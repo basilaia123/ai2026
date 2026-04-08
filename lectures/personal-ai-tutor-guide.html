@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>პერსონალური AI ასისტენტის გზამკვლევი | AI პრაქტიკაში</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-back:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 1px solid #eef2f6;
+        }
+
+        .content-card h2 {
+            color: #4f46e5;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid #e0e7ff;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .content-card h3 {
+            color: #1e293b;
+            margin: 2rem 0 1rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .content-card p {
+            margin-bottom: 1.2rem;
+            color: #475569;
+            font-size: 1.1rem;
+        }
+
+        .highlight-box {
+            background: #f8fafc;
+            border-left: 5px solid #4f46e5;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .template-box {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .template-header {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #4f46e5;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 0 12px 0 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+            color: #475569;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .platform-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .platform-card:hover {
+            border-color: #4f46e5;
+            background: #fdfdff;
+        }
+
+        .platform-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-list {
+            list-style: none;
+            counter-reset: steps;
+        }
+
+        .step-item {
+            position: relative;
+            padding-left: 3.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .step-item::before {
+            counter-increment: steps;
+            content: counter(steps);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: #4f46e5;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .btn-copy {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: #4338ca;
+        }
+
+        @media (max-width: 768px) {
+            .platform-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-back">← მთავარზე დაბრუნება</a>
+
+        <div class="header">
+            <h1>პერსონალური AI ასისტენტის გზამკვლევი</h1>
+            <p>ისწავლეთ როგორ შექმნათ თქვენს პროფესიაზე მორგებული "ციფრული ორეული", რომელიც დაზოგავს თქვენს დროს და გააუმჯობესებს მუშაობის ხარისხს.</p>
+        </div>
+
+        <!-- Section 1: Concept -->
+        <div class="content-card">
+            <h2>🎯 რა არის პერსონალური AI ასისტენტი?</h2>
+            <p>ეს არ არის უბრალოდ ChatGPT-თან საუბარი. ეს არის სპეციალურად კონფიგურირებული გარემო, სადაც AI-მ წინასწარ იცის:</p>
+            <ul>
+                <li><strong>თქვენი როლი და კონტექსტი:</strong> ვინ ხართ და რა არის თქვენი მიზანი.</li>
+                <li><strong>თქვენი სტილი:</strong> როგორი ტონით გსურთ კომუნიკაცია (ქართულად, ინგლისურად, ფორმალურად თუ მეგობრულად).</li>
+                <li><strong>თქვენი ცოდნის ბაზა:</strong> თქვენი კომპანიის დოკუმენტები, შაბლონები, წინა ნამუშევრები.</li>
+                <li><strong>თქვენი წესები:</strong> რა უნდა გააკეთოს ყოველთვის და რა - არასდროს.</li>
+            </ul>
+            <div class="highlight-box">
+                <p><strong>ფორმულა:</strong> Custom AI = LLM (ChatGPT/Claude) + თქვენი ინსტრუქციები + თქვენი მონაცემები.</p>
+            </div>
+        </div>
+
+        <!-- Section 2: Platforms -->
+        <div class="content-card">
+            <h2>🛠️ პლატფორმის არჩევა</h2>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <h4>🟢 ChatGPT (Custom GPTs)</h4>
+                    <p>საუკეთესოა, თუ გჭირდებათ:</p>
+                    <ul>
+                        <li>კონკრეტული "ხელსაწყოს" შექმნა (მაგ: Image Generator).</li>
+                        <li>ასისტენტის გაზიარება გუნდის წევრებისთვის.</li>
+                        <li>ავტომატიზაციებთან დაკავშირება (Zapier).</li>
+                    </ul>
+                </div>
+                <div class="platform-card">
+                    <h4>🟠 Claude (Projects)</h4>
+                    <p>საუკეთესოა, თუ გჭირდებათ:</p>
+                    <ul>
+                        <li>დიდი მოცულობის დოკუმენტების ანალიზი.</li>
+                        <li>სერიოზული წერითი სამუშაოები.</li>
+                        <li>კოდირება და ტექნიკური დოკუმენტაცია.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Expert Instruction Formula -->
+        <div class="content-card">
+            <h2>✍️ ექსპერტული ინსტრუქციის ფორმულა</h2>
+            <p>იმისთვის, რომ ასისტენტმა იდეალურად იმუშაოს, გამოიყენეთ ეს სტრუქტურა სისტემური პრომპტისთვის (System Instructions):</p>
+            <div class="template-box">
+                <div class="template-header">The Master Formula</div>
+# ROLE
+შენ ხარ [პროფესია], [გამოცდილება] წლიანი სტაჟით.
+
+# CONTEXT
+ჩემი მიზანია [მიზანი]. შენი სამიზნე აუდიტორიაა [აუდიტორია].
+
+# CORE TASKS
+1. [ამოცანა 1]
+2. [ამოცანა 2]
+
+# STYLE & LANGUAGE
+- გამოიყენე [ქართული/ინგლისური] ენა.
+- ტონი: [ფორმალური/კრეატიული/აკადემიური].
+- ფორმატი: [ბულეტები/ცხრილები/მოკლე პარაგრაფები].
+
+# CONSTRAINTS (ყოველთვის/არასდროს)
+- ყოველთვის: [წესი 1]
+- არასდროს: [აკრძალვა 1]
+            </div>
+        </div>
+
+        <!-- Section 4: Role-Specific Templates -->
+        <div class="content-card">
+            <h2>🚀 პროფესიული შაბლონები (Ready to Copy)</h2>
+            <p>გამოიყენეთ ეს ინსტრუქციები თქვენი Custom GPT-ს ან Claude Project-ის შექმნისას:</p>
+
+            <!-- Template 1: Marketing -->
+            <h3>1. მარკეტინგის და სოც. მედიის ასისტენტი</h3>
+            <span class="role-badge">Marketing Specialist</span>
+            <div class="template-box">
+                <div class="template-header">Marketing PRO System Prompt</div>
+# ROLE
+შენ ხარ კრეატიული მარკეტინგის სტრატეგი და Social Media მენეჯერი, რომელიც სპეციალიზებულია ქართულ ბაზარზე.
+
+# OBJECTIVE
+დამეხმარე ჩამთრევი (engaging) კონტენტის შექმნაში, რომელიც ზრდის ბრენდის ცნობადობას და გაყიდვებს.
+
+# STYLE GUIDELINES
+- გამოიყენე თანამედროვე, მეგობრული, მაგრამ პროფესიონალური ქართული.
+- სტრატეგიულად გამოიყენე ემოჯიები და ჰეშთეგები.
+- პოსტები უნდა იყოს სტრუქტურირებული: Hook -> Body -> Call to Action (CTA).
+
+# KNOWLEDGE BASE USAGE
+ყოველთვის გაითვალისწინე ატვირთული ბრენდ-ბუქი და წინა კამპანიების შედეგები.
+
+# CONSTRAINTS
+- არასდროს გამოიყენო "Google Translate"-ის მსგავსი ხელოვნური ქართული.
+- ყოველთვის შემომთავაზე 3 ვარიაცია თითოეული პოსტისთვის.
+            </div>
+
+            <!-- Template 2: HR -->
+            <h3>2. HR და რეკრუტინგის ასისტენტი</h3>
+            <span class="role-badge">HR Manager</span>
+            <div class="template-box">
+                <div class="template-header">HR Specialist System Prompt</div>
+# ROLE
+შენ ხარ HR დირექტორი და გამოცდილი რეკრუტერი.
+
+# TASKS
+- ვაკანსიის აღწერების (JD) მომზადება.
+- CV-ების სკრინინგი ატვირთული კრიტერიუმების მიხედვით.
+- ინტერვიუს კითხვების მომზადება STAR მეთოდით.
+- კანდიდატებისთვის უკუკავშირის (Feedback) წერა.
+
+# STYLE
+- ეთიკური, პროფესიონალური და ობიექტური.
+- ფორმალური ქართული ბიზნეს კომუნიკაცია.
+
+# RULES
+- ყოველთვის დაიცავი პერსონალური მონაცემების კონფიდენციალურობა.
+- CV-ების შეფასებისას შექმენი ცხრილი: [კრიტერიუმი | ქულა | კომენტარი].
+            </div>
+
+            <!-- Template 3: Sales -->
+            <h3>3. გაყიდვების და B2B ასისტენტი</h3>
+            <span class="role-badge">Sales & Business Development</span>
+            <div class="template-box">
+                <div class="template-header">Sales Closer System Prompt</div>
+# ROLE
+შენ ხარ High-Ticket B2B გაყიდვების ექსპერტი.
+
+# TASKS
+- "ცივი" (Cold) იმეილების და LinkedIn შეტყობინებების წერა.
+- მომხმარებლის უარყოფების (Objections) დამუშავება.
+- შეთავაზებების (Proposals) სტრუქტურირება.
+
+# STYLE
+- კონკრეტული, შედეგზე ორიენტირებული, დამაჯერებელი.
+- გამოიყენე "Problem-Agitation-Solution" (PAS) ფრეიმვორკი.
+
+# RULES
+- არასდროს იყავი ზედმეტად "Sellsy" ან აგრესიული.
+- ყოველთვის მოახდინე შეტყობინების პერსონალიზაცია ატვირთული კომპანიის პროფილის მიხედვით.
+            </div>
+        </div>
+
+        <!-- Section 5: Knowledge Base -->
+        <div class="content-card">
+            <h2>📂 რისი ატვირთვა ღირს ცოდნის ბაზაში (Knowledge Base)?</h2>
+            <p>ასისტენტის "ინტელექტი" პირდაპირ დამოკიდებულია მასალებზე, რომლებსაც მას მიაწვდით. ატვირთეთ:</p>
+            <div class="highlight-box">
+                <ul>
+                    <li><strong>Brand Kit / Style Guide:</strong> თქვენი ბრენდის ფერები, შრიფტები და კომუნიკაციის წესები.</li>
+                    <li><strong>Templates:</strong> იმეილების, ანგარიშების ან დოკუმენტების თქვენი ფავორიტი შაბლონები.</li>
+                    <li><strong>Case Studies:</strong> თქვენი წარმატებული პროექტების აღწერა (რათა AI-მ ისწავლოს თქვენი ხარისხი).</li>
+                    <li><strong>FAQ & Product Docs:</strong> ინფორმაცია თქვენი პროდუქტების ან სერვისების შესახებ.</li>
+                    <li><strong>Previous Reports:</strong> რათა ახალი ანგარიშები იმავე სტილში დაიწეროს.</li>
+                </ul>
+            </div>
+            <p><em>⚠️ მნიშვნელოვანია: არასდროს ატვირთოთ კონფიდენციალური პაროლები ან ზედმეტად სენსიტიური პერსონალური ინფორმაცია.</em></p>
+        </div>
+
+        <!-- Section 6: Steps to Create -->
+        <div class="content-card">
+            <h2>🚀 ნაბიჯ-ნაბიჯ ინსტრუქცია</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <h3>განსაზღვრეთ მიზანი</h3>
+                    <p>ჩამოწერეთ 1-3 ძირითადი ამოცანა, რომელსაც ეს ასისტენტი ყოველდღე შეასრულებს.</p>
+                </div>
+                <div class="step-item">
+                    <h3>აირჩიეთ პლატფორმა</h3>
+                    <p>შედით ChatGPT-ის "Explore GPTs" სექციაში ან Claude-ის "Projects" მენიუში.</p>
+                </div>
+                <div class="step-item">
+                    <h3>ჩაწერეთ ინსტრუქციები</h3>
+                    <p>დააკოპირეთ ზემოთ მოცემული შაბლონი და მოარგეთ თქვენს სპეციფიკას.</p>
+                </div>
+                <div class="step-item">
+                    <h3>ატვირთეთ ფაილები</h3>
+                    <p>მიეცით ასისტენტს საჭირო კონტექსტი (PDF, Word ან Excel ფაილების სახით).</p>
+                </div>
+                <div class="step-item">
+                    <h3>ტესტირება და დახვეწა</h3>
+                    <p>მიეცით პირველი დავალება. თუ პასუხი არ მოგეწონათ, ჩაასწორეთ ინსტრუქციები (Instructions) და არა უბრალოდ პრომპტი ჩატში.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final CTA -->
+        <div class="header" style="margin-top: 4rem;">
+            <h2>დროა შექმნათ თქვენი პირველი ასისტენტი!</h2>
+            <p>დაიწყეთ დღესვე და დაინახავთ, როგორ შეიცვლება თქვენი პროდუქტიულობა.</p>
+            <div style="margin-top: 2rem;">
+                <a href="lecture-11-slides.html" class="nav-back">ლექცია 11-ის სლაიდები</a>
+                <a href="index.html" class="nav-back">მთავარი გვერდი</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy functionality can be added here if needed
+        function copyTemplate(id) {
+            // Placeholder for copy function
+        }
+    </script>
+</body>
+</html>
