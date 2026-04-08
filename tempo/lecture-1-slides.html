@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სესია 1: AI საფუძვლები და პრომპტ-ინჟინერია | Tempo Holding 2026</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'FiraGO', sans-serif !important; }
+        :root {
+            --tempo-amber: #d97706; --tempo-gold: #fbbf24; --tempo-dark: #0f172a;
+            --tempo-mid: #1e293b; --tempo-light: #f8fafc; --text-dim: #94a3b8;
+            --success: #10b981; --danger: #ef4444;
+            --fs-h1: clamp(3rem, 4.2vw, 5.5rem);
+            --fs-h2: clamp(2rem, 2.6vw, 3.4rem);
+            --fs-h3: clamp(1.4rem, 1.7vw, 2.2rem);
+            --fs-p:  clamp(1.1rem, 1.25vw, 1.6rem);
+            --fs-li: clamp(1rem, 1.15vw, 1.45rem);
+            --fs-sm: clamp(0.85rem, 0.95vw, 1.15rem);
+        }
+        body { background-color: var(--tempo-dark); color: var(--tempo-light); overflow: hidden; }
+        .presentation-container { width: 100vw; height: 100vh; position: relative; }
+        .slide {
+            width: 100%; height: 100%; display: none;
+            padding: clamp(2rem, 4vh, 5rem) clamp(3rem, 6vw, 8rem);
+            padding-top: clamp(4rem, 7vh, 7rem);
+            flex-direction: column; justify-content: space-between;
+            background: radial-gradient(circle at center, var(--tempo-mid) 0%, var(--tempo-dark) 100%);
+            overflow-y: auto;
+        }
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h1 { font-size: var(--fs-h1); color: var(--tempo-gold); margin-bottom: 1.5rem; text-align: center; font-weight: 900; line-height: 1.1; }
+        h2 { font-size: var(--fs-h2); color: var(--tempo-amber); margin-bottom: clamp(1rem, 2vh, 2rem); border-left: 0.4vw solid var(--tempo-amber); padding-left: 1.2vw; font-weight: 800; line-height: 1.2; }
+        h3 { font-size: var(--fs-h3); color: var(--tempo-gold); margin: 0.8rem 0 0.5rem; font-weight: 700; }
+        p { font-size: var(--fs-p); margin-bottom: clamp(0.5rem, 1vh, 1.2rem); line-height: 1.65; }
+
+        .img-placeholder { width: 100%; height: clamp(220px, 38vh, 480px); background-size: cover; background-position: center; border-radius: 1.5vw; box-shadow: 0 20px 50px rgba(0,0,0,0.6); margin: clamp(0.5rem, 1.5vh, 2rem) 0; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+        .chart-container { width: 100%; max-width: 1100px; height: clamp(280px, 42vh, 520px); margin: 0.5rem auto; background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 1.2vw; flex-shrink: 0; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin: clamp(0.5rem, 1.5vh, 2rem) 0; background: rgba(255,255,255,0.02); border-radius: 0.8vw; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .data-table th { background: var(--tempo-amber); color: white; padding: clamp(10px, 1.5vh, 20px) clamp(12px, 1.2vw, 22px); text-align: left; font-size: var(--fs-sm); font-weight: 800; }
+        .data-table td { padding: clamp(10px, 1.4vh, 18px) clamp(12px, 1.2vw, 22px); border: 1px solid rgba(255,255,255,0.08); font-size: var(--fs-sm); line-height: 1.5; }
+
+        .prompt-card {
+            background: #020617; border-radius: 1vw; border-top: 4px solid var(--tempo-gold);
+            padding: clamp(1rem, 2vh, 2rem) clamp(1rem, 1.8vw, 2.5rem);
+            margin-bottom: clamp(0.8rem, 1.8vh, 2rem);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;
+        }
+        .prompt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+        .prompt-category { font-size: clamp(0.65rem, 0.75vw, 0.95rem); font-weight: 900; text-transform: uppercase; color: var(--tempo-gold); letter-spacing: 0.08em; }
+        .prompt-text { font-family: 'Courier New', monospace !important; color: #38bdf8; font-size: clamp(0.9rem, 1.05vw, 1.3rem); line-height: 1.6; white-space: pre-wrap; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.2rem, 2.5vw, 3.5rem); margin-top: clamp(0.8rem, 1.5vh, 2rem); flex: 1; }
+        .card { background: rgba(255,255,255,0.04); padding: clamp(1.2rem, 2vw, 2.5rem); border-radius: 1.2vw; border: 1px solid rgba(217,119,6,0.2); display: flex; flex-direction: column; }
+        .card h4 { color: var(--tempo-gold); font-size: var(--fs-h3); margin-bottom: 0.7rem; font-weight: 700; }
+        .card p, .card ul li { font-size: var(--fs-sm); }
+
+        .nav-controls { position: fixed; bottom: 2.5vh; right: 3vw; display: flex; gap: 1rem; z-index: 1000; }
+        .nav-btn {
+            background: rgba(217,119,6,0.1); border: 1px solid var(--tempo-amber); color: white;
+            width: clamp(48px, 4vw, 70px); height: clamp(48px, 4vw, 70px);
+            border-radius: 50%; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: clamp(1.1rem, 1.4vw, 1.8rem); transition: 0.3s;
+        }
+        .nav-btn:hover { background: var(--tempo-amber); box-shadow: 0 0 20px var(--tempo-amber); }
+
+        .progress-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 8px; background: rgba(255,255,255,0.05); z-index: 1000; }
+        .progress-bar { height: 100%; background: linear-gradient(to right, var(--tempo-amber), var(--tempo-gold)); width: 0%; transition: width 0.3s; }
+        .slide-counter { position: fixed; bottom: 2.5vh; left: 3vw; font-size: clamp(1rem, 1.1vw, 1.4rem); color: var(--text-dim); font-weight: 800; }
+
+        .brand-header { position: fixed; top: 1.8vh; left: 2.5vw; display: flex; align-items: center; gap: 1vw; z-index: 1000; }
+        .logo { width: clamp(36px, 3vw, 52px); height: clamp(36px, 3vw, 52px); background: var(--tempo-amber); border-radius: 0.6vw; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: clamp(1.3rem, 1.6vw, 2rem); }
+        .brand-text { font-size: clamp(0.9rem, 1.1vw, 1.4rem); font-weight: 900; letter-spacing: 0.12em; }
+
+        ul li { margin-bottom: clamp(0.4rem, 0.9vh, 1rem); list-style-type: none; padding-left: 1.8rem; position: relative; font-size: var(--fs-li); line-height: 1.55; }
+        ul li::before { content: "▸"; position: absolute; left: 0; color: var(--tempo-gold); font-size: 1.3em; font-weight: 900; }
+
+        .copy-btn { background: var(--tempo-amber); color: white; border: none; padding: clamp(5px,0.6vh,10px) clamp(12px,1.1vw,20px); border-radius: 6px; cursor: pointer; font-size: clamp(0.72rem, 0.8vw, 1rem); font-weight: 800; transition: 0.2s; }
+        .copy-btn:hover { background: var(--tempo-gold); color: var(--tempo-dark); }
+
+        .quiz-option { padding: clamp(0.9rem, 1.5vh, 1.8rem) clamp(1rem, 1.5vw, 2rem); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1vw; margin-bottom: clamp(0.6rem, 1.2vh, 1.4rem); cursor: pointer; transition: 0.2s; font-size: var(--fs-p); line-height: 1.5; }
+        .quiz-option:hover { border-color: var(--tempo-gold); background: rgba(255,255,255,0.1); }
+        .quiz-option.correct { background: rgba(16, 185, 129, 0.2); border-color: var(--success); }
+        .quiz-option.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--danger); }
+
+        .slide-body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.8rem, 1.5vh, 2rem); }
+        .highlight-box { background: rgba(251,191,36,0.08); padding: clamp(1rem, 2vh, 2.5rem); border-radius: 1vw; border: 1px solid rgba(251,191,36,0.3); text-align: center; }
+        .highlight-box p { margin: 0; font-size: var(--fs-p); }
+
+        /* ── DETAIL PANEL ── */
+        .detail-btn {
+            position: fixed; bottom: 2.5vh; left: 50%; transform: translateX(-50%);
+            background: rgba(217,119,6,0.15); border: 1px solid rgba(217,119,6,0.5);
+            color: var(--tempo-gold); border-radius: 999px;
+            padding: clamp(6px,0.8vh,12px) clamp(18px,1.8vw,32px);
+            font-size: clamp(0.8rem, 0.9vw, 1.1rem); font-weight: 700;
+            cursor: pointer; font-family: inherit; z-index: 900;
+            transition: all 0.25s; display: none; align-items: center; gap: 8px;
+            backdrop-filter: blur(8px);
+        }
+        .detail-btn.visible { display: flex; }
+        .detail-btn:hover { background: rgba(217,119,6,0.3); transform: translateX(-50%) translateY(-2px); }
+
+        .detail-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 950; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .detail-overlay.open { opacity: 1; pointer-events: all; }
+
+        .detail-panel {
+            position: fixed; right: 0; top: 0; height: 100%;
+            width: clamp(340px, 36vw, 580px);
+            background: linear-gradient(160deg, #0f2237 0%, #0f172a 100%);
+            border-left: 2px solid rgba(217,119,6,0.35);
+            z-index: 960; transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+            display: flex; flex-direction: column;
+            box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .detail-panel.open { transform: translateX(0); }
+
+        .dp-header {
+            padding: clamp(1rem,2vh,1.8rem) clamp(1.2rem,1.8vw,2rem);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .dp-header h3 { font-size: clamp(1rem,1.2vw,1.5rem); color: var(--tempo-gold); font-weight: 800; margin:0; }
+        .dp-close {
+            width: clamp(30px,2.5vw,42px); height: clamp(30px,2.5vw,42px);
+            border-radius: 50%; background: rgba(255,255,255,0.08);
+            border: none; color: #fff; cursor: pointer; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s; flex-shrink: 0;
+        }
+        .dp-close:hover { background: rgba(217,119,6,0.4); }
+
+        .dp-body {
+            padding: clamp(1rem,2vh,2rem) clamp(1.2rem,1.8vw,2rem);
+            overflow-y: auto; flex: 1;
+            scrollbar-width: thin; scrollbar-color: rgba(217,119,6,0.3) transparent;
+        }
+        .dp-body::-webkit-scrollbar { width: 4px; }
+        .dp-body::-webkit-scrollbar-thumb { background: rgba(217,119,6,0.3); border-radius: 2px; }
+
+        .dp-section { margin-bottom: clamp(1rem,2vh,2rem); }
+        .dp-section h4 {
+            font-size: clamp(0.85rem,1vw,1.15rem); font-weight: 800;
+            color: var(--tempo-amber); margin-bottom: 0.5rem;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .dp-section p, .dp-section li {
+            font-size: clamp(0.85rem,0.95vw,1.15rem);
+            color: #cbd5e1; line-height: 1.7;
+        }
+        .dp-section ul { list-style: none; padding: 0; }
+        .dp-section ul li { padding: 0.3rem 0 0.3rem 1.4rem; position: relative; }
+        .dp-section ul li::before { content: "▸"; position: absolute; left: 0; color: var(--tempo-gold); }
+        .dp-tag {
+            display: inline-block; background: rgba(217,119,6,0.15);
+            border: 1px solid rgba(217,119,6,0.3); color: var(--tempo-gold);
+            border-radius: 999px; padding: 2px 10px;
+            font-size: clamp(0.7rem,0.8vw,0.9rem); font-weight: 700; margin: 2px;
+        }
+        .dp-tip {
+            background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25);
+            border-radius: 0.8vw; padding: 0.8rem 1rem; margin-top: 0.8rem;
+        }
+        .dp-tip p { color: #6ee7b7; margin: 0; font-size: clamp(0.8rem,0.9vw,1.05rem); }
+        .dp-warn {
+            background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+            border-radius: 0.8vw; padding: 0.8rem 1rem; margin-top: 0.8rem;
+        }
+        .dp-warn p { color: #fca5a5; margin: 0; font-size: clamp(0.8rem,0.9vw,1.05rem); }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="slide-counter" id="slideCount">1 / 34</div>
+
+    <div class="brand-header">
+        <div class="logo">T</div>
+        <div class="brand-text">TEMPO HOLDING | AI CORE 2026</div>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- SLIDE 1: INTRO -->
+        <div class="slide active" style="justify-content: center; text-align: center;">
+            <p style="text-transform: uppercase; letter-spacing: 8px; color: var(--tempo-gold); font-weight: 900; margin-bottom: 1rem;">Corporate Strategic Training</p>
+            <h1>AI ინტეგრაცია და ეფექტიანობა</h1>
+            <h2 style="border: none; text-align: center; font-size: 2.2rem;">სესია 1: საფუძვლები და პრომპტ-ინჟინერია</h2>
+            <div style="margin-top: 4rem; display: flex; justify-content: center; gap: 4rem;">
+                <div><p style="color: var(--tempo-gold); font-weight: 800;">გიორგი ბასილაია</p><p style="font-size: 0.9rem; opacity: 0.6;">Senior AI Strategist</p></div>
+                <div style="width: 2px; background: rgba(255,255,255,0.1);"></div>
+                <div><p style="color: var(--tempo-gold); font-weight: 800;">Smart Academy</p><p style="font-size: 0.9rem; opacity: 0.6;">Training Partner</p></div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: THE VISION -->
+        <div class="slide">
+            <h2>AI-ს როლი Tempo-ს ეკოსისტემაში</h2>
+            <div class="img-placeholder" style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1000');"></div>
+            <p>2026 წელს უძრავი ქონების ბაზარზე წარმატება ნიშნავს სისწრაფეს. ჩვენი მიზანია AI-ს გამოყენება პროცესების <strong>40%-ით დაჩქარებისთვის</strong>.</p>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Serenade & Queen's Residence</h4>
+                    <p>პროექტების პოზიციონირება, საინვესტიციო ROI-ს მყისიერი დათვლა და VIP კლიენტებთან პერსონალიზებული კომუნიკაცია.</p>
+                </div>
+                <div class="card">
+                    <h4>Operational Excellence</h4>
+                    <p>შიდა დოკუმენტაციის, SOP-ების და ანალიტიკური რეპორტების ავტომატური გენერაცია და შემოწმება.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: EVOLUTION -->
+        <div class="slide">
+            <h2>AI შესაძლებლობების ზრდა (2022-2026)</h2>
+            <div class="chart-container"><canvas id="evolutionChart"></canvas></div>
+            <div class="grid-2" style="flex:0; margin-top: 1.5vh;">
+                <div class="card" style="padding: 1.2rem 1.5rem;">
+                    <h4>2022 — GPT-3.5</h4>
+                    <p>ზოგადი ტექსტი, ხშირი შეცდომები. გამოყენება: სამეცნიერო ექსპერიმენტები.</p>
+                </div>
+                <div class="card" style="padding: 1.2rem 1.5rem; border-color: var(--tempo-amber);">
+                    <h4>2026 — GPT-5 / Claude 4</h4>
+                    <p>ბიზნეს-ანალიტიკა, კოდი, სამართლებრივი ანალიზი — ყველა ერთ ინსტრუმენტში.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: THE BIG 4 GIANTS -->
+        <div class="slide">
+            <h2>AI გიგანტები 2026: რომელი რისთვის?</h2>
+            <div class="grid-2">
+                <div>
+                    <table class="data-table">
+                        <thead><tr><th>ინსტრუმენტი</th><th>მოდელი</th><th>Tempo Use-Case</th></tr></thead>
+                        <tbody>
+                            <tr><td>ChatGPT</td><td>GPT-5.2</td><td>ROI ანალიზი</td></tr>
+                            <tr><td>Claude</td><td>Opus 4.6</td><td>SOP-ების წერა</td></tr>
+                            <tr><td>Perplexity</td><td>Search 3</td><td>ბაზრის კვლევა</td></tr>
+                            <tr><td>Gemini</td><td>3.1 Pro</td><td>Sheets Auto</td></tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size: 1rem;">თითოეულ მოდელს აქვს თავისი "სუპერძალა", რომელსაც სესიების განმავლობაში ავითვისებთ.</p>
+                </div>
+                <div class="chart-container" style="height: 350px; margin: 0;"><canvas id="radarChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: LLM LOGIC -->
+        <div class="slide">
+            <h2>როგორ "ფიქრობს" AI? (ტოკენები)</h2>
+            <p>AI არ არის ენციკლოპედია. ის არის <strong>სტატისტიკური ალბათობის მანქანა</strong>.</p>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Tokens: AI-ს სიტყვები</h4>
+                    <p style="font-size: 1rem;">ყველა სიტყვა იშლება ნაწილებად. 2026 წელს Claude-ს შეუძლია 800-გვერდიანი დოკუმენტის წაკითხვა 10 წამში.</p>
+                </div>
+                <div class="card">
+                    <h4>Prediction: შემდეგი ნაბიჯი</h4>
+                    <p style="font-size: 1rem;">AI ვარაუდობს შემდეგ სიტყვას თქვენი ინსტრუქციის (პრომპტის) მიხედვით.</p>
+                </div>
+            </div>
+            <div class="highlight-box" style="background: rgba(255,255,255,0.05); padding: 1.5rem; margin-top: 2rem; border-radius: 15px; border: 1px dashed var(--tempo-gold); text-align: center;">
+                <p style="margin-bottom: 0;"><strong>პრომპტი არის პროგრამირება ბუნებრივ ენაზე.</strong></p>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: SECURITY MATRIX -->
+        <div class="slide">
+            <h2>🛡️ მონაცემთა უსაფრთხოება Tempo-ში</h2>
+            <div class="grid-2">
+                <div class="card" style="border-color: var(--success);">
+                    <h4 style="color: var(--success);">🟢 GREEN ZONE</h4>
+                    <ul><li>საჯარო PR ტექსტები</li><li>ბაზრის ზოგადი კვლევები</li><li>ბრენდბუქი</li></ul>
+                </div>
+                <div class="card" style="border-color: var(--danger);">
+                    <h4 style="color: var(--danger);">🔴 RED ZONE</h4>
+                    <ul><li>ინვესტორთა პირადი მონაცემები</li><li>შიდა P&L რეპორტები</li><li>პროექტის ნახაზები</li></ul>
+                </div>
+            </div>
+            <p style="margin-top: 2rem; text-align: center;"><strong>ოქროს წესი:</strong> ნუ ატვირთავთ იმას, რასაც Facebook-ზე არ დაპოსტავდით.</p>
+        </div>
+
+        <!-- SLIDE 7: CREATE FRAMEWORK -->
+        <div class="slide">
+            <h2>პრომპტ-ინჟინერია: CREATE ჩარჩო</h2>
+            <p>სრულყოფილი პრომპტი შედგება 6 კომპონენტისგან:</p>
+            <table class="data-table">
+                <tr><td style="color:var(--tempo-gold); font-weight:900;">C - Context</td><td>სიტუაციის აღწერა (Serenade Project).</td></tr>
+                <tr><td style="color:var(--tempo-gold); font-weight:900;">R - Role</td><td>AI-ს როლი (Senior Sales Closer).</td></tr>
+                <tr><td style="color:var(--tempo-gold); font-weight:900;">E - Effort</td><td>ზუსტი დავალება (Email Draft).</td></tr>
+                <tr><td style="color:var(--tempo-gold); font-weight:900;">A - Audience</td><td>ვისთვის ვწერთ (VIP Investor).</td></tr>
+                <tr><td style="color:var(--tempo-gold); font-weight:900;">T - Tone</td><td>როგორი ხმა (Premium, Reliable).</td></tr>
+                <tr><td style="color:var(--tempo-gold); font-weight:900;">E - Example</td><td>ნიმუში უკეთესი შედეგისთვის.</td></tr>
+            </table>
+        </div>
+
+        <!-- SLIDE 8: CONTEXT DEPTH -->
+        <div class="slide">
+            <h2>CREATE [C] - კონტექსტის ძალა</h2>
+            <div class="img-placeholder" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1000');"></div>
+            <p>კონტექსტი არის ის, რაც განასხვავებს "ზოგად" პასუხს "Tempo-ს" პასუხისგან.</p>
+            <div class="card" style="margin-top: 1rem;">
+                <p><strong>მაგალითი:</strong> "ვამზადებთ Serenade-ის VIP პრეზენტაციას. ეს არის ენერგოეფექტური კომპლექსი ბათუმში, რომელიც ორიენტირებულია 16%-იან ROI-ზე."</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: ROLE ACTIVATION -->
+        <div class="slide">
+            <h2>CREATE [R] - როლის გააქტიურება</h2>
+            <p>როლი ააქტიურებს AI-ს სპეციფიკურ "ცოდნის კლასტერს".</p>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>The Investment Analyst</h4>
+                    <p style="font-size: 0.9rem;">მშვიდი, რიცხვებზე ორიენტირებული, აქცენტი სტატისტიკაზე.</p>
+                </div>
+                <div class="card">
+                    <h4>The Luxury Copywriter</h4>
+                    <p style="font-size: 0.9rem;">ემოციური, დახვეწილი, აქცენტი პრემიალურ ცხოვრების სტილზე.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: CREATE [E] -->
+        <div class="slide">
+            <h2>CREATE [E] - Effort: ზუსტი დავალება</h2>
+            <p>AI-ს ვაძლევთ <strong>კონკრეტულ, გაზომვად</strong> დავალებას. ბუნდოვანი ინსტრუქცია = ბუნდოვანი შედეგი.</p>
+            <div class="grid-2">
+                <div class="card" style="border-color: var(--danger);">
+                    <h4 style="color: var(--danger);">❌ სუსტი Effort</h4>
+                    <p style="font-size:1rem;">"დამიწერე რაღაც Serenade-ის შესახებ"</p>
+                    <p style="font-size:0.85rem; opacity:0.6; margin-top:0.5rem;">— AI-ს არ იცის: რა ფორმატი? რამდენი სიტყვა? რა მიზანი?</p>
+                </div>
+                <div class="card" style="border-color: var(--success);">
+                    <h4 style="color: var(--success);">✅ ძლიერი Effort</h4>
+                    <p style="font-size:1rem;">"დაწერე 3-პარაგრაფიანი საინვესტიციო სარეზიუმე Serenade-ისთვის: 1) ბაზრის კონტექსტი, 2) ROI, 3) Call-to-Action"</p>
+                </div>
+            </div>
+            <div class="prompt-card" style="margin-top:1.5rem;">
+                <div class="prompt-header"><span class="prompt-category">Effort ფორმულა</span></div>
+                <div class="prompt-text">ზმნა + ფორმატი + მოცულობა + სტრუქტურა
+მაგ: "შეადგინე [ცხრილი] [5-სვეტიანი] [სახელი | ბინის ტიპი | ფასი | ROI | სტატუსი]"</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: CREATE [A] -->
+        <div class="slide">
+            <h2>CREATE [A] - Audience: ვისთვის ვწერთ</h2>
+            <p>ერთი და იგივე პროდუქტი <strong>სხვადასხვა ენით</strong> — Audience ცვლის ყველაფერს.</p>
+            <table class="data-table">
+                <thead><tr><th>აუდიტორია</th><th>ენა/ტონი</th><th>Tempo მაგალითი</th></tr></thead>
+                <tbody>
+                    <tr><td>🏦 ინვესტორი (საერთაშ.)</td><td>ფინანსური, ციფრები, ROI</td><td>"16% annual yield, prime location"</td></tr>
+                    <tr><td>👨‍👩‍👧 ოჯახი (ადგილობრივი)</td><td>ემოციური, უსაფრთხოება</td><td>"სახლი, სადაც ბავშვები გაიზრდება"</td></tr>
+                    <tr><td>🏢 B2B პარტნიორი</td><td>პროფ. ენა, KPI-ები</td><td>"ერთობლივი განვითარების შესაძლებლობა"</td></tr>
+                    <tr><td>📱 Instagram მომხ.</td><td>მარტივი, ვიზუალური</td><td>"ბათუმი. პრემიუმ. შენი."</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SLIDE 12: CREATE [T] -->
+        <div class="slide">
+            <h2>CREATE [T] - Tone: ბრენდის ხმა</h2>
+            <p>Tempo Holding-ის ოფიციალური ტონი: <strong>პრემიალური • სანდო • ენერგიული</strong></p>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Tempo-ს ტონის სიტყვები</h4>
+                    <ul>
+                        <li>პრემიუმ, ელიტარული, ექსკლუზიური</li>
+                        <li>სანდო, გარანტირებული, გამჭვირვალე</li>
+                        <li>ინოვაციური, მდგრადი, ენერგოეფ.</li>
+                        <li>ამბიციური, ზრდაზე ორიენტირებული</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-color: var(--danger);">
+                    <h4>აკრძალული ტონი</h4>
+                    <ul>
+                        <li>ზედმეტად კასუალური ("სუპერ გამოვა!")</li>
+                        <li>გარანტიების გადაჭარბება</li>
+                        <li>ჟარგონი / სლენგი</li>
+                        <li>ემოციური მანიპულაცია</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="prompt-card" style="margin-top:1.5rem;">
+                <div class="prompt-text">Tone ინსტრუქცია: "გამოიყენე Tempo Holding-ის ტონი: პრემიალური, კონფიდენციალური, ფაქტებზე დაფუძნებული. არ გამოიყენო ჰიპერბოლები."</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 13: CREATE [E2] -->
+        <div class="slide">
+            <h2>CREATE [E₂] - Example: ნიმუში = ხარისხი</h2>
+            <p>AI-ს ვაჩვენებთ <strong>ერთ კარგ მაგალითს</strong> და ის ამ სტილს გაიმეორებს.</p>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">Few-Shot მაგალითი — Subject Line-ების გენერატორი</span><button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text">მე გჭირდება ელ-ფოსტის Subject Line-ების გენერაცია Serenade-ისთვის.
+ნახე ეს მაგალითი (სტილი, რომელიც მომწონს):
+"Serenade Batumi: 16% Yield — Limited Units Available"
+
+ახლა შექმენი 5 ანალოგიური Subject Line — ყოველი განსხვავებული კუთხიდან:
+1. ROI-ის ხაზგასმა, 2. სიჩქარე/FOMO, 3. ლოკაცია, 4. ლაიფსტაილი, 5. ენერგოეფ.</div>
+            </div>
+            <div class="highlight-box" style="background: rgba(251,191,36,0.08); padding: 1.2rem; border-radius: 12px; border: 1px solid rgba(251,191,36,0.3); text-align: center; margin-top: 1rem;">
+                <p style="margin:0;"><strong>CREATE სრული ფორმულა:</strong> Context + Role + Effort + Audience + Tone + Example = 10X შედეგი</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 14: BEFORE/AFTER -->
+        <div class="slide">
+            <h2>Before → After: პრომპტის ტრანსფორმაცია</h2>
+            <p>იგივე დავალება — <strong>10-ჯერ განსხვავებული შედეგი</strong>:</p>
+            <div class="grid-2">
+                <div class="card" style="border-color: var(--danger);">
+                    <h4 style="color: var(--danger);">❌ Before (2 წამი)</h4>
+                    <p style="font-family: monospace; font-size: 0.95rem; color: #94a3b8;">"დამიწერე ელფოსტა კლიენტისთვის"</p>
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;">
+                    <p style="font-size: 0.9rem; opacity: 0.7;"><em>შედეგი: ზოგადი, უსარგებლო, Tempo-ს ბრენდთან შეუსაბამო</em></p>
+                </div>
+                <div class="card" style="border-color: var(--success);">
+                    <h4 style="color: var(--success);">✅ After (CREATE)</h4>
+                    <p style="font-family: monospace; font-size: 0.85rem; color: #94a3b8;">"შენ ხარ Tempo-ს VIP Sales Manager [R]. კლიენტი Davit-ი (32, ინვ-ორი) [A] ყოყმანობს Serenade-ის [C] ფასის გამო. დაწერე 150-სიტყვიანი follow-up ელ-წერილი [E] პრემ. ტონით [T]. ნახე ნიმუში: [E₂]"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 15: ITERATION -->
+        <div class="slide">
+            <h2>Iteration: პრომპტის 3-ნაბიჯიანი გაუმჯობესება</h2>
+            <p>პირველი პასუხი <strong>არასდროსაა</strong> საბოლოო. Iterate = პროფესიონალი.</p>
+            <div class="card" style="width:100%; margin-bottom: 1.5rem;">
+                <h4>ნაბიჯი 1 — მიიღე პირველი draft</h4>
+                <p style="font-size:1rem;">"დაწერე Serenade-ის ერთგვერდიანი ინვ. სარეზიუმე"</p>
+            </div>
+            <div class="card" style="width:100%; margin-bottom: 1.5rem; border-color: var(--tempo-amber);">
+                <h4>ნაბიჯი 2 — Refine კონკრეტულად</h4>
+                <p style="font-size:1rem;">"კარგია. ახლა: შემოკლე ROI სექცია 50%-ით, დაამატე მშენებლობის ვადა და სერთიფიკატები."</p>
+            </div>
+            <div class="card" style="width:100%; border-color: var(--success);">
+                <h4>ნაბიჯი 3 — Final Polish</h4>
+                <p style="font-size:1rem;">"შესანიშნავი. ახლა გადაწერე Premium ტონით, B2B ინვესტორებისთვის, ინგლისურად."</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 16: ROI CHART -->
+        <div class="slide">
+            <h2>ბათუმის საინვესტიციო პოტენციალი 2026</h2>
+            <div class="chart-container"><canvas id="roiChart"></canvas></div>
+            <div class="grid-2" style="flex:0; margin-top: 1.5vh;">
+                <div class="card" style="padding: 1.2rem 1.5rem; border-color: var(--tempo-gold);">
+                    <h4>Serenade — 8.8% Yield</h4>
+                    <p>ბათუმი New Boulevard. ენერგოეფ. სტანდარტი A+. დატვირთ. 62%+. Short-term rental-ის ბაზარი სწრაფად იზრდება.</p>
+                </div>
+                <div class="card" style="padding: 1.2rem 1.5rem;">
+                    <h4>AI-ს როლი ROI-ში</h4>
+                    <p>CREATE პრომპტით 30 წამში მიიღებ 10-წლიანი ROI მოდელს ნებისმიერი ბინისთვის — ყოველ კლიენტზე მორგებული.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: ELITE PROMPT LIBRARY INTRO -->
+        <div class="slide" style="justify-content: center; text-align: center;">
+            <p style="color: var(--tempo-amber); letter-spacing: 4px;">ნაწილი 2</p>
+            <h1 style="font-size: 4rem;">პრომპტების ელიტარული ბიბლიოთეკა</h1>
+            <p>12 ყველაზე ეფექტური პრომპტი Tempo-ს გუნდისთვის</p>
+        </div>
+
+        <!-- SLIDE 12: SALES ELITE 1 -->
+        <div class="slide">
+            <h2>გაყიდვების ელიტარული პრომპტები</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">WhatsApp-ის ლიდების ასისტენტი</span> <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># როლი: Tempo Holding-ის გაყიდვების უფროსი მრჩეველი.
+# კონტექსტი: VIP კლიენტი, რომელიც დაინტერესდა Serenade-ის პროექტით, მაგრამ ყოყმანობს ფასის გამო.
+# ამოცანა: დაწერე მეგობრული WhatsApp შეტყობინება, სადაც აუხსნი ენერგოეფექტურობით გამოწვეულ გრძელვადიან დაზოგვას და პრემიუმ მართვის უპირატესობას.
+# ტონი: თავდაჯერებული, პრემიალური.</div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">შესიტყვებებთან მუშაობა (Objection Buster)</span> <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># ამოცანა: მოამზადე პასუხი კლიენტისთვის, რომელიც ამბობს: "ბათუმში სხვა პროექტებში უფრო იაფია". 
+# აქცენტი: მშენებლობის ხარისხის სტანდარტი, Queen's Residence-ის ლოკაცია და Tempo-ს რეპუტაცია ბაზარზე.</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 13: MARKETING ELITE 1 -->
+        <div class="slide">
+            <h2>მარკეტინგის ელიტარული პრომპტები</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">კონტენტ-სტრატეგია</span> <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># ამოცანა: შექმენი 1-კვირიანი Facebook/Instagram კონტენტ-გეგმა Serenade-სთვის.
+# ფორმატი: ცხრილი [თემა | ჰედლაინი | ვიზუალური ბრიფი | ტექსტი].
+# თემები: 1. პრემიუმ ცხოვრების სტილი, 2. ფინანსური სტაბილურობა (ROI), 3. ბოლო შანსი (FOMO - მხოლოდ რამდენიმე ბინაა დარჩენილი).</div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">სარეკლამო სკრიპტების გენერატორი</span> <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text">დაწერე 30-წამიანი ვიდეო რეკლამის სცენარი Serenade-ისთვის. დაიწყე ძლიერი კაუჭით (Hook): "რატომ კარგავენ ინვესტორები ფულს ბათუმში?"</div>
+            </div>
+        </div>
+
+        <!-- SLIDE HR: HR PROMPTS -->
+        <div class="slide">
+            <h2>HR და ადმინისტრაციის პრომპტები</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">Job Description გენერატორი</span><button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># როლი: Tempo-ს HR მენეჯერი.
+# ამოცანა: შექმენი Senior Sales Manager-ის ვაკანსიის აღწერა.
+# მოთხოვნები: 3+ წლის გამოცდილება უძრავ ქონებაში, ქართული + ინგლისური, KPI-ზე ორიენტირება.
+# ტონი: პროფ., ამბიციური. ფორმატი: Requirements | Responsibilities | Benefits.</div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">შეხვედრის Minutes გენერატორი</span><button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># ამოცანა: ქვემოთ ატვირთული შეხვედრის ჩანაწერიდან შექმენი სტრუქტურირებული Minutes.
+# ფორმატი: 1) გადაწყვეტილებები, 2) Action Items (პასუხისმგებელი + ვადა), 3) გადადებული საკითხები.
+# ენა: ქართული, ოფიციალური.</div>
+            </div>
+        </div>
+
+        <!-- SLIDE FINANCE: FINANCE PROMPTS -->
+        <div class="slide">
+            <h2>ფინანსები და Operations-ის პრომპტები</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">Monthly Report ნარატივი</span><button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># როლი: Senior Financial Analyst.
+# ამოცანა: ქვემოთ მოცემული ციფრებიდან შექმენი Tempo-ს Q1 2026 Executive Summary.
+# სტრუქტურა: 3 ძირითადი მეტრიკა → ტენდენციები → 2 რეკომენდაცია.
+# ტონი: მკაფიო, ფაქტობრივი. მაქსიმუმ 200 სიტყვა.</div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">Email Automation — გადახდის შეხსენება</span><button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># ამოცანა: შექმენი 3 ვარიანტის გადახდის შეხსენება ელ-ფოსტა:
+1. მეგობრული (3 დღემდე ვადამდე), 2. ოფიციალური (ვადის გასვლის დღეს), 3. სამართლებრივი (7 დღე ვადის შემდეგ).
+# ყოველი — 80 სიტყვამდე, Tempo-ს ბრენდ-ტონით.</div>
+            </div>
+        </div>
+
+        <!-- SLIDE FEW-SHOT: FEW-SHOT LEARNING -->
+        <div class="slide">
+            <h2>Few-Shot Learning: ნიმუშებით სწავლება</h2>
+            <p>AI-ს ვაჩვენებთ <strong>2-3 მაგალითს</strong> და ის ამ პატერნს გაიმეორებს — ყოველი ჯერ.</p>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">Tempo Social Post გენერატორი (Few-Shot)</span><button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text">შენ ქმნი Instagram პოსტებს Tempo Holding-ისთვის. ნახე ჩვენი სტილი:
+
+მაგ. 1: "ბათუმი, 2026. Serenade-ის ბოლო 12 ბინა. 16% Yield. ინვესტიცია, რომელიც ამუშავებს." [ემოჯი: 🏙️📈]
+
+მაგ. 2: "Queen's Residence — სადაც ლუქსი ხვდება ოკეანეს. ფასი: $2,100/მ². დარჩენილია: 8 ერთეული." [ემოჯი: 👑🌊]
+
+ახლა შექმენი 5 ანალოგიური პოსტი სეზონური ფასდაკლებისთვის.</div>
+            </div>
+        </div>
+
+        <!-- SLIDE LEGAL: LEGAL & FINANCE ELITE -->
+        <div class="slide">
+            <h2>იურიდიული და ფინანსური პრომპტები</h2>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">ხელშეკრულების შეჯამება</span> <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># როლი: უფროსი იურიდიული მრჩეველი.
+# ამოცანა: გააანალიზე ატვირთული ხელშეკრულება და გამოყავი 5 მთავარი რისკ-ფაქტორი Tempo-სთვის.
+# შედეგი: პუნქტები შესაბამისი რეკომენდაციებით.</div>
+            </div>
+            <div class="prompt-card">
+                <div class="prompt-header"><span class="prompt-category">რთული ROI კალკულატორი</span> <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button></div>
+                <div class="prompt-text"># ამოცანა: შექმენი 10-წლიანი ფინანსური მოდელი $150,000-იანი ბინისთვის.
+# ცვლადები: წლიური ზრდა 10%, დატვირთულობა (Occupancy) 58%, ADR $140.
+# გამოთვალე: წმინდა ROI და ამოღების პერიოდი (Payback period).</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 15: INTERACTIVE QUIZ 1 -->
+        <div class="slide">
+            <h2>ინტერაქტიული ქვიზი #1</h2>
+            <p>რომელი პრომპტია უკეთესი Tempo-ს გაყიდვების მენეჯერისთვის?</p>
+            <div class="quiz-option" onclick="this.classList.add('wrong')">A: "დამიწერე პასუხი კლიენტისთვის, რომელსაც ბინის ყიდვა უნდა."</div>
+            <div class="quiz-option" onclick="this.classList.add('correct')">B: "შენ ხარ Tempo-ს გაყიდვების მრჩეველი. უპასუხე ინვესტორს, რომელიც ყოყმანობს Serenade-ის ფასის გამო. გამოიყენე ROI არგუმენტები."</div>
+            <div class="quiz-option" onclick="this.classList.add('wrong')">C: "თარგმნე ეს ტექსტი ინგლისურად."</div>
+        </div>
+
+        <!-- SLIDE 16: CHAIN OF THOUGHT -->
+        <div class="slide">
+            <h2>ტექნიკა: Chain-of-Thought (CoT)</h2>
+            <p>აიძულეთ AI "იფიქროს" საბოლოო პასუხამდე. ეს ექსპონენციალურად ზრდის სიზუსტეს.</p>
+            <div class="prompt-card">
+                <div class="prompt-text">"ჯერ გააანალიზე ბათუმის პრემიუმ სეგმენტის 3 მთავარი რისკი.<br>შემდეგ მოიფიქრე, როგორ აზღვევს ამ რისკებს Serenade-ის პროექტი.<br>ბოლოს, ამის საფუძველზე დაწერე პასუხი ინვესტორისთვის."</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 17: HALLUCINATIONS -->
+        <div class="slide">
+            <h2>⚠️ ჰალუცინაციები: როგორ არ მოვტყუვდეთ</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>ფაქტების გადამოწმება</h4>
+                    <ul>
+                        <li>გამოიყენეთ Perplexity წყაროებისთვის.</li>
+                        <li>სთხოვეთ AI-ს: "მოიყვანე საწინააღმდეგო არგუმენტები".</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-color:var(--danger);">
+                    <h4>წითელი დროშები</h4>
+                    <ul>
+                        <li>ზედმეტად თავდაჯერებული ციფრები.</li>
+                        <li>არარსებული ბმულები.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 18: ROADMAP -->
+        <div class="slide">
+            <h2>Tempo AI Roadmap (Next 90 Days)</h2>
+            <div class="card" style="width: 100%;">
+                <ul>
+                    <li><strong>დღე 1-15:</strong> პრო ვერსიების (ChatGPT Plus / Claude Pro) ათვისება.</li>
+                    <li><strong>დღე 16-45:</strong> დეპარტამენტული Custom GPT-ების შექმნა.</li>
+                    <li><strong>დღე 46-90:</strong> ავტონომიური AI აგენტების ინტეგრაცია CRM-თან.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE 19: SUMMARY -->
+        <div class="slide">
+            <h2>სესიის შეჯამება</h2>
+            <ul>
+                <li><strong>CREATE Framework</strong> არის ჩვენი ყოველდღიური სტანდარტი.</li>
+                <li><strong>Claude</strong> - წერა, <strong>GPT</strong> - ანალიზი, <strong>Perplexity</strong> - ძიება.</li>
+                <li>არასდროს ატვირთოთ <strong>პირადი მონაცემები</strong>.</li>
+                <li>AI არის <strong>10X სტაჟიორი</strong> და არა თქვენი შემცვლელი.</li>
+            </ul>
+        </div>
+
+        <!-- SLIDE: GROUP EXERCISE 1 -->
+        <div class="slide">
+            <h2>🛠️ ჯგუფური სავარჯიშო #1 — CREATE-ის გამოყენება</h2>
+            <p style="color: var(--tempo-gold); font-weight:800;">⏱ 10 წუთი | ჯგუფები: 3-4 კაცი</p>
+            <div class="card" style="width:100%; margin-bottom:1.5rem;">
+                <h4>სცენარი</h4>
+                <p>თქვენ ხართ Tempo-ს გაყიდვების მენეჯერი. VIP კლიენტი — ქართველ-ამერიკელი ინვესტორი — იკითხავს: <strong>"რატომ Serenade და არა Hilton-ის პროექტი ბათუმში?"</strong></p>
+            </div>
+            <div class="card" style="width:100%;">
+                <h4>დავალება</h4>
+                <ul>
+                    <li>შექმენი <strong>CREATE ფორმულით</strong> პრომპტი ამ სიტუაციისთვის</li>
+                    <li>გაუშვი ChatGPT / Claude-ში</li>
+                    <li>გააუმჯობესე პასუხი <strong>1 Iteration</strong>-ით</li>
+                    <li>ჯგუფი წარადგენს საუკეთესო შედეგს</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SLIDE: GROUP EXERCISE 2 -->
+        <div class="slide">
+            <h2>🛠️ ჯგუფური სავარჯიშო #2 — თქვენი დეპარტამენტი</h2>
+            <p style="color: var(--tempo-gold); font-weight:800;">⏱ 15 წუთი | ინდივიდუალური</p>
+            <table class="data-table">
+                <thead><tr><th>დეპარტამენტი</th><th>სცენარი</th></tr></thead>
+                <tbody>
+                    <tr><td>💼 გაყიდვები</td><td>მოამზადე Follow-up კლიენტისთვის, ვინც 2 კვირაა არ პასუხობს</td></tr>
+                    <tr><td>📣 მარკეტინგი</td><td>შექმენი 5 Instagram Caption Queen's Residence-ისთვის</td></tr>
+                    <tr><td>🏗️ Operations</td><td>დაწერე SOP "ახალი ბინის ჩაბარების პროცედურა" — 5 ნაბიჯი</td></tr>
+                    <tr><td>👥 HR</td><td>შექმენი გასაუბრების 10 კითხვა Sales Manager-ისთვის</td></tr>
+                    <tr><td>⚖️ იურიდიული</td><td>შეაჯამე ხელშეკრულება: 5 მთავარი პუნქტი, 2 საფრთხე</td></tr>
+                </tbody>
+            </table>
+            <p style="text-align:center; margin-top:1rem;">გაუშვი AI-ში → ინახე შედეგი → გაიტანე სამუშაოში</p>
+        </div>
+
+        <!-- SLIDE: HOMEWORK -->
+        <div class="slide">
+            <h2>📋 საშინაო დავალება — სესია 1</h2>
+            <p style="color: var(--tempo-gold); font-weight:800;">ვადა: სესია 2-ის დაწყებამდე</p>
+            <div class="card" style="width:100%; margin-bottom:1.5rem;">
+                <h4>დავალება 1 — CREATE Playbook (30 წთ)</h4>
+                <ul>
+                    <li>შექმენი <strong>3 CREATE პრომპტი</strong> თქვენი რეალური სამუშაო სიტუაციებიდან</li>
+                    <li>ყოველ პრომპტს ჰქონდეს ყველა 6 კომპონენტი</li>
+                    <li>ჩაიწერე: რა მოხდა? შედეგი კარგი იყო? რა შეცვალე?</li>
+                </ul>
+            </div>
+            <div class="card" style="width:100%; border-color: var(--tempo-amber);">
+                <h4>დავალება 2 — Security Audit (10 წთ)</h4>
+                <ul>
+                    <li>გაიარე შენი ბოლო 5 AI მოთხოვნა</li>
+                    <li>მონიშნე: Green Zone ✅ / Red Zone ❌</li>
+                    <li>Red Zone-ის შემთხვევაში — გაასწორე</li>
+                </ul>
+            </div>
+            <p style="text-align:center; margin-top:1rem; opacity:0.7;">📤 გამოგზავნე: <strong>Slack #ai-homework</strong> | ფორმატი: screenshot + 2 წინადადება</p>
+        </div>
+
+        <!-- SLIDE: Q&A -->
+        <div class="slide" style="justify-content: center; text-align: center;">
+            <h1 style="font-size: 5rem;">კითხვები? 🤔</h1>
+            <p style="color: var(--tempo-amber); font-weight: 800; font-size: 2rem;">მადლობა ყურადღებისთვის!</p>
+            <div style="margin-top: 3rem;">
+                <a href="index.html" style="color: var(--tempo-gold); text-decoration: none; border-bottom: 1px solid;">🏠 მთავარი გვერდი</a>
+            </div>
+        </div>
+
+        <!-- SLIDE: CASE STUDY SERENADE -->
+        <div class="slide">
+            <h2>Case Study: Serenade-ის მარკეტინგი AI-ით</h2>
+            <div class="img-placeholder" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1000');"></div>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>გამოწვევა</h4>
+                    <p style="font-size:1rem;">1 კვირაში სრული მარკეტინგ-პაკეტი: ელ-ფოსტა, სოც-მედია, პრეს-რელიზი, ბროშურა — 1 გუნდი, 3 ადამიანი.</p>
+                </div>
+                <div class="card" style="border-color: var(--success);">
+                    <h4>AI გადაწყვეტა</h4>
+                    <p style="font-size:1rem;">Claude: კოპირაიტინგი. Midjourney: ვიზუალები. Gamma: პრეზენტაცია. შედეგი: <strong>4 დღეში, $0 გარე ხარჯი.</strong></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-controls"><button class="nav-btn" onclick="prevSlide()">←</button><button class="nav-btn" onclick="nextSlide()">→</button></div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const slideCount = document.getElementById('slideCount');
+
+        function updateProgress() {
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = progress + '%';
+            slideCount.innerText = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function showSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            slides[index].classList.add('active');
+            slides[index].scrollTop = 0;
+            currentSlide = index;
+            updateProgress();
+            if(window.myCharts) window.myCharts.forEach(c => c.update());
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) showSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+
+        // Copy functionality
+        function copyPrompt(btn) {
+            const card = btn.closest('.prompt-card');
+            const text = card.querySelector('.prompt-text').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.background = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = 'var(--tempo-amber)';
+                }, 2000);
+            });
+        }
+
+        window.onload = () => {
+            window.myCharts = [];
+            
+            // Evolution Chart
+            const ctxEvo = document.getElementById('evolutionChart').getContext('2d');
+            window.myCharts.push(new Chart(ctxEvo, {
+                type: 'line',
+                data: {
+                    labels: ['2022', '2023', '2024', '2025', '2026'],
+                    datasets: [{
+                        label: 'AI Intelligence',
+                        data: [80, 115, 150, 195, 245],
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            }));
+
+            // Radar Chart
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            window.myCharts.push(new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['Reasoning', 'Writing', 'Research', 'Logic', 'Speed'],
+                    datasets: [{
+                        label: 'GPT-5.2', data: [98, 85, 82, 99, 92],
+                        borderColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.2)'
+                    }, {
+                        label: 'Claude 4.6', data: [92, 99, 88, 94, 86],
+                        borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.2)'
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false }, pointLabels: { color: '#94a3b8' } } },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            }));
+
+            // ROI Chart
+            const ctxRoi = document.getElementById('roiChart').getContext('2d');
+            window.myCharts.push(new Chart(ctxRoi, {
+                type: 'bar',
+                data: {
+                    labels: ['Batumi New Blvd', 'Tbilisi Center', 'Bakuriani', 'Kutaisi'],
+                    datasets: [{
+                        label: 'Rental Yield % (2026)',
+                        data: [8.8, 6.4, 7.2, 5.8],
+                        backgroundColor: ['#fbbf24', '#d97706', '#d97706', '#d97706'],
+                        borderRadius: 8
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            }));
+        };
+
+        showSlide(0);
+    </script>
+</body>
+</html>
