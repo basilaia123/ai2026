@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ლექცია 2: Prompt Engineering - სასწავლო გიდი</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .nav-menu a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .highlight-box {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            margin: 1rem 0;
+        }
+
+        .key-points {
+            background: #f1f8e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 1rem 0;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 1rem 0;
+        }
+
+        .study-day {
+            background: #f3e5f5;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #9c27b0;
+            margin: 1rem 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        ol {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        strong {
+            color: #667eea;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist li {
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .checklist li::before {
+            content: "☐";
+            position: absolute;
+            left: 0.8rem;
+            font-size: 1.2rem;
+            color: #4caf50;
+        }
+
+        .example-box {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .nav-menu, .header {
+                display: none;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📖 სასწავლო გიდი</h1>
+            <p>ლექცია 2: Prompt Engineering</p>
+        </div>
+
+        <div class="nav-menu">
+            <a href="index.html">🏠 მთავარი</a>
+            <a href="lecture-2-slides.html">📊 სლაიდები</a>
+            <a href="lecture-2-summary.html">📝 რეზიუმე</a>
+            <a href="lecture-2-quick-ref.html">⚡ სწრაფი მითითებები</a>
+            <a href="lecture-2-exercises.html">✏️ სავარჯიშოები</a>
+        </div>
+
+        <section class="section">
+            <h2 class="section-title">📚 სასწავლო გიდის შესახებ</h2>
+
+            <div class="highlight-box">
+                <p><strong>🎯 რა არის სასწავლო გიდი?</strong></p>
+                <p>ეს არის თქვენი პერსონალური სახელმძღვანელო, რომელიც დაგეხმარებათ ლექცია 2-ის მასალის ეფექტურად შესასწავლად და დასამახსოვრებლად.</p>
+
+                <p style="margin-top: 1rem;"><strong>📝 როგორ გამოვიყენო ეს გიდი:</strong></p>
+                <ul>
+                    <li>წაიკითხეთ ლექციის დაწყებამდე სწავლის მიზნების გასაცნობად</li>
+                    <li>გამოიყენეთ სასწავლო გეგმა როგორც roadmap</li>
+                    <li>ივარჯიშეთ Self-Study Questions-ზე</li>
+                    <li>შეამოწმეთ თქვენი ცოდნა Self-Assessment Rubric-ით</li>
+                    <li>გამოიყენეთ როგორც ლექციის შემდეგ გამეორებისთვის</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>⏱️ რეკომენდებული დრო:</strong></p>
+                <ul>
+                    <li><strong>ლექცია:</strong> 2 საათი</li>
+                    <li><strong>სავარჯიშოები:</strong> 1-2 საათი</li>
+                    <li><strong>გამეორება:</strong> 30 წუთი</li>
+                    <li><strong>სულ:</strong> 3.5-4.5 საათი</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">🎯 სწავლის მიზნები</h2>
+
+            <p>ამ ლექციის ბოლოს თქვენ შეძლებთ:</p>
+
+            <div class="two-column">
+                <div class="key-points">
+                    <h3>🔧 ტექნიკური უნარები</h3>
+                    <ul>
+                        <li>✓ დაწეროთ ეფექტური და სტრუქტურირებული prompt-ები</li>
+                        <li>✓ გამოიყენოთ Role-based prompting ტექნიკა</li>
+                        <li>✓ გამოიყენოთ Few-Shot Learning მაგალითებით</li>
+                        <li>✓ გამოიყენოთ Chain of Thought reasoning</li>
+                        <li>✓ მართოთ გამომავალი ფორმატი და სტილი</li>
+                        <li>✓ გამოიყენოთ Prompt Chaining რთული ამოცანებისთვის</li>
+                    </ul>
+                </div>
+
+                <div class="key-points">
+                    <h3>🧠 კონცეპტუალური გაგება</h3>
+                    <ul>
+                        <li>✓ გაიგოთ რა არის Prompt Engineering</li>
+                        <li>✓ გაიგოთ სპეციფიკურობის მნიშვნელობა</li>
+                        <li>✓ გაიგოთ კონტექსტის როლი</li>
+                        <li>✓ ამოიცნოთ ხშირი შეცდომები</li>
+                        <li>✓ გაიგოთ იტერაციული დახვეწის პროცესი</li>
+                        <li>✓ შეძლოთ prompt-ების შეფასება და გაუმჯობესება</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <p><strong>🎓 კურსში ინტეგრაცია:</strong></p>
+                <p>Prompt Engineering არის <strong>ფუნდამენტური უნარი</strong> მთელი კურსისთვის. ყველა შემდგომი ლექცია (ტექსტის გენერაცია, კვლევა, პროფესიული გამოყენება) ემყარება ამ ლექციაში შესწავლილ პრინციპებს.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">📖 სწავლის გეგმა</h2>
+
+            <p>რეკომენდებული მიდგომა ლექცია 2-ის შესასწავლად:</p>
+
+            <div class="study-day">
+                <h3>📅 სესია 1: ძირითადი კონცეფციები (45 წუთი)</h3>
+                <ol>
+                    <li><strong>რა არის Prompt Engineering?</strong> (10 წუთი)
+                        <ul>
+                            <li>ვიდეო: ლექციის სლაიდები 1-3</li>
+                            <li>წაიკითხეთ: Summary-ს შესავალი</li>
+                        </ul>
+                    </li>
+                    <li><strong>ცუდი vs კარგი Prompt-ები</strong> (15 წუთი)
+                        <ul>
+                            <li>შეისწავლეთ მაგალითები სლაიდები 4-5</li>
+                            <li>სცადეთ ChatGPT-ში ორივე ტიპის prompt</li>
+                        </ul>
+                    </li>
+                    <li><strong>ეფექტური Prompt-ის ელემენტები</strong> (20 წუთი)
+                        <ul>
+                            <li>სლაიდები 6-9</li>
+                            <li>ჩაინიშნეთ 4 მთავარი ელემენტი</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="study-day">
+                <h3>📅 სესია 2: მოწინავე ტექნიკები (60 წუთი)</h3>
+                <ol>
+                    <li><strong>Role-based Prompting</strong> (15 წუთი)
+                        <ul>
+                            <li>სლაიდი 11</li>
+                            <li>სავარჯიშო: შექმენით 3 სხვადასხვა როლის prompt</li>
+                        </ul>
+                    </li>
+                    <li><strong>Few-Shot Learning</strong> (20 წუთი)
+                        <ul>
+                            <li>სლაიდები 12-13</li>
+                            <li>პრაქტიკა: Zero-shot vs Few-shot შედარება</li>
+                        </ul>
+                    </li>
+                    <li><strong>Chain of Thought</strong> (25 წუთი)
+                        <ul>
+                            <li>სლაიდები 14-15</li>
+                            <li>სავარჯიშო: რთული პრობლემის გადაჭრა CoT-ით</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="study-day">
+                <h3>📅 სესია 3: კონტროლი და დახვეწა (45 წუთი)</h3>
+                <ol>
+                    <li><strong>ფორმატის, ტონის, სიგრძის კონტროლი</strong> (20 წუთი)
+                        <ul>
+                            <li>სლაიდები 16-19</li>
+                            <li>სცადეთ სხვადასხვა ფორმატის დაგენერირება</li>
+                        </ul>
+                    </li>
+                    <li><strong>შეზღუდვები და იტერაცია</strong> (15 წუთი)
+                        <ul>
+                            <li>სლაიდები 20-21</li>
+                            <li>ისწავლეთ როგორ დავახვიოთ prompt-ები</li>
+                        </ul>
+                    </li>
+                    <li><strong>ხშირი შეცდომები და Best Practices</strong> (10 წუთი)
+                        <ul>
+                            <li>სლაიდები 22-24</li>
+                            <li>შეადარეთ თქვენი prompt-ები best practices-ს</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="study-day">
+                <h3>📅 სესია 4: Advanced & Practice (60 წუთი)</h3>
+                <ol>
+                    <li><strong>Prompt Chaining</strong> (20 წუთი)
+                        <ul>
+                            <li>სლაიდი 25</li>
+                            <li>შექმენით multi-step workflow</li>
+                        </ul>
+                    </li>
+                    <li><strong>Template-ების გამოყენება</strong> (15 წუთი)
+                        <ul>
+                            <li>სლაიდი 26</li>
+                            <li>შეავსეთ 2-3 template სხვადასხვა სცენარისთვის</li>
+                        </ul>
+                    </li>
+                    <li><strong>პრაქტიკული სავარჯიშოები</strong> (25 წუთი)
+                        <ul>
+                            <li>გახსენით lecture-2-exercises.html</li>
+                            <li>გააკეთეთ მინიმუმ 3 სავარჯიშო</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="warning-box" style="margin-top: 1.5rem;">
+                <p><strong>⚠️ მნიშვნელოვანი:</strong> ეს არის რეკომენდებული გეგმა. შეგიძლიათ მოარგოთ თქვენს ტემპს და საჭიროებებს!</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">🗝️ მთავარი კონცეფციები (უნდა იცოდეთ)</h2>
+
+            <div class="key-points">
+                <h3>1️⃣ Prompt Engineering - ბირთვული განმარტება</h3>
+                <p><strong>რა არის:</strong> AI-სთან ეფექტური კომუნიკაციის ხელოვნება და მეცნიერება - ინსტრუქციების, კითხვების და კონტექსტის სწორი ფორმულირება სასურველი პასუხების მისაღებად.</p>
+
+                <p style="margin-top: 1rem;"><strong>რატომ არის მნიშვნელოვანი:</strong></p>
+                <ul>
+                    <li>განსაზღვრავს AI-ს პასუხის ხარისხს 80%-ით</li>
+                    <li>ზოგავს დროს და იტერაციებს</li>
+                    <li>აუმჯობესებს სიზუსტეს და რელევანტურობას</li>
+                    <li>საფუძველი ყველა AI აპლიკაციისთვის</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <h3>2️⃣ ეფექტური Prompt-ის 4 ელემენტი</h3>
+                <table>
+                    <tr>
+                        <th>ელემენტი</th>
+                        <th>აღწერა</th>
+                        <th>მაგალითი</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Instruction</strong></td>
+                        <td>რა უნდა გააკეთოს AI-მ</td>
+                        <td>"შექმენი სია...", "ახსენი...", "დაწერე..."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Context</strong></td>
+                        <td>ფონური ინფორმაცია</td>
+                        <td>"მე ვარ HR მენეჯერი და..."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Input Data</strong></td>
+                        <td>კონკრეტული მონაცემები</td>
+                        <td>"ეს არის კანდიდატის CV: [text]"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Output Indicator</strong></td>
+                        <td>სასურველი ფორმატი</td>
+                        <td>"გამომეცი bullet points-ით", "JSON ფორმატში"</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="key-points">
+                <h3>3️⃣ მთავარი ტექნიკები</h3>
+
+                <div style="margin-top: 1rem;">
+                    <p><strong>🎭 Role Prompting:</strong></p>
+                    <div class="example-box">
+გამოიყენე როლი როგორც [პროფესია/ექსპერტი] და...
+მაგალითი: "თქვენ ხართ გამოცდილი მარკეტინგ კონსულტანტი 10 წლიანი გამოცდილებით..."
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <p><strong>📚 Few-Shot Learning:</strong></p>
+                    <div class="example-box">
+მიეცი AI-ს მაგალითები და ის გააგრძელებს პატერნს:
+
+მაგალითი 1: Input → Output
+მაგალითი 2: Input → Output
+მაგალითი 3: Input → Output
+
+ახალი Input: [თქვენი მონაცემები]
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <p><strong>🧠 Chain of Thought:</strong></p>
+                    <div class="example-box">
+დაუმატეთ: "ნაბიჯ-ნაბიჯ აიხსენი შენი აზროვნება" ან "Let's think step by step"
+
+ეს აიძულებს AI-ს გამოიყენოს ლოგიკური მსჯელობა რთული პრობლემებისთვის
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <p><strong>⛓️ Prompt Chaining:</strong></p>
+                    <div class="example-box">
+რთული ამოცანა იყოფა ნაბიჯებად:
+
+Prompt 1: შექმენი outline
+Prompt 2: დაწერე თითოეული სექცია (გამოიყენე output 1)
+Prompt 3: დააედითე და გააუმჯობესე (გამოიყენე output 2)
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h3>4️⃣ ხშირი შეცდომები (რისი თავიდან აცილება)</h3>
+                <table>
+                    <tr>
+                        <th>❌ არ გააკეთოთ</th>
+                        <th>✅ გააკეთეთ ამის ნაცვლად</th>
+                    </tr>
+                    <tr>
+                        <td>ბუნდოვანი prompt-ები: "მომიძიე ინფორმაცია AI-ზე"</td>
+                        <td>კონკრეტული: "მომეცი 5 მთავარი AI ტრენდი 2024-ში healthcare-ში, თითოეული 2-3 წინადადებით"</td>
+                    </tr>
+                    <tr>
+                        <td>ძალიან გრძელი, ერთი წინადადება</td>
+                        <td>დაყავით პუნქტებად და პარაგრაფებად</td>
+                    </tr>
+                    <tr>
+                        <td>კონტექსტის გარეშე</td>
+                        <td>ყოველთვის მიუთითეთ: ვინ ხართ, რისთვის გჭირდებათ</td>
+                    </tr>
+                    <tr>
+                        <td>ფორმატის დაკონკრეტების გარეშე</td>
+                        <td>მიუთითეთ: bullet points, table, paragraph, word count</td>
+                    </tr>
+                    <tr>
+                        <td>პირველი შედეგით კმაყოფილება</td>
+                        <td>იტერაციული დახვეწა: "გააუმჯობესე...", "დაამატე...", "შეცვალე ტონი..."</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <h3>💡 ოქროს წესი</h3>
+                <p style="font-size: 1.2rem; font-weight: bold;">
+                    "იყავი <strong>სპეციფიკური</strong>, მიეცი <strong>კონტექსტი</strong>, განსაზღვრე <strong>ფორმატი</strong>, და <strong>დაუხვიე</strong> საჭიროებისამებრ."
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">❓ Self-Study Questions</h2>
+
+            <p>გამოიყენეთ ეს კითხვები თქვენი ცოდნის შესამოწმებლად:</p>
+
+            <div class="highlight-box">
+                <h3>🔵 Level 1: ძირითადი გაგება</h3>
+                <ol>
+                    <li>რა არის Prompt Engineering?</li>
+                    <li>დაასახელეთ ეფექტური prompt-ის 4 მთავარი ელემენტი</li>
+                    <li>რა განსხვავებაა კარგ და ცუდ prompt-ს შორის?</li>
+                    <li>რატომ არის სპეციფიკურობა მნიშვნელოვანი?</li>
+                    <li>რა როლი აქვს კონტექსტს prompt-ში?</li>
+                </ol>
+            </div>
+
+            <div class="key-points">
+                <h3>🟢 Level 2: პრაქტიკული გამოყენება</h3>
+                <ol>
+                    <li>როგორ გამოვიყენო Role-based prompting? მოიყვანეთ 2 მაგალითი</li>
+                    <li>განმარტეთ Few-Shot Learning და მოიყვანეთ მაგალითი</li>
+                    <li>რა არის Chain of Thought და როდის გამოვიყენოთ?</li>
+                    <li>როგორ დავაკონტროლოთ გამომავალი ფორმატი?</li>
+                    <li>რა არის იტერაციული დახვეწა და როგორ გამოვიყენოთ?</li>
+                    <li>დაასახელეთ 3 ხშირი შეცდომა prompt writing-ში</li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <h3>🔴 Level 3: მოწინავე დონე</h3>
+                <ol>
+                    <li>რა არის Prompt Chaining და როგორ გამოვიყენოთ რთული ამოცანებისთვის?</li>
+                    <li>როგორ გავაუმჯობესოთ prompt რომელიც გვაძლევს generic პასუხებს?</li>
+                    <li>შექმენით template 3 სხვადასხვა use case-ისთვის</li>
+                    <li>როგორ მოვარგოთ prompt სხვადასხვა AI მოდელს (ChatGPT, Claude, Gemini)?</li>
+                    <li>განმარტეთ როდის გამოვიყენოთ Zero-shot vs Few-shot vs Chain of Thought</li>
+                </ol>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <p><strong>💡 რჩევა:</strong> თუ ვერ პასუხობთ კითხვას, დაბრუნდით შესაბამის სლაიდზე/სექციაზე და ხელახლა შეისწავლეთ!</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">💡 სწავლის რჩევები (Study Tips)</h2>
+
+            <div class="two-column">
+                <div class="highlight-box">
+                    <h3>✅ რა გააკეთოთ</h3>
+                    <ul>
+                        <li><strong>Practice, Practice, Practice!</strong> ყველაზე კარგი გზა სწავლისთვის არის პრაქტიკა ChatGPT-ში</li>
+                        <li>ყოველ დღე სცადეთ 3-5 სხვადასხვა prompt</li>
+                        <li>შეინახეთ თქვენი საუკეთესო prompts notebook-ში</li>
+                        <li>შეადარეთ ცუდი vs კარგი prompts - რა სხვაობაა შედეგებში?</li>
+                        <li>შექმენით პერსონალური template library</li>
+                        <li>იყავით კრიტიკული - შეაფასეთ AI-ს პასუხები</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h3>❌ რა არ გააკეთოთ</h3>
+                    <ul>
+                        <li>არ დაიმახსოვროთ სლაიდები ზეპირად - გაიგეთ პრინციპები!</li>
+                        <li>არ შეიზღუდოთ მხოლოდ წაკითხვით - სავალდებულოა პრაქტიკა!</li>
+                        <li>არ გამოიყენოთ მხოლოდ ერთი prompt და დასრულდა</li>
+                        <li>არ იმედოვნოთ რომ პირველივე prompt იდეალური იქნება</li>
+                        <li>არ გამოტოვოთ სავარჯიშოები!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-points" style="margin-top: 1.5rem;">
+                <h3>🎯 30-დღიანი Challenge</h3>
+                <p><strong>გახდით Prompt Engineering ექსპერტი 30 დღეში:</strong></p>
+                <ul>
+                    <li><strong>კვირა 1:</strong> ყოველდღე 5 Zero-shot prompt (სხვადასხვა თემებზე)</li>
+                    <li><strong>კვირა 2:</strong> ყოველდღე 3 Role-based prompt (სხვადასხვა როლები)</li>
+                    <li><strong>კვირა 3:</strong> ყოველდღე 2 Few-shot prompt + 2 Chain of Thought</li>
+                    <li><strong>კვირა 4:</strong> Complex projects - Prompt Chaining გამოყენებით</li>
+                </ul>
+                <p style="margin-top: 1rem;"><strong>შედეგი:</strong> 100+ განსხვავებული prompt გამოცდილი და დახვეწილი უნარები!</p>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <h3>📱 რესურსები პრაქტიკისთვის</h3>
+                <ul>
+                    <li><strong>ChatGPT:</strong> chat.openai.com (უფასო ვერსია საკმარისია)</li>
+                    <li><strong>Claude:</strong> claude.ai (ალტერნატივა)</li>
+                    <li><strong>Prompt Library:</strong> შექმენით Google Doc/Notion page თქვენი prompts-ებისთვის</li>
+                    <li><strong>Community:</strong> შეუერთდით AI სათემო ჯგუფებს (Discord, Facebook)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">🎯 წინა კვირის Checklist</h2>
+
+            <p>გამოიყენეთ ეს checklist თქვენი მზადყოფნის შესამოწმებლად:</p>
+
+            <ul class="checklist">
+                <li>ნახეთ ლექცია 2-ის ყველა სლაიდი</li>
+                <li>წაიკითხეთ lecture-2-summary.html სრულად</li>
+                <li>გაითამაშეთ lecture-2-quick-ref.html (სწრაფი გამეორებისთვის)</li>
+                <li>გააკეთეთ lecture-2-exercises.html-დან მინიმუმ 5 სავარჯიშო</li>
+                <li>შექმენით 10+ prompt ChatGPT-ში (სხვადასხვა ტიპის)</li>
+                <li>დაწერეთ მინიმუმ 1 Role-based prompt</li>
+                <li>სცადეთ Few-Shot Learning მაგალითებით</li>
+                <li>გამოიყენეთ Chain of Thought რთული პრობლემისთვის</li>
+                <li>შექმენით 3 prompt template თქვენი საჭიროებებისთვის</li>
+                <li>პასუხი გაეცით Self-Study Questions-ს (ყველა დონე)</li>
+            </ul>
+
+            <div class="warning-box" style="margin-top: 1.5rem;">
+                <p><strong>⏰ მინიმალური მოთხოვნა:</strong></p>
+                <p>მინიმუმ <strong>3 საათი</strong> პრაქტიკული მუშაობა (არა მხოლოდ წაკითხვა!) Prompt Engineering-ზე ლექციის გავლის შემდეგ.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">📊 Self-Assessment Rubric</h2>
+
+            <p>შეაფასეთ თქვენი უნარები ამ რუბრიკის მიხედვით:</p>
+
+            <table>
+                <tr>
+                    <th>უნარი</th>
+                    <th>დამწყები (1-3)</th>
+                    <th>საშუალო (4-7)</th>
+                    <th>მოწინავე (8-10)</th>
+                </tr>
+                <tr>
+                    <td><strong>ბაზისური Prompts</strong></td>
+                    <td>ვწერ მარტივ კითხვებს</td>
+                    <td>ვიყენებ სპეციფიკურ ინსტრუქციებს და კონტექსტს</td>
+                    <td>ვქმნი სტრუქტურირებულ, მრავალელემენტიან prompts</td>
+                </tr>
+                <tr>
+                    <td><strong>Role Prompting</strong></td>
+                    <td>ვიცი რა არის, მაგრამ არ ვიყენებ</td>
+                    <td>ვიყენებ ხოლმე გენერიულ როლებს</td>
+                    <td>ვქმნი დეტალურ, კონტექსტურ როლებს</td>
+                </tr>
+                <tr>
+                    <td><strong>Few-Shot Learning</strong></td>
+                    <td>არ მიცდია რეგულარულად</td>
+                    <td>ვიყენებ 1-2 მაგალითს</td>
+                    <td>ვიყენებ multiple examples და patterns ოპტიმალურად</td>
+                </tr>
+                <tr>
+                    <td><strong>Chain of Thought</strong></td>
+                    <td>არ ვიყენებ</td>
+                    <td>ვიყენებ რთული ამოცანებისთვის</td>
+                    <td>სტრატეგიულად ვირჩევ როდის გამოვიყენო</td>
+                </tr>
+                <tr>
+                    <td><strong>ფორმატის კონტროლი</strong></td>
+                    <td>ვიღებ რასაც AI მომცემს</td>
+                    <td>ვაკონკრეტებ ფორმატს (table, list)</td>
+                    <td>ვკონტროლებ ფორმატს, სტილს, სიგრძეს დეტალურად</td>
+                </tr>
+                <tr>
+                    <td><strong>იტერაციული დახვეწა</strong></td>
+                    <td>ვიყენებ პირველ შედეგს</td>
+                    <td>ვახვევ 1-2-ჯერ</td>
+                    <td>სისტემატურად ვახვევ სანამ არ მივიღებ იდეალურს</td>
+                </tr>
+                <tr>
+                    <td><strong>Prompt Chaining</strong></td>
+                    <td>არასდროს მიცდია</td>
+                    <td>ვყოფ 2-3 ნაბიჯად</td>
+                    <td>ვქმნი რთულ multi-step workflows</td>
+                </tr>
+            </table>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <p><strong>🎯 მიზანი:</strong></p>
+                <ul>
+                    <li><strong>ბაზისური Prompts:</strong> მინიმუმ 7/10</li>
+                    <li><strong>Role & Few-Shot:</strong> მინიმუმ 6/10</li>
+                    <li><strong>Chain of Thought:</strong> მინიმუმ 5/10</li>
+                    <li><strong>ფორმატის კონტროლი:</strong> მინიმუმ 6/10</li>
+                    <li><strong>დახვეწა და Chaining:</strong> მინიმუმ 5/10</li>
+                </ul>
+                <p style="margin-top: 1rem;">თუ ქვემოთაა ქულები - მეტი პრაქტიკა გჭირდებათ!</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">🚀 შემდგომი ნაბიჯები</h2>
+
+            <div class="key-points">
+                <h3>📚 რა მოდის შემდეგ?</h3>
+                <p><strong>ლექცია 3: ტექსტის გენერაცია და სტილი</strong></p>
+                <p>ახლა როცა იცით როგორ დავწეროთ ეფექტური prompts, შემდეგ ლექციაზე ვისწავლით:</p>
+                <ul>
+                    <li>სხვადასხვა სტილით წერა (ფორმალური, არაფორმალური, ტექნიკური)</li>
+                    <li>სხვადასხვა ტონის გამოყენება (პროფესიონალური, მეგობრული, დამაჯერებელი)</li>
+                    <li>სხვადასხვა ფორმატის კონტენტის შექმნა</li>
+                    <li>Brand Voice-ის შენარჩუნება</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💼 გამოიყენეთ რეალურ სამუშაოში</h3>
+                <p><strong>აიღეთ რეალური პროექტი და დაიწყეთ Prompt Engineering:</strong></p>
+                <ul>
+                    <li>📧 Email-ების დაწერა და რედაქტირება</li>
+                    <li>📄 დოკუმენტების შედგენა (reports, proposals)</li>
+                    <li>💡 იდეების გენერაცია brainstorming-ისთვის</li>
+                    <li>🔍 ინფორმაციის ძიება და რეზიუმირება</li>
+                    <li>✍️ კონტენტის შექმნა (blogs, social media)</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ გაფრთხილება</h3>
+                <p>Prompt Engineering არ არის "ერთხელ ისწავლე და დაივიწყე" უნარი. ეს არის <strong>უწყვეტი პრაქტიკა</strong>.</p>
+                <ul>
+                    <li>ყოველი AI მოდელი სხვადასხვაა (GPT-4, GPT-5, Claude, Gemini)</li>
+                    <li>ყოველი use case უნიკალურია</li>
+                    <li>მოდელები განახლდება და იცვლება</li>
+                    <li>თქვენი უნარები უნდა იზრდებოდეს მუდმივად</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">📚 რეკომენდებული რესურსები</h2>
+
+            <div class="two-column">
+                <div class="highlight-box">
+                    <h3>🔗 ონლაინ რესურსები</h3>
+                    <ul>
+                        <li><strong>OpenAI Cookbook:</strong> prompt engineering examples</li>
+                        <li><strong>Anthropic Prompt Library:</strong> Claude-specific prompts</li>
+                        <li><strong>PromptBase:</strong> prompt marketplace</li>
+                        <li><strong>r/PromptEngineering:</strong> Reddit community</li>
+                        <li><strong>LearnPrompting.org:</strong> უფასო კურსი</li>
+                    </ul>
+                </div>
+
+                <div class="key-points">
+                    <h3>📖 სასწავლო მასალები</h3>
+                    <ul>
+                        <li><strong>კურსის სლაიდები:</strong> lecture-2-slides.html</li>
+                        <li><strong>დეტალური summary:</strong> lecture-2-summary.html</li>
+                        <li><strong>სწრაფი reference:</strong> lecture-2-quick-ref.html</li>
+                        <li><strong>სავარჯიშოები:</strong> lecture-2-exercises.html</li>
+                        <li><strong>ლექტორის გეგმა:</strong> lecture-2-lesson-plan.html</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box" style="margin-top: 1.5rem;">
+                <h3>🎓 პრაქტიკის პლატფორმები</h3>
+                <ul>
+                    <li><strong>ChatGPT (free tier):</strong> საკმარისია სწავლისთვის</li>
+                    <li><strong>ChatGPT Plus ($20/თვე):</strong> GPT-4 და GPT-5 წვდომა</li>
+                    <li><strong>Claude (free):</strong> შესანიშნავი ალტერნატივა</li>
+                    <li><strong>Google Gemini (free):</strong> კიდევ ერთი ოფცია</li>
+                </ul>
+                <p style="margin-top: 1rem;"><strong>რჩევა:</strong> სცადეთ ერთი და იგივე prompt სხვადასხვა მოდელში - დაინახავთ სხვაობას!</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">✅ საბოლოო Checklist</h2>
+
+            <div class="highlight-box">
+                <p style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;">თუ ყველა ეს პუნქტი შესრულებულია, თქვენ მზად ხართ!</p>
+
+                <ul class="checklist">
+                    <li>✓ ვიცი რა არის Prompt Engineering და რატომ არის მნიშვნელოვანი</li>
+                    <li>✓ ვიცი ეფექტური prompt-ის 4 ელემენტი</li>
+                    <li>✓ ვიცი როგორ დავწერო სპეციფიკური და კონტექსტური prompt</li>
+                    <li>✓ ვიცი როგორ გამოვიყენო Role-based prompting</li>
+                    <li>✓ ვიცი როგორ გამოვიყენო Few-Shot Learning</li>
+                    <li>✓ ვიცი როგორ გამოვიყენო Chain of Thought</li>
+                    <li>✓ ვიცი როგორ მოვართვა ფორმატი, ტონი, სტილი, სიგრძე</li>
+                    <li>✓ ვიცი როგორ დავახვიო prompts იტერაციულად</li>
+                    <li>✓ ვიცი რა არის Prompt Chaining და როგორ გამოვიყენო</li>
+                    <li>✓ ვიცი ხშირი შეცდომები და როგორ ავარიდო</li>
+                    <li>✓ გამოვცადე მინიმუმ 10 სხვადასხვა prompt ChatGPT-ში</li>
+                    <li>✓ შევქმენი ჩემი prompt templates library</li>
+                    <li>✓ გავაკეთე ყველა სავარჯიშო (lecture-2-exercises.html)</li>
+                    <li>✓ შემიძლია ავხსნა სხვას Prompt Engineering პრინციპები</li>
+                    <li>✓ მზად ვარ გამოვიყენო ეს უნარები რეალურ პროექტებში</li>
+                </ul>
+            </div>
+
+            <div class="key-points" style="margin-top: 2rem; text-align: center; padding: 2rem;">
+                <h3 style="font-size: 2rem; color: #667eea;">🎉 გილოცავთ!</h3>
+                <p style="font-size: 1.3rem; margin-top: 1rem;">
+                    თქვენ ახლა გაქვთ Prompt Engineering-ის საფუძვლები!<br>
+                    გააგრძელეთ პრაქტიკა და გახდით ექსპერტი!
+                </p>
+                <p style="margin-top: 1.5rem; font-size: 1.1rem;">
+                    <strong>შემდეგი ნაბიჯი:</strong> <a href="lecture-3-slides.html" style="color: #667eea;">ლექცია 3: ტექსტის გენერაცია და სტილი →</a>
+                </p>
+            </div>
+        </section>
+
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e0e0e0; color: #666;">
+            <p><strong>AI - გენერატიული ინტელექტის პრაქტიკაში</strong></p>
+            <p>გიორგი ბასილაია | Smart Academy</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="https://smartacademy.ge/trainings/587-AI-In-Practice" target="_blank" style="color: #667eea;">smartacademy.ge</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

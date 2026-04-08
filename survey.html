@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>კმაყოფილების კითხვარი — AI პრაქტიკაში</title>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<style>
+  :root {
+    --dark-bg: #0f172a;
+    --primary: #6366f1;
+    --accent: #ec4899;
+    --card-bg: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --success: #10b981;
+    --star-color: #f59e0b;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark-bg);
+    color: var(--text);
+    font-family: 'FiraGO', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background mesh */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 10%, rgba(99,102,241,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(236,72,153,0.12) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .header .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 800;
+    line-height: 1.25;
+    background: linear-gradient(135deg, #e2e8f0 0%, var(--primary) 60%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    background: var(--card-bg);
+    border-radius: 100px;
+    height: 6px;
+    margin-bottom: 36px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  .progress-label {
+    text-align: right;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    margin-bottom: 28px;
+  }
+
+  /* Section */
+  .section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease both;
+    transition: border-color 0.3s;
+  }
+
+  .section:hover { border-color: rgba(99,102,241,0.4); }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title .num {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* Question */
+  .q-block {
+    margin-bottom: 28px;
+  }
+
+  .q-block:last-child { margin-bottom: 0; }
+
+  .q-label {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  /* Stars */
+  .stars {
+    display: flex;
+    gap: 8px;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  .stars input { display: none; }
+
+  .stars label {
+    font-size: 32px;
+    cursor: pointer;
+    color: var(--border);
+    transition: color 0.15s, transform 0.15s;
+    line-height: 1;
+  }
+
+  .stars label:hover,
+  .stars label:hover ~ label,
+  .stars input:checked ~ label {
+    color: var(--star-color);
+    transform: scale(1.15);
+  }
+
+  /* NPS */
+  .nps-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .nps-row input { display: none; }
+
+  .nps-row label {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+
+  .nps-row input:checked + label {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-color: transparent;
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+  }
+
+  .nps-row label:hover {
+    border-color: var(--primary);
+    color: var(--text);
+  }
+
+  .nps-hints {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* Likert scale */
+  .likert {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+
+  .likert input { display: none; }
+
+  .likert label {
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .likert label .val {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .likert label .desc {
+    font-size: 9px;
+    color: var(--muted);
+    line-height: 1.2;
+  }
+
+  .likert input:checked + label {
+    background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(236,72,153,0.15));
+    border-color: var(--primary);
+  }
+
+  .likert input:checked + label .val { color: var(--primary); }
+  .likert label:hover { border-color: rgba(99,102,241,0.5); }
+
+  .likert-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* Textarea */
+  textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'FiraGO', sans-serif;
+    font-size: 14px;
+    padding: 14px 16px;
+    resize: vertical;
+    min-height: 90px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+  }
+
+  textarea::placeholder { color: var(--muted); opacity: 0.6; }
+
+  /* Text input */
+  input[type="text"] {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'FiraGO', sans-serif;
+    font-size: 14px;
+    padding: 13px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+  }
+
+  input[type="text"]::placeholder { color: var(--muted); opacity: 0.6; }
+
+  /* Experience radio pills */
+  .pill-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill-row input { display: none; }
+
+  .pill-row label {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+
+  .pill-row input:checked + label {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+  }
+
+  .pill-row label:hover { border-color: var(--primary); color: var(--text); }
+
+  /* Submit button */
+  .submit-wrap {
+    text-align: center;
+    margin-top: 12px;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 18px 60px;
+    font-family: 'FiraGO', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background 0.2s;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(99,102,241,0.55);
+  }
+
+  .btn-submit:hover::after { background: rgba(255,255,255,0.08); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* Thank you screen */
+  #thank-you {
+    display: none;
+    text-align: center;
+    padding: 80px 20px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .ty-icon {
+    font-size: 72px;
+    margin-bottom: 24px;
+    display: block;
+    animation: pulse 2s ease infinite;
+  }
+
+  #thank-you h2 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e2e8f0, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  #thank-you p { color: var(--muted); font-size: 15px; }
+
+  /* Divider */
+  .q-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.2s; }
+  .section:nth-child(3) { animation-delay: 0.3s; }
+  .section:nth-child(4) { animation-delay: 0.35s; }
+  .section:nth-child(5) { animation-delay: 0.4s; }
+
+  @media (max-width: 540px) {
+    .section { padding: 22px 18px; }
+    .nps-row label { width: 38px; height: 38px; font-size: 13px; }
+    .likert label .desc { display: none; }
+    .stars label { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="badge">Smart Academy · 2026</div>
+    <h1>კმაყოფილების კითხვარი<br>AI პრაქტიკაში</h1>
+    <p>გიორგი ბასილაია · AI კურსის შეფასება</p>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0% შევსებული</div>
+
+  <form id="survey-form">
+
+    <!-- SECTION 1 -->
+    <div class="section">
+      <div class="section-title"><span class="num">1</span>საერთო შეფასება</div>
+
+      <div class="q-block">
+        <div class="q-label">კურსი საერთო ჯამში როგორ შეგაფასებინდებათ?</div>
+        <div class="stars" id="stars1">
+          <input type="radio" name="overall" id="s1-5" value="5"><label for="s1-5">★</label>
+          <input type="radio" name="overall" id="s1-4" value="4"><label for="s1-4">★</label>
+          <input type="radio" name="overall" id="s1-3" value="3"><label for="s1-3">★</label>
+          <input type="radio" name="overall" id="s1-2" value="2"><label for="s1-2">★</label>
+          <input type="radio" name="overall" id="s1-1" value="1"><label for="s1-1">★</label>
+        </div>
+      </div>
+
+      <hr class="q-divider">
+
+      <div class="q-block">
+        <div class="q-label">როგორ შეაფასებთ ინსტრუქტორს?</div>
+        <div class="stars" id="stars2">
+          <input type="radio" name="instructor" id="s2-5" value="5"><label for="s2-5">★</label>
+          <input type="radio" name="instructor" id="s2-4" value="4"><label for="s2-4">★</label>
+          <input type="radio" name="instructor" id="s2-3" value="3"><label for="s2-3">★</label>
+          <input type="radio" name="instructor" id="s2-2" value="2"><label for="s2-2">★</label>
+          <input type="radio" name="instructor" id="s2-1" value="1"><label for="s2-1">★</label>
+        </div>
+      </div>
+
+      <hr class="q-divider">
+
+      <div class="q-block">
+        <div class="q-label">რამდენად სავარაუდოა, რომ ამ კურსს მეგობარს ან კოლეგას ურჩევდით?</div>
+        <div class="nps-row">
+          <input type="radio" name="nps" id="nps0" value="0"><label for="nps0">0</label>
+          <input type="radio" name="nps" id="nps1" value="1"><label for="nps1">1</label>
+          <input type="radio" name="nps" id="nps2" value="2"><label for="nps2">2</label>
+          <input type="radio" name="nps" id="nps3" value="3"><label for="nps3">3</label>
+          <input type="radio" name="nps" id="nps4" value="4"><label for="nps4">4</label>
+          <input type="radio" name="nps" id="nps5" value="5"><label for="nps5">5</label>
+          <input type="radio" name="nps" id="nps6" value="6"><label for="nps6">6</label>
+          <input type="radio" name="nps" id="nps7" value="7"><label for="nps7">7</label>
+          <input type="radio" name="nps" id="nps8" value="8"><label for="nps8">8</label>
+          <input type="radio" name="nps" id="nps9" value="9"><label for="nps9">9</label>
+          <input type="radio" name="nps" id="nps10" value="10"><label for="nps10">10</label>
+        </div>
+        <div class="nps-hints"><span>სულაც არ ვურჩევდი</span><span>აუცილებლად ვურჩევდი</span></div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section">
+      <div class="section-title"><span class="num">2</span>კონტენტის ხარისხი</div>
+
+      <div style="margin-bottom:8px;">
+        <div class="likert" style="pointer-events:none; margin-bottom:4px;">
+          <label style="cursor:default;"><span class="val" style="font-size:11px;color:var(--muted)">1</span></label>
+          <label style="cursor:default;"><span class="val" style="font-size:11px;color:var(--muted)">2</span></label>
+          <label style="cursor:default;"><span class="val" style="font-size:11px;color:var(--muted)">3</span></label>
+          <label style="cursor:default;"><span class="val" style="font-size:11px;color:var(--muted)">4</span></label>
+          <label style="cursor:default;"><span class="val" style="font-size:11px;color:var(--muted)">5</span></label>
+        </div>
+        <div class="likert-labels"><span>არ ვეთანხმები</span><span>სრულიად ვეთანხმები</span></div>
+      </div>
+
+      <!-- Statement rows -->
+      <div id="likert-questions"></div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section">
+      <div class="section-title"><span class="num">3</span>ლოჯისტიკა</div>
+      <div id="logistics-questions"></div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section">
+      <div class="section-title"><span class="num">4</span>ღია კითხვები</div>
+
+      <div class="q-block">
+        <div class="q-label">კურსის ყველაზე ღირებული ნაწილი რა იყო?</div>
+        <textarea name="best_part" placeholder="გაგვიზიარეთ თქვენი მოსაზრება..."></textarea>
+      </div>
+
+      <hr class="q-divider">
+
+      <div class="q-block">
+        <div class="q-label">რას გააუმჯობესებდით ან დაამატებდით?</div>
+        <textarea name="improve" placeholder="გაგვიზიარეთ თქვენი მოსაზრება..."></textarea>
+      </div>
+
+      <hr class="q-divider">
+
+      <div class="q-block">
+        <div class="q-label">რომელ AI ხელსაწყოებს გამოიყენებთ ყველაზე მეტად?</div>
+        <textarea name="tools" placeholder="მაგ: ChatGPT, Claude, Gemini..."></textarea>
+      </div>
+
+      <hr class="q-divider">
+
+      <div class="q-block">
+        <div class="q-label">სხვა კომენტარები ან წინადადებები</div>
+        <textarea name="other" placeholder="ნებისმიერი დამატებითი მოსაზრება..."></textarea>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="section">
+      <div class="section-title"><span class="num">5</span>სურვილისამებრ</div>
+
+      <div class="q-block">
+        <div class="q-label">პროფესიული სფერო</div>
+        <input type="text" name="field" placeholder="მაგ: მარკეტინგი, განათლება, IT...">
+      </div>
+
+      <hr class="q-divider">
+
+      <div class="q-block">
+        <div class="q-label">AI-ის გამოცდილება კურსამდე</div>
+        <div class="pill-row">
+          <input type="radio" name="experience" id="exp0" value="none"><label for="exp0">არ მქონია</label>
+          <input type="radio" name="experience" id="exp1" value="beginner"><label for="exp1">დამწყები</label>
+          <input type="radio" name="experience" id="exp2" value="mid"><label for="exp2">საშუალო</label>
+          <input type="radio" name="experience" id="exp3" value="advanced"><label for="exp3">მოწინავე</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button type="submit" class="btn-submit">გაგზავნა →</button>
+    </div>
+
+  </form>
+
+  <!-- Thank you -->
+  <div id="thank-you">
+    <span class="ty-icon">🙏</span>
+    <h2>მადლობა!</h2>
+    <p>თქვენი პასუხები მიღებულია. ❤️</p>
+    <p style="margin-top:8px; font-size:13px;">თქვენი მოსაზრებები კურსის გაუმჯობესებაში დაგვეხმარება.</p>
+  </div>
+
+</div>
+
+<script>
+  // --- Build likert question rows ---
+  const likertQs = [
+    { name: 'q_relevant',  text: 'კურსის შინაარსი ჩემს ყოველდღიურ სამუშაოსთან რელევანტური იყო' },
+    { name: 'q_clear',     text: 'მასალა ნათლად და გასაგებად იყო ახსნილი' },
+    { name: 'q_pace',      text: 'კურსის ტემპი შესაფერისი იყო' },
+    { name: 'q_exercises', text: 'პრაქტიკული სავარჯიშოები სასარგებლო იყო' },
+    { name: 'q_homework',  text: 'საშინაო დავალებები მასალის გამეორებაში მეხმარებოდა' },
+    { name: 'q_apply',     text: 'ვისწავლე რამე, რასაც დაუყოვნებლივ გამოვიყენებ' },
+  ];
+
+  const logisticsQs = [
+    { name: 'l_schedule', text: 'კურსის განრიგი და დრო მოსახერხებელი იყო' },
+    { name: 'l_materials', text: 'სასწავლო მასალები (სლაიდები, გზამკვლევები) სასარგებლო იყო' },
+    { name: 'l_tools',    text: 'კურსზე გამოყენებული AI ხელსაწყოები ხელმისაწვდომი იყო' },
+  ];
+
+  function buildLikertBlocks(questions, containerId) {
+    const container = document.getElementById(containerId);
+    questions.forEach((q, i) => {
+      const block = document.createElement('div');
+      block.className = 'q-block';
+      if (i > 0) {
+        const hr = document.createElement('hr');
+        hr.className = 'q-divider';
+        container.appendChild(hr);
+      }
+      block.innerHTML = `
+        <div class="q-label">${q.text}</div>
+        <div class="likert">
+          ${[1,2,3,4,5].map(v => `
+            <input type="radio" name="${q.name}" id="${q.name}_${v}" value="${v}">
+            <label for="${q.name}_${v}">
+              <span class="val">${v}</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
+      container.appendChild(block);
+    });
+  }
+
+  buildLikertBlocks(likertQs, 'likert-questions');
+  buildLikertBlocks(logisticsQs, 'logistics-questions');
+
+  // --- Progress tracking ---
+  const allInputs = () => document.querySelectorAll('input[type="radio"], input[type="text"], textarea');
+  const allGroups = [
+    'overall','instructor','nps',
+    ...likertQs.map(q => q.name),
+    ...logisticsQs.map(q => q.name),
+  ];
+
+  function updateProgress() {
+    let filled = 0;
+    allGroups.forEach(name => {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      if (checked) filled++;
+    });
+    // count any textarea/text that has content
+    document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+      if (el.value.trim().length > 0) filled += 0.25;
+    });
+    const total = allGroups.length;
+    const pct = Math.min(100, Math.round((filled / total) * 100));
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + '% შევსებული';
+  }
+
+  document.getElementById('survey-form').addEventListener('input', updateProgress);
+
+  // --- Submit ---
+  document.getElementById('survey-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    this.style.animation = 'fadeUp 0.4s reverse ease both';
+    setTimeout(() => {
+      this.style.display = 'none';
+      document.getElementById('thank-you').style.display = 'block';
+      document.querySelector('.progress-bar').style.display = 'none';
+      document.querySelector('.progress-label').style.display = 'none';
+      document.getElementById('progressFill').style.width = '100%';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 350);
+  });
+</script>
+</body>
+</html>

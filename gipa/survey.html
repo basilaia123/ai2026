@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>კმაყოფილების კითხვარი - GIPA AI Intensive</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: {
+            950: '#001a33', 900: '#003366', 800: '#004080',
+            700: '#004d99', 600: '#0059b3', 500: '#0066cc',
+            400: '#3385d6', 300: '#66a3e0', 200: '#99c2eb',
+            100: '#cce0f5', 50: '#e6f0fa'
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+  html { scroll-behavior: smooth; }
+
+  /* Stars */
+  .stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+  .stars input { display: none; }
+  .stars label {
+    font-size: 30px; cursor: pointer; color: #d1d5db; line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .stars label:hover,
+  .stars label:hover ~ label,
+  .stars input:checked ~ label { color: #f59e0b; transform: scale(1.15); }
+
+  /* NPS */
+  .nps-btn { display: none; }
+  .nps-lbl {
+    width: 40px; height: 40px; border-radius: 8px;
+    border: 1.5px solid #d1d5db;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; color: #6b7280;
+  }
+  .nps-btn:checked + .nps-lbl {
+    background: #003366; border-color: #003366;
+    color: #fff; transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,51,102,0.3);
+  }
+  .nps-lbl:hover { border-color: #003366; color: #003366; }
+
+  /* Likert */
+  .lk-input { display: none; }
+  .lk-label {
+    flex: 1; border: 1.5px solid #e5e7eb;
+    border-radius: 6px; padding: 4px 2px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; display: flex;
+    flex-direction: column; align-items: center; gap: 0;
+  }
+  .lk-input:checked + .lk-label {
+    background: #e6f0fa; border-color: #003366;
+  }
+  .lk-input:checked + .lk-label .lk-val { color: #003366; font-weight: 700; }
+  .lk-label:hover { border-color: #99c2eb; }
+  .lk-val { font-size: 14px; font-weight: 600; color: #9ca3af; }
+
+  /* Pill */
+  .pill-in { display: none; }
+  .pill-lb {
+    border: 1.5px solid #d1d5db; border-radius: 100px;
+    padding: 6px 12px; font-size: 11.5px; cursor: pointer;
+    transition: all 0.2s; color: #6b7280; white-space: nowrap;
+  }
+  .pill-in:checked + .pill-lb {
+    background: #003366; border-color: #003366;
+    color: #fff; box-shadow: 0 3px 10px rgba(0,51,102,0.25);
+  }
+  .pill-lb:hover { border-color: #003366; color: #003366; }
+
+  /* Textarea / text */
+  textarea, input[type="text"] {
+    width: 100%; border: 1.5px solid #e5e7eb;
+    border-radius: 10px; padding: 12px 14px;
+    font-family: 'FiraGO', sans-serif; font-size: 14px;
+    color: #1f2937; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+  }
+  textarea { min-height: 90px; }
+  textarea:focus, input[type="text"]:focus {
+    border-color: #003366;
+    box-shadow: 0 0 0 3px rgba(0,51,102,0.1);
+  }
+  textarea::placeholder, input[type="text"]::placeholder { color: #9ca3af; }
+
+  /* Progress fill */
+  #prog-fill { transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.5s ease both; }
+  @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+
+  @media (max-width: 520px) {
+    .nps-lbl { width: 34px; height: 34px; font-size: 12px; }
+    .lk-label { padding: 8px 3px; }
+    .pill-lb { padding: 5px 8px; font-size: 10px; }
+  }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- HERO -->
+<header class="bg-navy-900 text-white relative overflow-hidden">
+  <div class="absolute inset-0 opacity-[0.04]"
+    style="background-image:url('data:image/svg+xml,<svg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22><defs><pattern id=%22g%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22><path d=%22M60 0L0 60M-15 15L15-15M45 75L75 45%22 stroke=%22white%22 stroke-width=%221%22 fill=%22none%22/></pattern></defs><rect fill=%22url(%23g)%22 width=%2260%22 height=%2260%22/></svg>');">
+  </div>
+  <div class="relative max-w-3xl mx-auto px-6 py-12 text-center fade-up">
+    <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-5">
+      <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+      <span class="text-xs font-medium tracking-wide text-blue-200 uppercase">GIPA · 2026 · Executive Masterclass</span>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-2">კმაყოფილების კითხვარი</h1>
+    <p class="text-blue-300 text-base mb-1">AI Intensive - 2-დღიანი მასტერკლასი</p>
+    <div class="flex flex-col items-center gap-1 mt-4">
+      <p class="text-blue-400 text-sm">ინსტრუქტორი: გიორგი ბასილაია</p>
+      <p class="text-white/60 text-xs flex items-center gap-1.5 mt-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        შევსებას სჭირდება დაახლოებით 2-3 წუთი
+      </p>
+    </div>
+  </div>
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+      <path d="M0 48V24C240 0 480 0 720 24C960 48 1200 48 1440 24V48H0Z" fill="#f9fafb"/>
+    </svg>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="max-w-3xl mx-auto px-4 py-10 pb-20">
+
+  <!-- Progress -->
+  <div class="mb-8 fade-up" style="animation-delay:0.1s">
+    <div class="flex justify-between text-xs text-gray-400 mb-1.5">
+      <span>შევსების პროგრესი</span>
+      <span id="prog-label">0%</span>
+    </div>
+    <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+      <div id="prog-fill" class="h-full bg-gradient-to-r from-navy-700 to-navy-400 rounded-full" style="width:0%"></div>
+    </div>
+  </div>
+
+  <form id="gipa-form" action="https://formsubmit.co/08cbc6e5d0808cdc4f8023320fbca6b1" method="POST">
+    <!-- formsubmit.co config -->
+    <input type="hidden" name="_subject" value="GIPA AI Intensive - კმაყოფილების კითხვარი">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_next" value="about:blank">
+
+    <!-- ── SECTION 1: General ── -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 mb-5 fade-up" style="animation-delay:0.15s">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-7 h-7 rounded-lg bg-navy-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
+        <h2 class="text-xs font-bold text-navy-900 uppercase tracking-widest">საერთო შეფასება</h2>
+      </div>
+
+      <!-- Overall rating -->
+      <div class="mb-6">
+        <p class="text-sm font-medium text-gray-700 mb-3">საერთო ჯამში როგორ შეაფასებთ მასტერკლასს? <span class="text-red-500">*</span></p>
+        <div class="stars">
+          <input type="radio" name="overall" id="ov5" value="5"><label for="ov5">★</label>
+          <input type="radio" name="overall" id="ov4" value="4"><label for="ov4">★</label>
+          <input type="radio" name="overall" id="ov3" value="3"><label for="ov3">★</label>
+          <input type="radio" name="overall" id="ov2" value="2"><label for="ov2">★</label>
+          <input type="radio" name="overall" id="ov1" value="1"><label for="ov1">★</label>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-100 pt-6 mb-6">
+        <p class="text-sm font-medium text-gray-700 mb-1">ინსტრუქტორის შეფასება <span class="text-red-500">*</span></p>
+        <p class="text-xs text-gray-400 mb-4">1 = სუსტი · 2 = კარგი · 3 = შესანიშნავი</p>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between gap-4">
+            <span class="text-sm text-gray-600 flex-1">მასალას ნათლად და გასაგებად ხსნიდა</span>
+            <div class="flex gap-1.5">
+              <input class="nps-btn" type="radio" name="instr_clarity" id="ic1" value="1"><label class="nps-lbl" for="ic1">1</label>
+              <input class="nps-btn" type="radio" name="instr_clarity" id="ic2" value="2"><label class="nps-lbl" for="ic2">2</label>
+              <input class="nps-btn" type="radio" name="instr_clarity" id="ic3" value="3"><label class="nps-lbl" for="ic3">3</label>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-4">
+            <span class="text-sm text-gray-600 flex-1">კითხვებს სრულყოფილად პასუხობდა</span>
+            <div class="flex gap-1.5">
+              <input class="nps-btn" type="radio" name="instr_qa" id="iq1" value="1"><label class="nps-lbl" for="iq1">1</label>
+              <input class="nps-btn" type="radio" name="instr_qa" id="iq2" value="2"><label class="nps-lbl" for="iq2">2</label>
+              <input class="nps-btn" type="radio" name="instr_qa" id="iq3" value="3"><label class="nps-lbl" for="iq3">3</label>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-4">
+            <span class="text-sm text-gray-600 flex-1">ტემპსა და დროს სწორად ანაწილებდა</span>
+            <div class="flex gap-1.5">
+              <input class="nps-btn" type="radio" name="instr_pace" id="ip1" value="1"><label class="nps-lbl" for="ip1">1</label>
+              <input class="nps-btn" type="radio" name="instr_pace" id="ip2" value="2"><label class="nps-lbl" for="ip2">2</label>
+              <input class="nps-btn" type="radio" name="instr_pace" id="ip3" value="3"><label class="nps-lbl" for="ip3">3</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-100 pt-6">
+        <p class="text-sm font-medium text-gray-700 mb-3">ურჩევდით ამ მასტერკლასს კოლეგას? <span class="text-red-500">*</span></p>
+        <div class="flex flex-nowrap gap-1">
+          <input class="pill-in" type="radio" name="nps" id="nps_yes" value="yes"><label class="pill-lb flex-1 text-center" for="nps_yes">აუცილებლად</label>
+          <input class="pill-in" type="radio" name="nps" id="nps_maybe" value="maybe"><label class="pill-lb flex-1 text-center" for="nps_maybe">ალბათ</label>
+          <input class="pill-in" type="radio" name="nps" id="nps_no" value="no"><label class="pill-lb flex-1 text-center" for="nps_no">არა</label>
+        </div>
+      </div>
+
+      <!-- #1: მოლოდინი vs რეალობა -->
+      <div class="border-t border-gray-100 pt-6">
+        <p class="text-sm font-medium text-gray-700 mb-3">კურსი შეესაბამებოდა თქვენს წინასწარ მოლოდინებს? <span class="text-red-500">*</span></p>
+        <div class="flex flex-nowrap gap-1 overflow-x-auto pb-2 -mx-1 px-1">
+          <input class="pill-in" type="radio" name="expectations" id="exp_yes" value="yes"><label class="pill-lb" for="exp_yes">✓ სრულად</label>
+          <input class="pill-in" type="radio" name="expectations" id="exp_mostly" value="mostly"><label class="pill-lb" for="exp_mostly">~ მეტწილად</label>
+          <input class="pill-in" type="radio" name="expectations" id="exp_part" value="partial"><label class="pill-lb" for="exp_part">~ ნაწილობრივ</label>
+          <input class="pill-in" type="radio" name="expectations" id="exp_no" value="no"><label class="pill-lb" for="exp_no">✗ არ შეესაბამებოდა</label>
+        </div>
+      </div>
+
+      <!-- #6: სირთულე -->
+      <div class="border-t border-gray-100 pt-6">
+        <p class="text-sm font-medium text-gray-700 mb-3">კურსის სირთულის დონე თქვენთვის <span class="text-red-500">*</span></p>
+        <div class="flex flex-wrap gap-2">
+          <input class="pill-in" type="radio" name="difficulty" id="dif1" value="easy"><label class="pill-lb" for="dif1">ძალიან მარტივი</label>
+          <input class="pill-in" type="radio" name="difficulty" id="dif2" value="right"><label class="pill-lb" for="dif2">შესაფერისი</label>
+          <input class="pill-in" type="radio" name="difficulty" id="dif3" value="hard"><label class="pill-lb" for="dif3">ძალიან რთული</label>
+        </div>
+      </div>
+
+      <!-- #5: გამოცდილება -->
+      <div class="border-t border-gray-100 pt-6">
+        <p class="text-sm font-medium text-gray-700 mb-3">AI-ის გამოცდილება მასტერკლასამდე</p>
+        <div class="flex flex-wrap gap-2">
+          <input class="pill-in" type="radio" name="experience" id="ex0" value="none"><label class="pill-lb" for="ex0">არ მქონია</label>
+          <input class="pill-in" type="radio" name="experience" id="ex1" value="beginner"><label class="pill-lb" for="ex1">დამწყები</label>
+          <input class="pill-in" type="radio" name="experience" id="ex2" value="mid"><label class="pill-lb" for="ex2">საშუალო</label>
+          <input class="pill-in" type="radio" name="experience" id="ex3" value="advanced"><label class="pill-lb" for="ex3">მოწინავე</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: Day 1 ── -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 mb-5 fade-up" style="animation-delay:0.2s">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-7 h-7 rounded-lg bg-navy-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+        <h2 class="text-xs font-bold text-navy-900 uppercase tracking-widest">დღე 1 - საფუძვლები, პრომპტინგი და კურიკულუმი</h2>
+      </div>
+      <p class="text-[9px] text-gray-400 text-center mb-4 italic">(1 = სუსტი · 2 = კარგი · 3 = შესანიშნავი / გასაგებად იყო წარმოდგენილი · სასარგებლო იყო · რელევანტური იყო · ეფექტური იყო)</p>
+      <div id="day1-qs"></div>
+    </div>
+
+    <!-- ── SECTION 3: Day 2 ── -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 mb-5 fade-up" style="animation-delay:0.25s">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-7 h-7 rounded-lg bg-navy-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+        <h2 class="text-xs font-bold text-navy-900 uppercase tracking-widest">დღე 2 - შეფასება, კვლევა, ეთიკა და რეფორმა</h2>
+      </div>
+      <p class="text-[9px] text-gray-400 text-center mb-4 italic">(1 = სუსტი · 2 = კარგი · 3 = შესანიშნავი / გასაგებად იყო წარმოდგენილი · სასარგებლო იყო · რელევანტური იყო · ეფექტური იყო)</p>
+      <div id="day2-qs"></div>
+    </div>
+
+    <!-- ── SECTION 4: Future topics ── -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 mb-5 fade-up" style="animation-delay:0.28s">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-7 h-7 rounded-lg bg-navy-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">4</div>
+        <h2 class="text-xs font-bold text-navy-900 uppercase tracking-widest">მომავალი ტრეინინგი</h2>
+      </div>
+      <p class="text-xs text-gray-400 ml-10 mb-2">შეაფასეთ თითოეული თემა: <strong>1</strong> = არ მაინტერესებს · <strong>2</strong> = საინტერესოა · <strong>3</strong> = აუცილებლად მსურს</p>
+
+      <!-- Topic rating table -->
+      <div id="future-topics" class="space-y-1 mb-4"></div>
+
+      <div class="px-3 mb-6">
+        <p class="text-sm font-medium text-gray-700 mb-2">სხვა საინტერესო თემა, რომელიც არ არის სიაში:</p>
+        <input type="text" name="other_topic_text" placeholder="მიუთითეთ აქ...">
+      </div>
+
+      <!-- Format preference -->
+      <div class="border-t border-gray-100 pt-5 mb-5">
+        <p class="text-sm font-medium text-gray-700 mb-3">სასურველი ტრეინინგის ფორმატი</p>
+        <div class="flex flex-wrap gap-2">
+          <input class="pill-in" type="radio" name="format" id="fmt1" value="1day"><label class="pill-lb" for="fmt1">1-დღიანი ინტენსივი</label>
+          <input class="pill-in" type="radio" name="format" id="fmt2" value="2day"><label class="pill-lb" for="fmt2">2-დღიანი მასტერკლასი</label>
+          <input class="pill-in" type="radio" name="format" id="fmt3" value="3day"><label class="pill-lb" for="fmt3">3-დღიანი ინტენსივი</label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── SECTION 5: Practical use ── -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 mb-5 fade-up" style="animation-delay:0.29s">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-7 h-7 rounded-lg bg-navy-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">5</div>
+        <h2 class="text-xs font-bold text-navy-900 uppercase tracking-widest">პრაქტიკული გამოყენება</h2>
+      </div>
+      <p class="text-xs text-gray-400 ml-10 mb-5">რომელ კონკრეტულ ამოცანებში გამოიყენებთ AI-ს? (მონიშნეთ ყველა რელევანტური)</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_syllabus" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">სილაბუსის შედგენა / განახლება</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_lessonplan" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">ლექციის გეგმის მომზადება</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_feedback" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">სტუდენტებისთვის feedback-ის მომზადება</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_rubrics" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">შეფასების რუბრიკების შექმნა</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_research" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">სამეცნიერო კვლევა და ლიტერატურის მიმოხილვა</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_grants" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">გრანტის განაცხადების მომზადება</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_slides" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">პრეზენტაციებისა და სლაიდების შექმნა</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_admin" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">ადმინისტრაციული დოკუმენტაცია</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_plagiarism" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">AI-კონტენტის გამოვლენა / პლაგიატი</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-navy-300 hover:bg-navy-50 transition-all has-[:checked]:border-navy-700 has-[:checked]:bg-navy-50">
+          <input type="checkbox" name="use_other" value="1" class="accent-navy-900 w-4 h-4 flex-shrink-0">
+          <span class="text-sm text-gray-700">სხვა (მიუთითეთ ქვემოთ)</span>
+        </label>
+      </div>
+      <div class="mt-3">
+        <input type="text" name="use_other_text" placeholder="სხვა პრაქტიკული გამოყენება...">
+      </div>
+    </div>
+
+    <!-- ── SECTION 6: Open questions ── -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 mb-5 fade-up" style="animation-delay:0.3s">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-7 h-7 rounded-lg bg-navy-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">6</div>
+        <h2 class="text-xs font-bold text-navy-900 uppercase tracking-widest">ღია კითხვები</h2>
+      </div>
+
+      <div class="space-y-5">
+        <div>
+          <p class="text-sm font-medium text-gray-700 mb-2">მასტერკლასის ყველაზე ღირებული ნაწილი რა იყო?</p>
+          <textarea name="best_part" placeholder="გაგვიზიარეთ თქვენი მოსაზრება..."></textarea>
+        </div>
+        <div class="border-t border-gray-100 pt-5">
+          <p class="text-sm font-medium text-gray-700 mb-2">რას გააუმჯობესებდით ან დაამატებდით?</p>
+          <textarea name="improve" placeholder="კონსტრუქციული კრიტიკა მისასალმებელია..."></textarea>
+        </div>
+        <div class="border-t border-gray-100 pt-5">
+          <p class="text-sm font-medium text-gray-700 mb-2">სხვა კომენტარები ან წინადადებები</p>
+          <textarea name="other" placeholder="ნებისმიერი დამატებითი მოსაზრება..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="text-center fade-up" style="animation-delay:0.4s">
+      <button type="submit"
+        class="inline-flex items-center gap-2 bg-navy-900 hover:bg-navy-800 text-white font-bold px-12 py-4 rounded-xl text-base transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+        გაგზავნა
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </button>
+      <p class="text-xs text-gray-400 mt-3">პასუხები ანონიმურია · GIPA 2026</p>
+    </div>
+
+  </form>
+
+  <!-- Thank you -->
+  <div id="thank-you" class="hidden text-center py-20 fade-up">
+    <div class="text-6xl mb-6" style="animation: heartbeat 1.8s ease infinite; display:inline-block">🙏</div>
+    <h2 class="text-2xl font-extrabold text-navy-900 mb-3">მადლობა!</h2>
+    <p class="text-gray-600 mb-1">თქვენი პასუხები მიღებულია. ❤️</p>
+    <p class="text-sm text-gray-400">თქვენი მოსაზრებები მომავალი მასტერკლასის გაუმჯობესებაში დაგვეხმარება.</p>
+    
+    <a href="index.html" class="inline-flex items-center gap-2 mt-10 text-navy-700 hover:text-navy-900 text-sm font-medium transition-colors">
+      ← მთავარ გვერდზე დაბრუნება
+    </a>
+  </div>
+
+</main>
+
+<script>
+const day1Questions = [
+  { name: 'd1_theory',    text: 'AI საფუძვლები, მოდელების მიმოხილვა და უსაფრთხოება (GDPR/Bias)' },
+  { name: 'd1_prompt',    text: 'პრომპტინგის ტექნიკები (CREATE, Role, Few-Shot, Reasoning)' },
+  { name: 'd1_creative',  text: 'იდეების გენერაცია და კრეატიული აზროვნება (Six Thinking Hats)' },
+  { name: 'd1_design',    text: 'სასწავლო მასალების დიზაინი (სილაბუსი, Lesson Plan, ადაპტაცია)' },
+  { name: 'd1_pace',      text: 'პირველი დღის ტემპი და მოცულობა' },
+];
+
+const day2Questions = [
+  { name: 'd2_assess',    text: 'შეფასება, პერსონალიზებული უკუკავშირი და რუბრიკების გენერირება' },
+  { name: 'd2_content',   text: 'სასწავლო ქეისებისა და ვიზუალური მასალების (სლაიდები) შექმნა' },
+  { name: 'd2_research',  text: 'სამეცნიერო კვლევა, ლიტერატურის მიმოხილვა და NotebookLM' },
+  { name: 'd2_ethics',    text: 'ეთიკა, AI-Resistant დავალებები და კურიკულუმის რეფორმა (3+1)' },
+  { name: 'd2_pace',      text: 'მეორე დღის ტემპი და მოცულობა' },
+];
+
+function buildLikert(questions, containerId) {
+  const container = document.getElementById(containerId);
+  questions.forEach((q, i) => {
+    if (i > 0) {
+      const hr = document.createElement('div');
+      hr.className = 'border-t border-gray-100 my-2';
+      container.appendChild(hr);
+    }
+    const block = document.createElement('div');
+    const opts3 = [{v:1,sub:'სუსტი'},{v:2,sub:'კარგი'},{v:3,sub:'შესანიშნავი'}];
+    block.innerHTML = `
+      <p class="text-sm font-medium text-gray-700 mb-1.5">${q.text} <span class="text-red-500">*</span></p>
+      <div class="flex gap-2">
+        ${opts3.map(o => `
+          <input class="lk-input" type="radio" name="${q.name}" id="${q.name}_${o.v}" value="${o.v}">
+          <label class="lk-label" for="${q.name}_${o.v}">
+            <span class="lk-val">${o.v}</span>
+            <span style="font-size:9px;color:#9ca3af">${o.sub}</span>
+          </label>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(block);
+  });
+}
+
+buildLikert(day1Questions, 'day1-qs');
+buildLikert(day2Questions, 'day2-qs');
+
+// Future topics
+// Sorted: most likely desired → least (for GIPA academic/admin audience)
+const futureTopics = [
+  // ── ყველაზე სავარაუდოდ სასურველი ──
+  { id: 'ft1',  grp: 'პოლიტიკა და სტრატეგია',
+    text: 'AI პოლიტიკის შემუშავება უნივერსიტეტში (institutional AI policy)' },
+  { id: 'ft2',  grp: 'პოლიტიკა და სტრატეგია',
+    text: 'EU AI Act და საქართველოს მარეგულირებელი ჩარჩო - რა ვალდებულებები გვაქვს?' },
+  { id: 'ft3',  grp: 'პოლიტიკა და სტრატეგია',
+    text: 'AI სტრატეგია უნივერსიტეტის ადმინისტრაციაში (ჩარიცხვა, HR, ბიუჯეტი)' },
+  { id: 'ft4',  grp: 'სწავლება და შეფასება',
+    text: 'Custom AI ასისტენტის შექმნა ფაკულტეტისთვის (GPTs, Claude Projects)' },
+  { id: 'ft5',  grp: 'სწავლება და შეფასება',
+    text: 'AI-გენერირებული კონტენტის პოლიტიკა - plagiarism, დეტექცია, სტუდენტთა სახელმძღვანელო' },
+  { id: 'ft6',  grp: 'სწავლება და შეფასება',
+    text: 'AI-Resistant (AI-გამძლე) დავალებებისა და გამოცდების დიზაინი - ღრმა განხილვა' },
+  { id: 'ft7',  grp: 'კვლევა',
+    text: 'AI სამეცნიერო კვლევაში - სრული workflow: ლიტერატურა, ანალიზი, სტატია' },
+  { id: 'ft8',  grp: 'კვლევა',
+    text: 'AI-ით გრანტის განაცხადების მომზადება' },
+  { id: 'ft10', grp: 'ავტომატიზაცია',
+    text: 'AI სამუშაო პროცესების ავტომატიზაცია (Make.com, n8n) - კონკრეტული უნივერსიტეტის use cases' },
+  { id: 'ft11', grp: 'ავტომატიზაცია',
+    text: 'RAG სისტემები - საკუთარი ცოდნის ბაზის შექმნა ფაკულტეტის დოკუმენტებიდან' },
+  { id: 'ft12', grp: 'ავტომატიზაცია',
+    text: 'AI-ით HR პროცესების ავტომატიზაცია (შერჩევა, შეფასება, onboarding)' },
+  { id: 'ft13', grp: 'სტუდენტებთან მუშაობა',
+    text: 'AI-ით სტუდენტთა კარიერული მხარდაჭერა და პროფორიენტაცია' },
+  { id: 'ft14', grp: 'სტუდენტებთან მუშაობა',
+    text: 'AI ტუტორინგი და სტუდენტთა ინდივიდუალური სწავლის მხარდაჭერა' },
+  { id: 'ft15', grp: 'სტუდენტებთან მუშაობა',
+    text: 'სტუდენტების კარიერული განვითარება, დასაქმება და მათი ტრეინინგი AI ხელსაწყოებში' },
+  { id: 'ft20', grp: 'ტექნიკური',
+    text: 'AI მულტიმედია კონტენტის შექმნაში (ვიდეო, podcast, ინფოგრაფიკა)' },
+];
+
+const topicGrid = document.getElementById('future-topics');
+
+const ratingLabels = ['არ მაინტ.', 'საინტ.', 'აუც. მსურს'];
+
+let lastGrp = '';
+futureTopics.forEach(t => {
+  if (t.grp !== lastGrp) {
+    const hdr = document.createElement('div');
+    hdr.className = 'text-[10px] font-bold text-navy-700 uppercase tracking-widest pt-3 pb-1 px-1 border-t border-gray-100 first:border-0 first:pt-0';
+    hdr.textContent = t.grp;
+    topicGrid.appendChild(hdr);
+    lastGrp = t.grp;
+  }
+  const row = document.createElement('div');
+  row.className = 'flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-gray-50 transition-colors';
+  row.innerHTML = `
+    <span class="text-sm text-gray-700 flex-1 leading-snug">${t.text}</span>
+    <div class="flex gap-1.5 flex-shrink-0">
+      ${[1,2,3].map(v => `
+        <input class="pill-in" type="radio" name="topic_${t.id}" id="t${t.id}_${v}" value="${v}">
+        <label for="t${t.id}_${v}" class="pill-lb text-xs px-3 py-1.5" style="border-radius:8px" title="${ratingLabels[v-1]}">${v}</label>
+      `).join('')}
+    </div>
+  `;
+  topicGrid.appendChild(row);
+});
+
+// Progress & Validation
+const requiredFields = [
+  'overall', 'instr_clarity', 'instr_qa', 'instr_pace', 'nps',
+  'expectations', 'difficulty',
+  ...day1Questions.map(q => q.name),
+  ...day2Questions.map(q => q.name)
+];
+
+function updateProgress() {
+  let filled = 0;
+  requiredFields.forEach(n => { if (document.querySelector(`input[name="${n}"]:checked`)) filled++; });
+  
+  // Optional fields contribute less to progress but are tracked
+  const optionalChecked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+  const textFilled = Array.from(document.querySelectorAll('textarea, input[type="text"]')).filter(el => el.value.trim()).length;
+  
+  filled += (optionalChecked * 0.1) + (textFilled * 0.2);
+  
+  const pct = Math.min(100, Math.round((filled / requiredFields.length) * 100));
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = pct + '%';
+}
+
+document.getElementById('gipa-form').addEventListener('input', updateProgress);
+
+document.getElementById('gipa-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  // Basic validation
+  let missing = [];
+  requiredFields.forEach(n => {
+    if (!document.querySelector(`input[name="${n}"]:checked`)) {
+      missing.push(n);
+      // Highlight the section (optional but helpful)
+      const el = document.getElementsByName(n)[0];
+      if (el) el.closest('.border-t, .mb-6, .mb-5')?.classList.add('bg-red-50/50');
+    } else {
+      const el = document.getElementsByName(n)[0];
+      if (el) el.closest('.border-t, .mb-6, .mb-5')?.classList.remove('bg-red-50/50');
+    }
+  });
+
+  if (missing.length > 0) {
+    alert('გთხოვთ შეავსოთ ყველა სავალდებულო ველი (მონიშნულია წითლად)');
+    const firstMissing = document.getElementsByName(missing[0])[0];
+    firstMissing?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = this.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> იგზავნება...';
+
+  // Create descriptive mapping for Email
+  const getQuestionText = (name) => {
+    const d1 = day1Questions.find(q => q.name === name);
+    if (d1) return d1.text;
+    const d2 = day2Questions.find(q => q.name === name);
+    if (d2) return d2.text;
+    if (name.startsWith('topic_')) {
+      const t = futureTopics.find(x => x.id === name.replace('topic_', ''));
+      return t ? `${t.grp}: ${t.text}` : name;
+    }
+    const staticMap = {
+      'overall': 'საერთო შეფასება', 'instr_clarity': 'ინსტრუქტორი: სიცხადე', 'instr_qa': 'ინსტრუქტორი: პასუხები',
+      'instr_pace': 'ინსტრუქტორი: ტემპი', 'nps': 'NPS რეკომენდაცია', 'expectations': 'მოლოდინები',
+      'difficulty': 'სირთულე', 'experience': 'AI გამოცდილება', 'format': 'სასურველი ფორმატი',
+      'use_syllabus': 'გამოყენება: სილაბუსი', 'use_lessonplan': 'გამოყენება: გეგმა', 'use_feedback': 'გამოყენება: უკუკავშირი',
+      'use_rubrics': 'გამოყენება: რუბრიკები', 'use_research': 'გამოყენება: კვლევა', 'use_grants': 'გამოყენება: გრანტები',
+      'use_slides': 'გამოყენება: პრეზენტაციები', 'use_admin': 'გამოყენება: ადმინისტრაცია', 'use_plagiarism': 'გამოყენება: პლაგიატი',
+      'use_other': 'გამოყენება: სხვა', 'use_other_text': 'სხვა გამოყენება (ტექსტი)', 'best_part': 'საუკეთესო ნაწილი',
+      'improve': 'გასაუმჯობესებელი', 'other': 'სხვა კომენტარი',
+      'other_topic_text': 'სხვა თემა (ტექსტი)'
+    };
+    return staticMap[name] || name;
+  };
+
+  const getValueLabel = (name, value) => {
+    if (!value) return '---';
+    const v = value.toString();
+    // Likert 1-3
+    if (day1Questions.some(q => q.name === name) || day2Questions.some(q => q.name === name) || name.startsWith('instr_')) {
+      const m = { '1': '1 - არ ვეთანხმები / სუსტი', '2': '2 - ნეიტრალური / კარგი', '3': '3 - ვეთანხმები / შესანიშნავი' };
+      return m[v] || v;
+    }
+    // Future topics 1-3
+    if (name.startsWith('topic_')) {
+      const m = { '1': '1 - არ მაინტერესებს', '2': '2 - საინტერესოა', '3': '3 - აუცილებლად მსურს' };
+      return m[v] || v;
+    }
+    const valMap = {
+      'nps': { 'yes': 'აუცილებლად', 'maybe': 'ალბათ', 'no': 'არა' },
+      'expectations': { 'yes': '✓ სრულად', 'mostly': '~ მეტწილად', 'partial': '~ ნაწილობრივ', 'no': '✗ არ შეესაბამებოდა' },
+      'difficulty': { 'easy': 'ძალიან მარტივი', 'right': 'შესაფერისი', 'hard': 'ძალიან რთული' },
+      'experience': { 'none': 'არ მქონია', 'beginner': 'დამწყები', 'mid': 'საშუალო', 'advanced': 'მოწინავე' },
+      'format': { '1day': '1-დღიანი ინტენსივი', '2day': '2-დღიანი მასტერკლასი', '3day': '3-დღიანი ინტენსივი' }
+    };
+    if (valMap[name] && valMap[name][v]) return valMap[name][v];
+    if (v === '1' && name.startsWith('use_')) return 'კი';
+    return v;
+  };
+
+  try {
+    const formData = new FormData(this);
+    const payload = {};
+    
+    // Config fields
+    ['_subject', '_captcha'].forEach(k => {
+      const val = formData.get(k);
+      if (val) payload[k] = val;
+    });
+
+    const allKeys = [
+      'overall', 'instr_clarity', 'instr_qa', 'instr_pace', 'nps', 'expectations', 'difficulty', 'experience',
+      ...day1Questions.map(q => q.name),
+      ...day2Questions.map(q => q.name),
+      ...futureTopics.map(t => `topic_${t.id}`),
+      'format', 'use_syllabus', 'use_lessonplan', 'use_feedback', 'use_rubrics', 'use_research', 'use_grants', 'use_slides', 'use_admin', 'use_plagiarism', 'use_other', 'use_other_text',
+      'best_part', 'improve', 'other', 'other_topic_text'
+    ];
+
+    allKeys.forEach((key, index) => {
+      const val = formData.get(key);
+      const question = getQuestionText(key);
+      const answer = getValueLabel(key, val);
+      
+      // Clean labels for maximum compatibility
+      const label = `${(index + 1).toString().padStart(2, '0')} ${key} ${question}`.substring(0, 100);
+      payload[label] = answer;
+    });
+
+    // Generate CSV Row for Excel
+    const csvRow = allKeys.map(k => {
+      let v = formData.get(k) || '';
+      return `"${v.toString().replace(/"/g, '""')}"`;
+    }).join(',');
+    
+    payload['CSV_ROW_FOR_EXCEL'] = csvRow;
+
+    const res = await fetch(this.action, { 
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      showThanks();
+    } else {
+      // If JSON fails, try normal form post as a final fallback
+      this.submit();
+    }
+  } catch (err) {
+    console.error(err);
+    showThanks();
+  }
+});
+
+function showThanks() {
+  const form = document.getElementById('gipa-form');
+  form.style.opacity = '0';
+  form.style.transition = 'opacity 0.3s';
+  setTimeout(() => {
+    form.classList.add('hidden');
+    document.getElementById('thank-you').classList.remove('hidden');
+    document.querySelector('.progress-bar, #prog-fill')?.parentElement?.classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 300);
+}
+</script>
+</body>
+</html>

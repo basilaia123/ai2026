@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>პრაქტიკული ლაბი - დღე 2 | GIPA AI Intensive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#001a33',
+                            900: '#003366',
+                            800: '#004080',
+                            700: '#004d99',
+                            600: '#0059b3',
+                            500: '#0066cc',
+                            400: '#3385d6',
+                            300: '#66a3e0',
+                            200: '#99c2eb',
+                            100: '#cce0f5',
+                            50:  '#e6f0fa',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; }
+
+        .task-card {
+            transition: box-shadow 0.3s ease;
+        }
+        .task-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 51, 102, 0.08);
+        }
+
+        .answer-zone {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease, padding 0.4s ease;
+            opacity: 0;
+        }
+        .answer-zone.open {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        .prompt-input {
+            min-height: 120px;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .prompt-input:focus {
+            border-color: #004d99;
+            box-shadow: 0 0 0 3px rgba(0, 77, 153, 0.12);
+        }
+
+        pre { 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            font-family: 'FiraGO', monospace; 
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .self-check label {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        .self-check input:checked + span {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        /* Timer pulse when running */
+        @keyframes timerPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 51, 102, 0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(0, 51, 102, 0); }
+        }
+        .timer-running {
+            animation: timerPulse 2s ease-in-out infinite;
+        }
+
+        /* Timer warning under 5 min */
+        @keyframes timerWarning {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+        }
+        .timer-warning {
+            animation: timerWarning 1s ease-in-out infinite;
+        }
+
+        .copy-toast {
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 1.5s forwards;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+
+    <!-- ════════════ STICKY TIMER ════════════ -->
+    <div id="timerBar" class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-1.5 text-navy-700 hover:text-navy-900 transition-colors text-sm font-medium group">
+                <svg class="w-4 h-4 transform group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                <span class="hidden sm:inline">მთავარი</span>
+            </a>
+
+            <div class="flex items-center gap-3">
+                <!-- Timer display -->
+                <div id="timerDisplay" class="flex items-center gap-2 bg-navy-50 border border-navy-200 rounded-xl px-4 py-1.5">
+                    <svg class="w-4 h-4 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="timerText" class="text-lg font-mono font-bold text-navy-900 tabular-nums tracking-wider">30:00</span>
+                </div>
+
+                <!-- Timer controls -->
+                <button id="startBtn" onclick="startTimer()" class="px-3.5 py-1.5 bg-navy-900 text-white text-sm font-medium rounded-lg hover:bg-navy-800 transition-colors">
+                    დაწყება
+                </button>
+                <button id="pauseBtn" onclick="pauseTimer()" class="hidden px-3.5 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors">
+                    პაუზა
+                </button>
+                <button id="resetBtn" onclick="resetTimer()" class="px-2 py-1.5 text-gray-400 hover:text-gray-600 transition-colors" title="თავიდან">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════ HEADER ════════════ -->
+    <header class="bg-navy-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.04]" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><defs><pattern id=&quot;g&quot; width=&quot;60&quot; height=&quot;60&quot; patternUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M60 0L0 60M-15 15L15-15M45 75L75 45&quot; stroke=&quot;white&quot; stroke-width=&quot;1&quot; fill=&quot;none&quot;/></pattern></defs><rect fill=&quot;url(%23g)&quot; width=&quot;60&quot; height=&quot;60&quot;/></svg>');"></div>
+
+        <div class="relative max-w-4xl mx-auto px-6 py-10 md:py-14">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+                <span class="text-xs font-medium tracking-wide text-blue-200 uppercase">Practice Lab</span>
+            </div>
+
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-3">
+                დღე 2: პრაქტიკული სავარჯიშოები
+            </h1>
+            <p class="text-lg text-blue-200 font-light">Research, Feedback & Ethics</p>
+
+            <div class="w-12 h-0.5 bg-gradient-to-r from-blue-400 to-transparent my-5"></div>
+
+            <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl px-5 py-4 max-w-2xl">
+                <p class="text-blue-100 text-sm leading-relaxed">
+                    შეასრულეთ ეს <strong class="text-white">3 დავალება 30 წუთში</strong>. გამოიყენეთ
+                    <a href="https://chat.openai.com" target="_blank" class="text-blue-300 underline underline-offset-2 hover:text-white">ChatGPT</a>,
+                    <a href="https://claude.ai" target="_blank" class="text-blue-300 underline underline-offset-2 hover:text-white">Claude</a> ან
+                    <a href="https://gemini.google.com" target="_blank" class="text-blue-300 underline underline-offset-2 hover:text-white">Gemini</a>.
+                    ჩაწერეთ თქვენი პრომპტი შესაბამის ველში, შემდეგ შეადარეთ იდეალურ მაგალითს.
+                </p>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full"><path d="M0 40V20C240 0 480 0 720 20C960 40 1200 40 1440 20V40H0Z" fill="#f9fafb"/></svg>
+        </div>
+    </header>
+
+    <!-- ════════════ TASKS ════════════ -->
+    <main class="max-w-4xl mx-auto px-6 py-10 flex-1 w-full space-y-8">
+
+        <!-- ──────── TASK 1: Feedback Automator ──────── -->
+        <section class="task-card bg-white rounded-2xl border border-gray-200 overflow-hidden" id="task1">
+            <div class="bg-gradient-to-r from-navy-900 to-navy-700 px-6 py-5 text-white flex items-start justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/15 text-sm font-bold">1</span>
+                        <h2 class="text-lg font-bold">Feedback Automator</h2>
+                    </div>
+                    <p class="text-blue-200 text-sm">შექმენით Feedback-ის პრომპტი template-ის გამოყენებით</p>
+                </div>
+                <span class="shrink-0 bg-white/10 text-blue-200 text-xs font-medium rounded-full px-3 py-1 mt-1">10 წთ</span>
+            </div>
+
+            <div class="px-6 py-6 space-y-5">
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">სცენარი</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        თქვენ გაქვთ 30 სტუდენტის ესე და გსურთ ყველას ერთნაირი სტრუქტურის, მაგრამ პერსონალიზებული Feedback მისცეთ.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">დავალება</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        დაწერეთ პრომპტი, რომელიც AI-ს ავალებს სტუდენტის ნაშრომის ანალიზს და Feedback-ის გენერირებას შემდეგი პუნქტებით:
+                        <strong>ძლიერი მხარეები</strong>, <strong>გასაუმჯობესებელი ასპექტები</strong> (კონკრეტული მაგალითებით) და <strong>შემდეგი ნაბიჯი</strong>.
+                    </p>
+                    <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-800 flex items-start gap-2">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>მინიშნება: მიანიჭეთ AI-ს როლი (მაგ: „supportive professor"), მიუთითეთ Feedback-ის სტრუქტურა და მოითხოვეთ ციტატები ნაშრომიდან.</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">თქვენი პრომპტი</label>
+                    <textarea class="prompt-input w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 outline-none bg-gray-50 placeholder-gray-400" placeholder="ჩაწერეთ თქვენი პრომპტი აქ..."></textarea>
+                </div>
+
+                <button onclick="toggleAnswer('answer1', this)" class="flex items-center gap-2 text-sm font-semibold text-navy-700 hover:text-navy-900 transition-colors group">
+                    <svg class="w-5 h-5 text-navy-500 group-hover:text-navy-700 transition-transform duration-300 reveal-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    აჩვენე იდეალური პასუხი
+                </button>
+
+                <div id="answer1" class="answer-zone">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4 mt-1">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span class="text-sm font-bold text-emerald-800">იდეალური პრომპტი</span>
+                        </div>
+                        <div class="relative group">
+                            <button onclick="copyText(this)" class="absolute top-3 right-3 p-1.5 bg-navy-900/50 hover:bg-navy-900 text-white rounded-md transition-colors opacity-0 group-hover:opacity-100 z-10" title="კოპირება">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            </button>
+                            <pre class="text-sm leading-relaxed copyable-text"><code>I will paste a student's essay below. Act as a supportive but rigorous university professor. Analyze the text and provide feedback using this exact structure:
+
+**Overall Assessment:** [2 sentences summary]
+
+**Strengths:**
+- [Strength 1]: Quote a specific sentence from the essay that demonstrates this.
+- [Strength 2]: Quote another specific example.
+
+**Areas for Improvement:**
+- [Issue 1]: Explain exactly what is wrong and provide a corrected version of one sentence as an example.
+- [Issue 2]: Suggest a theoretical framework or source they could have used.
+
+**Actionable Next Step:** Give the student one specific task to complete in the next 24 hours to improve this draft.
+
+**Preliminary Grade:** [Score]/100
+
+Essay: [paste here]</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Self-check -->
+                    <div class="self-check bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 mt-3">
+                        <p class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2.5">შეამოწმეთ თქვენი პრომპტი:</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მიანიჭეთ AI-ს როლი (მაგ: professor)?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მიუთითეთ Feedback-ის სტრუქტურა?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მოითხოვეთ ციტატები ნაშრომიდან?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>შეიცავს „შემდეგ ნაბიჯს" (Actionable)?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>ტონი მითითებულია (წამახალისებელი / მკაცრი)?</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────── TASK 2: Research Synthesizer ──────── -->
+        <section class="task-card bg-white rounded-2xl border border-gray-200 overflow-hidden" id="task2">
+            <div class="bg-gradient-to-r from-navy-800 to-navy-600 px-6 py-5 text-white flex items-start justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/15 text-sm font-bold">2</span>
+                        <h2 class="text-lg font-bold">Research Synthesizer</h2>
+                    </div>
+                    <p class="text-blue-200 text-sm">მოამზადეთ ლიტერატურის მიმოხილვის სინთეზი</p>
+                </div>
+                <span class="shrink-0 bg-white/10 text-blue-200 text-xs font-medium rounded-full px-3 py-1 mt-1">10 წთ</span>
+            </div>
+
+            <div class="px-6 py-6 space-y-5">
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">სცენარი</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        თქვენ კითხულობთ რამდენიმე სტატიას და გსურთ იპოვოთ მათ შორის საერთო თემები და, რაც მთავარია, „კვლევის ხარვეზი“ (Research Gap).
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">დავალება</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        დაწერეთ პრომპტი, რომელიც AI-ს სთხოვს 3 სხვადასხვა აბსტრაქტის (ან ტექსტის ნაწილის) შედარებას. 
+                        მოითხოვეთ <strong>სინთეზის ცხრილი</strong> და 3 პოტენციური <strong>კვლევის ხარვეზი</strong>.
+                    </p>
+                    <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-800 flex items-start gap-2">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>მინიშნება: მიუთითეთ ცხრილის სვეტები (ავტორი, მეთოდოლოგია, დასკვნები...) და მოითხოვეთ კონკრეტული კონტექსტისთვის (მაგ: ქართული რეალობა) Research Gap.</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">თქვენი პრომპტი</label>
+                    <textarea class="prompt-input w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 outline-none bg-gray-50 placeholder-gray-400" placeholder="ჩაწერეთ თქვენი პრომპტი აქ..."></textarea>
+                </div>
+
+                <button onclick="toggleAnswer('answer2', this)" class="flex items-center gap-2 text-sm font-semibold text-navy-700 hover:text-navy-900 transition-colors group">
+                    <svg class="w-5 h-5 text-navy-500 group-hover:text-navy-700 transition-transform duration-300 reveal-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    აჩვენე იდეალური პასუხი
+                </button>
+
+                <div id="answer2" class="answer-zone">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4 mt-1">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span class="text-sm font-bold text-emerald-800">იდეალური პრომპტი</span>
+                        </div>
+                        <div class="relative group">
+                            <button onclick="copyText(this)" class="absolute top-3 right-3 p-1.5 bg-navy-900/50 hover:bg-navy-900 text-white rounded-md transition-colors opacity-0 group-hover:opacity-100 z-10" title="კოპირება">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            </button>
+                            <pre class="text-sm leading-relaxed copyable-text"><code>I will provide three research abstracts below. Please perform a systematic synthesis:
+
+1. Create a comparison table with columns: Author/Year, Main Argument, Methodology, Key Findings, and Limitations.
+2. Identify three cross-cutting themes that appear in all three papers.
+3. Identify a "Research Gap": Based on these papers, what specific question is left unanswered? Focus on gaps related to [e.g., the Georgian context or a specific demographic].
+4. Suggest a title for a new research paper that would address this gap.
+
+Abstract 1: [text]
+Abstract 2: [text]
+Abstract 3: [text]</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Self-check -->
+                    <div class="self-check bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 mt-3">
+                        <p class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2.5">შეამოწმეთ თქვენი პრომპტი:</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მოითხოვეთ შედარების ცხრილი?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მიუთითეთ ცხრილის სვეტები?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მოითხოვეთ საერთო თემების იდენტიფიცირება?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მიუთითეთ Research Gap-ის კონტექსტი?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მოითხოვეთ ახალი კვლევის სათაური?</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──────── TASK 3: The AI-Resistant Redesign ──────── -->
+        <section class="task-card bg-white rounded-2xl border border-gray-200 overflow-hidden" id="task3">
+            <div class="bg-gradient-to-r from-navy-700 to-navy-500 px-6 py-5 text-white flex items-start justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/15 text-sm font-bold">3</span>
+                        <h2 class="text-lg font-bold">AI-Resistant Redesign</h2>
+                    </div>
+                    <p class="text-blue-200 text-sm">გახადეთ დავალება AI-მედეგი</p>
+                </div>
+                <span class="shrink-0 bg-white/10 text-blue-200 text-xs font-medium rounded-full px-3 py-1 mt-1">10 წთ</span>
+            </div>
+
+            <div class="px-6 py-6 space-y-5">
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">სცენარი</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        თქვენ გაქვთ ტრადიციული დავალება: „შეადარეთ ორი თეორია“. სტუდენტებს შეუძლიათ ეს მარტივად ჩააკოპირონ AI-ში და მიიღონ მზა პასუხი.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">დავალება</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        დაწერეთ პრომპტი, რომელიც AI-ს სთხოვს ამ დავალების <strong>რედიზაინს</strong> ისე, რომ ის იყოს <strong>AI-Resistant</strong>. 
+                        გამოიყენეთ ლოკალური კონტექსტი, პირადი გამოცდილება ან პროცესზე დაფუძნებული შეფასება.
+                    </p>
+                    <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-800 flex items-start gap-2">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>მინიშნება: სთხოვეთ AI-ს „educational designer"-ის როლი და მიუთითეთ 3 პრინციპი: ლოკალური კონტექსტი, პირადი რეფლექსია, პროცესი > პროდუქტი.</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">თქვენი პრომპტი</label>
+                    <textarea class="prompt-input w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 outline-none bg-gray-50 placeholder-gray-400" placeholder="ჩაწერეთ თქვენი პრომპტი აქ..."></textarea>
+                </div>
+
+                <button onclick="toggleAnswer('answer3', this)" class="flex items-center gap-2 text-sm font-semibold text-navy-700 hover:text-navy-900 transition-colors group">
+                    <svg class="w-5 h-5 text-navy-500 group-hover:text-navy-700 transition-transform duration-300 reveal-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    აჩვენე იდეალური პასუხი
+                </button>
+
+                <div id="answer3" class="answer-zone">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4 mt-1">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span class="text-sm font-bold text-emerald-800">იდეალური პრომპტი</span>
+                        </div>
+                        <div class="relative group">
+                            <button onclick="copyText(this)" class="absolute top-3 right-3 p-1.5 bg-navy-900/50 hover:bg-navy-900 text-white rounded-md transition-colors opacity-0 group-hover:opacity-100 z-10" title="კოპირება">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            </button>
+                            <pre class="text-sm leading-relaxed copyable-text"><code>Act as an educational designer. I have this assignment: "[your assignment topic]". It is currently very easy for students to complete using only AI.
+
+Redesign this assignment to be AI-resistant by applying these three principles:
+1. **Local Context:** Require students to apply the concepts to a specific current event in Georgia from the last 3 months.
+2. **Personal Reflection:** Ask students to connect the theory to a specific observation from their own professional or academic life.
+3. **Process over Product:** Require the submission of two mandatory checkpoints (an annotated bibliography and a mind-map) before the final product.
+
+Provide the new assignment description, a 3rd-year student-level difficulty rating, and a brief explanation of why this version is harder for AI to simulate than the original.</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Self-check -->
+                    <div class="self-check bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 mt-3">
+                        <p class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2.5">შეამოწმეთ თქვენი პრომპტი:</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მიანიჭეთ AI-ს „educational designer" როლი?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მოითხოვეთ ლოკალური კონტექსტის ჩართვა?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>მოითხოვეთ პირადი რეფლექსიის კომპონენტი?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>შეიცავს პროცესის ეტაპებს (checkpoints)?</span></label>
+                            <label class="flex items-center gap-2.5 text-sm text-gray-700"><input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-navy-700"><span>ახსნა, რატომ არის AI-Resistant?</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════ COMPLETION SECTION ════════════ -->
+        <section class="text-center py-6">
+            <div class="bg-navy-50 border border-navy-100 rounded-2xl px-6 py-8 max-w-lg mx-auto">
+                <svg class="w-10 h-10 text-navy-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                <h3 class="text-lg font-bold text-navy-900 mb-2">შესანიშნავია!</h3>
+                <p class="text-sm text-gray-600 mb-6">თქვენ დაასრულეთ Day 2 პრაქტიკული ლაბი. ახლა თქვენ გაქვთ მზა შაბლონები კვლევისთვის, Feedback-ისთვის და ეთიკური სწავლებისთვის.</p>
+
+                <a href="index.html" class="inline-flex items-center gap-2 bg-navy-900 text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-navy-800 transition-colors group">
+                    <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    დაბრუნება მთავარ გვერდზე
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ════════════ FOOTER ════════════ -->
+    <footer class="bg-navy-900 text-center py-6 px-6 mt-auto">
+        <p class="text-blue-300 text-sm mb-1">GIPA AI Intensive - Executive Masterclass</p>
+        <p class="text-blue-400/60 text-xs">მომზადებულია გიორგი ბასილაიას მიერ | 2026</p>
+    </footer>
+
+    <!-- ════════════ SCRIPTS ════════════ -->
+    <script>
+        // ──── Timer ────
+        let totalSeconds = 30 * 60;
+        let timerInterval = null;
+        let isRunning = false;
+
+        const timerText = document.getElementById('timerText');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+
+        function updateTimerDisplay() {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            timerText.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+            if (totalSeconds <= 300 && totalSeconds > 0 && isRunning) {
+                timerDisplay.classList.remove('timer-running');
+                timerDisplay.classList.add('timer-warning');
+                timerDisplay.classList.remove('bg-navy-50', 'border-navy-200');
+                timerDisplay.classList.add('bg-red-50', 'border-red-200');
+                timerText.classList.remove('text-navy-900');
+                timerText.classList.add('text-red-700');
+            } else if (totalSeconds === 0) {
+                timerDisplay.classList.remove('timer-running', 'timer-warning');
+                timerDisplay.classList.remove('bg-navy-50', 'border-navy-200');
+                timerDisplay.classList.add('bg-red-50', 'border-red-200');
+                timerText.classList.remove('text-navy-900');
+                timerText.classList.add('text-red-700');
+                timerText.textContent = '00:00';
+            } else {
+                timerDisplay.classList.remove('timer-warning', 'bg-red-50', 'border-red-200');
+                timerText.classList.remove('text-red-700');
+                if (!timerDisplay.classList.contains('bg-navy-50')) {
+                    timerDisplay.classList.add('bg-navy-50', 'border-navy-200');
+                    timerText.classList.add('text-navy-900');
+                }
+            }
+        }
+
+        function startTimer() {
+            if (isRunning || totalSeconds <= 0) return;
+            isRunning = true;
+            startBtn.classList.add('hidden');
+            pauseBtn.classList.remove('hidden');
+            timerDisplay.classList.add('timer-running');
+
+            timerInterval = setInterval(() => {
+                totalSeconds--;
+                updateTimerDisplay();
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    startBtn.classList.remove('hidden');
+                    startBtn.textContent = 'დასრულდა';
+                    startBtn.disabled = true;
+                    startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    pauseBtn.classList.add('hidden');
+                    timerDisplay.classList.remove('timer-running');
+                    playBeep();
+                }
+            }, 1000);
+        }
+
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                [0, 0.25, 0.5].forEach(delay => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.3;
+                    osc.start(ctx.currentTime + delay);
+                    osc.stop(ctx.currentTime + delay + 0.15);
+                });
+            } catch(e) {}
+        }
+
+        function pauseTimer() {
+            if (!isRunning) return;
+            clearInterval(timerInterval);
+            isRunning = false;
+            pauseBtn.classList.add('hidden');
+            startBtn.classList.remove('hidden');
+            startBtn.textContent = 'გაგრძელება';
+            timerDisplay.classList.remove('timer-running');
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            totalSeconds = 30 * 60;
+            updateTimerDisplay();
+            startBtn.classList.remove('hidden', 'opacity-50', 'cursor-not-allowed');
+            startBtn.disabled = false;
+            startBtn.textContent = 'დაწყება';
+            pauseBtn.classList.add('hidden');
+            timerDisplay.classList.remove('timer-running', 'timer-warning', 'bg-red-50', 'border-red-200');
+            timerDisplay.classList.add('bg-navy-50', 'border-navy-200');
+            timerText.classList.remove('text-red-700');
+            timerText.classList.add('text-navy-900');
+        }
+
+        // ──── Answer Accordion ────
+        function toggleAnswer(id, btn) {
+            const el = document.getElementById(id);
+            const arrow = btn.querySelector('.reveal-arrow');
+            const isOpen = el.classList.contains('open');
+
+            if (isOpen) {
+                el.classList.remove('open');
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                el.classList.add('open');
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // ──── Copy to Clipboard ────
+        function copyText(btn) {
+            const container = btn.closest('.relative');
+            const textEl = container.querySelector('.copyable-text code');
+            const text = textEl.innerText;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.createElement('div');
+                toast.className = 'copy-toast fixed bottom-6 left-1/2 -translate-x-1/2 bg-navy-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg z-50';
+                toast.textContent = 'დაკოპირდა!';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2000);
+            });
+        }
+
+        // ──── Textarea Auto-Save ────
+        document.querySelectorAll('.prompt-input').forEach((textarea, i) => {
+            const key = 'practice_day2_task' + (i + 1);
+            const saved = localStorage.getItem(key);
+            if (saved) textarea.value = saved;
+            textarea.addEventListener('input', () => {
+                localStorage.setItem(key, textarea.value);
+            });
+        });
+    </script>
+
+<!-- GIPA Controls: Dark Mode + Font Size -->
+<script>
+(function(){
+    var s=document.createElement('style');
+    s.textContent=`
+body.dark{background:#0f172a!important;color:#cbd5e1!important}
+body.dark .bg-white{background:#1e293b!important}
+body.dark .bg-gray-50{background:#0f172a!important}
+body.dark .bg-gray-100,body.dark .bg-slate-50,body.dark .bg-slate-100{background:#1e293b!important}
+body.dark .text-gray-900,body.dark .text-gray-800{color:#f1f5f9!important}
+body.dark .text-gray-700,body.dark .text-gray-600{color:#cbd5e1!important}
+body.dark .text-gray-500,body.dark .text-gray-400{color:#94a3b8!important}
+body.dark .border-gray-200,body.dark .border-gray-100,body.dark .border-gray-50{border-color:#334155!important}
+body.dark .bg-navy-50,body.dark .bg-navy-100{background:#0c2340!important}
+body.dark .bg-blue-50{background:#1e3a5f!important}
+body.dark .bg-emerald-50{background:#0d3320!important}
+body.dark .bg-amber-50{background:#3b2506!important}
+body.dark input[type="text"],body.dark textarea{background:#1e293b!important;color:#e2e8f0!important;border-color:#334155!important}
+#gipaControls{position:fixed;bottom:1.5rem;left:1.5rem;z-index:45;display:flex;flex-direction:column;gap:4px;background:rgba(0,51,102,0.92);backdrop-filter:blur(8px);padding:5px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+#gipaControls button{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:transparent;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:background .2s}
+#gipaControls button:hover{background:rgba(255,255,255,0.15)}
+#gipaControls svg{width:18px;height:18px}
+@media print{#gipaControls{display:none!important}}
+`;
+    document.head.appendChild(s);
+    var c=document.createElement('div');c.id='gipaControls';
+    c.innerHTML='<button id="darkToggle" title="Dark / Light"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></button><button onclick="gipaFontSize(-1)" title="A-">A-</button><button onclick="gipaFontSize(1)" title="A+">A+</button>';
+    document.body.appendChild(c);
+    var pref=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var saved=localStorage.getItem('gipa-dark');
+    if((saved!==null?saved==='true':pref))document.body.classList.add('dark');
+    var moonSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+    var sunSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+    function updIcon(){document.getElementById('darkToggle').innerHTML=document.body.classList.contains('dark')?sunSvg:moonSvg;}
+    updIcon();
+    document.getElementById('darkToggle').onclick=function(){document.body.classList.toggle('dark');localStorage.setItem('gipa-dark',document.body.classList.contains('dark'));updIcon();};
+    var fs=parseInt(localStorage.getItem('gipa-fontsize')||'0');
+    if(fs)document.documentElement.style.fontSize=(100+fs*8)+'%';
+    window.gipaFontSize=function(d){fs=Math.max(-3,Math.min(3,fs+d));localStorage.setItem('gipa-fontsize',fs);document.documentElement.style.fontSize=(100+fs*8)+'%';};
+})();
+</script>
+
+</body>
+</html>

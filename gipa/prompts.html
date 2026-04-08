@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>პრომპტების კოლექცია - GIPA AI Intensive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#001a33',
+                            900: '#003366',
+                            800: '#004080',
+                            700: '#004d99',
+                            600: '#0059b3',
+                            500: '#0066cc',
+                            400: '#3385d6',
+                            300: '#66a3e0',
+                            200: '#99c2eb',
+                            100: '#cce0f5',
+                            50:  '#e6f0fa',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; }
+
+        .prompt-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .prompt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 51, 102, 0.1);
+        }
+        .prompt-card.hidden-by-search,
+        .prompt-card.hidden-by-filter {
+            display: none;
+        }
+
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+        .filter-btn.active {
+            background-color: #003366;
+            color: white;
+            border-color: #003366;
+        }
+        pre { 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            font-family: 'FiraGO', monospace; 
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+        }
+        
+        .category-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .copy-toast {
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 1.5s forwards;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+        @media print {
+            body { background: white; }
+            header, footer, #searchInput, .filter-btn, .copy-toast, #resultCount, #noResults, button[onclick="copyPrompt(this)"], button[onclick="window.print()"], #langToggle { display: none !important; }
+            .prompt-card { break-inside: avoid; border: 1px solid #ccc !important; margin-bottom: 1rem; box-shadow: none !important; transform: none !important; }
+            .prompt-card.hidden-by-search, .prompt-card.hidden-by-filter { display: none !important; }
+            pre { font-size: 11px; padding: 0.75rem; border: 1px solid #ddd; background: #f9f9f9 !important; color: #333 !important; }
+            main { max-width: 100%; padding: 0 1cm; }
+            .max-w-4xl { max-width: 100%; }
+            @page { margin: 1.5cm; }
+        }
+
+        #langToggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 45;
+            background: rgba(0, 51, 102, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 4px;
+        }
+        #langToggle button {
+            padding: 6px 12px;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: background .2s;
+        }
+        #langToggle button.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        #langToggle button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+
+    <!-- Language Toggle -->
+    <div id="langToggle">
+        <button id="btnEn" onclick="setLanguage('en')" class="active">EN</button>
+        <button id="btnKa" onclick="setLanguage('ka')">KA</button>
+    </div>
+
+    <!-- ════════════ HEADER ════════════ -->
+    <header class="bg-navy-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.04]" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><defs><pattern id=&quot;g&quot; width=&quot;60&quot; height=&quot;60&quot; patternUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M60 0L0 60M-15 15L15-15M45 75L75 45&quot; stroke=&quot;white&quot; stroke-width=&quot;1&quot; fill=&quot;none&quot;/></pattern></defs><rect fill=&quot;url(%23g)&quot; width=&quot;60&quot; height=&quot;60&quot;/></svg>');"></div>
+
+        <div class="relative max-w-4xl mx-auto px-6 py-10 md:py-14">
+            <a href="index.html" class="inline-flex items-center gap-2 text-blue-300 hover:text-white transition-colors text-sm mb-6 group">
+                <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                მთავარ გვერდზე დაბრუნება
+            </a>
+
+            <div class="flex items-center gap-4 mb-3">
+                <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">პრომპტების კოლექცია</h1>
+                    <p class="text-blue-300 text-sm mt-1">მზა შაბლონები და მაგალითები აკადემიური საქმიანობისთვის</p>
+                </div>
+            </div>
+
+            <a href="glossary.html" class="inline-flex items-center gap-2 mt-4 text-blue-300 hover:text-white transition-colors text-sm group">
+                ტერმინთა ლექსიკონი
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full"><path d="M0 40V20C240 0 480 0 720 20C960 40 1200 40 1440 20V40H0Z" fill="#f9fafb"/></svg>
+        </div>
+    </header>
+
+    <!-- ════════════ SEARCH ════════════ -->
+    <section class="max-w-4xl mx-auto px-6 pt-8 pb-4 w-full">
+        <div class="relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="პრომპტის ძიება (მაგ: სილაბუსი, კვლევა, feedback)..."
+                class="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent shadow-sm"
+            >
+            <span id="resultCount" class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400"></span>
+        </div>
+    </section>
+
+    <!-- ════════════ DAY FILTERS ════════════ -->
+    <section class="max-w-4xl mx-auto px-6 pb-2 w-full">
+        <div class="flex flex-wrap gap-2 items-center">
+            <button onclick="filterDay('all')" class="filter-btn active text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">ყველა</button>
+            <button onclick="filterDay('day1')" class="filter-btn text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">დღე 1 - Prompt Engineering</button>
+            <button onclick="filterDay('day2')" class="filter-btn text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">დღე 2 - Research & Ethics</button>
+            <button onclick="window.print()" class="ml-auto text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-500 hover:text-navy-700 hover:border-navy-300 flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                ბეჭდვა
+            </button>
+        </div>
+    </section>
+
+    <!-- ════════════ PROMPTS ════════════ -->
+    <main class="max-w-4xl mx-auto px-6 pb-16 flex-1 w-full">
+        <div id="promptsGrid" class="grid gap-6 mt-2">
+
+            <!-- Category: Prompt Engineering -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering create syllabus სილაბუსი"
+                 data-en='[Context] I am a professor at a Georgian university teaching International Relations to 3rd-year undergraduate students. The course covers post-Soviet geopolitics.
+
+[Role] Act as an experienced curriculum designer specializing in political science education.
+
+[Explicit Instructions] Create a detailed lesson plan for a 90-minute seminar on "The EU"s Eastern Partnership Policy and Georgia"s European Integration."
+
+[Ask] Include learning objectives (using Bloom"s taxonomy), a structured timeline, discussion questions, and a formative assessment activity.
+
+[Type of Output] Format as a structured document with headers, bullet points, and a timeline table.
+
+[Examples] For discussion questions, model them after Socratic questioning - starting broad and narrowing to specific analytical points.'
+                 data-ka='[კონტექსტი] ვარ საქართველოს უნივერსიტეტის პროფესორი, ვასწავლი საერთაშორისო ურთიერთობებს საბაკალავრო საფეხურის მე-3 კურსის სტუდენტებს. კურსი მოიცავს პოსტსაბჭოთა გეოპოლიტიკას.
+
+[როლი] იმოქმედე როგორც გამოცდილი კურიკულუმის დიზაინერი, რომელიც სპეციალიზებულია პოლიტიკის მეცნიერების განათლებაში.
+
+[ზუსტი ინსტრუქცია] შეადგინე დეტალური ლექციის გეგმა 90-წუთიანი სემინარისთვის თემაზე: „ევროკავშირის აღმოსავლეთ პარტნიორობის პოლიტიკა და საქართველოს ევროპული ინტეგრაცია“.
+
+[მოთხოვნა] მოიცავი სწავლის შედეგები (ბლუმის ტაქსონომიის გამოყენებით), სტრუქტურირებული განრიგი, სადისკუსიო კითხვები და განმავითარებელი შეფასების აქტივობა.
+
+[ფორმატი] ჩამოაყალიბე სტრუქტურირებული დოკუმენტის სახით, სათაურებით, ჩამონათვალითა და განრიგის ცხრილით.
+
+[მაგალითები] სადისკუსიო კითხვებისთვის გამოიყენე სოკრატესეული მეთოდი - დაიწყე ზოგადი კითხვებით და გადადი სპეციფიკურ ანალიტიკურ პუნქტებზე.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">C.R.E.A.T.E ფორმულა</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">უნივერსალური ჩარჩო სტრუქტურირებული და მაღალი ხარისხის პრომპტების შესადგენად ნებისმიერი აკადემიური ამოცანისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- CRISPE Framework -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering framework crispe role context"
+                 data-en='Capacity/Role: You are a senior curriculum designer for social science programs.
+Insight: I teach Public Policy at GIPA to 3rd-year students with mixed academic preparation.
+Statement: Design a 90-minute seminar on evidence-based policy making.
+Personality: Clear, practical, and academically rigorous.
+Example: Structure the flow similar to a workshop format: warm-up, mini-lecture, group task, debrief, exit ticket.'
+                 data-ka='Capacity/Role: შენ ხარ სოციალური მეცნიერებების პროგრამების უფროსი კურიკულუმის დიზაინერი.
+Insight: GIPA-ში ვასწავლი საჯარო პოლიტიკას მე-3 კურსის სტუდენტებს არათანაბარი აკადემიური მომზადებით.
+Statement: შეადგინე 90-წუთიანი სემინარი თემაზე „მტკიცებულებაზე დაფუძნებული პოლიტიკა“.
+Personality: იყოს მკაფიო, პრაქტიკული და აკადემიურად სიღრმისეული.
+Example: სტრუქტურა იყოს workshop ტიპის: warm-up, mini-lecture, group task, debrief, exit ticket.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">CRISPE Framework</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">როლზე და კონტექსტზე ორიენტირებული ჩარჩო რთული სასწავლო ამოცანებისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- CO-STAR Framework -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering framework co-star format audience tone"
+                 data-en='Context: I teach Public Policy at GIPA to 3rd-year students.
+Objective: Create a 90-minute seminar plan on evidence-based policy making.
+Style: Practical and research-informed.
+Tone: Professional but student-friendly.
+Audience: Undergraduate students with mixed preparation levels.
+Response: Provide a timeline table with activities, discussion questions, and one formative assessment.'
+                 data-ka='კონტექსტი: GIPA-ში ვასწავლი საჯარო პოლიტიკას მე-3 კურსის სტუდენტებს.
+მიზანი: შექმენი 90-წუთიანი სემინარის გეგმა თემაზე „მტკიცებულებაზე დაფუძნებული პოლიტიკა“.
+სტილი: პრაქტიკული და კვლევაზე დაფუძნებული.
+ტონი: პროფესიონალური, მაგრამ სტუდენტზე ორიენტირებული.
+აუდიტორია: ბაკალავრის სტუდენტები არათანაბარი მომზადების დონით.
+ფორმატი: წარმოადგინე დროის ცხრილად აქტივობებით, სადისკუსიო კითხვებით და 1 განმავითარებელი შეფასებით.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">CO-STAR Framework</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">მრავალფაქტორიანი ჩარჩო ტონის, აუდიტორიისა და ფორმატის ზუსტი კონტროლისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Role Prompting -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering role student simulation სიმულაცია"
+                 data-en='You are a 2nd-year undergraduate student in Political Science at a Georgian university. You have basic knowledge but often confuse related concepts. Read the following lecture notes and:
+1. List 3 things you found confusing
+2. Ask 5 questions a real student might ask
+3. Identify any terms that need better explanation
+4. Rate the clarity on a scale of 1-10
+
+Lecture notes: [paste here]'
+                 data-ka='შენ ხარ პოლიტიკის მეცნიერების მე-2 კურსის ბაკალავრიატის სტუდენტი საქართველოს უნივერსიტეტში. გაქვს საბაზისო ცოდნა, მაგრამ ხშირად გერევა მსგავსი ცნებები ერთმანეთში. წაიკითხე ლექციის მასალა და:
+1. ჩამოთვალე 3 საკითხი, რომელიც შენთვის გაუგებარი იყო.
+2. დასვი 5 კითხვა, რომელსაც რეალური სტუდენტი დასვამდა.
+3. მონიშნე ტერმინები, რომლებიც უკეთეს განმარტებას საჭიროებს.
+4. შეაფასე მასალის გასაგებობა 1-10 ბალიან შკალაზე.
+
+ლექციის მასალა: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">სტუდენტის სიმულაცია</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ლექციის მასალის ტესტირება სტუდენტის პერსპექტივიდან - გაუგებარი ადგილების პოვნა.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Chain of Thought -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering cot step-by-step assessment შეფასება"
+                 data-en='I need to redesign my course assessment strategy. Think through this step-by-step:
+
+Step 1: Analyze the current structure (3 exams worth 100% of the grade)
+Step 2: Identify problems with this approach based on educational research
+Step 3: Propose an alternative using continuous assessment
+Step 4: For each component, explain the rationale using Bloom"s taxonomy
+Step 5: Create a grade distribution that ensures rigor while supporting diverse learners
+Step 6: Suggest a realistic implementation timeline for one semester'
+                 data-ka='მჭირდება ჩემი კურსის შეფასების სტრატეგიის რედიზაინი. იფიქრე ეტაპობრივად:
+
+ნაბიჯი 1: გააანალიზე არსებული სტრუქტურა (3 გამოცდა, რაც საბოლოო ნიშნის 100%-ია).
+ნაბიჯი 2: გამოკვეთე ამ მიდგომის პრობლემები საგანმანათლებლო კვლევებზე დაყრდნობით.
+ნაბიჯი 3: შესთავაზე ალტერნატივა უწყვეტი შეფასების (continuous assessment) გამოყენებით.
+ნაბიჯი 4: თითოეული კომპონენტისთვის განმარტე ლოგიკა ბლუმის ტაქსონომიის მიხედვით.
+ნაბიჯი 5: შექმენი ქულების განაწილება, რომელიც უზრუნველყოფს აკადემიურ სიმკაცრეს და მხარს უჭერს სხვადასხვა ტიპის სტუდენტებს.
+ნაბიჯი 6: შესთავაზე განხორციელების რეალისტური ვადები ერთი სემესტრისთვის.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">აზროვნების ჯაჭვი (CoT)</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">რთული პრობლემების ეტაპობრივი გადაჭრა - მსჯელობის ლოგიკური ჯაჭვი.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Fundamentals: Cutoff / Tokens / Usage Limits -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 fundamentals cutoff tokens context window usage limits ლიმიტები"
+                 data-en='Explain these 3 AI concepts for first-year university students in simple Georgian, using one practical example for each:
+1) Knowledge Cutoff
+2) Tokens / Context Window
+3) Usage Limits
+
+Format:
+- A short definition (1-2 sentences) per concept
+- One classroom-relevant example per concept
+- A final "What should I do in practice?" checklist with 5 bullets.'
+                 data-ka='ამიხსენი ეს 3 AI კონცეფცია პირველკურსელი უნივერსიტეტის სტუდენტებისთვის მარტივ ქართულად, თითოეულზე ერთი პრაქტიკული მაგალითით:
+1) Knowledge Cutoff
+2) Tokens / Context Window
+3) Usage Limits
+
+ფორმატი:
+- თითოეულზე მოკლე განმარტება (1-2 წინადადება)
+- თითოეულზე ერთი აუდიტორიისთვის რელევანტური მაგალითი
+- ბოლოს „პრაქტიკაში რა გავაკეთო?“ 5-პუნქტიანი ჩეკლისტი.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-cyan-100 text-cyan-700">Fundamentals</span>
+                        <span class="text-xs font-bold text-navy-900">Cutoff / Tokens / Limits</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">სწრაფი საგანმანათლებლო პრომპტი ტექნიკური ტერმინების გასაგებად ასახსნელად.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Research -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 fundamentals research search-engines შედარება"
+                 data-en='Compare the pedagogical advantages of using generative AI versus traditional search engines for a graduate-level research methods course. Provide 5 specific scenarios where each tool is more appropriate, formatted as a comparison table.'
+                 data-ka='შეადარე გენერაციული AI-სა და ტრადიციული საძიებო სისტემების გამოყენების პედაგოგიური უპირატესობები სამაგისტრო საფეხურის კვლევის მეთოდების კურსისთვის. მოიყვანე 5 კონკრეტული სცენარი, სადაც თითოეული ინსტრუმენტი უფრო მიზანშეწონილია. შედეგი წარმოადგინე შედარებითი ცხრილის სახით.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Research</span>
+                        <span class="text-xs font-bold text-navy-900">GenAI vs საძიებო სისტემები</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ინსტრუმენტების შედარებითი ანალიზი სტუდენტებისთვის - როდის არის AI ეფექტური და როდის ტრადიციული ძიება.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- NotebookLM Synthesis -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 research notebooklm synthesis სინთეზი"
+                 data-en='Based on all uploaded sources, create a synthesis table:
+- Author(s) and year
+- Research question
+- Methodology
+- Key findings
+- Limitations
+
+Then answer: (1) What do most sources agree on? (2) Where do they disagree? (3) What gaps remain?'
+                 data-ka='ყველა ატვირთულ წყაროზე დაყრდნობით, შექმენი სინთეზის ცხრილი:
+- ავტორ(ებ)ი და წელი.
+- კვლევის კითხვა.
+- მეთოდოლოგია.
+- მთავარი მიგნებები.
+- შეზღუდვები.
+
+შემდეგ უპასუხე: (1) რაზე თანხმდება წყაროების უმეტესობა? (2) სად ჩანს აზრთა სხვადასხვაობა? (3) რა კვლევითი ხარვეზები რჩება?'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Research</span>
+                        <span class="text-xs font-bold text-navy-900">წყაროების სინთეზი (NotebookLM)</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ატვირთული აკადემიური წყაროების შედარებითი ანალიზი და კვლევის ხარვეზების ძიება.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Citation Formatting -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 research citations apa ციტირება"
+                 data-en='Convert the following list of references to APA 7th edition format. For each entry:
+1. Fix any formatting errors
+2. Flag entries that appear incomplete (missing year, publisher, etc.)
+3. Sort alphabetically by first author"s last name
+4. Add DOI where the pattern suggests one exists (but mark it as [VERIFY DOI])
+
+References: [paste here]'
+                 data-ka='გადაიყვანე წყაროების შემდეგი სია APA მე-7 გამოცემის ფორმატში. თითოეული ჩანაწერისთვის:
+1. გაასწორე ფორმატირების შეცდომები.
+2. მონიშნე ჩანაწერები, რომლებიც არასრულია (აკლია წელი, გამომცემელი და ა.შ.).
+3. დაალაგე ანბანური თანმიმდევრობით პირველი ავტორის გვარის მიხედვით.
+4. დაამატე DOI, სადაც შესაძლებელია (მაგრამ მონიშნე როგორც [გადამოწმება]).
+
+წყაროები: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Research</span>
+                        <span class="text-xs font-bold text-navy-900">ციტატების ფორმატირება (APA)</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ბიბლიოგრაფიის ავტომატური ფორმატირება და ხარვეზების იდენტიფიცირება.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Teaching Support -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 feedback personalized უკუკავშირი"
+                 data-en='You are an experienced university professor providing constructive feedback. Review this student essay and provide:
+
+1. Overall impression (2-3 sentences)
+2. Three specific strengths with exact quotes from the text
+3. Three areas for improvement with concrete suggestions (not vague - show how to fix it)
+4. A "Next Steps" section with 2 actionable items the student can work on
+5. A score out of 100 based on these criteria: argument quality (30%), evidence use (25%), structure (20%), writing quality (15%), originality (10%)
+
+Tone: Encouraging but honest. Address the student directly ("You did well..." not "The student...")
+
+Essay: [paste here]'
+                 data-ka='შენ ხარ გამოცდილი უნივერსიტეტის პროფესორი, რომელიც გასცემს კონსტრუქციულ უკუკავშირს. შეაფასე სტუდენტის ესე და მოამზადე:
+
+1. ზოგადი შთაბეჭდილება (2-3 წინადადება).
+2. სამი კონკრეტული ძლიერი მხარე ტექსტიდან ზუსტი ციტატების მოყვანით.
+3. სამი გასაუმჯობესებელი ასპექტი კონკრეტული რჩევებით (არა ზოგადი, არამედ აჩვენე როგორ გამოსწორდეს).
+4. „შემდეგი ნაბიჯები“ - 2 კონკრეტული დავალება, რომელზეც სტუდენტმა უნდა იმუშაოს.
+5. ქულა 100-დან შემდეგი კრიტერიუმებით: არგუმენტაციის ხარისხი (30%), წყაროების გამოყენება (25%), სტრუქტურა (20%), წერის ხარისხი (15%), ორიგინალურობა (10%).
+
+ტონი: დადებითი, მაგრამ გულწრფელი. მიმართე სტუდენტს პირდაპირ („შენ კარგად გაართვი თავი...“ და არა „სტუდენტმა...“).
+
+ესე: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-purple-100 text-purple-700">Teaching Support</span>
+                        <span class="text-xs font-bold text-navy-900">პერსონალიზებული Feedback</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">დეტალური და კონსტრუქციული უკუკავშირის გენერირება სტუდენტის ნაშრომზე, კონკრეტული მაგალითებითა და გაუმჯობესების გზებით.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Case Studies -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 case-study design ქეისი"
+                 data-en='Create a detailed case study for a Master"s level course in Public Administration. The case should:
+
+1. Be set in Georgia (use realistic institutional names and context)
+2. Present a policy dilemma with no clear "right answer"
+3. Include 3-4 stakeholder perspectives with conflicting interests
+4. Provide data tables or statistics relevant to the decision
+5. End with 5 discussion questions (ordered by Bloom"s taxonomy: comprehension → analysis → evaluation)
+
+Topic: [e.g., "Municipal budget allocation for education vs infrastructure in a small Georgian town"]
+
+Length: 800-1000 words. Format as a professional teaching case.'
+                 data-ka='შექმენი დეტალური ქეისი (Case Study) საჯარო მმართველობის სამაგისტრო კურსისთვის. ქეისი უნდა აკმაყოფილებდეს შემდეგ მოთხოვნებს:
+
+1. მოქმედება ხდება საქართველოში (გამოიყენე რეალისტური ინსტიტუციური სახელები და კონტექსტი).
+2. წარმოადგინე პოლიტიკის დილემა, რომელსაც არ აქვს ცალსახა „სწორი პასუხი“.
+3. მოიცავი 3-4 დაინტერესებული მხარის (stakeholder) პერსპექტივა კონფლიქტური ინტერესებით.
+4. მოამზადე მონაცემთა ცხრილები ან სტატისტიკა, რომელიც საჭიროა გადაწყვეტილების მისაღებად.
+5. ბოლოს დაამატე 5 სადისკუსიო კითხვა (ბლუმის ტაქსონომიის მიხედვით: გაგება → ანალიზი → შეფასება).
+
+თემა: [მაგ: „მუნიციპალური ბიუჯეტის განაწილება განათლებასა და ინფრასტრუქტურას შორის საქართველოს მცირე ქალაქში“]
+
+მოცულობა: 800-1000 სიტყვა. გააფორმე როგორც პროფესიული აკადემიური ქეისი.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-amber-100 text-amber-700">Case Studies</span>
+                        <span class="text-xs font-bold text-navy-900">აკადემიური ქეისის გენერირება</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">რეალისტური აკადემიური ქეისების შექმნა ქართულ კონტექსტში, მონაცემებითა და სადისკუსიო კითხვებით.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Assessment -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 rubric assessment რუბრიკა შეფასება"
+                 data-en='Create a detailed analytical rubric for a Master"s level research paper (3000 words) in Political Science.
+
+Requirements:
+- 5 criteria: Thesis/Argument, Evidence & Sources, Analysis, Structure & Organization, Academic Writing
+- 4 performance levels: Excellent (90-100), Good (75-89), Satisfactory (60-74), Needs Improvement (0-59)
+- Each cell must contain specific, observable descriptors (not vague like "good analysis")
+- Include point weights that total 100
+- Align criteria with Bloom"s taxonomy levels
+
+Format as a table ready to share with students.'
+                 data-ka='შექმენი დეტალური ანალიტიკური რუბრიკა პოლიტიკის მეცნიერების სამაგისტრო ნაშრომისთვის (3000 სიტყვა).
+
+მოთხოვნები:
+- 5 კრიტერიუმი: თეზისი/არგუმენტაცია, მტკიცებულებები და წყაროები, ანალიზი, სტრუქტურა და ორგანიზება, აკადემიური წერა.
+- 4 დონე: შესანიშნავი (90-100), კარგი (75-89), დამაკმაყოფილებელი (60-74), საჭიროებს გაუმჯობესებას (0-59).
+- თითოეული უჯრა უნდა შეიცავდეს სპეციფიკურ, დაკვირვებად აღწერას (არა ზოგადს, მაგ: „კარგი ანალიზი“).
+- მიუთითე წონები ქულებში, ჯამში 100 ქულა.
+- დაუკავშირე კრიტერიუმები ბლუმის ტაქსონომიის დონეებს.
+
+ფორმატი: ცხრილი, რომელიც მზად იქნება სტუდენტებისთვის გასაზიარებლად.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-red-100 text-red-700">Assessment</span>
+                        <span class="text-xs font-bold text-navy-900">ანალიტიკური რუბრიკა</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ზუსტი და გამჭვირვალე შეფასების კრიტერიუმების (რუბრიკის) შედგენა Bloom-ის ტაქსონომიის გათვალისწინებით.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Ethics & Policy -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 ethics policy პოლიტიკა ეთიკა"
+                 data-en='Draft an AI usage policy for a university course. The policy should:
+1. Clearly define what AI use is permitted and what is not
+2. Specify which assignments allow AI and which don"t
+3. Require students to cite AI use (tool name, date, how it was used)
+4. Explain consequences of unauthorized AI use
+5. Include a "spectrum of AI use" from acceptable to unacceptable
+
+Tone: Fair and educational, not punitive. Assume students are adults.
+Context: Georgian university, Master"s level, Social Sciences.'
+                 data-ka='შეადგინე AI-ს გამოყენების პოლიტიკის პროექტი საუნივერსიტეტო კურსისთვის. პოლიტიკა უნდა მოიცავდეს შემდეგს:
+1. მკაფიოდ განსაზღვროს რომელი ტიპის AI გამოყენებაა დაშვებული და რომელი - არა.
+2. მიუთითოს რომელ დავალებებშია ნებადართული AI და რომელში - არა.
+3. მოსთხოვოს სტუდენტებს AI-ს გამოყენების ციტირება (ხელსაწყო, თარიღი, გამოყენების ფორმა).
+4. განმარტოს უნებართვო გამოყენების შედეგები.
+5. მოიცავდეს „AI გამოყენების სპექტრს“ მისაღებიდან მიუღებელ ქმედებებამდე.
+
+ტონი: სამართლიანი და საგანმანათლებლო, არა სადამსჯელო. ჩათვალე, რომ სტუდენტები ზრდასრული ადამიანები არიან.
+კონტექსტი: საქართველოს უნივერსიტეტი, სამაგისტრო საფეხური, სოციალური მეცნიერებები.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-gray-100 text-gray-700">Ethics & Policy</span>
+                        <span class="text-xs font-bold text-navy-900">AI გამოყენების პოლიტიკა</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">კურსის ფარგლებში AI-ს გამოყენების ეთიკური წესებისა და პასუხისმგებლობების განსაზღვრა სტუდენტებისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Plagiarism Analysis -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 ethics plagiarism analysis პლაგიატი"
+                 data-en='Analyze this student essay for signs that suggest AI-generated content. Do NOT make a definitive judgment - only identify linguistic patterns. Look for:
+
+1. Overly consistent paragraph structure
+2. Generic transitional phrases ("It is important to note...")
+3. Lack of personal voice or original perspective
+4. Suspicious source references (check if they look fabricated)
+5. Vocabulary that"s inconsistent with the stated student level
+6. Perfect balance of arguments (real students usually have a bias)
+
+Provide a nuanced analysis, not a binary "AI or not" verdict.
+
+Essay: [paste here]'
+                 data-ka='გააანალიზე სტუდენტის ესე იმ ენობრივი ნიშნების გამოსავლენად, რომლებიც AI-ს მიერ გენერირებულ ტექსტს ახასიათებს. ნუ გამოიტან კატეგორიულ დასკვნას, მხოლოდ გამოკვეთე პატერნები:
+
+1. ზედმეტად ერთფეროვანი აბზაცების სტრუქტურა.
+2. შაბლონური გარდამავალი ფრაზები („აღსანიშნავია, რომ...“).
+3. პერსონალური ხმის ან ორიგინალური პერსპექტივის ნაკლებობა.
+4. საეჭვო წყაროები (შეამოწმე, ხომ არ არის მოგონილი).
+5. სტუდენტის დონესთან შეუსაბამო ლექსიკა.
+6. არგუმენტების იდეალური ბალანსი (რეალურ სტუდენტებს, როგორც წესი, გამოკვეთილი პოზიცია აქვთ).
+
+მოამზადე ნიუანსური ანალიზი და არა ბინარული პასუხი („AI-ა თუ არა“).
+
+ესე: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-gray-100 text-gray-700">Ethics & Policy</span>
+                        <span class="text-xs font-bold text-navy-900">ტექსტის ანალიზი (AI ნიშნები)</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">სტუდენტის ნაშრომის ენობრივი ანალიზი AI-სთვის დამახასიათებელი პატერნების გამოსავლენად.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Academic Design -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 design syllabus ბოლონია Bologna სილაბუსი"
+                 data-en='Context: I am updating a syllabus for "Introduction to Public Policy" at a Georgian university. The course is for 2nd-year BA students, runs 15 weeks (2 lectures + 1 seminar per week), and needs to align with the Bologna Process (6 ECTS).
+
+Task: Redesign the syllabus with:
+1. Course description (150 words)
+2. 5 Program Learning Outcomes mapped to NQF Level 6
+3. Week-by-week schedule with topics, readings, and activities
+4. Assessment plan with rubrics for each component
+5. Reading list with at least 50% sources published after 2020
+6. Both Georgian and international case studies
+
+Format as a professional academic document ready for faculty review.'
+                 data-ka='კონტექსტი: ვაახლებ „საჯარო პოლიტიკის შესავლის“ სილაბუსს საქართველოს უნივერსიტეტისთვის. კურსი განკუთვნილია საბაკალავრო საფეხურის მე-2 კურსის სტუდენტებისთვის, გრძელდება 15 კვირა (კვირაში 2 ლექცია + 1 სემინარი) და უნდა შეესაბამებოდეს ბოლონიის პროცესის სტანდარტებს (6 ECTS).
+
+დავალება: მოახდინე სილაბუსის რედიზაინი შემდეგი პუნქტებით:
+1. კურსის აღწერა (150 სიტყვა).
+2. 5 სწავლის შედეგი, რომელიც შეესაბამება NQF-ის მე-6 დონეს.
+3. კვირეული განრიგი თემებით, საკითხავი მასალითა და აქტივობებით.
+4. შეფასების გეგმა რუბრიკებით თითოეული კომპონენტისთვის.
+5. ბიბლიოგრაფია, სადაც წყაროების 50% მაინც 2020 წლის შემდეგაა გამოქვეყნებული.
+6. როგორც ქართული, ისე საერთაშორისო ქეისები (case studies).
+
+ფორმატი: პროფესიული აკადემიური დოკუმენტი, რომელიც მზად იქნება ფაკულტეტზე წარსადგენად.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-orange-100 text-orange-700">Academic Design</span>
+                        <span class="text-xs font-bold text-navy-900">სილაბუსის რედიზაინი</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">არსებული სილაბუსის განახლება ბოლონიის პროცესის სტანდარტების, PLO-ებისა და თანამედროვე ბიბლიოგრაფიის მიხედვით.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Differentiation -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 design differentiation მასალის ადაპტაცია"
+                 data-en='Take the following academic text and create 3 versions:
+1. Simplified version for students with limited background (B1 reading level, short sentences, definitions for all technical terms)
+2. Standard version for typical undergraduate students (clear academic prose, some assumed knowledge)
+3. Advanced version with additional theoretical depth for honors students (add counter-arguments, cite theoretical frameworks, suggest further reading)
+
+Original text: [paste text]'
+                 data-ka='გადააკეთე მოცემული აკადემიური ტექსტი 3 ვერსიად:
+1. გამარტივებული ვერსია ნაკლები წინარე ცოდნის მქონე სტუდენტებისთვის (B1 დონე, მოკლე წინადადებები, ტერმინების განმარტებები).
+2. სტანდარტული ვერსია ბაკალავრიატის სტუდენტებისთვის (ნათელი აკადემიური ენა).
+3. გაღრმავებული ვერსია წარჩინებული სტუდენტებისთვის (დაამატე კონტრარგუმენტები, თეორიული ჩარჩოები, რეკომენდაციები დამატებითი საკითხავისთვის).
+
+ორიგინალი ტექსტი: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-orange-100 text-orange-700">Academic Design</span>
+                        <span class="text-xs font-bold text-navy-900">მასალების ადაპტაცია</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">აკადემიური ტექსტის მორგება სხვადასხვა მომზადების დონის მქონე სტუდენტებისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- AI-Resistant Redesign -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 design ai-resistant assessment დავალება"
+                 data-en='I currently assign this essay topic to students: "[paste your essay topic]"
+
+This topic is easy for AI to answer. Redesign it to be AI-resistant while keeping the same learning objectives. Apply these strategies:
+1. Add a personal experience or local context requirement
+2. Include a process component (drafts, reflection)
+3. Add an oral defense component
+4. Require specific, verifiable data sources
+
+Provide 3 alternative versions of the assignment, ordered from least to most AI-resistant.'
+                 data-ka='ამჟამად სტუდენტებს ვაძლევ შემდეგ საკითხს ესესთვის: „[ჩასვით თემა]“
+
+ეს თემა AI-სთვის ძალიან მარტივია საპასუხოდ. მოახდინე მისი რედიზაინი ისე, რომ გახდეს AI-Resistant, მაგრამ შეინარჩუნოს სწავლის შედეგები. გამოიყენე შემდეგი სტრატეგიები:
+1. დაამატე პირადი გამოცდილების ან ლოკალური კონტექსტის მოთხოვნა.
+2. ჩართე პროცესზე ორიენტირებული კომპონენტი (მონახაზები, რეფლექსია).
+3. დაამატე ზეპირი დაცვის კომპონენტი.
+4. მოითხოვე სპეციფიკური, გადამოწმებადი მონაცემების წყაროები.
+
+შემომთავაზე დავალების 3 ალტერნატიული ვერსია, დალაგებული AI-მედეგობის მიხედვით.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-orange-100 text-orange-700">Academic Design</span>
+                        <span class="text-xs font-bold text-navy-900">AI-Resistant დავალებები</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">დავალებების ტრანსფორმაცია ისე, რომ AI-ს გამოყენება პირდაპირი კოპირებისთვის გახდეს შეუძლებელი.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Prompt Engineering (Few-Shot) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering few-shot learning style სტილი"
+                 data-en='I will show you 2 examples of how I write learning objectives. Learn my style and generate 5 more.
+
+Example 1: "By the end of this lecture, students will be able to critically evaluate the effectiveness of Georgia"s public sector reform initiatives using comparative policy analysis frameworks."
+
+Example 2: "By the end of this seminar, students will be able to construct evidence-based arguments for or against decentralization in post-Soviet states, drawing on at least three theoretical perspectives."
+
+Now generate 5 learning objectives for a new module on "Digital Governance and E-Government in Developing Countries" in the same style.'
+                 data-ka='გიჩვენებ 2 მაგალითს, თუ როგორ ვწერ სწავლის შედეგებს. ისწავლე ჩემი სტილი და მოამზადე კიდევ 5.
+
+მაგალითი 1: „ამ ლექციის დასრულების შემდეგ, სტუდენტი შეძლებს კრიტიკულად შეაფასოს საქართველოს საჯარო სექტორის რეფორმების ინიციატივების ეფექტურობა პოლიტიკის შედარებითი ანალიზის ჩარჩოების გამოყენებით.“
+
+მაგალითი 2: „ამ სემინარის დასრულების შემდეგ, სტუდენტი შეძლებს ჩამოაყალიბოს მტკიცებულებებზე დაფუძნებული არგუმენტები პოსტსაბჭოთა ქვეყნებში დეცენტრალიზაციის მომხრე და საწინააღმდეგო პოზიციებისთვის, სულ მცირე სამი თეორიული პერსპექტივის გამოყენებით.“
+
+ახლა შეადგინე 5 სწავლის შედეგი იმავე სტილში ახალი მოდულისთვის: „ციფრული მმართველობა და ელექტრონული მთავრობა განვითარებად ქვეყნებში“.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">Few-Shot Learning</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">AI-სთვის რამდენიმე მაგალითის მიცემა თქვენი ინდივიდუალური სტილისა და ტონის დასასწავლად.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Prompt Engineering (Iterative) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering iterative refinement dialogue დიალოგი"
+                 data-en='--- Message 1: ---
+Write a course description for "Introduction to Public Policy" (150 words, for a university catalog).
+
+--- Message 2: ---
+Good start, but make it more engaging - add a hook in the first sentence and mention real-world Georgian policy examples.
+
+--- Message 3: ---
+Now make the tone more formal and academic. Remove marketing language. Keep the Georgian examples.
+
+--- Message 4: ---
+Perfect. Now translate this to Georgian, keeping technical terms in English where appropriate.'
+                 data-ka='--- შეტყობინება 1: ---
+დაწერე კურსის აღწერა საგნისთვის „საჯარო პოლიტიკის შესავალი“ (150 სიტყვა, საუნივერსიტეტო კატალოგისთვის).
+
+--- შეტყობინება 2: ---
+კარგი დასაწყისია, მაგრამ გახადე უფრო მიმზიდველი - პირველივე წინადადებაში გამოიყენე „hook“ და ახსენე რეალური პოლიტიკის მაგალითები საქართველოდან.
+
+--- შეტყობინება 3: ---
+ახლა ტონი გახადე უფრო ფორმალური და აკადემიური. ამოიღე მარკეტინგული ენა. დატოვე ქართული მაგალითები.
+
+--- შეტყობინება 4: ---
+იდეალურია. ახლა თარგმნე ეს ქართულად, ტექნიკური ტერმინები დატოვე ინგლისურადაც, სადაც საჭიროა.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">Iterative Refinement</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">შედეგის ეტაპობრივი გაუმჯობესება AI-სთან თანმიმდევრული დიალოგის გზით.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Research (Fact-check) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 fundamentals research fact-check გადამოწმება"
+                 data-en='Fact-check the following claim and provide verifiable sources with DOI numbers or URLs. If any part is inaccurate, explain what is wrong and provide the correct information.
+
+Important: If you are not 100% certain about a fact, say "I"m not sure about this" rather than guessing.
+
+Claim: [paste claim here]'
+                 data-ka='გადაამოწმე შემდეგი ფაქტის სიზუსტე და მიუთითე გადამოწმებადი წყაროები DOI ნომრებით ან ბმულებით. თუ რომელიმე ნაწილი მცდარია, ახსენი რა არის შეცდომა და მოიყვანე სწორი ინფორმაცია.
+
+მნიშვნელოვანია: თუ რომელიმე ფაქტში 100%-ით დარწმუნებული არ ხარ, დაწერე „არ ვარ დარწმუნებული“ და ნუ გამოიყენებ ვარაუდებს.
+
+ფაქტი: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Research</span>
+                        <span class="text-xs font-bold text-navy-900">ფაქტების გადამოწმება</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">საეჭვო ინფორმაციის, ციტატებისა და სტატისტიკის ვერიფიკაცია აკადემიური წყაროების მითითებით.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Research (Summarization) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 research summary literature მიმოხილვა"
+                 data-en='Summarize the following academic text in 3 sections:
+1. Key argument (2-3 sentences)
+2. Methodology and evidence used
+3. Main limitations and what questions remain unanswered
+
+Keep it concise. Do NOT add information that is not in the original text.
+
+Text: [paste here]'
+                 data-ka='შეაჯამე მოცემული აკადემიური ტექსტი 3 ნაწილად:
+1. მთავარი არგუმენტი (2-3 წინადადება).
+2. გამოყენებული მეთოდოლოგია და მტკიცებულებები.
+3. ძირითადი შეზღუდვები და პასუხგაუცემელი კითხვები.
+
+იყავი ლაკონიური. ნუ დაამატებ ინფორმაციას, რომელიც არ არის ორიგინალ ტექსტში.
+
+ტექსტი: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Research</span>
+                        <span class="text-xs font-bold text-navy-900">ტექსტის შეჯამება</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">აკადემიური სტატიების სწრაფი და სტრუქტურირებული შეჯამება ლიტერატურის მიმოხილვისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Academic Design (Slides) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 design slides presentation პრეზენტაცია"
+                 data-en='Create a 15-slide presentation outline for a 90-minute lecture on "[Topic]" for undergraduate students.
+
+For each slide provide:
+- Slide title
+- 3-4 bullet points (concise, not full sentences)
+- Speaker notes (what to say - 3-4 sentences)
+- Suggested visual: photo, diagram, chart, or quote
+
+Structure: Title slide → Learning objectives → Content (10 slides) → Interactive activity → Summary → Q&A → Next week preview'
+                 data-ka='შექმენი 15-სლაიდიანი პრეზენტაციის სტრუქტურა 90-წუთიანი ლექციისთვის თემაზე: „[თემა]“ ბაკალავრიატის სტუდენტებისთვის.
+
+თითოეული სლაიდისთვის მოამზადე:
+- სლაიდის სათაური.
+- 3-4 პუნქტი (მოკლედ, არა სრული წინადადებებით).
+- სპიკერის შენიშვნები (რა უნდა ვთქვა - 3-4 წინადადება).
+- ვიზუალის იდეა: ფოტო, დიაგრამა, გრაფიკი ან ციტატა.
+
+სტრუქტურა: სატიტულო სლაიდი → სწავლის შედეგები → ძირითადი ნაწილი (10 სლაიდი) → ინტერაქტიული აქტივობა → შეჯამება → Q&A → შემდეგი კვირის პრევიუ.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-orange-100 text-orange-700">Academic Design</span>
+                        <span class="text-xs font-bold text-navy-900">პრეზენტაციის სტრუქტურა</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ლექციის სლაიდების დეტალური შინაარსისა და სპიკერის შენიშვნების გენერირება.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Ethics & Policy (Models) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 fundamentals models comparison მოდელები"
+                 data-en='I need to choose an AI model for academic use at a Georgian university. Compare GPT-5.3, Claude Opus 4.6, and Gemini 3.1 Pro on: (1) accuracy for social science topics, (2) Georgian language support, (3) context window size, (4) data privacy policies, (5) pricing for institutional use.'
+                 data-ka='მჭირდება AI მოდელის შერჩევა საქართველოში საუნივერსიტეტო საქმიანობისთვის. შეადარე GPT-5.3, Claude Opus 4.6 და Gemini 3.1 Pro შემდეგი კრიტერიუმებით: (1) სიზუსტე სოციალური მეცნიერებების თემებში, (2) ქართული ენის მხარდაჭერა, (3) კონტექსტის მოცულობა (context window), (4) მონაცემთა დაცვის პოლიტიკა, (5) ფასი ინსტიტუციური გამოყენებისთვის.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-gray-100 text-gray-700">Ethics & Policy</span>
+                        <span class="text-xs font-bold text-navy-900">LLM მოდელების შედარება</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">საუკეთესო AI მოდელის შერჩევა აკადემიური ამოცანებისთვის ქართულ კონტექსტში.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Research (Thesis) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 research brainstorming thesis topics თემები"
+                 data-en='I supervise Master"s theses in Public Policy at a Georgian university. Generate 15 original thesis topic ideas that:
+- Are relevant to Georgia"s current policy challenges (2024-2026)
+- Are feasible for a 6-month research project
+- Have available data sources
+- Would contribute to the field
+
+Group them into 3 categories: domestic policy, EU integration, and digital governance. For each, suggest a potential research question and methodology.'
+                 data-ka='ვხელმძღვანელობ სამაგისტრო ნაშრომებს საჯარო პოლიტიკის მიმართულებით საქართველოს უნივერსიტეტში. ჩამოაყალიბე 15 ორიგინალური თემა სამაგისტრო ნაშრომისთვის, რომლებიც:
+- რელევანტურია საქართველოს პოლიტიკის მიმდინარე გამოწვევებისთვის (2024-2026).
+- რეალისტურია 6-თვიანი კვლევითი პროექტისთვის.
+- ეყრდნობა ხელმისაწვდომ მონაცემებს.
+- შეიტანს წვლილს დარგის განვითარებაში.
+
+დააჯგუფე თემები 3 კატეგორიად: საშინაო პოლიტიკა, ევროინტეგრაცია და ციფრული მმართველობა. თითოეულისთვის შესთავაზე კვლევის კითხვა და მეთოდოლოგია.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Research</span>
+                        <span class="text-xs font-bold text-navy-900">სამაგისტრო თემების გენერაცია</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ორიგინალური და აქტუალური კვლევითი თემების მოფიქრება სტუდენტებისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Teaching Support (Examiner) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering role examiner grading შეფასება"
+                 data-en='You are an experienced IB examiner with 15 years of experience grading Theory of Knowledge essays. Review the following student essay excerpt and provide:
+1. A score based on the IB TOK rubric (0-10)
+2. Three specific strengths
+3. Three areas for improvement with concrete suggestions
+4. A model paragraph showing how to improve the weakest section
+
+Essay excerpt: [paste here]'
+                 data-ka='შენ ხარ გამოცდილი IB (International Baccalaureate) გამომცდელი, 15-წლიანი სტაჟით Theory of Knowledge (TOK) ესეების შეფასებაში. გადახედე სტუდენტის ესეს ამონარიდს და მოამზადე:
+1. ქულა IB TOK რუბრიკის მიხედვით (0-10).
+2. სამი კონკრეტული ძლიერი მხარე.
+3. სამი გასაუმჯობესებელი ასპექტი კონკრეტული რეკომენდაციებით.
+4. სადემონსტრაციო აბზაცი, რომელიც აჩვენებს როგორ შეიძლება ყველაზე სუსტი ნაწილის გაუმჯობესება.
+
+ესეს ამონარიდი: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-purple-100 text-purple-700">Teaching Support</span>
+                        <span class="text-xs font-bold text-navy-900">ექსპერტი შემფასებელი</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ნაშრომის დეტალური შეფასება კონკრეტული აკადემიური როლის (მაგ: IB გამომცდელი) გამოყენებით.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+            <!-- Category: Academic Design (Syllabus Audit) -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 design syllabus audit გაუმჯობესება"
+                 data-en='Review the following syllabus and provide specific recommendations for improvement:
+
+1. Are the learning outcomes measurable? If not, rewrite them using Bloom"s taxonomy verbs.
+2. Is the weekly progression logical? Suggest reordering if needed.
+3. Is the assessment aligned with the learning outcomes? Identify gaps.
+4. What topics from 2024-2026 developments should be added?
+5. Rate the overall quality on a scale of 1-10 and explain.
+
+Current syllabus: [paste here]'
+                 data-ka='გადახედე შემდეგ სილაბუსს და მოამზადე კონკრეტული რეკომენდაციები გასაუმჯობესებლად:
+
+1. არის თუ არა სწავლის შედეგები გაზომვადი? თუ არა, გადაწერე ისინი ბლუმის ტაქსონომიის ზმნების გამოყენებით.
+2. არის თუ არა კვირეული განრიგი ლოგიკური? საჭიროების შემთხვევაში, შემომთავაზე თემების გადალაგება.
+3. შეესაბამება თუ არა შეფასების სისტემა სწავლის შედეგებს? იპოვე ხარვეზები.
+4. რომელი თემები უნდა დაემატოს 2024-2026 წლების მოვლენებიდან გამომდინარე?
+5. შეაფასე სილაბუსის საერთო ხარისხი 1-10 ბალიან შკალაზე და დაასაბუთე.
+
+არსებული სილაბუსი: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-orange-100 text-orange-700">Academic Design</span>
+                        <span class="text-xs font-bold text-navy-900">სილაბუსის აუდიტი</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">არსებული სილაბუსის კრიტიკული ანალიზი და კონკრეტული რეკომენდაციები მისი დახვეწისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+
+                                    <!-- Added from day1.html: missing prompts -->
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I am a university professor preparing a lecture on "Democratic Transitions in Post-Soviet States." I need to:
+1. Find the 5 most cited academic frameworks for analyzing democratic transitions
+2. Create a structured outline for a 90-minute lecture
+3. Suggest 3 discussion questions
+
+For task 1, I would normally use Google Scholar. Can you help me with tasks 2 and 3, and explain why task 1 is better suited for a search engine?'
+                 data-ka='ვარ უნივერსიტეტის პროფესორი და ვამზადებ ლექციას თემაზე: „დემოკრატიული ტრანზიცია პოსტსაბჭოთა ქვეყნებში“. მჭირდება:
+1. მოვიძიო 5 ყველაზე ციტირებადი აკადემიური ჩარჩო დემოკრატიული ტრანზიციის ანალიზისთვის.
+2. შევადგინო 90-წუთიანი ლექციის სტრუქტურული გეგმა.
+3. მოვიფიქრო 3 სადისკუსიო კითხვა.
+
+პირველი დავალებისთვის ჩვეულებრივ Google Scholar-ს გამოვიყენებდი. დამეხმარე მე-2 და მე-3 დავალებებში და ამიხსენი, რატომაა პირველი დავალება უფრო შესაფერისი საძიებო სისტემისთვის?'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 1</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I am a university professor preparing a lecture on &quot;Democratic Transitio...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I need to choose an AI model for academic use at a Georgian university. Compare GPT-5.3, Claude Opus 4.6, and Gemini 3.1 Pro on: (1) accuracy for social science topics, (2) Georgian language support, (3) context window size, (4) data privacy policies, (5) pricing for institutional use.'
+                 data-ka='მჭირდება AI მოდელის შერჩევა საქართველოში საუნივერსიტეტო საქმიანობისთვის. შეადარე GPT-5.3, Claude Opus 4.6 და Gemini 3.1 Pro შემდეგი კრიტერიუმებით: (1) სიზუსტე სოციალური მეცნიერებების თემებში, (2) ქართული ენის მხარდაჭერა, (3) კონტექსტის მოცულობა (context window), (4) მონაცემთა დაცვის პოლიტიკა, (5) ფასი ინსტიტუციური გამოყენებისთვის.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 2</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I need to choose an AI model for academic use at a Georgian university....</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Explain in Georgian what "Public Policy Analysis" means and what methodological approaches exist. Assume the reader is a first-year undergraduate student in Georgia.'
+                 data-ka='ახსენი ქართულად, რას ნიშნავს „საჯარო პოლიტიკის ანალიზი“ (Public Policy Analysis) და რა მეთოდოლოგიური მიდგომები არსებობს. ჩათვალე, რომ მკითხველი არის პირველკურსელი სტუდენტი საქართველოში.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 3</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Explain in Georgian what &quot;Public Policy Analysis&quot; means and what methodo...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='You are being tested for accuracy. Generate a list of 5 real, verifiable academic papers about "digital transformation in Georgian public sector governance" published between 2018-2024.
+
+For each paper include: Author(s), Title, Journal name, Year, DOI.
+
+Important: Only include papers you are highly confident are real. Mark any you are uncertain about with "(unverified)".'
+                 data-ka='ახლა ტესტირება გიტარდება სიზუსტეზე. გამოიყვანე 5 რეალური, გადამოწმებადი სამეცნიერო სტატიის სია თემაზე: „ციფრული ტრანსფორმაცია საქართველოს სახელმწიფო მმართველობაში" - 2018-2024 წლებში გამოქვეყნებული.
+
+თითოეულისთვის მიუთითე: ავტორ(ებ)ი, სათაური, ჟურნალი, წელი, DOI.
+
+მნიშვნელოვანია: მიუთითე მხოლოდ ისეთი სტატიები, რომლებშიც 100%-ით ხარ დარწმუნებული. ნებისმიერ საეჭვოს მონიშნე "(გადაუმოწმებელი)"-ით.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 4</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">You are being tested for accuracy. Generate a list of 5 real, verifiable...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I want to understand AI bias in practice. Please answer the following question from TWO distinct perspectives:
+
+Question: "What are the main challenges in modernizing higher education?"
+
+Perspective 1: Based on Western European/American academic literature (your default knowledge base)
+Perspective 2: From a South Caucasus/Georgian context specifically
+
+After both answers, briefly reflect: Where did the quality and depth of your information differ most? What does this reveal about your training data?'
+                 data-ka='მინდა AI-ის მიკერძოება პრაქტიკაში დავინახო. გთხოვ, შემდეგ კითხვაზე უპასუხო ორი სხვადასხვა პერსპექტივიდან:
+
+კითხვა: „რა არის უმაღლესი განათლების მოდერნიზაციის მთავარი გამოწვევები?"
+
+პერსპექტივა 1: დასავლეთ ევროპული/ამერიკული აკადემიური ლიტერატურის საფუძველზე (შენი ნაგულისხმევი ბაზა)
+პერსპექტივა 2: სამხრეთ კავკასიის/საქართველოს კონტექსტიდან კონკრეტულად
+
+ბოლოს, მოკლედ შეაფასე: სად განსხვავდებოდა ყველაზე მეტად ინფორმაციის ხარისხი და სიღრმე? რას გვიჩვენებს ეს შენი სასწავლო მონაცემების შესახებ?'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 5</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I want to understand AI bias in practice. Please answer the following qu...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I need to write feedback on student performance without sharing personal data. Here is anonymized information:
+
+- Student A: Score 78/100. Frequently asks clarifying questions. Struggles with quantitative sections but excels in essay writing.
+- Student B: Score 91/100. Rarely participates verbally but submits high-quality written work. Strong analytical skills.
+- Student C: Score 64/100. Misses ~20% of classes. Participates actively when present. Needs support with academic writing conventions.
+
+For each student write: (1) one-paragraph strengths-based feedback, (2) one specific actionable improvement suggestion, (3) one recommended resource or strategy.'
+                 data-ka='მჭირდება სტუდენტების შესრულებაზე გამოხმაურება პირადი მონაცემების გაზიარების გარეშე. ეს არის ანონიმიზებული ინფორმაცია:
+
+- სტუდენტი A: ნიშანი 78/100. ხშირად სვამს განმარტებით კითხვებს. სირთულეები აქვს რაოდენობრივ ნაწილებთან, მაგრამ ბრწყინვალედ წერს ესეებს.
+- სტუდენტი B: ნიშანი 91/100. იშვიათად ჩაერთვება სიტყვიერად, მაგრამ წარმოადგენს მაღალხარისხიან წერილობით სამუშაოს. ძლიერი ანალიტიკური უნარები.
+- სტუდენტი C: ნიშანი 64/100. გამოტოვებს ლექციების ~20%-ს. აქტიურია დასწრებისას. სჭირდება მხარდაჭერა აკადემიური წერის კონვენციებში.
+
+თითოეული სტუდენტისთვის დაწერე: (1) ერთი აბზაცი ძლიერ მხარეებზე ორიენტირებული გამოხმაურება, (2) ერთი კონკრეტული განხორციელებადი გაუმჯობესების წინადადება, (3) ერთი რეკომენდებული რესურსი ან სტრატეგია.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 6</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I need to write feedback on student performance without sharing personal...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='[Context] I am a professor at a Georgian university teaching International Relations to 3rd-year undergraduate students. The course covers post-Soviet geopolitics.
+
+[Role] Act as an experienced curriculum designer specializing in political science education.
+
+[Explicit Instructions] Create a detailed lesson plan for a 90-minute seminar on "The EU&apos;s Eastern Partnership Policy and Georgia&apos;s European Integration."
+
+[Ask] Include learning objectives (using Bloom&apos;s taxonomy), a structured timeline, discussion questions, and a formative assessment activity.
+
+[Type of Output] Format as a structured document with headers, bullet points, and a timeline table.
+
+[Examples] For discussion questions, model them after Socratic questioning - starting broad and narrowing to specific analytical points.'
+                 data-ka='[კონტექსტი] ვარ საქართველოს საზოგადოებრივ საქმეთა ინსტიტუტის პროფესორი, ვასწავლი საერთაშორისო ურთიერთობებს მე-3 კურსის სტუდენტებს. კურსი ეხება პოსტსაბჭოთა გეოპოლიტიკას.
+
+[როლი] იმოქმედე როგორც გამოცდილი კურიკულუმის დიზაინერი, რომელიც სპეციალიზებულია პოლიტიკის მეცნიერების განათლებაში.
+
+[მკაფიო ინსტრუქციები] შეადგინე დეტალური ლექციის გეგმა 90-წუთიანი სემინარისთვის თემაზე: „ევროკავშირის აღმოსავლეთ პარტნიორობის პოლიტიკა და საქართველოს ევროპული ინტეგრაცია“.
+
+[მოთხოვნა] მოიცავი სწავლის შედეგები (ბლუმის ტაქსონომიის გამოყენებით), სტრუქტურირებული განრიგი, სადისკუსიო კითხვები და განმავითარებელი შეფასების აქტივობა.
+
+[ფორმატი] ჩამოაყალიბე სტრუქტურირებული დოკუმენტის სახით, სათაურებით, პუნქტებითა და განრიგის ცხრილით.
+
+[მაგალითები] სადისკუსიო კითხვებისთვის გამოიყენე სოკრატესეული მეთოდი - დაიწყე ზოგადი კითხვებით და გადადი სპეციფიკურ ანალიტიკურ პუნქტებზე.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 7</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">[Context] I am a professor at a Georgian university teaching Internation...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing weak-example"
+                 data-en='Write me a lesson plan.'
+                 data-ka='დამიწერე ლექციის გეგმა.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-amber-100 text-amber-700">Weak Example</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 8 (სუსტი მაგალითი)</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Weak prompt example: Write me a lesson plan.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='[Context] I teach International Relations to 3rd-year students at GIPA. The course covers EU integration.
+[Role] Act as a curriculum designer.
+[Explicit] Create a 90-minute seminar plan with learning objectives, timeline, and discussion questions.
+[Ask] Include a formative assessment activity.
+[Type] Format as a structured table.
+[Examples] Use Socratic questioning for discussion.'
+                 data-ka='[კონტექსტი] ვასწავლი საერთაშორისო ურთიერთობებს მე-3 კურსის სტუდენტებს GIPA-ში. კურსი ეხება ევროინტეგრაციას.
+[როლი] იმოქმედე როგორც კურიკულუმის დიზაინერი.
+[ინსტრუქცია] შეადგინე 90-წუთიანი სემინარის გეგმა სწავლის შედეგებით, განრიგითა და სადისკუსიო კითხვებით.
+[მოთხოვნა] ჩართე განმავითარებელი შეფასების აქტივობა.
+[ფორმატი] გააფორმე სტრუქტურირებული ცხრილის სახით.
+[მაგალითი] დისკუსიისთვის გამოიყენე სოკრატესეული მეთოდი.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 9</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">[Context] I teach International Relations to 3rd-year students at GIPA....</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Apply Edward de Bono&apos;s Six Thinking Hats framework to the following question: "Should GIPA introduce a mandatory AI literacy module for all Master&apos;s programs?"
+
+For each hat, write 3-4 sentences in that hat&apos;s style:
+⚪ White Hat - relevant facts, data, and what we know for certain
+🔴 Red Hat - emotional reactions, gut feelings, and concerns without justification
+⚫ Black Hat - risks, obstacles, and reasons it could fail
+🟡 Yellow Hat - benefits, opportunities, and best-case outcomes
+🟢 Green Hat - creative alternatives, unconventional ideas, unexpected possibilities
+🔵 Blue Hat - summary of key insights and a recommended next step
+
+End with one synthesis sentence: the most balanced conclusion from all six perspectives.'
+                 data-ka='გამოიყენე Edward de Bono-ს Six Thinking Hats ჩარჩო შემდეგ კითხვაზე: „უნდა შემოიღოს თუ არა GIPA-მ სავალდებულო AI წიგნიერების მოდული ყველა სამაგისტრო პროგრამაში?"
+
+თითოეული ქუდისთვის დაწერე 3-4 წინადადება იმ ქუდის სტილში:
+⚪ თეთრი ქუდი - რელევანტური ფაქტები, მონაცემები, რაც ზუსტად ვიცით
+🔴 წითელი ქუდი - ემოციური რეაქციები, ინტუიცია, შეშფოთება - დასაბუთების გარეშე
+⚫ შავი ქუდი - რისკები, დაბრკოლებები, რატომ შეიძლება ჩაიშალოს
+🟡 ყვითელი ქუდი - სარგებელი, შესაძლებლობები, საუკეთესო შედეგი
+🟢 მწვანე ქუდი - კრეატიული ალტერნატივები, არასტანდარტული იდეები, მოულოდნელი შესაძლებლობები
+🔵 ლურჯი ქუდი - ძირითადი დასკვნები და შემდეგი ნაბიჯის რეკომენდაცია
+
+ბოლოს დაწერე ერთი სინთეზური წინადადება: ყველაზე დაბალანსებული დასკვნა 6 პერსპექტივიდან.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 10</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Apply Edward de Bono&amp;apos;s Six Thinking Hats framework to the following...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Generate 10 innovative assessment methods for a Master&apos;s level course in Public Administration that go beyond traditional exams and essays. For each method, explain: (1) how it works, (2) what skills it evaluates, (3) how to implement it with 30+ students.'
+                 data-ka='ჩამოაყალიბე 10 ინოვაციური შეფასების მეთოდი საჯარო მმართველობის სამაგისტრო კურსისთვის, რომლებიც სცილდება ტრადიციულ გამოცდებსა და ესეებს. თითოეული მეთოდისთვის განმარტე: (1) როგორ მუშაობს იგი, (2) რა უნარებს აფასებს, (3) როგორ განხორციელდეს იგი 30+ სტუდენტიან ჯგუფში.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 11</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Generate 10 innovative assessment methods for a Master&amp;apos;s level cour...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I supervise Master&apos;s theses in Public Policy at a Georgian university. Generate 15 original thesis topic ideas that:
+- Are relevant to Georgia&apos;s current policy challenges (2024-2026)
+- Are feasible for a 6-month research project
+- Have available data sources
+- Would contribute to the field
+
+Group them into 3 categories: domestic policy, EU integration, and digital governance. For each, suggest a potential research question and methodology.'
+                 data-ka='ვხელმძღვანელობ სამაგისტრო ნაშრომებს საჯარო პოლიტიკის მიმართულებით საქართველოს საზოგადოებრივ საქმეთა ინსტიტუტში. ჩამოაყალიბე 15 ორიგინალური თემა სამაგისტრო ნაშრომისთვის, რომლებიც:
+- რელევანტურია საქართველოს პოლიტიკის მიმდინარე გამოწვევებისთვის (2024-2026).
+- რეალისტურია 6-თვიანი კვლევითი პროექტისთვის.
+- ეყრდნობა ხელმისაწვდომ მონაცემებს.
+- შეიტანს წვლილს დარგის განვითარებაში.
+
+დააჯგუფე თემები 3 კატეგორიად: საშინაო პოლიტიკა, ევროინტეგრაცია და ციფრული მმართველობა. თითოეულისთვის შესთავაზე კვლევის კითხვა და მეთოდოლოგია.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 12</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I supervise Master&amp;apos;s theses in Public Policy at a Georgian universi...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='You are a senior GIPA professor with 15 years of experience grading Master&apos;s level policy analysis essays. Review the following student essay excerpt and provide:
+1. A score out of 100 based on academic rigor, argument clarity, use of evidence, and policy relevance
+2. Three specific strengths
+3. Three areas for improvement with concrete suggestions
+4. A model paragraph showing how to improve the weakest section
+
+Essay excerpt: [paste here]'
+                 data-ka='შენ ხარ GIPA-ს უფროსი პროფესორი, 15-წლიანი სტაჟით სამაგისტრო დონის პოლიტიკის ანალიზის ესეების შეფასებაში. გადახედე სტუდენტის ესეს ამონარიდს და მოამზადე:
+1. ქულა 100-დან - აკადემიური სიმკაცრის, არგუმენტის სიცხადის, მტკიცებულებების გამოყენებისა და პოლიტიკური რელევანტობის მიხედვით.
+2. სამი კონკრეტული ძლიერი მხარე.
+3. სამი გასაუმჯობესებელი ასპექტი კონკრეტული რეკომენდაციებით.
+4. სადემონსტრაციო აბზაცი, რომელიც აჩვენებს როგორ შეიძლება ყველაზე სუსტი ნაწილის გაუმჯობესება.
+
+ესეს ამონარიდი:
+„საქართველოს საჯარო სამსახურის რეფორმა ბოლო ათწლეულის განმავლობაში მნიშვნელოვანი გამოწვევების წინაშე დგას. მიუხედავად იმისა, რომ კანონმდებლობა შეიცვალა, პრაქტიკული განხორციელება რჩება პრობლემური. ეს გამოწვეულია სხვადასხვა ფაქტორებით. ერთ-ერთი მთავარი პრობლემა არის პოლიტიკური ნება. ასევე, ინსტიტუციური სისუსტე გავლენას ახდენს. საერთაშორისო გამოცდილება გვიჩვენებს, რომ წარმატებული რეფორმისთვის საჭიროა კომპლექსური მიდგომა."'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 13</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">You are a senior GIPA professor with 15 years of experience grading Mast...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I need to redesign my course assessment strategy.
+Use this output format only:
+1) Brief analysis of the current structure (3 exams = 100%)
+2) Decision criteria (fairness, rigor, workload, learning outcomes, academic integrity)
+3) Recommended continuous assessment model
+4) Grade distribution with Bloom taxonomy alignment
+5) One semester implementation timeline
+Keep reasoning concise and focus on actionable recommendations.'
+                 data-ka='მჭირდება ჩემი კურსის შეფასების სტრატეგიის რედიზაინი.
+იმუშავე მხოლოდ ამ ფორმატით:
+1) არსებული სტრუქტურის მოკლე ანალიზი (3 გამოცდა = 100%)
+2) გადაწყვეტილების კრიტერიუმები (სამართლიანობა, სიმკაცრე, დატვირთვა, სწავლის შედეგები, აკადემიური კეთილსინდისიერება)
+3) რეკომენდებული უწყვეტი შეფასების მოდელი
+4) ქულების განაწილება Bloom-ის ტაქსონომიასთან შესაბამისობით
+5) 1-სემესტრიანი განხორციელების ვადები
+მსჯელობა იყოს მოკლე, აქცენტი კი პრაქტიკულ რეკომენდაციებზე.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 14</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I need to redesign my course assessment strategy.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I want to add an AI literacy module to my existing course.
+Return the answer in 5 short sections:
+1) Most relevant AI skills for [your field] graduates in 2026
+2) Best placement in a 15 week semester and why
+3) Three 90 minute session outlines
+4) Mapping to existing course learning outcomes
+5) Assessment approach that reduces academic dishonesty risk
+Use concise rationale and clear decision criteria.'
+                 data-ka='მსურს ჩემს კურსს დავამატო AI წიგნიერების მოდული.
+პასუხი დააბრუნე 5 მოკლე სექციად:
+1) 2026 წელს [თქვენი სფერო]-ს კურსდამთავრებულებისთვის ყველაზე რელევანტური AI უნარები
+2) 15-კვირიან სემესტრში მოდულის საუკეთესო ადგილი და მიზეზი
+3) სამი 90-წუთიანი სესიის მონახაზი
+4) კავშირი კურსის არსებულ სწავლის შედეგებთან
+5) შეფასების მიდგომა, რომელიც ამცირებს აკადემიური არაკეთილსინდისიერების რისკს
+გამოიყენე მოკლე დასაბუთება და მკაფიო გადაწყვეტილების კრიტერიუმები.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 15</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I want to add an AI literacy module to my existing course.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing weak-example"
+                 data-en='Explain the benefits of formative assessment.'
+                 data-ka='ახსენი განმავითარებელი შეფასების (formative assessment) უპირატესობები.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-amber-100 text-amber-700">Weak Example</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 16 (სუსტი მაგალითი)</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Weak prompt example: Explain the benefits of formative assessment.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Define formative assessment and distinguish it from summative assessment.
+Then provide:
+1) 3 key benefits with brief evidence-based rationale
+2) Decision criteria for when to use each method
+3) A practical implementation plan for a 30 student class
+End with a short final recommendation.'
+                 data-ka='განმარტე განმავითარებელი შეფასება (formative assessment) და განასხვავე შემაჯამებელი შეფასებისგან (summative).
+შემდეგ წარმოადგინე:
+1) 3 მთავარი უპირატესობა მოკლე, მტკიცებულებაზე დაფუძნებული დასაბუთებით
+2) გადაწყვეტილების კრიტერიუმები, როდის რომელი მეთოდი ჯობს
+3) პრაქტიკული დანერგვის გეგმა 30-სტუდენტიანი ჯგუფისთვის
+ბოლოში დაამატე მოკლე საბოლოო რეკომენდაცია.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 17</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Define formative assessment and distinguish it from summative assessment...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I will show you 2 examples of how I write learning objectives. Learn my style and generate 5 more.
+
+Example 1: "By the end of this lecture, students will be able to critically evaluate the effectiveness of Georgia&apos;s public sector reform initiatives using comparative policy analysis frameworks."
+
+Example 2: "By the end of this seminar, students will be able to construct evidence-based arguments for or against decentralization in post-Soviet states, drawing on at least three theoretical perspectives."
+
+Now generate 5 learning objectives for a new module on "Digital Governance and E-Government in Developing Countries" in the same style.'
+                 data-ka='გიჩვენებ 2 მაგალითს, თუ როგორ ვწერ სწავლის შედეგებს. ისწავლე ჩემი სტილი და მოამზადე კიდევ 5.
+
+მაგალითი 1: „ამ ლექციის დასრულების შემდეგ, სტუდენტი შეძლებს კრიტიკულად შეაფასოს საქართველოს საჯარო სექტორის რეფორმების ინიციატივების ეფექტურობა პოლიტიკის შედარებითი ანალიზის ჩარჩოების გამოყენებით.“
+
+მაგალითი 2: „ამ სემინარის დასრულების შემდეგ, სტუდენტი შეძლებს ჩამოაყალიბოს მტკიცებულებებზე დაფუძნებული არგუმენტები პოსტსაბჭოთა ქვეყნებში დეცენტრალიზაციის მომხრე და საწინააღმდეგო პოზიციებისთვის, სულ მცირე სამი თეორიული პერსპექტივის გამოყენებით.“
+
+ახლა შეადგინე 5 სწავლის შედეგი იმავე სტილში ახალი მოდულისთვის: „ციფრული მმართველობა და ელექტრონული მთავრობა განვითარებად ქვეყნებში“.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 18</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I will show you 2 examples of how I write learning objectives. Learn my...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Review the following syllabus and provide specific recommendations for improvement:
+
+1. Are the learning outcomes measurable? If not, rewrite them using Bloom&apos;s taxonomy verbs.
+2. Is the weekly progression logical? Suggest reordering if needed.
+3. Is the assessment aligned with the learning outcomes? Identify gaps.
+4. What topics from 2024-2026 developments should be added?
+5. Rate the overall quality on a scale of 1-10 and explain.
+
+Current syllabus: [paste here]'
+                 data-ka='გადახედე შემდეგ სილაბუსს და მოამზადე კონკრეტული რეკომენდაციები გასაუმჯობესებლად:
+
+1. არის თუ არა სწავლის შედეგები გაზომვადი? თუ არა, გადაწერე ისინი ბლუმის ტაქსონომიის ზმნების გამოყენებით.
+2. არის თუ არა კვირეული განრიგი ლოგიკური? საჭიროების შემთხვევაში, შემომთავაზე თემების გადალაგება.
+3. შეესაბამება თუ არა შეფასების სისტემა სწავლის შედეგებს? იპოვე ხარვეზები.
+4. რომელი თემები უნდა დაემატოს 2024-2026 წლების მოვლენებიდან გამომდინარე?
+5. შეაფასე სილაბუსის საერთო ხარისხი 1-10 ბალიან შკალაზე და დაასაბუთე.
+
+არსებული სილაბუსი: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 19</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Review the following syllabus and provide specific recommendations for i...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Review my learning outcomes below. For each one:
+1. Is it measurable? (Yes/No)
+2. If not, rewrite it using Bloom&apos;s taxonomy action verbs.
+3. Suggest which NQF level it corresponds to.
+
+My learning outcomes:
+[paste your 3 learning outcomes here]'
+                 data-ka='გადახედე ჩემს სწავლის შედეგებს ქვემოთ. თითოეულისთვის:
+1. გაზომვადია? (კი/არა)
+2. თუ არა, გადაწერე ბლუმის ტაქსონომიის მოქმედებითი ზმნების გამოყენებით.
+3. შესთავაზე რომელ NQF დონეს შეესაბამება.
+
+ჩემი სწავლის შედეგები:
+[ჩასვით თქვენი 3 სწავლის შედეგი აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 20</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Review my learning outcomes below. For each one:</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Step 1: Generate a short academic lecture excerpt (4-5 sentences) on "the policy cycle in public administration" suitable for Master&apos;s level students. Write it in a formal lecture style.
+
+Step 2: Now take that same excerpt and transform it into 3 different learning formats:
+
+1. A 5-question multiple choice quiz with answer key and a one-sentence explanation for each correct answer
+2. A one-page visual study guide - use bullet points, bold key terms, arrows showing relationships, and a clear hierarchy (describe the layout as if you are designing it)
+3. A 5-minute in-class pair activity with clear student instructions and a debrief question for the full group'
+                 data-ka='ნაბიჯი 1: დაგენერირე მოკლე აკადემიური ლექციის ნაწყვეტი (4-5 წინადადება) თემაზე „საჯარო მმართველობის პოლიტიკის ციკლი" - სამაგისტრო დონის სტუდენტებისთვის, ფორმალური ლექციის სტილში.
+
+ნაბიჯი 2: ახლა იმავე ნაწყვეტი გარდაქმენი 3 სხვადასხვა სასწავლო ფორმატად:
+
+1. 5-კითხვიანი ტესტი მრავალი პასუხის ვარიანტით - სწორი პასუხების გასაღებით და ერთი წინადადებიანი განმარტებით თითოეული სწორი პასუხისთვის.
+2. ერთგვერდიანი ვიზუალური სასწავლო გზამკვლევი - bullet points, მსხვილი ძირითადი ტერმინები, ისრები კავშირების საჩვენებლად, მკაფიო იერარქია (აღწერე განლაგება, თითქოს ადიზაინებ).
+3. 5-წუთიანი საკლასო წყვილური აქტივობა სტუდენტებისთვის მკაფიო ინსტრუქციებით და ჯგუფური განხილვის კითხვით.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 21</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Step 1: Generate a short academic lecture excerpt (4-5 sentences) on &quot;th...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='Create a detailed 90-minute lesson plan for "Introduction to Qualitative Research Methods" for Master&apos;s students in Social Sciences.
+
+Include:
+- 3-4 learning objectives using Bloom&apos;s taxonomy verbs
+- Detailed timeline broken into segments (warm-up 5min, lecture 25min, activity 20min, discussion 15min, wrap-up 5min, buffer 10min)
+- One interactive group activity with clear step-by-step instructions
+- 3 discussion questions progressing from comprehension to analysis to evaluation
+- A 5-minute formative assessment (exit ticket with 2 questions)
+- Suggested homework assignment with clear deliverables
+- Required materials and preparation notes for the instructor
+- Backup plan if the activity takes longer than expected'
+                 data-ka='შეადგინე 90-წუთიანი ლექციის დეტალური გეგმა თემაზე: „თვისებრივი კვლევის მეთოდების შესავალი“ სოციალური მეცნიერებების სამაგისტრო პროგრამის სტუდენტებისთვის.
+
+მოიცავი:
+- 3-4 სწავლის შედეგი ბლუმის ტაქსონომიის ზმნების გამოყენებით.
+- დეტალური განრიგი სეგმენტების მიხედვით (warm-up 5წთ, ლექცია 25წთ, აქტივობა 20წთ, დისკუსია 15წთ, შეჯამება 5წთ, ბუფერული დრო 10წთ).
+- ერთი ინტერაქტიული ჯგუფური აქტივობა მკაფიო ინსტრუქციებით.
+- 3 სადისკუსიო კითხვა (გაგება → ანალიზი → შეფასება).
+- 5-წუთიანი განმავითარებელი შეფასება (exit ticket 2 კითხვით).
+- საშინაო დავალება კონკრეტული შედეგებით.
+- საჭირო მასალები და მოსამზადებელი შენიშვნები ლექტორისთვის.
+- სათადარიგო გეგმა, თუ აქტივობა დაგეგმილზე მეტ დროს წაიღებს.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 22</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Create a detailed 90-minute lesson plan for &quot;Introduction to Qualitative...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day1 engineering additional missing"
+                 data-en='I want to use a published paper as the basis for a 45-minute seminar discussion. Transform the following abstract into a complete seminar facilitation guide.
+
+Include:
+- 1-sentence "hook" question to open the session and capture attention
+- 4 discussion questions that build progressively (comprehension → analysis → application → evaluation)
+- 1 small group activity (10 minutes) directly tied to the paper'
+                 data-ka='მინდა გამოქვეყნებული სტატია გამოვიყენო 45-წუთიანი სემინარის სადისკუსიო საფუძვლად. გარდაქმენი შემდეგი ანოტაცია სრულ სემინარის გამართვის გზამკვლევად.
+
+მოიცავი:
+- 1 წინადადებიანი „hook" კითხვა სესიის გასახსნელად და ყურადღების მოსაზიდად.
+- 4 სადისკუსიო კითხვა, რომლებიც პროგრესულად იზრდება (გაგება → ანალიზი → გამოყენება → შეფასება).
+- 1 მცირე ჯგუფური აქტივობა (10 წუთი), რომელიც პირდაპირ კავშირშია სტატიის ძირითად არგუმენტთან - ნაბიჯ-ნაბიჯ ინსტრუქციებით.
+- 3 ძირითადი ტერმინი, რომლებიც სტუდენტებმა სესიის ბოლოს უნდა გაიგონ.
+- დამხურავი კითხვა, რომელიც სტატიას სტუდენტების საკუთარ კვლევასთან ან პროფესიულ კონტექსტთან აკავშირებს.
+
+სტატიის ანოტაცია: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-blue-100 text-blue-700">Prompt Engineering</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 23</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">I want to use a published paper as the basis for a 45-minute seminar dis...</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 case-study facilitation optional არასავალდებულო"
+                 data-en='Based on the case study above, create a 30-minute seminar facilitation plan:
+1. Opening question (2 minutes)
+2. Group work task (10 minutes)
+3. Stakeholder negotiation role-play (10 minutes)
+4. Debrief with 4 guided questions (8 minutes)
+
+Include expected student mistakes and quick facilitator interventions.'
+                 data-ka='ზემოთ მოცემულ ქეისზე დაყრდნობით, შექმენი 30-წუთიანი სემინარის ფასილიტაციის გეგმა:
+1. გახსნის კითხვა (2 წუთი)
+2. ჯგუფური დავალება (10 წუთი)
+3. stakeholder-ების მოლაპარაკების როლური თამაში (10 წუთი)
+4. შეჯამება 4 სახელმძღვანელო კითხვით (8 წუთი)
+
+დაამატე მოსალოდნელი შეცდომები და ფასილიტატორის სწრაფი ჩარევის გზები.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Day 2 Optional</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 24</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">Case Study სემინარის დამატებითი 30-წუთიანი ფასილიტაციის გეგმა.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 rubric grading optional არასავალდებულო"
+                 data-en='Use the rubric above to grade this student paragraph sample.
+Return:
+1. Criterion-by-criterion score
+2. One sentence justification per criterion
+3. Final score out of 100
+4. Two specific revision suggestions
+
+Sample text: [paste here]'
+                 data-ka='ზემოთ შექმნილი რუბრიკით შეაფასე ეს სტუდენტის ტექსტის ნიმუში.
+დააბრუნე:
+1. ქულა თითოეული კრიტერიუმის მიხედვით
+2. თითო კრიტერიუმზე ერთწინადადებიანი დასაბუთება
+3. საბოლოო ქულა 100-დან
+4. ორი კონკრეტული რჩევა გადასამუშავებლად
+
+ტექსტის ნიმუში: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Day 2 Optional</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 25</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">რუბრიკის სწრაფი ტესტირება რეალურ ნიმუშ ტექსტზე.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 research gaps optional არასავალდებულო"
+                 data-en='Based on this summary, identify:
+1. 3 research gaps
+2. 3 testable research questions
+3. Suggested methods for each question
+
+Do not invent sources. Use only information present in the provided text.'
+                 data-ka='ამ შეჯამებაზე დაყრდნობით, გამოკვეთე:
+1. 3 კვლევითი ხარვეზი
+2. 3 ტესტირებადი კვლევის კითხვა
+3. თითოეულ კითხვაზე შესაბამისი მეთოდური მიდგომა
+
+არ გამოიგონო წყაროები. გამოიყენე მხოლოდ მოცემულ ტექსტში არსებული ინფორმაცია.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Day 2 Optional</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 26</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">შეჯამებიდან კვლევითი ხარვეზებისა და კითხვების გენერაცია.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 notebooklm audio optional არასავალდებულო"
+                 data-en='Using the same uploaded sources, write a 5-minute podcast-style script for students:
+1. Core topic explanation
+2. Two competing viewpoints
+3. One real-world implication
+4. Three reflection questions
+
+Keep citations traceable to the uploaded documents.'
+                 data-ka='იმავე ატვირთულ წყაროებზე დაყრდნობით, დაწერე 5-წუთიანი podcast-სტილის სკრიპტი სტუდენტებისთვის:
+1. ძირითადი თემის ახსნა
+2. ორი კონკურენტული პოზიცია
+3. ერთი პრაქტიკული იმპლიკაცია
+4. სამი რეფლექსიური კითხვა
+
+ციტირებები იყოს დაკავშირებადი ატვირთულ დოკუმენტებთან.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Day 2 Optional</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 27</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">NotebookLM-ზე აუდიო/სკრიპტის დამატებითი ვარიანტი სტუდენტებისთვის.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 citation apa optional არასავალდებულო"
+                 data-en='Given this paragraph and reference list, insert correct APA 7 in-text citations.
+Then return:
+1. Revised paragraph with citations
+2. Citation map (which claim uses which source)
+3. Any citation-confidence warnings
+
+Paragraph: [paste here]
+References: [paste here]'
+                 data-ka='ამ აბზაცისა და წყაროების სიის მიხედვით, ჩასვი სწორად APA 7-ის ტექსტშიდა ციტირებები.
+შემდეგ დააბრუნე:
+1. რედაქტირებული აბზაცი ციტირებებით
+2. ციტირების რუკა (რომელი მტკიცება რომელ წყაროს ეყრდნობა)
+3. გაფრთხილებები საეჭვო/დაბალი სანდოობის ციტირებებზე
+
+აბზაცი: [ჩასვით აქ]
+წყაროები: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Day 2 Optional</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 28</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">APA in-text citation-ის დამატებითი ავტომატიზაციის პრომპტი.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 ethics oral defense optional არასავალდებულო"
+                 data-en='Design a 7-minute oral follow-up protocol for this essay to verify authorship.
+Include:
+1. 5 targeted questions
+2. What strong answers look like
+3. Red flags to monitor
+4. A fair grading adjustment rule
+
+Essay topic: [paste here]'
+                 data-ka='შექმენი 7-წუთიანი ზეპირი გადამოწმების პროტოკოლი ამ ესეს ავტორობის დასაზუსტებლად.
+შეიტანე:
+1. 5 მიზნობრივი კითხვა
+2. როგორი პასუხია ძლიერი
+3. რომელი ნიშნებია საეჭვო
+4. სამართლიანი წესები შეფასების კორექტირებისთვის
+
+ესეს თემა: [ჩასვით აქ]'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Day 2 Optional</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 29</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">ავტორობის გადამოწმებისთვის ზეპირი follow-up პროტოკოლი.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+            <div class="prompt-card bg-white rounded-xl border border-gray-200 overflow-hidden" 
+                 data-tag="day2 ai-resistant rubric optional არასავალდებულო"
+                 data-en='For this AI-resistant assignment, create an assessment rubric with 5 criteria:
+1. Original thinking
+2. Use of local or personal evidence
+3. Process transparency
+4. Oral defense quality
+5. Source verification
+
+Give 4 performance levels and a total score out of 100.'
+                 data-ka='ამ AI-Resistant დავალებისთვის შექმენი შეფასების რუბრიკა 5 კრიტერიუმით:
+1. ორიგინალური აზროვნება
+2. ლოკალური ან პირადი მტკიცებულებების გამოყენება
+3. პროცესის გამჭვირვალობა
+4. ზეპირი დაცვის ხარისხი
+5. წყაროების გადამოწმება
+
+დაამატე 4 შესრულების დონე და საბოლოო ქულა 100-დან.'>
+                <div class="px-5 py-3 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="category-badge bg-emerald-100 text-emerald-700">Day 2 Optional</span>
+                        <span class="text-xs font-bold text-navy-900">დამატებითი პრომპტი 30</span>
+                    </div>
+                    <button onclick="copyPrompt(this)" class="text-[10px] bg-white border border-gray-200 px-2.5 py-1 rounded hover:bg-navy-900 hover:text-white transition-all font-bold">კოპირება</button>
+                </div>
+                <div class="p-5">
+                    <p class="text-xs text-gray-500 mb-3 italic">AI-Resistant დავალების შეფასების რუბრიკის დამატებითი ბლოკი.</p>
+                    <pre class="text-sm leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+        <!-- No results message -->
+        <div id="noResults" class="hidden text-center py-12">
+            <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <p class="text-gray-400 text-sm">პრომპტი ვერ მოიძებნა</p>
+        </div>
+    </main>
+
+    <!-- ════════════ FOOTER ════════════ -->
+    <footer class="bg-navy-900 text-center py-6 px-6 mt-auto">
+        <p class="text-blue-300 text-sm mb-1">GIPA AI Intensive - Executive Masterclass</p>
+        <p class="text-blue-400/60 text-xs">მომზადებულია გიორგი ბასილაიას მიერ | 2026</p>
+    </footer>
+
+    <!-- ════════════ SCRIPTS ════════════ -->
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const promptsGrid = document.getElementById('promptsGrid');
+        const noResults = document.getElementById('noResults');
+        const resultCount = document.getElementById('resultCount');
+        const cards = promptsGrid.querySelectorAll('.prompt-card');
+        const totalPrompts = cards.length;
+        let activeDay = 'all';
+        let currentLang = localStorage.getItem('gipa-prompt-lang') || 'en';
+
+        function updatePrompts() {
+            cards.forEach(card => {
+                const codeEl = card.querySelector('code');
+                const text = card.getAttribute(`data-${currentLang}`);
+                codeEl.textContent = text;
+            });
+            
+            // Update toggle buttons
+            document.getElementById('btnEn').classList.toggle('active', currentLang === 'en');
+            document.getElementById('btnKa').classList.toggle('active', currentLang === 'ka');
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('gipa-prompt-lang', lang);
+            updatePrompts();
+        }
+
+        // Initialize prompts on load
+        updatePrompts();
+
+        function applyFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+            let visible = 0;
+
+            cards.forEach(card => {
+                const tags = card.getAttribute('data-tag').toLowerCase();
+                const content = card.textContent.toLowerCase();
+
+                const matchesSearch = !query || tags.includes(query) || content.includes(query);
+                const matchesDay = activeDay === 'all' || tags.includes(activeDay);
+
+                if (matchesSearch) {
+                    card.classList.remove('hidden-by-search');
+                } else {
+                    card.classList.add('hidden-by-search');
+                }
+
+                if (matchesDay) {
+                    card.classList.remove('hidden-by-filter');
+                } else {
+                    card.classList.add('hidden-by-filter');
+                }
+
+                if (matchesSearch && matchesDay) visible++;
+            });
+
+            noResults.classList.toggle('hidden', visible > 0);
+            if (query || activeDay !== 'all') {
+                resultCount.textContent = `${visible} / ${totalPrompts}`;
+            } else {
+                resultCount.textContent = '';
+            }
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+
+        function filterDay(day) {
+            activeDay = day;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            const btn = event.target;
+            btn.classList.add('active');
+            applyFilters();
+        }
+
+        function copyPrompt(btn) {
+            const code = btn.parentElement.nextElementSibling.querySelector('code');
+            const text = code.textContent.trim();
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'დაკოპირდა!';
+                btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+                
+                const toast = document.createElement('div');
+                toast.className = 'copy-toast fixed bottom-6 left-1/2 -translate-x-1/2 bg-navy-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg z-50';
+                toast.textContent = currentLang === 'ka' ? 'პრომპტი დაკოპირებულია!' : 'Prompt copied to clipboard!';
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+                    toast.remove();
+                }, 2000);
+            });
+        }
+    </script>
+
+<!-- GIPA Controls: Dark Mode + Font Size -->
+<script>
+(function(){
+    var s=document.createElement('style');
+    s.textContent=`
+body.dark{background:#0f172a!important;color:#cbd5e1!important}
+body.dark .bg-white{background:#1e293b!important}
+body.dark .bg-gray-50{background:#0f172a!important}
+body.dark .bg-gray-100,body.dark .bg-slate-50,body.dark .bg-slate-100{background:#1e293b!important}
+body.dark .text-gray-900,body.dark .text-gray-800{color:#f1f5f9!important}
+body.dark .text-gray-700,body.dark .text-gray-600{color:#cbd5e1!important}
+body.dark .text-gray-500,body.dark .text-gray-400{color:#94a3b8!important}
+body.dark .border-gray-200,body.dark .border-gray-100,body.dark .border-gray-50{border-color:#334155!important}
+body.dark .bg-navy-50,body.dark .bg-navy-100{background:#0c2340!important}
+body.dark .bg-blue-50,.dark .bg-blue-100{background:#1e3a5f!important}
+body.dark .bg-emerald-50,.dark .bg-emerald-100{background:#0d3320!important}
+body.dark .bg-red-50,.dark .bg-red-100{background:#3b1010!important}
+body.dark .bg-amber-50,.dark .bg-amber-100{background:#3b2506!important}
+body.dark .bg-orange-50,.dark .bg-orange-100{background:#3b2006!important}
+body.dark .bg-purple-50,.dark .bg-purple-100{background:#2d1548!important}
+body.dark table{border-color:#334155!important}
+body.dark thead{background:#1e293b!important}
+body.dark tbody tr{border-color:#334155!important}
+body.dark td,body.dark th{color:#cbd5e1!important}
+body.dark input[type="text"],body.dark textarea{background:#1e293b!important;color:#e2e8f0!important;border-color:#334155!important}
+body.dark .prompt-card{background:#1e293b!important}
+body.dark .filter-btn{background:#1e293b!important;color:#94a3b8!important;border-color:#334155!important}
+body.dark .filter-btn.active{background:#003366!important;color:#fff!important;border-color:#003366!important}
+body.dark .category-badge{opacity:0.85}
+#gipaControls{position:fixed;bottom:1.5rem;left:1.5rem;z-index:45;display:flex;flex-direction:column;gap:4px;background:rgba(0,51,102,0.92);backdrop-filter:blur(8px);padding:5px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+#gipaControls button{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:transparent;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:background .2s}
+#gipaControls button:hover{background:rgba(255,255,255,0.15)}
+#gipaControls svg{width:18px;height:18px}
+@media print{#gipaControls{display:none!important}}
+`;
+    document.head.appendChild(s);
+    var c=document.createElement('div');c.id='gipaControls';
+    c.innerHTML='<button id="darkToggle" title="Dark / Light"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></button><button onclick="gipaFontSize(-1)" title="A-">A-</button><button onclick="gipaFontSize(1)" title="A+">A+</button>';
+    document.body.appendChild(c);
+    var pref=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var saved=localStorage.getItem('gipa-dark');
+    if((saved!==null?saved==='true':pref))document.body.classList.add('dark');
+    var moonSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+    var sunSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+    function updIcon(){document.getElementById('darkToggle').innerHTML=document.body.classList.contains('dark')?sunSvg:moonSvg;}
+    updIcon();
+    document.getElementById('darkToggle').onclick=function(){document.body.classList.toggle('dark');localStorage.setItem('gipa-dark',document.body.classList.contains('dark'));updIcon();};
+    var fs=parseInt(localStorage.getItem('gipa-fontsize')||'0');
+    if(fs)document.documentElement.style.fontSize=(100+fs*8)+'%';
+    window.gipaFontSize=function(d){fs=Math.max(-3,Math.min(3,fs+d));localStorage.setItem('gipa-fontsize',fs);document.documentElement.style.fontSize=(100+fs*8)+'%';};
+})();
+</script>
+
+</body>
+</html>
+
+
+
+
+

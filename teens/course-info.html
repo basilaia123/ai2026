@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>კურსის აღწერა და შეფასების სისტემა - AI მოზარდებისთვის</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 50%, #f472b6 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .header .age-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .content-section h2 {
+            color: #06b6d4;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            font-weight: 700;
+            border-bottom: 3px solid #06b6d4;
+            padding-bottom: 0.5rem;
+        }
+
+        .content-section h3 {
+            color: #8b5cf6;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .grading-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .grade-item {
+            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .grade-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .grade-item h3 {
+            color: white;
+            font-size: 1.2rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .grade-points {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .grade-description {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            margin-top: 0.5rem;
+        }
+
+        .task-list {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 5px solid #06b6d4;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .task-item h4 {
+            color: #06b6d4;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .task-item .points {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-item .session-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .task-item .description {
+            color: #555;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .highlight-box {
+            background: #e0f7fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #00bcd4;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h4 {
+            color: #00838f;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #f57c00;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .key-points {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 1.5rem 0;
+        }
+
+        .key-points h4 {
+            color: #388e3c;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .key-points ul {
+            padding-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .key-points li {
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .safety-box {
+            background: #fce4ec;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #e91e63;
+            margin: 1.5rem 0;
+        }
+
+        .safety-box h4 {
+            color: #c2185b;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .safety-box ul {
+            padding-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .safety-box li {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .grading-scale {
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .grading-scale table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .grading-scale th {
+            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .grading-scale td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1.05rem;
+        }
+
+        .grading-scale tr:last-child td {
+            border-bottom: none;
+        }
+
+        .grading-scale tr:hover {
+            background: #f8f9fa;
+        }
+
+        .project-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .project-option {
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .project-option:hover {
+            border-color: #06b6d4;
+            transform: translateY(-3px);
+        }
+
+        .project-option .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-option h5 {
+            color: #8b5cf6;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .project-option p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .awards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .award-card {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
+            color: #333;
+            padding: 1.2rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .award-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .award-card h5 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .parent-section {
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(244, 114, 182, 0.3);
+        }
+
+        .parent-section h4 {
+            color: #f472b6;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .tool-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tool-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-card h5 {
+            color: #06b6d4;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .tool-card p {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .tool-card .free-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(6, 182, 212, 0.4);
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            .grading-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .grading-scale {
+                font-size: 0.9rem;
+            }
+
+            .project-options {
+                grid-template-columns: 1fr;
+            }
+
+            .awards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>კურსის აღწერა და შეფასების სისტემა</h1>
+            <p>AI მოზარდებისთვის - ხელოვნური ინტელექტი ახალგაზრდებისთვის</p>
+            <div class="age-badge">15-18 წელი</div>
+        </div>
+
+        <div class="content-section">
+            <h2>შეფასების სისტემა - 100 ქულიანი სკალა</h2>
+            <p>კურსი აფასებს მონაწილეების აქტიურობას, კრეატიულობას და პრაქტიკული პროექტების ხარისხს. შეფასება მორგებულია ახალგაზრდა აუდიტორიაზე და ხელს უწყობს სწავლის პროცესის სიამოვნებას.</p>
+
+            <div class="grading-overview">
+                <div class="grade-item">
+                    <h3>მონაწილეობა</h3>
+                    <div class="grade-points">30</div>
+                    <div class="grade-description">დასწრება, აქტიურობა, დისკუსიები</div>
+                </div>
+                <div class="grade-item">
+                    <h3>მინი-დავალებები</h3>
+                    <div class="grade-points">30</div>
+                    <div class="grade-description">4 პატარა პროექტი</div>
+                </div>
+                <div class="grade-item">
+                    <h3>ფინალური პროექტი</h3>
+                    <div class="grade-points">40</div>
+                    <div class="grade-description">პრეზენტაცია + პორტფოლიო</div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 შეფასების ფილოსოფია</h4>
+                <p>კურსის მიზანია კრეატიულობისა და პრაქტიკული უნარების განვითარება. არ არის ტესტები ან დამაშინებელი გამოცდები — მხოლოდ საინტერესო პროექტები, რომელთა გაზიარებასაც შეძლებ მეგობრებისთვის!</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>მონაწილეობა (30 ქულა)</h2>
+            <p>აქტიური ჩართულობა კურსის განმავლობაში ფასდება შემდეგი კრიტერიუმებით:</p>
+
+            <ul class="task-list">
+                <li class="task-item">
+                    <h4>დასწრება</h4>
+                    <span class="points">12 ქულა</span>
+                    <div class="description">
+                        <strong>კრიტერიუმი:</strong> 8 სესიიდან თითოეულზე დასწრება = 1.5 ქულა<br>
+                        <strong>მინიმუმი:</strong> სერტიფიკატისთვის საჭიროა მინიმუმ 6 სესიაზე დასწრება (75%)<br>
+                        <strong>შენიშვნა:</strong> დაგვიანება 15+ წუთით = ნახევარი დასწრება
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>აქტიურობა და დისკუსიები</h4>
+                    <span class="points">10 ქულა</span>
+                    <div class="description">
+                        <strong>კრიტერიუმი:</strong> კითხვების დასმა, დისკუსიებში მონაწილეობა, იდეების გაზიარება<br>
+                        <strong>როგორ:</strong> არ არის საჭირო „სწორი" პასუხი — მნიშვნელოვანია ჩართულობა!<br>
+                        <strong>ბონუსი:</strong> თანაკლასელებისთვის დახმარება = დამატებითი ქულა
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>პრაქტიკული სავარჯიშოები</h4>
+                    <span class="points">8 ქულა</span>
+                    <div class="description">
+                        <strong>კრიტერიუმი:</strong> სესიაზე მოცემული პრაქტიკული დავალებების შესრულება<br>
+                        <strong>მაგალითები:</strong> Prompt Battle-ში მონაწილეობა, გუნდური აქტივობები, დემოები<br>
+                        <strong>შეფასება:</strong> მონაწილეობა ფასდება, არა „გამარჯვება"
+                    </div>
+                </li>
+            </ul>
+
+            <div class="key-points">
+                <h4>✅ როგორ მივიღო მაღალი ქულა მონაწილეობაში?</h4>
+                <ul>
+                    <li>მოდი ყველა სესიაზე დროულად</li>
+                    <li>დასვი კითხვები — ყველა კითხვა კარგი კითხვაა!</li>
+                    <li>გააზიარე შენი აზრები და გამოცდილება</li>
+                    <li>დაეხმარე თანაკლასელებს, თუ რაიმე იცი</li>
+                    <li>სცადე ყველა პრაქტიკული სავარჯიშო</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>მინი-დავალებები (30 ქულა)</h2>
+            <p>კურსის განმავლობაში შეასრულებ 4 პატარა პროექტს, რომლებიც დაკავშირებულია სესიების თემებთან. თითოეული დავალება შეფასდება 7-8 ქულით.</p>
+
+            <ul class="task-list">
+                <li class="task-item">
+                    <h4>დავალება 1: Prompt Portfolio</h4>
+                    <span class="points">7 ქულა</span>
+                    <span class="session-badge">სესია 1-2</span>
+                    <div class="description">
+                        <strong>ამოცანა:</strong> შექმენი 10 საუკეთესო prompt-ის კოლექცია შენთვის საინტერესო თემაზე<br>
+                        <strong>მოთხოვნა:</strong> თითოეული prompt + AI-ს პასუხის სქრინშოტი + რატომ მოგეწონა<br>
+                        <strong>ფორმატი:</strong> Google Docs ან Canva პრეზენტაცია<br>
+                        <strong>ვადა:</strong> 1 კვირა მეორე სესიის შემდეგ
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>დავალება 2: სასწავლო რესურსი</h4>
+                    <span class="points">8 ქულა</span>
+                    <span class="session-badge">სესია 3-4</span>
+                    <div class="description">
+                        <strong>ამოცანა:</strong> AI-ს დახმარებით შექმენი სასწავლო მასალა რომელიმე საგანში<br>
+                        <strong>მოთხოვნა:</strong> შეჯამება + ტესტის კითხვები + ვიზუალი (მინიმუმ 1 AI-გენერირებული სურათი)<br>
+                        <strong>ფორმატი:</strong> Google Docs + სურათები<br>
+                        <strong>ვადა:</strong> 1 კვირა მეოთხე სესიის შემდეგ
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>დავალება 3: მულტიმედია / თამაშის პროექტი</h4>
+                    <span class="points">8 ქულა</span>
+                    <span class="session-badge">სესია 5-6</span>
+                    <div class="description">
+                        <strong>ამოცანა:</strong> შექმენი მულტიმედია კონტენტი ან მარტივი თამაში AI ხელსაწყოებით<br>
+                        <strong>არჩევანი:</strong> 30-წამიანი ვიდეო ან მუსიკალური ტრეკი ან მარტივი Quiz თამაში ან 5 AI-გენერირებული სურათის კოლექცია<br>
+                        <strong>მოთხოვნა:</strong> + მოკლე აღწერა რა ხელსაწყოები გამოიყენე<br>
+                        <strong>ვადა:</strong> 1 კვირა მეექვსე სესიის შემდეგ
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>დავალება 4: ეთიკის კეისი</h4>
+                    <span class="points">7 ქულა</span>
+                    <span class="session-badge">სესია 6</span>
+                    <div class="description">
+                        <strong>ამოცანა:</strong> გააანალიზე ერთი AI ეთიკის კეისი და დაწერე შენი აზრი<br>
+                        <strong>თემები:</strong> Deepfakes, AI სკოლაში, საავტორო უფლებები, პირადი მონაცემები<br>
+                        <strong>მოთხოვნა:</strong> 300-500 სიტყვა + არგუმენტები ორივე მხრიდან<br>
+                        <strong>ვადა:</strong> მეშვიდე სესიამდე
+                    </div>
+                </li>
+            </ul>
+
+            <div class="warning-box">
+                <h4>⚠️ ჩაბარების წესები</h4>
+                <p><strong>დაგვიანება:</strong> თითოეული დაგვიანებული დღისთვის აკლდება 0.5 ქულა<br>
+                <strong>AI გამოყენება:</strong> სავალდებულო და წახალისებული! მაგრამ აღწერე რა ხელსაწყოები გამოიყენე<br>
+                <strong>კოპირება:</strong> სხვა მონაწილის ნამუშევრის კოპირება = 0 ქულა ორივესთვის</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>ფინალური პროექტი (40 ქულა)</h2>
+            <p>კურსის ბოლოს წარმოადგენ საკუთარ კრეატიულ პროექტს, რომელიც აჩვენებს შენს AI უნარებს. პროექტი უნდა იყოს შენთვის საინტერესო და პრაქტიკული!</p>
+
+            <h3>აირჩიე პროექტის ტიპი:</h3>
+
+            <div class="project-options">
+                <div class="project-option">
+                    <div class="icon">🎮</div>
+                    <h5>მარტივი ვებ-თამაში</h5>
+                    <p>ინტერაქტიული თამაში Lovable.dev-ით</p>
+                </div>
+                <div class="project-option">
+                    <div class="icon">📱</div>
+                    <h5>სოციალური მედია</h5>
+                    <p>5+ პოსტის კამპანია (ტექსტი + სურათები)</p>
+                </div>
+                <div class="project-option">
+                    <div class="icon">🎨</div>
+                    <h5>ციფრული ხელოვნება</h5>
+                    <p>5+ ნამუშევრის კოლექცია + კონცეფცია</p>
+                </div>
+                <div class="project-option">
+                    <div class="icon">📚</div>
+                    <h5>სასწავლო რესურსი</h5>
+                    <p>თანაკლასელებისთვის სასარგებლო მასალა</p>
+                </div>
+                <div class="project-option">
+                    <div class="icon">🎵</div>
+                    <h5>მუსიკა/ვიდეო</h5>
+                    <p>ორიგინალური ტრეკი ან 1-წუთიანი ვიდეო</p>
+                </div>
+                <div class="project-option">
+                    <div class="icon">📖</div>
+                    <h5>ილუსტრირებული ისტორია</h5>
+                    <p>მოკლე ისტორია + AI ილუსტრაციები</p>
+                </div>
+                <div class="project-option">
+                    <div class="icon">🤖</div>
+                    <h5>Custom AI პროფილი</h5>
+                    <p>ChatGPT Custom Instructions + დოკუმენტაცია</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>🎯 პროექტის კომპონენტები:</h4>
+                <ul>
+                    <li><strong>პორტფოლიო (25 ქულა):</strong> თავად პროექტი + დოკუმენტაცია (რა გააკეთე, რა ხელსაწყოები გამოიყენე, რა სირთულეები შეგხვდა)</li>
+                    <li><strong>პრეზენტაცია (15 ქულა):</strong> 5-წუთიანი პრეზენტაცია კლასის წინაშე (არ გაინერვიულო - ყველა მხარს გიჭერს!)</li>
+                </ul>
+            </div>
+
+            <h3>საუკეთესო პროექტების ჯილდოები:</h3>
+
+            <div class="awards-grid">
+                <div class="award-card">
+                    <div class="icon">🥇</div>
+                    <h5>ყველაზე კრეატიული</h5>
+                </div>
+                <div class="award-card">
+                    <div class="icon">🥈</div>
+                    <h5>ყველაზე პრაქტიკული</h5>
+                </div>
+                <div class="award-card">
+                    <div class="icon">🥉</div>
+                    <h5>ყველაზე ინოვაციური</h5>
+                </div>
+                <div class="award-card">
+                    <div class="icon">⭐</div>
+                    <h5>აუდიტორიის ფავორიტი</h5>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📋 შეფასების კრიტერიუმები:</h4>
+                <p><strong>კრეატიულობა (30%):</strong> ორიგინალური იდეა და მიდგომა<br>
+                <strong>AI გამოყენება (30%):</strong> რამდენად ეფექტურად გამოიყენე AI ხელსაწყოები<br>
+                <strong>პრეზენტაცია (20%):</strong> მკაფიო ახსნა და ვიზუალური მასალა<br>
+                <strong>პრაქტიკულობა (20%):</strong> რამდენად გამოსადეგია რეალურ ცხოვრებაში</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>საბოლოო შეფასების სკალა</h2>
+            <p>კურსის დასასრულს შენი საბოლოო შეფასება განისაზღვრება შემდეგი სკალით:</p>
+
+            <div class="grading-scale">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ქულა</th>
+                            <th>შეფასება</th>
+                            <th>რა ნიშნავს?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>90-100</td>
+                            <td>⭐ შესანიშნავი</td>
+                            <td>სერტიფიკატი გამორჩეული შედეგით + ჯილდო</td>
+                        </tr>
+                        <tr>
+                            <td>75-89</td>
+                            <td>✅ კარგი</td>
+                            <td>სტანდარტული სერტიფიკატი</td>
+                        </tr>
+                        <tr>
+                            <td>60-74</td>
+                            <td>📝 დამაკმაყოფილებელი</td>
+                            <td>სერტიფიკატი დასწრებისთვის</td>
+                        </tr>
+                        <tr>
+                            <td>0-59</td>
+                            <td>❌ არასაკმარისი</td>
+                            <td>სერტიფიკატი არ გაიცემა</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="key-points">
+                <h4>🎓 სერტიფიკატის მიღების პირობები</h4>
+                <ul>
+                    <li>მინიმუმ 60 ქულა</li>
+                    <li>8 სესიიდან მინიმუმ 6-ზე დასწრება (75%)</li>
+                    <li>მინიმუმ 3 მინი-დავალების ჩაბარება (4-დან)</li>
+                    <li>ფინალური პროექტის წარდგენა</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>AI ინსტრუმენტები კურსში</h2>
+            <p>ყველა ინსტრუმენტს, რომელსაც კურსში გამოვიყენებთ, აქვს <strong>უფასო ვერსია</strong>. არ არის საჭირო ფასიანი გამოწერა!</p>
+
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="icon">💬</div>
+                    <h5>ChatGPT</h5>
+                    <p>მთავარი AI ასისტენტი</p>
+                    <span class="free-badge">უფასო</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">🤖</div>
+                    <h5>Claude</h5>
+                    <p>ალტერნატიული AI</p>
+                    <span class="free-badge">უფასო</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">🔍</div>
+                    <h5>Gemini</h5>
+                    <p>Google-ის AI</p>
+                    <span class="free-badge">უფასო</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">🎨</div>
+                    <h5>Canva AI</h5>
+                    <p>დიზაინი და სურათები</p>
+                    <span class="free-badge">უფასო</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">🖼️</div>
+                    <h5>Leonardo AI</h5>
+                    <p>სურათების გენერირება</p>
+                    <span class="free-badge">უფასო კრედიტები</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">🎵</div>
+                    <h5>Suno</h5>
+                    <p>მუსიკის შექმნა</p>
+                    <span class="free-badge">უფასო კრედიტები</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">🎤</div>
+                    <h5>ElevenLabs</h5>
+                    <p>ხმის გენერირება</p>
+                    <span class="free-badge">უფასო ვერსია</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">🎮</div>
+                    <h5>Lovable.dev</h5>
+                    <p>თამაშების შექმნა</p>
+                    <span class="free-badge">უფასო</span>
+                </div>
+                <div class="tool-card">
+                    <div class="icon">📊</div>
+                    <h5>Gamma</h5>
+                    <p>პრეზენტაციები</p>
+                    <span class="free-badge">უფასო</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>მშობლებისთვის</h2>
+
+            <div class="parent-section">
+                <h4>👨‍👩‍👧 მშობლის თანხმობა</h4>
+                <p>18 წლამდე ყველა მონაწილეს ესაჭიროება მშობლის/მეურვის ხელმოწერილი თანხმობის ფორმა. ფორმა მიიღება რეგისტრაციისას და უნდა იყოს ჩაბარებული პირველ სესიამდე.</p>
+            </div>
+
+            <div class="safety-box">
+                <h4>🛡️ უსაფრთხოების ზომები</h4>
+                <ul>
+                    <li><strong>ინტეგრირებული მიდგომა:</strong> უსაფრთხოების თემები ინტეგრირებულია ყველა სესიაში</li>
+                    <li><strong>პირადი მონაცემები (სესია 1):</strong> ანგარიშის უსაფრთხოება და კონფიდენციალობა</li>
+                    <li><strong>AI ეთიკა (სესია 2):</strong> რა შეიძლება და რა არა AI-სთან</li>
+                    <li><strong>Fact-checking (სესია 3):</strong> ინფორმაციის გადამოწმება და პლაგიატი</li>
+                    <li><strong>Deepfakes (სესია 5):</strong> ყალბი კონტენტის ამოცნობა</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📱 ტექნიკური მოთხოვნები</h4>
+                <p><strong>აუცილებელი:</strong></p>
+                <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>ლეპტოპი ან ტაბლეტი (სმარტფონი არ არის საკმარისი)</li>
+                    <li>სტაბილური ინტერნეტი (ონლაინ სესიებისთვის)</li>
+                    <li>ელ-ფოსტის მისამართი (AI პლატფორმებზე რეგისტრაციისთვის)</li>
+                </ul>
+                <p style="margin-top: 1rem;"><strong>რეკომენდებული:</strong></p>
+                <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>ყურსასმენი მიკროფონით</li>
+                    <li>სმარტფონი (აპლიკაციების ტესტირებისთვის)</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ რას ისწავლის თქვენი შვილი?</h4>
+                <ul>
+                    <li>AI ინსტრუმენტების პასუხისმგებლიან და ეფექტურ გამოყენებას</li>
+                    <li>კრიტიკულ აზროვნებას - როგორ შეაფასოს AI-გენერირებული კონტენტი</li>
+                    <li>კრეატიულ უნარებს თანამედროვე ტექნოლოგიებით</li>
+                    <li>ციფრულ კომპეტენციებს, რომლებიც საჭირო იქნება კოლეჯში და კარიერაში</li>
+                    <li>Deepfakes-ის და დეზინფორმაციის ამოცნობას</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>დამატებითი ინფორმაცია</h2>
+
+            <h3>კურსის პოლიტიკა</h3>
+
+            <div class="warning-box">
+                <h4>📅 დასწრება და გაცდენა</h4>
+                <p><strong>ფიზიკური სესიები:</strong> მნიშვნელოვანია დასწრება, რადგან workshops და გუნდური აქტივობებია<br>
+                <strong>ონლაინ სესიები:</strong> ჩაიწერება და ხელმისაწვდომი იქნება გაცდენის შემთხვევაში<br>
+                <strong>წინასწარი შეტყობინება:</strong> თუ ვერ ესწრები, გთხოვ წინასწარ აცნობო ლექტორს<br>
+                <strong>ჩანაცვლება:</strong> გაცდენილი ფიზიკური სესიის შემთხვევაში შესაძლებელია ინდივიდუალური კონსულტაცია</p>
+            </div>
+
+            <h3>კომუნიკაცია</h3>
+
+            <div class="highlight-box">
+                <h4>📧 კონტაქტი</h4>
+                <p><strong>Email:</strong> basilaia@gmail.com<br>
+                <strong>საპასუხო დრო:</strong> 24–48 საათი<br>
+                <strong>სასწრაფო კითხვები:</strong> სესიის დაწყებამდე 15 წუთით ადრე<br>
+                <strong>მშობლებისთვის:</strong> კითხვების შემთხვევაში დაგვიკავშირდით ელ-ფოსტით</p>
+            </div>
+
+            <h3>ხშირად დასმული კითხვები</h3>
+
+            <div class="task-list">
+                <li class="task-item">
+                    <h4>საჭიროა თუ არა წინასწარი ცოდნა?</h4>
+                    <div class="description">
+                        არა! კურსი განკუთვნილია დამწყებებისთვის. საჭიროა მხოლოდ ძირითადი კომპიუტერული უნარები.
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>შემიძლია მივიღო მონაწილეობა, თუ 15 წელზე ნაკლები ვარ?</h4>
+                    <div class="description">
+                        განიხილება ინდივიდუალურად. დაგვიკავშირდით და განვიხილავთ თქვენს შემთხვევას.
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>მჭირდება თუ არა ფასიანი AI ინსტრუმენტები?</h4>
+                    <div class="description">
+                        არა! ყველა ინსტრუმენტს, რომელსაც გამოვიყენებთ, აქვს უფასო ვერსია, რომელიც სრულიად საკმარისია კურსისთვის.
+                    </div>
+                </li>
+
+                <li class="task-item">
+                    <h4>რა ხდება, თუ სესიას გავაცდენ?</h4>
+                    <div class="description">
+                        ონლაინ სესიების ჩანაწერები ხელმისაწვდომია. ფიზიკური სესიის გაცდენის შემთხვევაში შესაძლებელია ინდივიდუალური კონსულტაცია.
+                    </div>
+                </li>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="index.html" class="back-button">← უკან მთავარ გვერდზე</a>
+        </div>
+    </div>
+</body>
+</html>

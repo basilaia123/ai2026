@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სესია 6: თამაშების შექმნა AI-ის დახმარებით — AI მოზარდებისთვის</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --orange: #f97316;
+            --orange-light: #fdba74;
+            --orange-dark: #ea580c;
+            --yellow: #eab308;
+            --yellow-light: #fde047;
+            --green: #22c55e;
+            --green-light: #86efac;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+            --bg-cream: #fefdfb;
+            --bg-soft: #f8f7f4;
+            --bg-card: #ffffff;
+            --text-dark: #1e1b4b;
+            --text-body: #4b5563;
+            --text-muted: #9ca3af;
+            --shadow-soft: 0 4px 20px rgba(249, 115, 22, 0.08);
+            --shadow-hover: 0 12px 40px rgba(249, 115, 22, 0.15);
+        }
+
+        body {
+            font-family: 'Outfit', 'FiraGO', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--orange) 0%, var(--yellow) 50%, var(--green) 100%);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .session-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .workshop-badge {
+            background: rgba(34, 197, 94, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            background: var(--bg-card);
+            color: var(--orange);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--orange);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.next {
+            background: linear-gradient(135deg, var(--orange), var(--yellow));
+            color: white;
+        }
+
+        .nav-link.next:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Slide */
+        .slide {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(249, 115, 22, 0.06);
+            border-left: 5px solid var(--orange);
+            transition: all 0.3s ease;
+        }
+
+        .slide:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .slide-number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--orange), var(--yellow));
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .slide h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .slide h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--orange);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .slide p {
+            color: var(--text-body);
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide ul, .slide ol {
+            color: var(--text-body);
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide li {
+            margin-bottom: 0.6rem;
+            font-size: 1.05rem;
+        }
+
+        /* Title Slide */
+        .slide.title-slide {
+            text-align: center;
+            padding: 4rem 2.5rem;
+            border-left: none;
+            border-top: 5px solid transparent;
+            border-image: linear-gradient(90deg, var(--orange), var(--yellow), var(--green)) 1;
+        }
+
+        .title-slide h2 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--orange) 50%, var(--yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-slide .emoji-big {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Game Controller Animation */
+        .game-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 2.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .game-icons span {
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .game-icons span:nth-child(1) { animation-delay: 0s; }
+        .game-icons span:nth-child(2) { animation-delay: 0.1s; }
+        .game-icons span:nth-child(3) { animation-delay: 0.2s; }
+        .game-icons span:nth-child(4) { animation-delay: 0.3s; }
+        .game-icons span:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Info Boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.08), rgba(234, 179, 8, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--orange);
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--orange);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.08), rgba(236, 72, 153, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid #f59e0b;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #f59e0b;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(234, 179, 8, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--green);
+            margin: 1.5rem 0;
+        }
+
+        .key-points h4 {
+            color: #16a34a;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(249, 115, 22, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--purple);
+            margin: 1.5rem 0;
+        }
+
+        .tool-box h4 {
+            color: var(--purple);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .code-box {
+            background: #1e1b4b;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--green);
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-box h4 {
+            color: var(--green-light);
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .code-box pre {
+            color: #e2e8f0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 700px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .column-card {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+
+        .column-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .column-card.good h4 { color: var(--green); }
+        .column-card.tool h4 { color: var(--orange); }
+
+        /* Three Column Layout */
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 800px) {
+            .three-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tool-card {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .tool-card .tool-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Game Type Cards */
+        .game-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 600px) {
+            .game-types {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .game-type {
+            background: linear-gradient(135deg, var(--bg-soft), white);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-type:hover {
+            border-color: var(--orange);
+            transform: translateY(-2px);
+        }
+
+        .game-type .game-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-type h5 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .game-type p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .game-type .difficulty {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .game-type .easy { background: #dcfce7; color: #16a34a; }
+        .game-type .medium { background: #fef3c7; color: #d97706; }
+        .game-type .hard { background: #fee2e2; color: #dc2626; }
+
+        /* Activity Box */
+        .activity-box {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 179, 8, 0.1));
+            padding: 2rem;
+            border-radius: 20px;
+            border: 2px dashed var(--orange);
+            margin: 1.5rem 0;
+        }
+
+        .activity-box h4 {
+            color: var(--orange);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Project Box */
+        .project-box {
+            background: linear-gradient(135deg, var(--orange), var(--yellow));
+            padding: 2rem;
+            border-radius: 20px;
+            color: white;
+            margin: 1.5rem 0;
+        }
+
+        .project-box h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .project-box ul {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-soft);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--orange), var(--yellow));
+            border-radius: 10px;
+            width: 75%;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--bg-soft);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-soft);
+            color: var(--text-body);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .home-link:hover {
+            background: var(--orange);
+            color: white;
+        }
+
+        /* Steps */
+        .steps-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .steps-list li {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--orange), var(--yellow));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Prompt Example */
+        .prompt-example {
+            background: #1e1b4b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--orange);
+            line-height: 1.6;
+        }
+
+        .prompt-label {
+            color: var(--orange-light);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 600px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-item {
+            background: var(--bg-soft);
+            padding: 1.25rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .feature-emoji {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .feature-content h5 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-content p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--orange), var(--yellow));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--bg-soft);
+        }
+
+        .comparison-table tr:hover td {
+            background: rgba(249, 115, 22, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <span class="session-badge workshop-badge">🎮 Workshop • კვირა</span>
+            <h1>სესია 6: თამაშების შექმნა AI-ის დახმარებით</h1>
+            <p class="header-subtitle">Lovable.dev • v0.dev • თამაშის დიზაინი • Quiz თამაში</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <a href="lecture-5-slides.html" class="nav-link">← სესია 5</a>
+            <a href="lecture-7-slides.html" class="nav-link next">სესია 7 →</a>
+        </nav>
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>პროგრესი</span>
+                <span>6/8 სესია</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide">
+            <span class="emoji-big">🎮</span>
+            <h2>თამაშების შექმნა AI-ის დახმარებით</h2>
+            <p>დღეს შევქმნით საკუთარ თამაშს პროგრამირების ცოდნის გარეშე!</p>
+
+            <div class="game-icons">
+                <span>🕹️</span>
+                <span>👾</span>
+                <span>🎯</span>
+                <span>🏆</span>
+                <span>⭐</span>
+            </div>
+
+            <div class="highlight-box" style="text-align: left; margin-top: 2rem;">
+                <h4>📋 დღის გეგმა:</h4>
+                <ul>
+                    <li>თამაშის კონცეფციის შემუშავება ChatGPT-ის მეშვეობით</li>
+                    <li>Lovable.dev / v0.dev — No-Code თამაშები</li>
+                    <li>პერსონაჟებისა და ასეტების დიზაინი</li>
+                    <li>მინი-პროექტი: ინტერაქტიული Quiz თამაში</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 2</span>
+            <h2>🎯 რას ვისწავლით დღეს?</h2>
+
+            <div class="key-points">
+                <h4>დღის მიზნები:</h4>
+                <ol>
+                    <li><strong>გავიგოთ,</strong> თუ როგორ იქმნება თამაშები AI-ის დახმარებით</li>
+                    <li><strong>ვისწავლოთ</strong> No-Code პლატფორმების გამოყენება</li>
+                    <li><strong>შევქმნათ</strong> თამაშის კონცეფცია და დიზაინი</li>
+                    <li><strong>ავაწყოთ</strong> საკუთარი ინტერაქტიული თამაში!</li>
+                </ol>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 რატომ არის ეს საინტერესო?</h4>
+                <p>აქამდე თამაშის შექმნა პროგრამირების ცოდნას მოითხოვდა. დღეს AI-ის საშუალებით შეგიძლია შექმნა მოქმედი თამაში მხოლოდ იდეის აღწერით!</p>
+            </div>
+
+            <div class="warning-box">
+                <h4>🎉 დღევანდელი Workshop:</h4>
+                <p>დღეს უფრო მეტ დროს დავუთმობთ პრაქტიკას - ყველა შექმნის საკუთარ თამაშს!</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Game Creation with AI Overview -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 3</span>
+            <h2>🎲 AI-თამაშების შექმნა — მიმოხილვა</h2>
+
+            <p>AI-ის დახმარებით თამაშების შექმნა რამდენიმე ეტაპს მოიცავს:</p>
+
+            <div class="three-column">
+                <div class="tool-card">
+                    <div class="tool-emoji">💡</div>
+                    <h4>იდეა</h4>
+                    <p>ChatGPT-ის მეშვეობით კონცეფციის შემუშავება</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-emoji">🎨</div>
+                    <h4>დიზაინი</h4>
+                    <p>DALL-E/Leonardo-ის დახმარებით ვიზუალების შექმნა</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-emoji">🔧</div>
+                    <h4>აწყობა</h4>
+                    <p>No-Code პლატფორმით თამაშის აწყობა</p>
+                </div>
+            </div>
+
+            <div class="tool-box">
+                <h4>🛠️ ჩვენი ინსტრუმენტები დღეს:</h4>
+                <ul>
+                    <li><strong>ChatGPT</strong> — თამაშის იდეა, წესები, კითხვები</li>
+                    <li><strong>Lovable.dev</strong> — ვებ-აპლიკაციების შექმნა AI-ის საშუალებით</li>
+                    <li><strong>v0.dev</strong> — UI კომპონენტების გენერირება</li>
+                    <li><strong>DALL-E / Leonardo</strong> — გრაფიკა და ასეტები</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Types of Games We Can Create -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 4</span>
+            <h2>🕹️ რა თამაშების შექმნა შეგვიძლია?</h2>
+
+            <div class="game-types">
+                <div class="game-type">
+                    <div class="game-emoji">❓</div>
+                    <h5>Quiz / Trivia</h5>
+                    <p>კითხვა-პასუხის თამაში ნებისმიერ თემაზე</p>
+                    <span class="difficulty easy">მარტივი</span>
+                </div>
+                <div class="game-type">
+                    <div class="game-emoji">🎴</div>
+                    <h5>Memory Game</h5>
+                    <p>ბარათების დამახსოვრების თამაში</p>
+                    <span class="difficulty easy">მარტივი</span>
+                </div>
+                <div class="game-type">
+                    <div class="game-emoji">🔤</div>
+                    <h5>Word Games</h5>
+                    <p>სიტყვების გამოცნობა, Hangman</p>
+                    <span class="difficulty medium">საშუალო</span>
+                </div>
+                <div class="game-type">
+                    <div class="game-emoji">🎰</div>
+                    <h5>Clicker / Idle</h5>
+                    <p>დაჭერით ქულების დაგროვება</p>
+                    <span class="difficulty medium">საშუალო</span>
+                </div>
+                <div class="game-type">
+                    <div class="game-emoji">🧩</div>
+                    <h5>Puzzle</h5>
+                    <p>ლოგიკური თავსატეხები</p>
+                    <span class="difficulty medium">საშუალო</span>
+                </div>
+                <div class="game-type">
+                    <div class="game-emoji">🎮</div>
+                    <h5>Simple Arcade</h5>
+                    <p>მარტივი არკადული თამაშები</p>
+                    <span class="difficulty hard">რთული</span>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>💡 დღეს ფოკუსი:</h4>
+                <p>Quiz/Trivia თამაში — ყველაზე მარტივია დასაწყებად და შეგიძლია ნებისმიერ თემაზე შექმნა!</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Game Concept with ChatGPT -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 5</span>
+            <h2>💡 თამაშის კონცეფცია ChatGPT-ის მეშვეობით</h2>
+
+            <p>პირველი ნაბიჯი — კარგი იდეის ჩამოყალიბება. ChatGPT დაგეხმარება!</p>
+
+            <div class="prompt-example">
+                <span class="prompt-label">ChatGPT Prompt მაგალითი:</span>
+„მინდა შევქმნა Quiz თამაში მოზარდებისთვის. თემა: საქართველოს გეოგრაფია.
+
+დამეხმარე:
+1. შემომთავაზე თამაშის სახელი (3 ვარიანტი)
+2. შექმენი 10 კითხვა 4 პასუხის ვარიანტით
+3. დაალაგე კითხვები სირთულის მიხედვით
+4. შემომთავაზე ქულების სისტემა“
+            </div>
+
+            <div class="two-column">
+                <div class="column-card tool">
+                    <h4>📝 რა უნდა განსაზღვრო:</h4>
+                    <ul>
+                        <li>თამაშის ტიპი (Quiz, Memory...)</li>
+                        <li>თემა / საგანი</li>
+                        <li>სამიზნე აუდიტორია</li>
+                        <li>სირთულის დონე</li>
+                        <li>წესები და ქულები</li>
+                    </ul>
+                </div>
+                <div class="column-card good">
+                    <h4>✨ ChatGPT დაგეხმარება:</h4>
+                    <ul>
+                        <li>კითხვების გენერირებაში</li>
+                        <li>პასუხების ვარიანტების შედგენაში</li>
+                        <li>თამაშის ლოგიკის ჩამოყალიბებაში</li>
+                        <li>ტექსტებისა და მინიშნებების წერაში</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Lovable.dev Introduction -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 6</span>
+            <h2>💜 Lovable.dev — AI Web App Builder</h2>
+
+            <p>Lovable.dev არის AI-ზე დაფუძნებული პლატფორმა, რომელიც ტექსტური აღწერით ქმნის სრულ ვებ-აპლიკაციებს!</p>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <span class="feature-emoji">🗣️</span>
+                    <div class="feature-content">
+                        <h5>ტექსტით აღწერა</h5>
+                        <p>უბრალოდ აღწერე, თუ რა გსურს და AI შექმნის</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-emoji">⚡</span>
+                    <div class="feature-content">
+                        <h5>სწრაფი შედეგი</h5>
+                        <p>მზა აპლიკაცია რამდენიმე წუთში</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-emoji">🔄</span>
+                    <div class="feature-content">
+                        <h5>იტერაცია</h5>
+                        <p>შეცვალე და დახვეწე საუბრით</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-emoji">🌐</span>
+                    <div class="feature-content">
+                        <h5>გამოქვეყნება</h5>
+                        <p>ერთი დაჭერით ონლაინ რეჟიმში</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🆓 უფასო გეგმა:</h4>
+                <ul>
+                    <li>5 პროექტი</li>
+                    <li>შეზღუდული რაოდენობის AI გენერირებები დღეში</li>
+                    <li>Lovable-ის ქვედომენზე (subdomain) გამოქვეყნება</li>
+                </ul>
+            </div>
+
+            <div class="tool-box">
+                <h4>🔗 საიტი: lovable.dev</h4>
+                <p>რეგისტრაცია შესაძლებელია Google ანგარიშით</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Lovable.dev How To -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 7</span>
+            <h2>📝 Lovable.dev — როგორ გამოვიყენოთ</h2>
+
+            <ol class="steps-list">
+                <li>
+                    <strong>რეგისტრაცია:</strong> გახსენი lovable.dev და შედი Google ანგარიშით
+                </li>
+                <li>
+                    <strong>ახალი პროექტი:</strong> დააჭირე „Create New Project“
+                </li>
+                <li>
+                    <strong>აღწერე თამაში:</strong> ჩატში (Chat) დეტალურად აღწერე, თუ რა გსურს
+                </li>
+                <li>
+                    <strong>დაელოდე გენერირებას:</strong> AI შექმნის კოდსა და UI-ს
+                </li>
+                <li>
+                    <strong>ტესტირება:</strong> Preview-ში ნახე, თუ როგორ მუშაობს
+                </li>
+                <li>
+                    <strong>დახვეწა:</strong> მოითხოვე ცვლილებები ჩატში
+                </li>
+                <li>
+                    <strong>გამოქვეყნება:</strong> „Publish“ ღილაკით გაუზიარე სხვებს
+                </li>
+            </ol>
+
+            <div class="prompt-example">
+                <span class="prompt-label">Lovable.dev Prompt მაგალითი:</span>
+„Create a quiz game about Georgian history.
+
+Features:
+- 10 multiple choice questions
+- 4 answer options each
+- Score tracking
+- Timer (30 seconds per question)
+- Beautiful UI with Georgian flag colors
+- Show correct answer after each question
+- Final score screen with rating“
+            </div>
+        </div>
+
+        <!-- Slide 8: v0.dev Introduction -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 8</span>
+            <h2>⚡ v0.dev — UI Generation by Vercel</h2>
+
+            <p>v0.dev არის Vercel-ის პროდუქტი, რომელიც ქმნის მაღალი ხარისხის React კომპონენტებს.</p>
+
+            <div class="two-column">
+                <div class="column-card tool">
+                    <h4>🎨 v0.dev უპირატესობები:</h4>
+                    <ul>
+                        <li>უმაღლესი ხარისხის დიზაინი</li>
+                        <li>თანამედროვე UI კომპონენტები</li>
+                        <li>კოპირებადი კოდი</li>
+                        <li>Responsive დიზაინი</li>
+                    </ul>
+                </div>
+                <div class="column-card">
+                    <h4>⚠️ გასათვალისწინებელი:</h4>
+                    <ul>
+                        <li>უფრო ტექნიკურია</li>
+                        <li>კოდის ცოდნა სასარგებლოა</li>
+                        <li>საჭიროა ცალკე ჰოსტინგი (hosting)</li>
+                        <li>კომპონენტებია და არა სრული აპი</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="prompt-example">
+                <span class="prompt-label">v0.dev Prompt მაგალითი:</span>
+„Create a quiz game component with:
+- Question display with number indicator
+- 4 clickable answer buttons in a grid
+- Progress bar showing question number
+- Score counter in the corner
+- Colorful, playful design suitable for teenagers
+- Animations when selecting answers“
+            </div>
+
+            <div class="tool-box">
+                <h4>🔗 საიტი: v0.dev</h4>
+                <p>შესანიშნავია UI იდეებისა და დიზაინის ინსპირაციისთვის!</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Comparison -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 9</span>
+            <h2>⚖️ Lovable.dev vs v0.dev</h2>
+
+            <table class="comparison-table">
+                <tr>
+                    <th>კრიტერიუმი</th>
+                    <th>Lovable.dev</th>
+                    <th>v0.dev</th>
+                </tr>
+                <tr>
+                    <td><strong>სირთულე</strong></td>
+                    <td>⭐ მარტივი</td>
+                    <td>⭐⭐ საშუალო</td>
+                </tr>
+                <tr>
+                    <td><strong>შედეგი</strong></td>
+                    <td>სრული აპლიკაცია</td>
+                    <td>UI კომპონენტები</td>
+                </tr>
+                <tr>
+                    <td><strong>ჰოსტინგი</strong></td>
+                    <td>ჩაშენებული</td>
+                    <td>საჭიროა ცალკე</td>
+                </tr>
+                <tr>
+                    <td><strong>დიზაინი</strong></td>
+                    <td>კარგი</td>
+                    <td>შესანიშნავი</td>
+                </tr>
+                <tr>
+                    <td><strong>საუკეთესო</strong></td>
+                    <td>სწრაფი პროტოტიპირება</td>
+                    <td>მაღალი ხარისხის UI</td>
+                </tr>
+            </table>
+
+            <div class="key-points">
+                <h4>💡 რეკომენდაცია დამწყებთათვის:</h4>
+                <p><strong>Lovable.dev</strong> — თუ გსურთ სწრაფად შექმნათ მოქმედი თამაში ტექნიკური ცოდნის გარეშე, Lovable.dev საუკეთესო არჩევანია!</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Game Assets with AI -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 10</span>
+            <h2>🎨 თამაშის გრაფიკა AI-ის დახმარებით</h2>
+
+            <p>თამაშს ლამაზი ვიზუალები სჭირდება! გამოიყენე AI Image Generators:</p>
+
+            <div class="three-column">
+                <div class="tool-card">
+                    <div class="tool-emoji">🤖</div>
+                    <h4>DALL-E</h4>
+                    <p>ChatGPT-ში, მარტივი გამოყენება</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-emoji">🦁</div>
+                    <h4>Leonardo AI</h4>
+                    <p>Game Art სპეციალიზაცია</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-emoji">✨</div>
+                    <h4>Canva AI</h4>
+                    <p>ლოგოები და ბანერები</p>
+                </div>
+            </div>
+
+            <h3>რა გრაფიკა შეგიძლია შექმნა:</h3>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <span class="feature-emoji">🖼️</span>
+                    <div class="feature-content">
+                        <h5>ფონი (Background)</h5>
+                        <p>თამაშის ფონი და ატმოსფერო</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-emoji">👤</span>
+                    <div class="feature-content">
+                        <h5>პერსონაჟები</h5>
+                        <p>მთავარი გმირი, NPC-ები</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-emoji">🎯</span>
+                    <div class="feature-content">
+                        <h5>ხატულები</h5>
+                        <p>ღილაკები, ბეჯები, ნივთები</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-emoji">🏆</span>
+                    <div class="feature-content">
+                        <h5>UI ელემენტები</h5>
+                        <p>ქულების დაფა, პროგრესბარი</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prompt-example">
+                <span class="prompt-label">Game Asset Prompt მაგალითი:</span>
+„Create a cute cartoon mascot character for a quiz game, friendly owl wearing glasses and graduation cap, simple flat design, vibrant colors, transparent background, game asset style“
+            </div>
+        </div>
+
+        <!-- Slide 11: Practical Exercise -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 11</span>
+            <h2>🎮 პრაქტიკული სავარჯიშო 1</h2>
+
+            <div class="activity-box">
+                <h4>💡 აქტივობა: თამაშის კონცეფცია</h4>
+                <p><strong>დრო:</strong> 10 წუთი</p>
+                <p><strong>ინსტრუმენტი:</strong> ChatGPT</p>
+
+                <h4 style="margin-top: 1rem;">დავალება:</h4>
+                <ol>
+                    <li>აირჩიე Quiz-ის თემა:
+                        <ul>
+                            <li>🎬 ფილმები და სერიალები</li>
+                            <li>🎵 მუსიკა და შემსრულებლები</li>
+                            <li>⚽ სპორტი</li>
+                            <li>🎮 ვიდეო თამაშები</li>
+                            <li>📚 სკოლის საგანი</li>
+                            <li>🌍 გეოგრაფია</li>
+                        </ul>
+                    </li>
+                    <li>ChatGPT-ს სთხოვე:
+                        <ul>
+                            <li>10 კითხვა 4 პასუხით</li>
+                            <li>თამაშის სახელი</li>
+                            <li>ქულების სისტემა</li>
+                        </ul>
+                    </li>
+                    <li>შეინახე შედეგი!</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 12: Main Project -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 12</span>
+            <h2>🏆 მინი-პროექტი: Quiz თამაში</h2>
+
+            <div class="project-box">
+                <h4>🎯 შექმენი საკუთარი Quiz თამაში Lovable.dev-ით!</h4>
+                <p>გამოიყენე ChatGPT-ის მეშვეობით შექმნილი კითხვები და ააწყვე მოქმედი თამაში</p>
+            </div>
+
+            <h3>📋 ნაბიჯები:</h3>
+            <ol class="steps-list">
+                <li>
+                    <strong>გახსენი Lovable.dev</strong> და შექმენი ახალი პროექტი
+                </li>
+                <li>
+                    <strong>დააკოპირე Prompt:</strong> (მორგე შენს თემას)
+                </li>
+            </ol>
+
+            <div class="code-box">
+                <h4>📝 Lovable.dev Prompt Template:</h4>
+                <pre>Create a fun quiz game with these features:
+
+THEME: [შენი თემა]
+QUESTIONS: [ჩასვი ChatGPT-ით შექმნილი კითხვები]
+
+FEATURES:
+- Welcome screen with game title and Start button
+- Show one question at a time
+- 4 answer buttons (A, B, C, D)
+- Highlight correct/wrong answer after selection
+- Score counter
+- Progress indicator (Question 1/10)
+- Final screen showing total score
+- "Play Again" button
+
+DESIGN:
+- Colorful, modern design
+- Fun animations
+- Mobile-friendly</pre>
+            </div>
+        </div>
+
+        <!-- Slide 13: Project Continuation -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 13</span>
+            <h2>🔧 პროექტის გაგრძელება</h2>
+
+            <h3>ნაბიჯები 3–7:</h3>
+            <ol class="steps-list" start="3">
+                <li>
+                    <strong>დაელოდე გენერირებას</strong> (1–2 წუთი)
+                </li>
+                <li>
+                    <strong>ტესტირება:</strong> ითამაშე და ნახე, თუ რა მუშაობს
+                </li>
+                <li>
+                    <strong>დახვეწა:</strong> ჩატში სთხოვე ცვლილებები:
+                    <ul>
+                        <li>„Make the buttons bigger“</li>
+                        <li>„Add sound effects“</li>
+                        <li>„Change colors to blue and gold“</li>
+                        <li>„Add a timer“</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>გამოქვეყნება:</strong> დააჭირე „Publish“ ღილაკს
+                </li>
+                <li>
+                    <strong>გაზიარება:</strong> მიიღე ლინკი და გაუზიარე კლასს!
+                </li>
+            </ol>
+
+            <div class="highlight-box">
+                <h4>⏱️ დრო: 30 წუთი</h4>
+                <p>ბოლოს ყველა წარადგენს თავის თამაშს და ვითამაშებთ ერთმანეთის Quiz-ებს!</p>
+            </div>
+
+            <div class="warning-box">
+                <h4>💡 რჩევები:</h4>
+                <ul>
+                    <li>თუ რამე არ მუშაობს, აღწერე პრობლემა ჩატში</li>
+                    <li>შეგიძლია სთხოვო „undo“ ბოლო ცვლილების გასაუქმებლად</li>
+                    <li>ნუ შეგეშინდება ექსპერიმენტების — ყოველთვის შეგიძლია თავიდან დაწყება</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 14</span>
+            <h2>📝 შეჯამება</h2>
+
+            <div class="key-points">
+                <h4>დღეს ვისწავლეთ:</h4>
+                <ul>
+                    <li>✅ <strong>თამაშის კონცეფცია</strong> — ChatGPT-ის მეშვეობით იდეისა და კონტენტის შექმნა</li>
+                    <li>✅ <strong>Lovable.dev</strong> — No-Code პლატფორმა ვებთამაშებისთვის</li>
+                    <li>✅ <strong>v0.dev</strong> — UI კომპონენტების გენერირება</li>
+                    <li>✅ <strong>Game Assets</strong> — გრაფიკის შექმნა AI-ის დახმარებით</li>
+                    <li>✅ <strong>პრაქტიკა</strong> — საკუთარი Quiz თამაშის შექმნა!</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📚 საშინაო დავალება:</h4>
+                <ol>
+                    <li>დაასრულე და დახვეწე შენი Quiz თამაში</li>
+                    <li>დაამატე მინიმუმ 5 დამატებითი კითხვა</li>
+                    <li>შექმენი თამაშის ლოგო DALL-E ან Leonardo-ის დახმარებით</li>
+                    <li>გაუზიარე ლინკი ოჯახსა და მეგობრებს!</li>
+                </ol>
+            </div>
+
+            <div class="tool-box">
+                <h4>🔗 გამოსადეგი ლინკები:</h4>
+                <ul>
+                    <li><strong>Lovable.dev:</strong> lovable.dev</li>
+                    <li><strong>v0.dev:</strong> v0.dev</li>
+                    <li><strong>ChatGPT:</strong> chat.openai.com</li>
+                    <li><strong>Leonardo AI:</strong> leonardo.ai</li>
+                </ul>
+            </div>
+
+            <div class="project-box" style="margin-top: 1.5rem;">
+                <h4>🎉 შენ დღეს შექმენი საკუთარი თამაში!</h4>
+                <p>ეს არის პირველი ნაბიჯი Game Development-ში. შეგიძლია გააგრძელო და შექმნა უფრო რთული თამაშებიც!</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="lecture-5-slides.html" class="nav-link">← სესია 5: აუდიო/ვიდეო</a>
+            <a href="index.html" class="home-link">🏠 მთავარი</a>
+            <a href="lecture-7-slides.html" class="nav-link next">სესია 7: ავტომატიზაცია →</a>
+        </nav>
+    </main>
+</body>
+</html>

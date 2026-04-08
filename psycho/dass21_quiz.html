@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DASS-21 - დეპრესიის, შფოთვისა და სტრესის სკრინინგი. 21-პუნქტიანი მეცნიერულად ვალიდური ტესტი Lovibond-ის მეთოდით.">
+    <meta name="keywords" content="DASS-21, დეპრესიის ტესტი, შფოთვის ტესტი, სტრესის ტესტი, ფსიქოლოგიური სკრინინგი">
+    <title>DASS-21 - დეპრესია · შფოთვა · სტრესი (სკრინინგი)</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="DASS-21 - დეპრესიის, შფოთვისა და სტრესის სკრინინგი">
+    <meta property="og:description" content="შეაფასეთ თქვენი ფსიქოემოციური მდგომარეობა DASS-21 სკალით.">
+    <meta property="og:type" content="website">
+
+    <!-- JSON-LD for AI Search -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Quiz",
+      "name": "DASS-21 Depression Anxiety Stress Scales",
+      "description": "A 21-item clinical scale for the assessment of depression, anxiety, and stress.",
+      "educationalUse": "Screening",
+      "interactivityType": "active",
+      "author": {
+        "@type": "Person",
+        "name": "Lovibond & Lovibond"
+      }
+    }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f1923;
+            --bg-secondary: #162231;
+            --bg-card: #1a2a3a;
+            --bg-card-hover: #1f3347;
+            --accent: #5b9fd4;
+            --accent-glow: rgba(91, 159, 212, 0.14);
+            --accent-soft: #3d7eb5;
+            --accent-light: #90c4e8;
+            --text-primary: #e8edf2;
+            --text-secondary: #8fa3b8;
+            --text-muted: #5a7089;
+            --border: rgba(91, 159, 212, 0.12);
+            --border-active: rgba(91, 159, 212, 0.35);
+            --danger: #c94d6d;
+            --danger-soft: rgba(201, 77, 109, 0.15);
+            --warning: #c9a44d;
+            --warning-soft: rgba(201, 164, 77, 0.15);
+            --success: #4dc98a;
+            --success-soft: rgba(77, 201, 138, 0.15);
+
+            /* Subscale colours */
+            --sub-d: #6b7fcf;
+            --sub-d-soft: rgba(107, 127, 207, 0.15);
+            --sub-a: #4dc9a4;
+            --sub-a-soft: rgba(77, 201, 164, 0.15);
+            --sub-s: #e8a44d;
+            --sub-s-soft: rgba(232, 164, 77, 0.15);
+
+            /* Severity colours */
+            --sev-normal:   #4dc98a;
+            --sev-mild:     #c9c94d;
+            --sev-moderate: #c9a44d;
+            --sev-severe:   #c97b4d;
+            --sev-extreme:  #c94d6d;
+
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Georgian', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 10% 10%, rgba(107, 127, 207, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 85% 85%, rgba(232, 164, 77, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 40% at 50% 50%, rgba(77, 201, 164, 0.03) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .container {
+            max-width: 760px; margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative; z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 14px; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: var(--accent); }
+
+        /* Top bar */
+        .top-bar {
+            position: fixed; top: 16px; right: 16px; z-index: 200;
+            display: flex; border-radius: var(--radius-sm);
+            overflow: hidden; border: 1px solid var(--border-active);
+            background: var(--bg-card); box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .top-btn {
+            padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600;
+            cursor: pointer; border: none; background: transparent; color: var(--text-muted);
+            transition: var(--transition); letter-spacing: 0.5px;
+        }
+        .top-btn:hover { color: var(--text-primary); background: var(--bg-card-hover); }
+        .top-btn.active { background: var(--accent); color: #fff; }
+        .top-btn.theme-btn {
+            font-size: 15px; border-left: 1px solid var(--border-active);
+            display: flex; align-items: center; padding: 6px 10px;
+        }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 32px; animation: fadeInDown 0.8s ease; }
+        .header-icon {
+            width: 60px; height: 60px;
+            background: var(--accent-glow); border: 1px solid var(--border-active);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px; font-size: 26px;
+        }
+        .header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 6px; }
+        .header .subtitle { font-size: 13px; color: var(--accent-light); font-weight: 500; margin-bottom: 10px; }
+        .header p { font-size: 13px; color: var(--text-secondary); max-width: 560px; margin: 0 auto; font-weight: 300; line-height: 1.8; }
+
+        /* Subscale pills */
+        .subscale-pills { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+        .pill {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .pill-d  { background: var(--sub-d-soft); color: var(--sub-d); }
+        .pill-a  { background: var(--sub-a-soft); color: var(--sub-a); }
+        .pill-s  { background: var(--sub-s-soft); color: var(--sub-s); }
+
+        /* Info / disclaimer */
+        .info-box {
+            background: var(--accent-glow); border: 1px solid var(--border-active);
+            border-radius: var(--radius); padding: 16px 20px; margin-bottom: 10px;
+            font-size: 13px; color: var(--text-secondary); line-height: 1.9;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+        .info-box strong { color: var(--accent-light); }
+
+        .disclaimer {
+            background: var(--danger-soft); border: 1px solid rgba(201, 77, 109, 0.22);
+            border-radius: var(--radius); padding: 13px 18px; margin-bottom: 28px;
+            font-size: 12px; color: #d4a0b0; line-height: 1.8;
+            animation: fadeIn 0.8s ease 0.3s both;
+        }
+        .disclaimer strong { color: var(--danger); }
+
+        /* Progress */
+        .progress-container {
+            margin-bottom: 24px; animation: fadeIn 0.8s ease 0.4s both;
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg-primary); padding: 12px 0;
+        }
+        .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .progress-label { font-size: 13px; color: var(--text-muted); }
+        .progress-count { font-size: 13px; color: var(--accent); font-weight: 500; }
+        .progress-bar { height: 4px; background: var(--bg-card); border-radius: 2px; overflow: hidden; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+            border-radius: 2px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Question block */
+        .question-block {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px;
+            transition: var(--transition); position: relative; overflow: hidden;
+        }
+        .question-block::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 3px; transition: var(--transition);
+        }
+        .question-block.answered { border-color: rgba(91, 159, 212, 0.22); }
+
+        .q-d::before  { background: var(--sub-d); }
+        .q-a::before  { background: var(--sub-a); }
+        .q-s::before  { background: var(--sub-s); }
+
+        .question-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .question-num {
+            width: 26px; height: 26px; border-radius: 7px;
+            background: var(--accent-glow); color: var(--accent);
+            font-size: 11px; font-weight: 700; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .question-sub-tag {
+            font-size: 10px; font-weight: 600; padding: 2px 8px;
+            border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .q-d .question-sub-tag { background: var(--sub-d-soft); color: var(--sub-d); }
+        .q-a .question-sub-tag { background: var(--sub-a-soft); color: var(--sub-a); }
+        .q-s .question-sub-tag { background: var(--sub-s-soft); color: var(--sub-s); }
+
+        .question-text { font-size: 14.5px; font-weight: 500; line-height: 1.55; margin-bottom: 16px; }
+
+        /* 4-point scale */
+        .scale-buttons { display: flex; gap: 6px; margin-bottom: 8px; }
+        .scale-btn {
+            flex: 1; border-radius: var(--radius-sm);
+            border: 1px solid var(--border); background: var(--bg-secondary);
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 8px 4px; gap: 4px;
+        }
+        .scale-btn:hover { background: var(--bg-card-hover); border-color: var(--border-active); }
+        .scale-val { font-size: 17px; font-weight: 700; color: var(--text-muted); line-height: 1; }
+        .scale-lbl { font-size: 9.5px; color: var(--text-muted); text-align: center; line-height: 1.3; }
+
+        .q-d .scale-btn.selected { background: var(--sub-d-soft); border-color: var(--sub-d); }
+        .q-a .scale-btn.selected { background: var(--sub-a-soft); border-color: var(--sub-a); }
+        .q-s .scale-btn.selected { background: var(--sub-s-soft); border-color: var(--sub-s); }
+        .q-d .scale-btn.selected .scale-val { color: var(--sub-d); }
+        .q-a .scale-btn.selected .scale-val { color: var(--sub-a); }
+        .q-s .scale-btn.selected .scale-val { color: var(--sub-s); }
+        .q-d .scale-btn.selected .scale-lbl,
+        .q-a .scale-btn.selected .scale-lbl,
+        .q-s .scale-btn.selected .scale-lbl { color: var(--text-secondary); }
+
+        /* Submit */
+        .submit-area { margin-top: 32px; text-align: center; }
+        .btn {
+            padding: 14px 40px; border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+            border: none; background: var(--accent); color: #fff;
+        }
+        .btn:hover { background: var(--accent-soft); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(91, 159, 212, 0.4); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Results */
+        .results-container { display: none; animation: fadeInUp 0.8s ease; }
+        .results-container.active { display: block; }
+
+        /* Overall summary card */
+        .result-overview {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 28px 24px;
+            margin-bottom: 20px; text-align: center;
+        }
+        .result-icon { font-size: 40px; margin-bottom: 14px; }
+        .result-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+        .result-subtitle { font-size: 13px; color: var(--text-secondary); font-weight: 300; max-width: 460px; margin: 0 auto 20px; line-height: 1.8; }
+
+        /* Three mini scores */
+        .subscale-scores {
+            display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        .mini-score {
+            padding: 10px 20px; border-radius: var(--radius);
+            min-width: 110px; text-align: center;
+        }
+        .mini-score-val { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
+        .mini-score-sub { font-size: 11px; font-weight: 500; margin-bottom: 4px; }
+        .mini-score-sev { font-size: 10px; opacity: 0.8; }
+        .ms-d { background: var(--sub-d-soft); color: var(--sub-d); border: 1px solid rgba(107,127,207,0.25); }
+        .ms-a { background: var(--sub-a-soft); color: var(--sub-a); border: 1px solid rgba(77,201,164,0.25); }
+        .ms-s { background: var(--sub-s-soft); color: var(--sub-s); border: 1px solid rgba(232,164,77,0.25); }
+
+        /* Subscale detail cards */
+        .subscale-cards { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+        .subscale-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px 22px;
+            position: relative; overflow: hidden;
+        }
+        .subscale-card::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0; width: 4px;
+        }
+        .sc-d::before { background: var(--sub-d); }
+        .sc-a::before { background: var(--sub-a); }
+        .sc-s::before { background: var(--sub-s); }
+
+        .sc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .sc-icon { font-size: 22px; }
+        .sc-name { font-size: 16px; font-weight: 700; flex: 1; }
+        .sc-score { font-size: 22px; font-weight: 700; }
+        .sc-d .sc-score { color: var(--sub-d); }
+        .sc-a .sc-score { color: var(--sub-a); }
+        .sc-s .sc-score { color: var(--sub-s); }
+
+        /* 5-level severity badge */
+        .sev-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 10px; }
+        .sev-normal   { background: rgba(77,201,138,0.15);  color: var(--sev-normal); }
+        .sev-mild     { background: rgba(201,201,77,0.15);  color: var(--sev-mild); }
+        .sev-moderate { background: rgba(201,164,77,0.15);  color: var(--sev-moderate); }
+        .sev-severe   { background: rgba(201,123,77,0.15);  color: var(--sev-severe); }
+        .sev-extreme  { background: rgba(201,77,109,0.15);  color: var(--sev-extreme); }
+
+        /* Severity bar (5 segments) */
+        .sev-bar-wrap { margin: 10px 0 12px; }
+        .sev-bar-track {
+            height: 20px; border-radius: 10px;
+            display: flex; overflow: hidden; position: relative;
+        }
+        .sev-seg {
+            height: 100%; display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.7);
+        }
+        .seg-normal   { background: rgba(77,201,138,0.3); }
+        .seg-mild     { background: rgba(201,201,77,0.3); }
+        .seg-moderate { background: rgba(201,164,77,0.3); }
+        .seg-severe   { background: rgba(201,123,77,0.3); }
+        .seg-extreme  { background: rgba(201,77,109,0.3); }
+
+        .sev-marker {
+            position: absolute; top: -4px;
+            width: 3px; height: 28px;
+            background: var(--text-primary);
+            border-radius: 2px; z-index: 5;
+            transition: left 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sev-bar-labels {
+            display: flex; margin-top: 5px;
+            font-size: 9px; color: var(--text-muted);
+        }
+        .sev-bar-labels span { display: flex; align-items: center; justify-content: center; }
+
+        .sc-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.75; }
+
+        /* Item table */
+        .item-breakdown {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px 22px; margin-bottom: 14px;
+        }
+        .item-breakdown h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+        .item-row {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 7px 0; border-bottom: 1px solid var(--border);
+            font-size: 12.5px; line-height: 1.6;
+        }
+        .item-row:last-child { border-bottom: none; }
+        .item-num {
+            flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700;
+            background: var(--accent-glow); color: var(--accent);
+        }
+        .item-sub {
+            flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%;
+            margin-top: 5px;
+        }
+        .item-sub-d { background: var(--sub-d); }
+        .item-sub-a { background: var(--sub-a); }
+        .item-sub-s { background: var(--sub-s); }
+        .item-text { flex: 1; color: var(--text-secondary); }
+        .item-score {
+            flex-shrink: 0; min-width: 24px; text-align: right;
+            font-weight: 700; font-size: 13px;
+        }
+        .is-0 { color: var(--sev-normal); }
+        .is-1 { color: var(--sev-mild); }
+        .is-2 { color: var(--sev-moderate); }
+        .is-3 { color: var(--sev-extreme); }
+
+        /* Note */
+        .result-note {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px 22px; margin-bottom: 14px;
+        }
+        .result-note h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--accent); }
+        .result-note p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+        .result-note p + p { margin-top: 8px; }
+
+        .restart-btn {
+            display: block; width: 100%; margin-top: 10px; padding: 14px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); color: var(--text-secondary);
+            font-family: inherit; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: var(--transition);
+        }
+        .restart-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+        /* Light mode */
+        body.light {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #e2e8f0;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --text-primary: #1e2d3d;
+            --text-secondary: #4a6580;
+            --text-muted: #8fa3b8;
+            --border: rgba(0, 0, 0, 0.10);
+            --border-active: rgba(0, 0, 0, 0.25);
+        }
+        body.light::before { opacity: 0.25; }
+
+        @keyframes fadeIn     { from { opacity: 0; }                to { opacity: 1; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp   { from { opacity: 0; transform: translateY(16px);  } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 560px) {
+            .container { padding: 24px 14px 60px; }
+            .header h1 { font-size: 20px; }
+            .question-block { padding: 14px 12px; }
+            .scale-val { font-size: 15px; }
+            .scale-lbl { font-size: 8.5px; }
+            .subscale-scores { gap: 8px; }
+            .mini-score { min-width: 90px; padding: 8px 14px; }
+        }
+
+        @media print {
+            body { background: white; color: #1a1a1a; }
+            body::before { display: none; }
+            .container { max-width: 100%; padding: 20px; }
+            .top-bar, #questionsContainer, #submitArea, .progress-container,
+            .info-box, .disclaimer, .restart-btn { display: none !important; }
+            .results-container { display: block !important; }
+            .result-overview, .subscale-card, .item-breakdown, .result-note {
+                background: #f5f5f5; border: 1px solid #ccc; break-inside: avoid;
+            }
+            .sev-seg { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+<script>if(localStorage.getItem('psycho-theme')==='light'){document.body.classList.add('light');}</script>
+
+<div class="top-bar">
+    <button class="top-btn active" id="btnKa" onclick="setLang('ka')">KA</button>
+    <button class="top-btn"        id="btnEn" onclick="setLang('en')">EN</button>
+    <button class="top-btn theme-btn" id="themeToggle" onclick="toggleTheme()" title="Dark / Light Mode">☀️</button>
+</div>
+<script>if(localStorage.getItem('psycho-theme')==='light'){document.getElementById('themeToggle').textContent='🌙';}</script>
+
+<div class="container">
+    <a href="index.html" class="back-link">← <span id="backLabel">მთავარი</span></a>
+
+    <div class="header">
+        <div class="header-icon">🌀</div>
+        <h1 id="headerTitle">DASS-21</h1>
+        <div class="subtitle">Depression · Anxiety · Stress Scales · Lovibond &amp; Lovibond, 1995</div>
+        <p id="headerDesc"></p>
+        <div class="subscale-pills">
+            <span class="pill pill-d">🫧 <span id="pillD"></span></span>
+            <span class="pill pill-a">🌊 <span id="pillA"></span></span>
+            <span class="pill pill-s">⚡ <span id="pillS"></span></span>
+        </div>
+    </div>
+
+    <div class="info-box"  id="infoBox"></div>
+    <div class="disclaimer" id="disclaimerBox"></div>
+
+    <div class="progress-container" id="progressArea">
+        <div class="progress-info">
+            <span class="progress-label" id="progressLabel">0 / 21</span>
+            <span class="progress-count" id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="submit-area" id="submitArea">
+        <button class="btn" id="submitBtn" onclick="calculateResults()" disabled>
+            📊 <span id="submitBtnText">შედეგის ნახვა</span>
+        </button>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:10px;" id="submitHint"></p>
+    </div>
+
+    <div class="results-container" id="results"></div>
+</div>
+
+<script>
+// ── QUESTION DATA ─────────────────────────────────────────────
+// sub: D=Depression A=Anxiety S=Stress
+const QUESTIONS = [
+    { id: 1,  sub: 'S', ka: 'ჩამდუნება ან დამოდუნება მიჭირდა', en: 'I found it hard to wind down' },
+    { id: 2,  sub: 'A', ka: 'პირის სიმშრალე შევამჩნიე', en: 'I was aware of dryness of my mouth' },
+    { id: 3,  sub: 'D', ka: 'ვერ ვგრძნობდი არანაირ პოზიტიურ ემოციას', en: 'I couldn\'t seem to experience any positive feeling at all' },
+    { id: 4,  sub: 'A', ka: 'სუნთქვის სირთულე განვიცადე (ქოშინი ფიზიკური დატვირთვის გარეშე)', en: 'I experienced breathing difficulty (e.g. breathlessness in the absence of physical exertion)' },
+    { id: 5,  sub: 'D', ka: 'ინიციატივა გამოვავლინო და რამე დავიწყო - ეს ძალიან მიჭირდა', en: 'I found it difficult to work up the initiative to do things' },
+    { id: 6,  sub: 'S', ka: 'სიტუაციებზე ჩემი ჩვეულ საზღვარზე მეტად ვრეაგირებდი', en: 'I tended to over-react to situations' },
+    { id: 7,  sub: 'A', ka: 'კანკალი (მაგ., ხელებში) განვიცადე', en: 'I experienced trembling (e.g. in the hands)' },
+    { id: 8,  sub: 'S', ka: 'ვგრძნობდი, რომ ძალიან ბევრ ნერვიულ ენერგიას ვხარჯავდი', en: 'I felt that I was using a lot of nervous energy' },
+    { id: 9,  sub: 'A', ka: 'ვღელავდი სიტუაციებზე, სადაც პანიკა შეიძლებოდა მქონდეს', en: 'I was worried about situations in which I might panic and make a fool of myself' },
+    { id: 10, sub: 'D', ka: 'ვგრძნობდი, რომ წინ ელოდება სანახავი არაფერი არ გამაჩნია', en: 'I felt that I had nothing to look forward to' },
+    { id: 11, sub: 'S', ka: 'ვამჩნევდი, რომ ვღელავდი და გაღიზიანებული ვხდებოდი', en: 'I found myself getting agitated' },
+    { id: 12, sub: 'S', ka: 'დამოდუნება მიჭირდა', en: 'I found it difficult to relax' },
+    { id: 13, sub: 'D', ka: 'გულჩამოვარდნილი და სევდიანი ვიყავი', en: 'I felt down-hearted and blue' },
+    { id: 14, sub: 'S', ka: 'გამაღიზიანებდა ყველაფერი, რაც ჩემ საქმეს ხელს უშლიდა', en: 'I was intolerant of anything that kept me from getting on with what I was doing' },
+    { id: 15, sub: 'A', ka: 'ვგრძნობდი, რომ პანიკის ზღვარზე ვარ', en: 'I felt I was close to panic' },
+    { id: 16, sub: 'D', ka: 'ვერ ვხდებოდი ენთუზიაზმი ვერც ერთ რამეზე', en: 'I was unable to become enthusiastic about anything' },
+    { id: 17, sub: 'D', ka: 'ვგრძნობდი, რომ როგორც ადამიანს, ღირებულება არ მქონდა', en: 'I felt I wasn\'t worth much as a person' },
+    { id: 18, sub: 'S', ka: 'ვიყავი ადვილად გასაღიზიანებელი, "ჩემ ბეჭებს" ყველა ეხებოდა', en: 'I felt that I was rather touchy' },
+    { id: 19, sub: 'A', ka: 'გულის ფეთქვა ვიგრძნე ფიზიკური დატვირთვის გარეშე', en: 'I was aware of the action of my heart in the absence of physical exertion' },
+    { id: 20, sub: 'A', ka: 'შიში განვიცადე უმიზეზოდ', en: 'I felt scared without any good reason' },
+    { id: 21, sub: 'D', ka: 'ვგრძნობდი, რომ ცხოვრებას მნიშვნელობა არ აქვს', en: 'I felt that life was meaningless' }
+];
+
+// ── SEVERITY TABLES ───────────────────────────────────────────
+// Scores below are DASS-42 equivalents (raw × 2)
+const SEV = {
+    D: [
+        { max: 9,   key: 'normal' },
+        { max: 13,  key: 'mild' },
+        { max: 20,  key: 'moderate' },
+        { max: 27,  key: 'severe' },
+        { max: Infinity, key: 'extreme' }
+    ],
+    A: [
+        { max: 7,   key: 'normal' },
+        { max: 9,   key: 'mild' },
+        { max: 14,  key: 'moderate' },
+        { max: 19,  key: 'severe' },
+        { max: Infinity, key: 'extreme' }
+    ],
+    S: [
+        { max: 14,  key: 'normal' },
+        { max: 18,  key: 'mild' },
+        { max: 25,  key: 'moderate' },
+        { max: 33,  key: 'severe' },
+        { max: Infinity, key: 'extreme' }
+    ]
+};
+
+// Cutoff breakpoints for the visual bar (out of 42 max)
+const SEV_CUTS = {
+    D: [9, 13, 20, 27, 42],
+    A: [7,  9, 14, 19, 42],
+    S: [14, 18, 25, 33, 42]
+};
+
+// ── I18N ──────────────────────────────────────────────────────
+const T = {
+    ka: {
+        lang: 'ka', backLabel: 'მთავარი',
+        headerTitle: 'DASS-21',
+        headerDesc: '21-პუნქტიანი სკრინინგი, რომელიც ერთდროულად ზომავს დეპრესიის, შფოთვისა და სტრესის სიმძიმეს ბოლო კვირის განმავლობაში.',
+        pillD: 'დეპრესია', pillA: 'შფოთვა', pillS: 'სტრესი',
+        infoBox: '<strong>📋 ინსტრუქცია:</strong> ქვემოთ მოცემული განცხადებები ეხება <strong>ბოლო 7 დღეს</strong>. შეაფასეთ, რამდენად ახასიათებდათ ეს თქვენ.',
+        disclaimer: '<strong>⚠️ გაფრთხილება:</strong> ეს კითხვარი სკრინინგის ინსტრუმენტია და <strong>არ ცვლის</strong> პროფესიონალურ დიაგნოსტიკას. მაღალი ქულა სპეციალისტთან ვიზიტს ითხოვს.',
+        submitBtnText: 'შედეგის ნახვა',
+        progressQ: 'პუნქტი',
+        hintAll: 'ყველა პუნქტი შევსებულია ✓',
+        hintRemain: n => `დარჩენილია: ${n} პუნქტი`,
+        scaleLabels: ['სულ არ\nმეხებოდა', 'ოდნავ,\nზოგჯერ', 'ხშირად,\nმნიშვნ.', 'ძალიან\nბევრად'],
+        subNames: { D: 'დეპრესია', A: 'შფოთვა', S: 'სტრესი' },
+        subTag:   { D: 'დეპრ.', A: 'შფოთ.', S: 'სტრ.' },
+        subIcons: { D: '🫧', A: '🌊', S: '⚡' },
+        subDescs: {
+            D: {
+                normal:   'დეპრესიის ნიშნები მინიმალურია.',
+                mild:     'მსუბუქი დეპრესიული სიმპტომები. დინამიკის თვალყური ედევნეთ.',
+                moderate: 'საშუალო დეპრესია. სპეციალისტთან კონსულტაცია რეკომენდებულია.',
+                severe:   'მძიმე დეპრესია. პროფესიონალური დახმარება საჭიროა.',
+                extreme:  'ძალიან მძიმე დეპრესია. სასწრაფო პრofesionali გამოკვლევა მნიშვნელოვანია.'
+            },
+            A: {
+                normal:   'შფოთვის ნიშნები მინიმალურია.',
+                mild:     'მსუბუქი შფოთვა. სავარჯიშოები და სტრეს-მენეჯმენტი სასარგებლოა.',
+                moderate: 'საშუალო შფოთვა. სპეციალისტთან კონსულტაცია რეკომენდებულია.',
+                severe:   'მძიმე შფოთვა. კლინიკური შეფასება საჭიროა.',
+                extreme:  'ძალიან მძიმე შფოთვა. სასწრაფო პrofesionali გამოკვლევა მნიშვნელოვანია.'
+            },
+            S: {
+                normal:   'სტრესის დონე ნორმის ფარგლებშია.',
+                mild:     'მსუბუქი სტრესი. დასვენება და სტრეს-მენეჯმენტი სასარგებლოა.',
+                moderate: 'საშუალო სტრესი. სპეციალისტთან კონსულტაცია რეკომენდებულია.',
+                severe:   'მძიმე სტრესი. პrofesionali დახმარება საჭიროა.',
+                extreme:  'ძალიან მძიმე სტრესი. სასწრაფო სამედიცინო შეფასება მნიშვნელოვანია.'
+            }
+        },
+        sevLabels: {
+            normal: 'ნორმა', mild: 'მსუბუქი', moderate: 'საშუალო',
+            severe: 'მძიმე', extreme: 'ძალ. მძიმე'
+        },
+        overallTitle: id => `სამივე სფეროში ${id === 'normal' ? 'ნორმის ფარგლებშია' : 'ამაღლებული მაჩვენებელია'}`,
+        overallDesc: 'DASS-21 სკორები (raw × 2) DASS-42 ნორმებთან შედარებისთვისაა გამოყვანილი.',
+        itemBreakTitle: '21 პუნქტის დეტალი',
+        noteTitle: '📘 შენიშვნა',
+        noteP1: 'DASS-21 შეიქმნა Lovibond & Lovibond (1995) მიერ. ქულა = raw ჯამი × 2 (DASS-42 ეკვივალენტი). ეს ინსტრუმენტი სკრინინგისთვის გამოიყენება და <strong>არ წარმოადგენს კლინიკურ დიაგნოზს</strong>.',
+        noteP2: 'თუ ნებისმიერ სფეროში "მძიმე" ან "ძალ. მძიმე" მიიღეთ, გთხოვთ, მიმართოთ ფსიქოთერაპევტს ან ფსიქიატრს.',
+        printBtn: '🖨️ ამობეჭდვა',
+        restartBtn: '🔄 თავიდან დაწყება'
+    },
+    en: {
+        lang: 'en', backLabel: 'Back',
+        headerTitle: 'DASS-21',
+        headerDesc: '21-item screening measuring the severity of depression, anxiety, and stress over the past week simultaneously.',
+        pillD: 'Depression', pillA: 'Anxiety', pillS: 'Stress',
+        infoBox: '<strong>📋 Instructions:</strong> The following statements apply to the <strong>past 7 days</strong>. Rate the extent to which each statement applied to you.',
+        disclaimer: '<strong>⚠️ Warning:</strong> This questionnaire is a screening tool and <strong>does not replace</strong> professional diagnosis. High scores warrant consultation with a specialist.',
+        submitBtnText: 'View Results',
+        progressQ: 'items',
+        hintAll: 'All items answered ✓',
+        hintRemain: n => `Remaining: ${n} items`,
+        scaleLabels: ['Did not\napply', 'Applied\nsomewhat', 'Applied\nconsiderably', 'Applied\nvery much'],
+        subNames: { D: 'Depression', A: 'Anxiety', S: 'Stress' },
+        subTag:   { D: 'Depr.', A: 'Anx.', S: 'Stress' },
+        subIcons: { D: '🫧', A: '🌊', S: '⚡' },
+        subDescs: {
+            D: {
+                normal:   'Depression signs are minimal.',
+                mild:     'Mild depressive symptoms. Monitor for changes.',
+                moderate: 'Moderate depression. Clinical evaluation recommended.',
+                severe:   'Severe depression. Professional support is needed.',
+                extreme:  'Extremely severe depression. Urgent professional assessment is important.'
+            },
+            A: {
+                normal:   'Anxiety signs are minimal.',
+                mild:     'Mild anxiety. Relaxation and stress management are beneficial.',
+                moderate: 'Moderate anxiety. Clinical evaluation recommended.',
+                severe:   'Severe anxiety. Professional support is needed.',
+                extreme:  'Extremely severe anxiety. Urgent professional assessment is important.'
+            },
+            S: {
+                normal:   'Stress levels are within normal range.',
+                mild:     'Mild stress. Rest and stress management are beneficial.',
+                moderate: 'Moderate stress. Clinical evaluation recommended.',
+                severe:   'Severe stress. Professional support is needed.',
+                extreme:  'Extremely severe stress. Urgent professional assessment is important.'
+            }
+        },
+        sevLabels: {
+            normal: 'Normal', mild: 'Mild', moderate: 'Moderate',
+            severe: 'Severe', extreme: 'Ext. Severe'
+        },
+        overallTitle: id => `Scores are ${id === 'normal' ? 'within normal range' : 'elevated'} across subscales`,
+        overallDesc: 'DASS-21 scores (raw × 2) are converted to DASS-42 equivalents for comparison with published norms.',
+        itemBreakTitle: 'Item-by-item breakdown (21 items)',
+        noteTitle: '📘 Note',
+        noteP1: 'DASS-21 was developed by Lovibond & Lovibond (1995). Score = raw sum × 2 (DASS-42 equivalent). This is a screening tool and <strong>does not constitute a clinical diagnosis</strong>.',
+        noteP2: 'If you scored "Severe" or "Extremely Severe" in any subscale, please consult a psychotherapist or psychiatrist.',
+        printBtn: '🖨️ Print Results',
+        restartBtn: '🔄 Start Over'
+    }
+};
+
+// ── STATE ─────────────────────────────────────────────────────
+const answers = {};
+let answeredCount = 0;
+let currentLang = 'ka';
+
+// ── LANGUAGE ──────────────────────────────────────────────────
+function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = T[lang].lang;
+    document.getElementById('btnKa').classList.toggle('active', lang === 'ka');
+    document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+    const t = T[lang];
+    document.getElementById('backLabel').textContent = t.backLabel;
+    document.getElementById('headerTitle').textContent = t.headerTitle;
+    document.getElementById('headerDesc').textContent = t.headerDesc;
+    document.getElementById('pillD').textContent = t.pillD;
+    document.getElementById('pillA').textContent = t.pillA;
+    document.getElementById('pillS').textContent = t.pillS;
+    document.getElementById('infoBox').innerHTML = t.infoBox;
+    document.getElementById('disclaimerBox').innerHTML = t.disclaimer;
+    document.getElementById('submitBtnText').textContent = t.submitBtnText;
+    rebuildQuestions();
+    updateProgress();
+    if (document.getElementById('results').classList.contains('active')) calculateResults();
+}
+
+// ── BUILD QUESTIONS ───────────────────────────────────────────
+function rebuildQuestions() {
+    const container = document.getElementById('questionsContainer');
+    container.innerHTML = '';
+    const t = T[currentLang];
+
+    QUESTIONS.forEach(q => {
+        const sub = q.sub;
+        const qCls = 'q-' + sub.toLowerCase();
+        const isAnswered = q.id in answers;
+        const qText = currentLang === 'en' ? q.en : q.ka;
+
+        let btns = '';
+        t.scaleLabels.forEach((lbl, v) => {
+            const sel = answers[q.id] === v ? ' selected' : '';
+            const lines = lbl.split('\n');
+            btns += `<button class="scale-btn${sel}" onclick="selectAnswer(${q.id},${v},this)">
+                <span class="scale-val">${v}</span>
+                <span class="scale-lbl">${lines.join('<br>')}</span>
+            </button>`;
+        });
+
+        const block = document.createElement('div');
+        block.className = `question-block ${qCls}${isAnswered ? ' answered' : ''}`;
+        block.id = `qb-${q.id}`;
+        block.innerHTML = `
+            <div class="question-meta">
+                <div class="question-num">${q.id}</div>
+                <span class="question-sub-tag">${t.subTag[sub]}</span>
+            </div>
+            <div class="question-text">${qText}</div>
+            <div class="scale-buttons" id="sb-${q.id}">${btns}</div>`;
+        container.appendChild(block);
+    });
+}
+
+// ── INTERACTION ───────────────────────────────────────────────
+function selectAnswer(id, value, btn) {
+    const wasNew = !(id in answers);
+    answers[id] = value;
+    if (wasNew) answeredCount++;
+    document.getElementById(`sb-${id}`)
+        .querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById(`qb-${id}`).classList.add('answered');
+    updateProgress();
+}
+
+function updateProgress() {
+    const t = T[currentLang];
+    const pct = Math.round((answeredCount / 21) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPercent').textContent = pct + '%';
+    document.getElementById('progressLabel').textContent = `${answeredCount} / 21 ${t.progressQ}`;
+    const btn  = document.getElementById('submitBtn');
+    const hint = document.getElementById('submitHint');
+    if (answeredCount === 21) {
+        btn.disabled = false;
+        hint.textContent = t.hintAll;
+        hint.style.color = 'var(--success)';
+    } else {
+        btn.disabled = true;
+        hint.textContent = t.hintRemain(21 - answeredCount);
+        hint.style.color = 'var(--text-muted)';
+    }
+}
+
+// ── SCORING ───────────────────────────────────────────────────
+function computeScores() {
+    const raw = { D: 0, A: 0, S: 0 };
+    QUESTIONS.forEach(q => { raw[q.sub] += (answers[q.id] || 0); });
+    return { D: raw.D * 2, A: raw.A * 2, S: raw.S * 2 };
+}
+
+function getSeverity(sub, score) {
+    return SEV[sub].find(r => score <= r.max).key;
+}
+
+// Severity styling
+const SEV_CLS = {
+    normal: 'sev-normal', mild: 'sev-mild', moderate: 'sev-moderate',
+    severe: 'sev-severe', extreme: 'sev-extreme'
+};
+const SUB_CLS = { D: 'sc-d', A: 'sc-a', S: 'sc-s' };
+const ITEM_CLS = { D: 'item-sub-d', A: 'item-sub-a', S: 'item-sub-s' };
+
+// ── SEVERITY BAR ──────────────────────────────────────────────
+function buildSevBar(sub, score) {
+    const cuts = SEV_CUT_WIDTHS[sub];       // widths in %
+    const pct  = Math.min((score / 42) * 100, 100);
+    const segs = ['normal','mild','moderate','severe','extreme'];
+    let track = '';
+    cuts.forEach((w, i) => {
+        track += `<div class="sev-seg seg-${segs[i]}" style="width:${w}%">${SEV_CUTS[sub][i]}</div>`;
+    });
+    track += `<div class="sev-marker" style="left:${pct}%;"></div>`;
+
+    const t = T[currentLang];
+    let labels = '';
+    cuts.forEach((w, i) => {
+        labels += `<span style="width:${w}%;">${t.sevLabels[segs[i]]}</span>`;
+    });
+
+    return `<div class="sev-bar-wrap">
+        <div class="sev-bar-track">${track}</div>
+        <div class="sev-bar-labels">${labels}</div>
+    </div>`;
+}
+
+// Precompute segment widths (% of 42)
+const SEV_CUT_WIDTHS = {
+    D: SEV_CUTS.D.map((v, i, a) => ((v - (i > 0 ? a[i-1] : 0)) / 42 * 100).toFixed(2) + '' ).map(Number),
+    A: SEV_CUTS.A.map((v, i, a) => ((v - (i > 0 ? a[i-1] : 0)) / 42 * 100).toFixed(2) + '' ).map(Number),
+    S: SEV_CUTS.S.map((v, i, a) => ((v - (i > 0 ? a[i-1] : 0)) / 42 * 100).toFixed(2) + '' ).map(Number)
+};
+
+// ── RESULTS ───────────────────────────────────────────────────
+function calculateResults() {
+    if (answeredCount < 21) return;
+    const t = T[currentLang];
+    const scores = computeScores();
+    const sevKeys = { D: getSeverity('D', scores.D), A: getSeverity('A', scores.A), S: getSeverity('S', scores.S) };
+    const allNormal = Object.values(sevKeys).every(k => k === 'normal');
+
+    let html = '';
+
+    // ── Overview card ──────────────────────────────────────────
+    const worstSev = ['extreme','severe','moderate','mild','normal']
+        .find(k => Object.values(sevKeys).includes(k));
+    const overIcon = { normal:'✅', mild:'🔶', moderate:'⚠️', severe:'🔴', extreme:'🚨' }[worstSev];
+    html += `
+        <div class="result-overview">
+            <div class="result-icon">${overIcon}</div>
+            <div class="result-title">${t.overallTitle(allNormal ? 'normal' : 'elevated')}</div>
+            <div class="result-subtitle">${t.overallDesc}</div>
+            <div class="subscale-scores">
+                ${['D','A','S'].map(sub => `
+                <div class="mini-score ms-${sub.toLowerCase()}">
+                    <div class="mini-score-val">${scores[sub]}</div>
+                    <div class="mini-score-sub">${t.subNames[sub]}</div>
+                    <div class="mini-score-sev">${t.sevLabels[sevKeys[sub]]}</div>
+                </div>`).join('')}
+            </div>
+        </div>`;
+
+    // ── Subscale detail cards ──────────────────────────────────
+    html += '<div class="subscale-cards">';
+    ['D','A','S'].forEach(sub => {
+        const score = scores[sub];
+        const sevKey = sevKeys[sub];
+        const pct = Math.min((score / 42) * 100, 100);
+        html += `
+            <div class="subscale-card ${SUB_CLS[sub]}">
+                <div class="sc-header">
+                    <span class="sc-icon">${t.subIcons[sub]}</span>
+                    <div class="sc-name">${t.subNames[sub]}</div>
+                    <div class="sc-score">${score}<span style="font-size:13px;font-weight:400;color:var(--text-muted)">/42</span></div>
+                    <span class="sev-badge ${SEV_CLS[sevKey]}">${t.sevLabels[sevKey]}</span>
+                </div>
+                ${buildSevBar(sub, score)}
+                <div class="sc-desc">${t.subDescs[sub][sevKey]}</div>
+            </div>`;
+    });
+    html += '</div>';
+
+    // ── Item breakdown ─────────────────────────────────────────
+    html += `<div class="item-breakdown"><h3>${t.itemBreakTitle}</h3>`;
+    QUESTIONS.forEach(q => {
+        const v = answers[q.id];
+        const qText = currentLang === 'en' ? q.en : q.ka;
+        html += `<div class="item-row">
+            <div class="item-num">${q.id}</div>
+            <div class="item-sub ${ITEM_CLS[q.sub]}"></div>
+            <div class="item-text">${qText}</div>
+            <div class="item-score is-${v}">${v}</div>
+        </div>`;
+    });
+    html += '</div>';
+
+    // ── Note ───────────────────────────────────────────────────
+    const hasHigh = Object.values(sevKeys).some(k => k === 'severe' || k === 'extreme');
+    html += `
+        <div class="result-note">
+            <h3>${t.noteTitle}</h3>
+            <p>${t.noteP1}</p>
+            ${hasHigh ? `<p style="color:var(--danger)"><strong>⚠️ ${t.noteP2}</strong></p>` : `<p>${t.noteP2}</p>`}
+        </div>
+        <button class="restart-btn" onclick="window.print()">${t.printBtn}</button>
+        <button class="restart-btn" onclick="restart()">${t.restartBtn}</button>`;
+
+    // Show results
+    ['questionsContainer','submitArea','progressArea','infoBox','disclaimerBox']
+        .forEach(id => document.getElementById(id).style.display = 'none');
+    const el = document.getElementById('results');
+    el.innerHTML = html;
+    el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── RESTART ───────────────────────────────────────────────────
+function restart() {
+    Object.keys(answers).forEach(k => delete answers[k]);
+    answeredCount = 0;
+    ['questionsContainer','submitArea','progressArea','infoBox','disclaimerBox']
+        .forEach(id => document.getElementById(id).style.display = 'block');
+    const el = document.getElementById('results');
+    el.classList.remove('active');
+    el.innerHTML = '';
+    rebuildQuestions();
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── THEME ─────────────────────────────────────────────────────
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light');
+    localStorage.setItem('psycho-theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeToggle').textContent = isLight ? '🌙' : '☀️';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+setLang('ka');
+if (localStorage.getItem('psycho-theme') === 'light') {
+    document.getElementById('themeToggle').textContent = '🌙';
+}
+</script>
+
+</body>
+</html>

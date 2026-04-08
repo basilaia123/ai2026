@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>საშინაო დავალება 5 - ინფორმაციის მოძიება და შეჯამება | AI პრაქტიკაში</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .header .meta {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            text-align: left;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .content-section h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 1.9rem;
+            font-weight: 700;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .content-section h3 {
+            color: #764ba2;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .highlight-box {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h4 {
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #f57c00;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .key-points {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 1.5rem 0;
+        }
+
+        .key-points h4 {
+            color: #388e3c;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .task-item {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .task-header h4 {
+            color: #667eea;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .badge-points {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        .badge-time {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #388e3c;
+            padding: 0.25rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .prompt-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+
+        .prompt-label {
+            color: #a78bfa;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-family: 'FiraGO', sans-serif;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: #667eea;
+        }
+
+        .deliverable-list {
+            background: #f8f9ff;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            margin-top: 1.2rem;
+        }
+
+        .deliverable-list h4 {
+            color: #667eea;
+            margin-bottom: 0.6rem;
+            font-size: 1rem;
+        }
+
+        .deliverable-list ul {
+            padding-left: 1.5rem;
+            margin: 0;
+        }
+
+        .deliverable-list li {
+            margin-bottom: 0.3rem;
+            color: #444;
+        }
+
+        .grading-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .grading-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.9rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .grading-table td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        .grading-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        ul, ol {
+            padding-left: 1.8rem;
+            margin: 0.8rem 0;
+        }
+
+        li {
+            margin-bottom: 0.4rem;
+            color: #333;
+        }
+
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 22px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+
+        .tool-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.8rem 0;
+        }
+
+        .chip {
+            background: #ede9fe;
+            color: #5b21b6;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .content-section { padding: 1.5rem; }
+            .task-header { flex-direction: column; align-items: flex-start; }
+            .badge-points { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="badge">ლექცია 5</div>
+            <h1>საშინაო დავალება 5</h1>
+            <h2 style="color: #764ba2; font-size: 1.6rem; margin-top: 0.4rem; border: none; font-weight: 600;">ინფორმაციის მოძიება, შეჯამება და გადამოწმება</h2>
+            <div class="meta">
+                <strong>ქულა:</strong> 5 ქულა &nbsp;|&nbsp;
+                <strong>დრო:</strong> ~20-30 წუთი &nbsp;|&nbsp;
+                <strong>ინსტრუმენტები:</strong> Perplexity, ChatGPT, Claude ან Gemini
+            </div>
+        </div>
+
+        <!-- Overview -->
+        <div class="content-section">
+            <h2>მიზანი</h2>
+            <p style="font-size: 1.1rem;">
+                ორი პრაქტიკული ამოცანა: ერთ რეალურ ტექსტს შეაჯამებთ AI-ით სამი სხვადასხვა ფორმატით,
+                ერთ კითხვას კი გამოიკვლევთ Perplexity-ით — და გადაამოწმებთ, რამდენად ზუსტია პასუხი.
+            </p>
+
+            <div class="key-points" style="margin-top: 1.2rem;">
+                <h4>დავალების სტრუქტურა:</h4>
+                <ul>
+                    <li><strong>ნაწილი 1:</strong> ტექსტის სამფორმატიანი შეჯამება — 3 ქულა, ~12-15 წუთი</li>
+                    <li><strong>ნაწილი 2:</strong> Perplexity-ით კვლევა და ფაქტების გადამოწმება — 2 ქულა, ~10-12 წუთი</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Part 1 -->
+        <div class="content-section">
+            <h2>ნაწილი 1 — ტექსტის სამფორმატიანი შეჯამება</h2>
+
+            <div class="task-item">
+                <div class="task-header">
+                    <h4>ტექსტის შერჩევა და შეჯამება</h4>
+                    <span class="badge-time">~12-15 წთ</span>
+                    <span class="badge-points">3 ქულა</span>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <strong>აირჩიეთ ტექსტი</strong> — რეალური სტატია, ანგარიში ან ახალი ამბების პუბლიკაცია
+                        თქვენი სფეროდან ან AI-ის თემაზე (500-1000 სიტყვა საკმარისია).
+                        მოიძიეთ Google-ში ან გამოიყენეთ ნებისმიერი ქართული/ინგლისური მედია.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <strong>შექმენით 3 შეჯამება</strong> — სამი ცალკე პრომპტით, სამი განსხვავებული ფორმატი:
+
+                        <div style="margin-top: 1rem;">
+                            <p><strong>A. Executive Summary</strong> — მენეჯერისთვის, 3-4 წინადადება:</p>
+                            <div class="prompt-box">
+                                <div class="prompt-label">პრომპტი A</div>
+შეაჯამეთ ეს ტექსტი 3-4 წინადადებით. მიმართეთ მენეჯერს, რომელსაც 30 წამი აქვს.
+ხაზი გაუსვით: რა ხდება, რატომ არის მნიშვნელოვანი, რა ქმედება არის საჭირო.
+
+[ტექსტი]
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <p><strong>B. 5 Key Points</strong> — ძირითადი ფაქტები, პუნქტებად:</p>
+                            <div class="prompt-box">
+                                <div class="prompt-label">პრომპტი B</div>
+ამ ტექსტიდან ამოიღეთ ზუსტად 5 ყველაზე მნიშვნელოვანი ფაქტი ან მოსაზრება.
+თითოეული — ერთი კონკრეტული წინადადება. არ გადააფორმულიროთ, ციტირეთ ან
+გადმოეცით მაქსიმალურად ზუსტად.
+
+[ტექსტი]
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <p><strong>C. ELI5 (Explain Like I'm 5)</strong> — სრულიად მარტივი ენით:</p>
+                            <div class="prompt-box">
+                                <div class="prompt-label">პრომპტი C</div>
+ამიხსენი ეს ტექსტი ისე, რომ გავიგო 10 წლის ბავშვმა. გამოიყენე მარტივი სიტყვები,
+მოკლე წინადადებები, ყოველდღიური მაგალითები. 4-5 წინადადება.
+
+[ტექსტი]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <strong>შეადარეთ შედეგები</strong> — 2-3 წინადადებით ჩაწერეთ: რომელი ფორმატი
+                        ყველაზე სასარგებლო გამოდგებოდა თქვენი სამუშაოსთვის და რატომ?
+                    </div>
+                </div>
+
+                <div class="deliverable-list">
+                    <h4>ჩასაბარებელი:</h4>
+                    <ul>
+                        <li>ორიგინალი ტექსტის სათაური და ბმული (ან ჩასმული ტექსტი)</li>
+                        <li>3 შეჯამება (A, B, C) — გამოყენებული პრომპტებით</li>
+                        <li>2-3 წინადადება შედარების შესახებ</li>
+                        <li>1 სკრინშოტი AI-სთან საუბრიდან</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 2 -->
+        <div class="content-section">
+            <h2>ნაწილი 2 — Perplexity-ით კვლევა და გადამოწმება</h2>
+
+            <div class="task-item">
+                <div class="task-header">
+                    <h4>AI-ასისტირებული კვლევა წყაროებით</h4>
+                    <span class="badge-time">~10-12 წთ</span>
+                    <span class="badge-points">2 ქულა</span>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>რატომ Perplexity?</h4>
+                    <p>Perplexity.ai ერთ-ერთი გამორჩეული AI-ია, რომელიც ყოველ პასუხს <strong>ციტირებული წყაროებით</strong>
+                    ადასტურებს. ეს აადვილებს ფაქტების სწრაფ გადამოწმებას.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <strong>დაუსვით Perplexity-ს პრაქტიკული კითხვა</strong> თქვენი სამუშაო სფეროდან ან
+                        ყოველდღიური ცხოვრებიდან — რამე, რაც გაინტერესებთ ან გამოგადგებათ.
+
+                        <div style="margin-top: 0.8rem;">
+                            <p>მაგალითები:</p>
+                            <ul>
+                                <li>"რა AI ინსტრუმენტები გამოიყენება [თქვენი პროფესია]-ში 2025 წელს?"</li>
+                                <li>"რა განსხვავებაა ChatGPT-სა და Gemini-ს შორის ტექსტის შეჯამებაში?"</li>
+                                <li>"რამდენი ადამიანი იყენებს ChatGPT-ს ყოველდღიურად 2025 წელს?"</li>
+                                <li>ან ნებისმიერი სხვა კითხვა, სადაც ფაქტები და სტატისტიკა მნიშვნელოვანია</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <strong>ნახეთ წყაროები</strong> — Perplexity პასუხს ციტირებული ბმულებით გასცემს.
+                        გადადით <strong>ერთ</strong> ნებისმიერ მითითებულ წყაროზე.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <strong>გადაამოწმეთ ერთი ფაქტი</strong> — Perplexity-ს პასუხიდან ამოიღეთ ერთი
+                        კონკრეტული ციფრი, თარიღი ან ფაქტი. გადადით წყაროზე და შეამოწმეთ, ეთანხმება თუ არა.
+                        ჩაწერეთ: დამთხვა? განსხვავება?
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <strong>2-3 წინადადება</strong>: რა გაიგეთ ამ კვლევიდან? სანდოა Perplexity-ს
+                        პასუხი ამ შემთხვევაში?
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>მნიშვნელოვანი პრაქტიკული წესი:</h4>
+                    <p>AI ყოველთვის შეიძლება შეცდეს ციფრებში, თარიღებში და სტატისტიკაში.
+                    Perplexity-ს უპირატესობა ის არის, რომ <strong>გიჩვენებს სად შეიძლება გადაამოწმო</strong> —
+                    ისარგებლეთ ამ ფუნქციით.</p>
+                </div>
+
+                <div class="deliverable-list">
+                    <h4>ჩასაბარებელი:</h4>
+                    <ul>
+                        <li>გამოყენებული კითხვა (პრომპტი)</li>
+                        <li>Perplexity-ს პასუხის მოკლე შინაარსი + ერთი გადამოწმებული ფაქტი</li>
+                        <li>გადამოწმების შედეგი (დამთხვა / განსხვავება)</li>
+                        <li>2-3 წინადადება — რეფლექსია</li>
+                        <li>1 სკრინშოტი Perplexity-ს პასუხიდან (წყაროები ჩანდეს)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grading -->
+        <div class="content-section">
+            <h2>შეფასების რუბრიკა</h2>
+
+            <table class="grading-table">
+                <thead>
+                    <tr>
+                        <th>კრიტერიუმი</th>
+                        <th>ქულა</th>
+                        <th>რას ვაფასებ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ნაწილი 1 — 3 შეჯამება</strong></td>
+                        <td><strong>2 ქულა</strong></td>
+                        <td>სამივე ფორმატი შესრულებულია, პრომპტები დოკუმენტირებულია, შედეგები ხარისხიანია</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ნაწილი 1 — შედარება</strong></td>
+                        <td><strong>1 ქულა</strong></td>
+                        <td>კონკრეტული, დასაბუთებული მოსაზრება — რომელი ფორმატი გამოდგება და რატომ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ნაწილი 2 — კვლევა</strong></td>
+                        <td><strong>1 ქულა</strong></td>
+                        <td>კითხვა რეალურია, Perplexity-ს პასუხი გამოყენებულია, წყარო ნახულია</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ნაწილი 2 — გადამოწმება</strong></td>
+                        <td><strong>1 ქულა</strong></td>
+                        <td>კონკრეტული ფაქტი გადამოწმებულია, შედეგი ჩაწერილია, რეფლექსია გონივრულია</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-points">
+                <h4>შეფასების ლოგიკა:</h4>
+                <ul>
+                    <li>ქულა ეკუთვნის <strong>პროცესს</strong>, არა სრულყოფილ შედეგს — ნახვა, ცდა, ჩაწერა საკმარისია</li>
+                    <li>სკრინშოტები ადასტურებს, რომ AI-ი გამოიყენეთ — 2 ჯამში (1+1)</li>
+                    <li>ენა: ქართული, ინგლისური ან შერეული — ნებისმიერი</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Submission -->
+        <div class="content-section">
+            <h2>წარდგენის ინსტრუქცია</h2>
+
+            <div class="highlight-box">
+                <h4>ფაილი:</h4>
+                <ol>
+                    <li>შექმენით <strong>ერთი Google Docs</strong> დოკუმენტი: <code>HW5_[გვარი].docx</code></li>
+                    <li>სტრუქტურა: ნაწილი 1 → ნაწილი 2 → სკრინშოტები ბოლოში</li>
+                    <li>გაზიარების პარამეტრი: <strong>Anyone with the link → Commenter</strong></li>
+                    <li>ატვირთეთ <strong>Google Classroom</strong>-ში ბმულად</li>
+                </ol>
+            </div>
+
+            <div class="tool-chips" style="margin-top: 1rem;">
+                <span style="color: #555; font-weight: 600; align-self: center;">რეკომენდებული ინსტრუმენტები:</span>
+                <span class="chip">Perplexity.ai</span>
+                <span class="chip">ChatGPT</span>
+                <span class="chip">Claude</span>
+                <span class="chip">Gemini</span>
+                <span class="chip">NotebookLM</span>
+            </div>
+
+            <div class="links">
+                <a href="lecture-5-slides.html" class="btn">ლექცია 5 — სლაიდები</a>
+                <a href="index.html" class="btn">მთავარი გვერდი</a>
+                <a href="course-info.html" class="btn">კურსის ინფო</a>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

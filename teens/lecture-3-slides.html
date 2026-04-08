@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სესია 3: AI — სასწავლო ასისტენტი - AI მოზარდებისთვის</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyan: #06b6d4;
+            --cyan-light: #67e8f9;
+            --purple: #8b5cf6;
+            --purple-light: #c4b5fd;
+            --pink: #ec4899;
+            --pink-light: #f9a8d4;
+            --mint: #34d399;
+            --peach: #fb923c;
+            --blue: #3b82f6;
+            --blue-light: #93c5fd;
+            --bg-cream: #fefdfb;
+            --bg-soft: #f8f7f4;
+            --bg-card: #ffffff;
+            --text-dark: #1e1b4b;
+            --text-body: #4b5563;
+            --text-muted: #9ca3af;
+            --shadow-soft: 0 4px 20px rgba(139, 92, 246, 0.08);
+            --shadow-hover: 0 12px 40px rgba(139, 92, 246, 0.15);
+        }
+
+        body {
+            font-family: 'Outfit', 'FiraGO', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 50%, var(--mint) 100%);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .session-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .online-badge {
+            background: rgba(52, 211, 153, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            background: var(--bg-card);
+            color: var(--blue);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.next {
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: white;
+        }
+
+        .nav-link.next:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Slide */
+        .slide {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(59, 130, 246, 0.06);
+            border-left: 5px solid var(--blue);
+            transition: all 0.3s ease;
+        }
+
+        .slide:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .slide-number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .slide h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .slide h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .slide p {
+            color: var(--text-body);
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide ul, .slide ol {
+            color: var(--text-body);
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide li {
+            margin-bottom: 0.6rem;
+            font-size: 1.05rem;
+        }
+
+        /* Title Slide */
+        .slide.title-slide {
+            text-align: center;
+            padding: 4rem 2.5rem;
+            border-left: none;
+            border-top: 5px solid transparent;
+            border-image: linear-gradient(90deg, var(--blue), var(--cyan), var(--mint)) 1;
+        }
+
+        .title-slide h2 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--blue) 50%, var(--cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-slide .emoji-big {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Info Boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(6, 182, 212, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--blue);
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--blue);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.08), rgba(236, 72, 153, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--peach);
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: var(--peach);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(6, 182, 212, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--mint);
+            margin: 1.5rem 0;
+        }
+
+        .key-points h4 {
+            color: #059669;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .safety-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(251, 146, 60, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid #ef4444;
+            margin: 1.5rem 0;
+        }
+
+        .safety-box h4 {
+            color: #ef4444;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .ethics-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--purple);
+            margin: 1.5rem 0;
+        }
+
+        .ethics-box h4 {
+            color: var(--purple);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            border-color: var(--blue-light);
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .card h5 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Use Case Cards */
+        .usecase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .usecase-card {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-bottom: 4px solid var(--blue);
+            transition: all 0.3s ease;
+        }
+
+        .usecase-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .usecase-card h5 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .usecase-card p {
+            font-size: 0.95rem;
+            color: var(--text-body);
+            margin: 0;
+        }
+
+        /* Demo Box */
+        .demo-box {
+            background: linear-gradient(135deg, var(--bg-soft), rgba(59, 130, 246, 0.05));
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 1.5rem 0;
+            border: 2px dashed var(--blue-light);
+        }
+
+        .demo-box h4 {
+            color: var(--blue);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .prompt-example {
+            background: var(--bg-card);
+            padding: 1.2rem;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            margin: 1rem 0;
+        }
+
+        .prompt-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .prompt-good {
+            border-color: var(--mint);
+            background: rgba(52, 211, 153, 0.05);
+        }
+
+        /* Activity Box */
+        .activity-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(6, 182, 212, 0.08));
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 1.5rem 0;
+            border: 2px solid var(--blue-light);
+        }
+
+        .activity-box h4 {
+            color: var(--blue);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .activity-steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-steps li {
+            counter-increment: step;
+            padding: 0.8rem 0 0.8rem 3rem;
+            position: relative;
+        }
+
+        .activity-steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Homework Box */
+        .homework-box {
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            padding: 2rem;
+            border-radius: 20px;
+            color: white;
+            margin: 1.5rem 0;
+        }
+
+        .homework-box h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .homework-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .homework-box li {
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+        }
+
+        .homework-box li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--mint);
+            font-weight: bold;
+        }
+
+        /* Comparison */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-bad {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(251, 146, 60, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .comparison-bad h4 {
+            color: #ef4444;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-good {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(6, 182, 212, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--mint);
+        }
+
+        .comparison-good h4 {
+            color: #059669;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Two Column */
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Subject Cards */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .subject-card {
+            background: var(--bg-soft);
+            padding: 1.2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .subject-emoji {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-soft);
+            border-radius: 50px;
+            padding: 0.3rem;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, var(--blue), var(--cyan), var(--mint));
+            border-radius: 50px;
+            width: 37.5%; /* 3/8 sessions */
+        }
+
+        /* Fact Check Steps */
+        .factcheck-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .factcheck-step {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            position: relative;
+        }
+
+        .factcheck-step::after {
+            content: '→';
+            position: absolute;
+            right: -1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--blue);
+        }
+
+        .factcheck-step:last-child::after {
+            display: none;
+        }
+
+        .factcheck-number {
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 0.75rem;
+        }
+
+        .factcheck-step h5 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .factcheck-step p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 1.5rem;
+            }
+
+            .title-slide {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .title-slide h2 {
+                font-size: 1.8rem;
+            }
+
+            .cards-grid, .subject-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+
+            .factcheck-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .factcheck-step::after {
+                display: none;
+            }
+
+            .nav-bar {
+                justify-content: center;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .header {
+                position: relative;
+            }
+
+            .slide {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="session-badge">სესია 3 / 8</div>
+            <div class="session-badge online-badge">🌐 ონლაინ სესია</div>
+            <h1>AI — სასწავლო ასისტენტი</h1>
+            <p class="header-subtitle">AI as Your Study Assistant</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <a href="lecture-2-slides.html" class="nav-link">← სესია 2</a>
+            <a href="lecture-4-slides.html" class="nav-link next">სესია 4 →</a>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide">
+            <span class="emoji-big">📚</span>
+            <h2>AI — შენი პირადი სწავლის ასისტენტი</h2>
+            <p style="font-size: 1.2rem; color: var(--text-body);">ისწავლე, როგორ გამოიყენო AI ესეების, რეფერატებისა და გამოცდებისთვის მომზადებაში</p>
+            <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <div class="session-badge" style="background: var(--blue);">შაბათი</div>
+                <div class="session-badge" style="background: var(--cyan);">14:00-16:30</div>
+                <div class="session-badge" style="background: var(--mint);">🌐 ონლაინ</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Today's Agenda -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 1</span>
+            <h2>📋 დღევანდელი გეგმა</h2>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">👋</span>
+                    <h5>შეერთება & განხილვა</h5>
+                    <p>14:00 - 14:20</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📝</span>
+                    <h5>ესეები & რეფერატები</h5>
+                    <p>14:20 - 14:55</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🔍</span>
+                    <h5>კვლევა & მოძიება</h5>
+                    <p>14:55 - 15:30</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">☕</span>
+                    <h5>შესვენება</h5>
+                    <p>15:30 - 15:45</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📒</span>
+                    <h5>კონსპექტები</h5>
+                    <p>15:45 - 16:15</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">❓</span>
+                    <h5>Q&A</h5>
+                    <p>16:15 - 16:30</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🌐 ონლაინ სესიის წესები</h4>
+                <ul>
+                    <li>კამერა ჩართული (თუ შესაძლებელია)</li>
+                    <li>მიკროფონი გამორთული, სანამ არ ლაპარაკობ</li>
+                    <li>კითხვები ჩატში ან "Raise Hand" ფუნქციით</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Why AI for Learning -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 2</span>
+            <h2>🎯 რატომ AI სწავლისთვის?</h2>
+
+            <div class="usecase-grid">
+                <div class="usecase-card">
+                    <h5>⏰ დროის დაზოგვა</h5>
+                    <p>რთული თემების სწრაფი ახსნა, კონსპექტების ავტომატური შექმნა</p>
+                </div>
+                <div class="usecase-card">
+                    <h5>🎓 პერსონალიზება</h5>
+                    <p>შენს დონეზე მორგებული ახსნა-განმარტება</p>
+                </div>
+                <div class="usecase-card">
+                    <h5>🔄 24/7 ხელმისაწვდომობა</h5>
+                    <p>დახმარება ნებისმიერ დროს, გაკვეთილის შემდეგაც</p>
+                </div>
+                <div class="usecase-card">
+                    <h5>💡 იდეების გენერირება</h5>
+                    <p>ესეების თემები, პროექტების იდეები</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ მაგრამ გახსოვდეს!</h4>
+                <p>AI არის <strong>დამხმარე</strong>, არა შემცვლელი. სწავლის პროცესი მაინც შენ უნდა გაიარო - AI მხოლოდ გაგიადვილებს გზას!</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: AI for Different Subjects -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 3</span>
+            <h2>📖 AI სხვადასხვა საგანში</h2>
+
+            <p>AI-ს შეუძლია დაგეხმაროს თითქმის ყველა საგანში:</p>
+
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <span class="subject-emoji">📐</span>
+                    <div class="subject-name">მათემატიკა</div>
+                </div>
+                <div class="subject-card">
+                    <span class="subject-emoji">🧪</span>
+                    <div class="subject-name">ქიმია</div>
+                </div>
+                <div class="subject-card">
+                    <span class="subject-emoji">🔬</span>
+                    <div class="subject-name">ბიოლოგია</div>
+                </div>
+                <div class="subject-card">
+                    <span class="subject-emoji">⚛️</span>
+                    <div class="subject-name">ფიზიკა</div>
+                </div>
+                <div class="subject-card">
+                    <span class="subject-emoji">🌍</span>
+                    <div class="subject-name">გეოგრაფია</div>
+                </div>
+                <div class="subject-card">
+                    <span class="subject-emoji">📜</span>
+                    <div class="subject-name">ისტორია</div>
+                </div>
+                <div class="subject-card">
+                    <span class="subject-emoji">📚</span>
+                    <div class="subject-name">ლიტერატურა</div>
+                </div>
+                <div class="subject-card">
+                    <span class="subject-emoji">🇬🇧</span>
+                    <div class="subject-name">ინგლისური</div>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ AI განსაკუთრებით კარგია:</h4>
+                <ul>
+                    <li><strong>ახსნა-განმარტებაში</strong> - რთული კონცეფციების მარტივად ახსნა</li>
+                    <li><strong>მაგალითებში</strong> - დამატებითი ამოცანები და მაგალითები</li>
+                    <li><strong>შემოწმებაში</strong> - შენი პასუხების გადამოწმება</li>
+                    <li><strong>მომზადებაში</strong> - ტესტის კითხვების გენერირება</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Essays Part 1 -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 4</span>
+            <h2>📝 ესეების დაწერა AI-ის დახმარებით — ნაწილი 1</h2>
+
+            <h3>რაში დაგეხმარება AI:</h3>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">💡</span>
+                    <h5>თემის არჩევა</h5>
+                    <p>იდეების გენერირება</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📋</span>
+                    <h5>სტრუქტურა</h5>
+                    <p>გეგმის შედგენა</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">✏️</span>
+                    <h5>დახვეწა</h5>
+                    <p>ტექსტის რედაქტირება</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🔍</span>
+                    <h5>შემოწმება</h5>
+                    <p>გრამატიკა, სტილი</p>
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი: თემის არჩევა</h4>
+                <div class="prompt-label">Prompt:</div>
+                <div class="prompt-example prompt-good">
+                    მე ვარ მე-10 კლასის მოსწავლე. უნდა დავწერო ესე გარემოს დაცვის თემაზე (500-700 სიტყვა). მომეცი 5 საინტერესო თემა, რომელიც შეეფერება ჩემს ასაკს და აქტუალურია დღეს.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Essays Part 2 -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 5</span>
+            <h2>📝 ესეების დაწერა AI-ის დახმარებით — ნაწილი 2</h2>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი: სტრუქტურის შედგენა</h4>
+                <div class="prompt-label">Prompt:</div>
+                <div class="prompt-example prompt-good">
+                    დამეხმარე შევადგინო გეგმა ესეისთვის თემაზე "პლასტიკის დაბინძურება ოკეანეებში". ესე უნდა იყოს 600 სიტყვა, 5 პარაგრაფით (შესავალი, 3 მთავარი აბზაცი, დასკვნა). თითოეული პარაგრაფისთვის მომეცი 2-3 მთავარი პუნქტი.
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი: ტექსტის გადამოწმება</h4>
+                <div class="prompt-label">Prompt:</div>
+                <div class="prompt-example prompt-good">
+                    გადახედე ჩემს ტექსტს და მომეცი უკუკავშირი:<br>
+                    1. გრამატიკული შეცდომები<br>
+                    2. სტილის გასაუმჯობესებელი ადგილები<br>
+                    3. ლოგიკური კავშირები პარაგრაფებს შორის<br><br>
+                    [შენი ტექსტი აქ]
+                </div>
+            </div>
+
+            <div class="safety-box">
+                <h4>🚫 რა არ უნდა გააკეთო:</h4>
+                <p><strong>არასოდეს სთხოვო AI-ს მთლიანი ესეს დაწერა!</strong> ეს პლაგიატია და სკოლაში სერიოზული პრობლემა გექნება.</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Plagiarism vs Help -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 6</span>
+            <h2>🛡️ პლაგიატი თუ დახმარება</h2>
+
+            <p>სად არის ზღვარი? ეს მნიშვნელოვანი კითხვაა!</p>
+
+            <div class="comparison-container">
+                <div class="comparison-bad">
+                    <h4>❌ პლაგიატი:</h4>
+                    <ul>
+                        <li>AI-ის მიერ დაწერილი ტექსტის თავის სახელით წარდგენა</li>
+                        <li>"დაწერე ჩემს მაგივრად ესე"</li>
+                        <li>AI პასუხების კოპირება გამოცდაზე</li>
+                        <li>სხვისი ნამუშევრის გადმოწერა</li>
+                    </ul>
+                </div>
+                <div class="comparison-good">
+                    <h4>✅ ლეგიტიმური დახმარება:</h4>
+                    <ul>
+                        <li>იდეების გენერირება და ბრეინსტორმინგი</li>
+                        <li>რთული კონცეფციების ახსნა</li>
+                        <li>შენი ტექსტის რედაქტირება</li>
+                        <li>პრაქტიკის კითხვების გენერირება</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ethics-box">
+                <h4>💡 ოქროს წესი:</h4>
+                <p>თუ შეგიძლია ამოხსნა <strong>"მე ეს თავად გავაკეთე, AI მხოლოდ დამეხმარა"</strong> - ყველაფერი რიგზეა! თუ ვერ - სავარაუდოდ ზღვარს კვეთ.</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Research -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 7</span>
+            <h2>🔍 კვლევა და ინფორმაციის მოძიება</h2>
+
+            <p>AI კარგი ასისტენტია კვლევისთვის, მაგრამ ფრთხილად!</p>
+
+            <div class="two-column">
+                <div class="highlight-box">
+                    <h4>✅ სთხოვე AI-ს:</h4>
+                    <ul>
+                        <li>თემის მიმოხილვა და ძირითადი ცნებები</li>
+                        <li>საკვანძო სიტყვები ძიებისთვის</li>
+                        <li>კითხვების ჩამოყალიბება</li>
+                        <li>ინფორმაციის სტრუქტურირება</li>
+                    </ul>
+                </div>
+                <div class="warning-box">
+                    <h4>⚠️ ნუ ენდობი AI-ს:</h4>
+                    <ul>
+                        <li>კონკრეტული ფაქტები და თარიღები</li>
+                        <li>სტატისტიკა და რიცხვები</li>
+                        <li>ციტატები და წყაროები</li>
+                        <li>უახლესი მოვლენები</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი: კვლევის დაწყება</h4>
+                <div class="prompt-example prompt-good">
+                    მინდა გავიგო მეტი კლიმატის ცვლილებაზე რეფერატისთვის. მომეცი:<br>
+                    1. 5 მთავარი საკითხი, რაც უნდა გავიგო<br>
+                    2. საკვანძო ტერმინები განმარტებებით<br>
+                    3. რა ტიპის წყაროები მოვძებნო (არა კონკრეტული ლინკები)
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Fact Checking -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 8</span>
+            <h2>🛡️ Fact-Checking - ფაქტების გადამოწმება</h2>
+
+            <p>AI ხშირად "იტყუება" - ყოველთვის გადაამოწმე მნიშვნელოვანი ინფორმაცია!</p>
+
+            <div class="factcheck-steps">
+                <div class="factcheck-step">
+                    <div class="factcheck-number">1</div>
+                    <h5>ეჭვი შეიტანე</h5>
+                    <p>თუ რაიმე საეჭვოდ ჟღერს</p>
+                </div>
+                <div class="factcheck-step">
+                    <div class="factcheck-number">2</div>
+                    <h5>მოძებნე წყარო</h5>
+                    <p>Google-ში, Wikipedia-ში</p>
+                </div>
+                <div class="factcheck-step">
+                    <div class="factcheck-number">3</div>
+                    <h5>შეადარე</h5>
+                    <p>რამდენიმე წყაროსთან</p>
+                </div>
+                <div class="factcheck-step">
+                    <div class="factcheck-number">4</div>
+                    <h5>დაადასტურე</h5>
+                    <p>სანდო წყაროთი</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ სანდო წყაროები:</h4>
+                <ul>
+                    <li><strong>აკადემიური:</strong> Google Scholar, სამეცნიერო ჟურნალები</li>
+                    <li><strong>ენციკლოპედიური:</strong> Wikipedia (საწყისი წერტილი), Britannica</li>
+                    <li><strong>სახელმწიფო:</strong> .gov, .edu საიტები</li>
+                    <li><strong>მედია:</strong> რეპუტაციის მქონე მედიასაშუალებები</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Study Notes -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 9</span>
+            <h2>📒 კონსპექტების შექმნა</h2>
+
+            <p>AI-ს შეუძლია დაგეხმაროს კონსპექტების შექმნაში და სტრუქტურირებაში.</p>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი: კონსპექტის შექმნა</h4>
+                <div class="prompt-example prompt-good">
+                    მაქვს ბიოლოგიის ტექსტი უჯრედის აგებულების შესახებ. დამეხმარე შევქმნა კონსპექტი:<br>
+                    1. მთავარი პუნქტებით<br>
+                    2. საკვანძო ტერმინები განმარტებებით<br>
+                    3. დასამახსოვრებელი ფაქტები<br><br>
+                    [ტექსტი აქ]
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი: შეჯამება</h4>
+                <div class="prompt-example prompt-good">
+                    შეაჯამე ეს თავი 5 მთავარ პუნქტში. თითოეული პუნქტი უნდა იყოს 1-2 წინადადება. დაამატე 1 მაგალითი თითოეულს.<br><br>
+                    [თავის ტექსტი]
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 რჩევა: აქტიური სწავლა</h4>
+                <p>უბრალოდ AI-ის მიერ გაკეთებული კონსპექტის კითხვა არ არის საკმარისი! გადაიკითხე, გაიაზრე და <strong>შენი სიტყვებით გადაწერე</strong> - ასე უკეთ დაიმახსოვრებ.</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Exam Preparation -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 10</span>
+            <h2>📖 გამოცდისთვის მომზადება</h2>
+
+            <p>AI შეიძლება იყოს შენი იდეალური "მოსამზადებელი პარტნიორი"!</p>
+
+            <div class="usecase-grid">
+                <div class="usecase-card">
+                    <h5>❓ კითხვების გენერირება</h5>
+                    <p>"შემიქმენი 10 ტესტის კითხვა ამ თემაზე"</p>
+                </div>
+                <div class="usecase-card">
+                    <h5>📝 ახსნა-განმარტება</h5>
+                    <p>"ამიხსენი ეს კონცეფცია სხვა მაგალითით"</p>
+                </div>
+                <div class="usecase-card">
+                    <h5>🔄 გამეორება</h5>
+                    <p>"დამისვი კითხვები და შეამოწმე ჩემი პასუხები"</p>
+                </div>
+                <div class="usecase-card">
+                    <h5>💭 სუსტი მხარეები</h5>
+                    <p>"ვერ ვიგებ ამ თემას, ამიხსენი მარტივად"</p>
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი: ტესტის პრაქტიკა</h4>
+                <div class="prompt-example prompt-good">
+                    იყავი ისტორიის მასწავლებელი. შემიქმენი 10 კითხვა მეორე მსოფლიო ომის თემაზე მე-10 კლასის დონისთვის:<br>
+                    - 5 მრავალარჩევანიანი<br>
+                    - 3 მოკლე პასუხის<br>
+                    - 2 განვრცობილი პასუხის<br><br>
+                    ჯერ არ მომცე პასუხები - მინდა თავად ვცადო!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Practice Time -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 11</span>
+            <h2>🎯 პრაქტიკის დრო!</h2>
+
+            <div class="activity-box">
+                <h4>✏️ დავალება: AI სასწავლო ასისტენტი</h4>
+                <p>აირჩიე ერთ-ერთი სცენარი და გამოიყენე AI:</p>
+                <ol class="activity-steps">
+                    <li><strong>სცენარი A:</strong> შექმენი კონსპექტი ბოლო გაკვეთილის თემაზე</li>
+                    <li><strong>სცენარი B:</strong> მოამზადე ტესტის კითხვები შენთვის</li>
+                    <li><strong>სცენარი C:</strong> სთხოვე AI-ს აგიხსნას რთული თემა</li>
+                </ol>
+            </div>
+
+            <div class="two-column">
+                <div class="key-points">
+                    <h4>✅ გახსოვდეს:</h4>
+                    <ul>
+                        <li>გამოიყენე CLEAR ჩარჩო</li>
+                        <li>იყავი კონკრეტული</li>
+                        <li>გადაამოწმე ფაქტები</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <h4>💬 გააზიარე:</h4>
+                    <p>რა მოგეწონა? რა იყო სასარგებლო? რამე გაგაკვირვა?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Tips & Tricks -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 12</span>
+            <h2>💡 რჩევები და ხრიკები</h2>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">🎭</span>
+                    <h5>როლის მინიჭება</h5>
+                    <p>"იყავი მასწავლებელი, რომელიც..."</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📊</span>
+                    <h5>ფორმატის მოთხოვნა</h5>
+                    <p>"დამიწერე პუნქტებით/ცხრილით"</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🔄</span>
+                    <h5>Follow-up</h5>
+                    <p>"ამიხსენი უფრო მარტივად"</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📝</span>
+                    <h5>მაგალითები</h5>
+                    <p>"მომეცი 3 მაგალითი"</p>
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 Power Prompt სწავლისთვის:</h4>
+                <div class="prompt-example prompt-good">
+                    იყავი გამოცდილი [საგნის] მასწავლებელი. მე ვარ მე-[X] კლასის მოსწავლე.<br><br>
+                    ამიხსენი [თემა]:<br>
+                    1. მარტივი ენით, რთული ტერმინების გარეშე<br>
+                    2. 2-3 რეალური მაგალითით<br>
+                    3. რატომ არის ეს მნიშვნელოვანი<br><br>
+                    ბოლოს დამისვი 3 კითხვა, რომ შევამოწმო გავიგე თუ არა.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 13</span>
+            <h2>📋 რა ვისწავლეთ დღეს?</h2>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">📝</span>
+                    <h5>ესეების დახმარება</h5>
+                    <p>იდეები, სტრუქტურა, რედაქტირება</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🔍</span>
+                    <h5>კვლევა</h5>
+                    <p>მიმოხილვა + fact-checking</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📒</span>
+                    <h5>კონსპექტები</h5>
+                    <p>შეჯამება და სტრუქტურირება</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🛡️</span>
+                    <h5>ეთიკა</h5>
+                    <p>პლაგიატი თუ დახმარება</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ მთავარი გზავნილი:</h4>
+                <p style="font-size: 1.1rem;">AI = <strong>შენი სწავლის პარტნიორი</strong>, არა შემცვლელი. გამოიყენე ჭკვიანურად და ყოველთვის გადაამოწმე მნიშვნელოვანი ინფორმაცია!</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Homework -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 14</span>
+            <h2>📝 საშინაო დავალება</h2>
+
+            <div class="homework-box">
+                <h4>დავალება: "სასწავლო რესურსი" (8 ქულა)</h4>
+                <ul>
+                    <li>აირჩიე <strong>ერთი თემა</strong> ნებისმიერი საგნიდან</li>
+                    <li>AI-ის დახმარებით შექმენი <strong>სასწავლო მასალა</strong>:</li>
+                    <li style="padding-left: 2rem;">• შეჯამება (200-300 სიტყვა)</li>
+                    <li style="padding-left: 2rem;">• 5 საკვანძო ტერმინი განმარტებებით</li>
+                    <li style="padding-left: 2rem;">• 5 ტესტის კითხვა (პასუხებით)</li>
+                    <li style="padding-left: 2rem;">• 1 AI-ის მიერ გენერირებული სურათი თემაზე</li>
+                    <li>დაწერე რა prompts გამოიყენე</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📁 ფორმატი:</h4>
+                <p>Google Docs (ტექსტი + სურათი + prompts)</p>
+                <p><strong>ვადა:</strong> 1 კვირა (შემდეგ კვირამდე)</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 შემდეგ სესიაზე (ფიზიკური - Workshop):</h4>
+                <p style="text-align: center; font-size: 1.1rem;">
+                    <strong>ვიზუალური კონტენტის Workshop</strong> - ისწავლი DALL-E, Midjourney და Canva AI-ის გამოყენებას!
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 16: Questions -->
+        <div class="slide title-slide">
+            <span class="emoji-big">❓</span>
+            <h2>კითხვები?</h2>
+            <p style="font-size: 1.2rem; color: var(--text-body);">ნებისმიერ კითხვას სიამოვნებით ვუპასუხებ!</p>
+
+            <div class="key-points" style="text-align: left; max-width: 500px; margin: 2rem auto;">
+                <h4>📚 დამატებითი რესურსები:</h4>
+                <ul>
+                    <li><a href="https://scholar.google.com/" target="_blank">Google Scholar</a> - აკადემიური წყაროები</li>
+                    <li><a href="https://www.grammarly.com/" target="_blank">Grammarly</a> - გრამატიკის შემოწმება</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <p style="color: var(--text-muted);">📧 basilaia@gmail.com</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-bar" style="margin-top: 2rem;">
+            <a href="lecture-2-slides.html" class="nav-link">← სესია 2: Prompt Engineering</a>
+            <a href="lecture-4-slides.html" class="nav-link next">სესია 4: ვიზუალური კონტენტი →</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>AI მოზარდებისთვის © 2026 | <a href="index.html">Smart Academy</a></p>
+            <p>სესია 3 / 8 | 🌐 ონლაინ</p>
+        </div>
+    </div>
+</body>
+</html>

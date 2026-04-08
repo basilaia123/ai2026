@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სილაბუსი - AI მოზარდებისთვის</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyan: #06b6d4;
+            --cyan-light: #67e8f9;
+            --purple: #8b5cf6;
+            --purple-light: #c4b5fd;
+            --pink: #ec4899;
+            --pink-light: #f9a8d4;
+            --mint: #34d399;
+            --peach: #fb923c;
+
+            --bg-cream: #fefdfb;
+            --bg-soft: #f8f7f4;
+            --bg-card: #ffffff;
+
+            --text-dark: #1e1b4b;
+            --text-body: #4b5563;
+            --text-muted: #9ca3af;
+
+            --shadow-soft: 0 4px 20px rgba(139, 92, 246, 0.08);
+            --shadow-hover: 0 12px 40px rgba(139, 92, 246, 0.15);
+        }
+
+        body {
+            font-family: 'Outfit', 'FiraGO', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Decorative Background */
+        .bg-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .blob-1 {
+            top: -200px;
+            right: -150px;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--cyan-light) 0%, var(--purple-light) 100%);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            opacity: 0.3;
+            filter: blur(60px);
+            animation: blobFloat 20s ease-in-out infinite;
+        }
+
+        .blob-2 {
+            bottom: 200px;
+            left: -200px;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--pink-light) 0%, var(--purple-light) 100%);
+            border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+            opacity: 0.25;
+            filter: blur(50px);
+            animation: blobFloat 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(5deg); }
+            66% { transform: translate(-20px, 20px) rotate(-5deg); }
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            padding: 3rem 1.5rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, #fff 0%, var(--bg-soft) 100%);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink), var(--cyan));
+            background-size: 300% 100%;
+            animation: gradientSlide 8s linear infinite;
+        }
+
+        @keyframes gradientSlide {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--purple) 50%, var(--pink) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            color: var(--text-body);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: var(--bg-card);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .stat-pill span {
+            color: var(--purple);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-card);
+            color: var(--purple);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-back:hover {
+            background: var(--purple);
+            color: white;
+            transform: translateX(-4px);
+        }
+
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(139, 92, 246, 0.06);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border-radius: 2px;
+        }
+
+        /* Objectives Grid */
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-soft);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .objective-item:hover {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(139, 92, 246, 0.08));
+            transform: translateX(4px);
+        }
+
+        .objective-check {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .objective-text {
+            color: var(--text-body);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Week Cards */
+        .week-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(139, 92, 246, 0.06);
+        }
+
+        .week-header {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            padding: 1.5rem 2rem;
+            color: white;
+        }
+
+        .week-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+
+        .week-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .week-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .week-badge {
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .week-content {
+            padding: 2rem;
+        }
+
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Session Card */
+        .session-card {
+            background: var(--bg-soft);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(139, 92, 246, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .session-card:hover {
+            border-color: var(--purple-light);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .session-number {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            color: white;
+            padding: 0.4rem 0.9rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .session-day {
+            padding: 0.3rem 0.7rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .day-saturday {
+            background: rgba(236, 72, 153, 0.12);
+            color: var(--pink);
+        }
+
+        .day-sunday {
+            background: rgba(139, 92, 246, 0.12);
+            color: var(--purple);
+        }
+
+        .session-format {
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .format-physical {
+            background: rgba(52, 211, 153, 0.15);
+            color: #059669;
+        }
+
+        .format-online {
+            background: rgba(59, 130, 246, 0.15);
+            color: #2563eb;
+        }
+
+        .session-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .session-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        /* Schedule Table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .schedule-table th {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 0.6rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-radius: 6px 6px 0 0;
+        }
+
+        .schedule-table td {
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.08);
+            color: var(--text-body);
+        }
+
+        .schedule-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .schedule-table td:first-child {
+            font-weight: 600;
+            color: var(--purple);
+            width: 100px;
+        }
+
+        /* Topics List */
+        .topics-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .topics-list {
+            list-style: none;
+        }
+
+        .topics-list li {
+            padding: 0.3rem 0;
+            padding-left: 1.2rem;
+            position: relative;
+            color: var(--text-body);
+            font-size: 0.9rem;
+        }
+
+        .topics-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--cyan);
+            font-weight: bold;
+        }
+
+        /* Tools Section */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .tools-category {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+
+        .tools-category h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed rgba(139, 92, 246, 0.15);
+        }
+
+        .tool-item:last-child {
+            border-bottom: none;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .tool-free {
+            background: var(--mint);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Assessment Section */
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .assessment-card {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .assessment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .assessment-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .assessment-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .assessment-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Scale Table */
+        .scale-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+        }
+
+        .scale-table th {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .scale-table th:first-child { border-radius: 12px 0 0 12px; }
+        .scale-table th:last-child { border-radius: 0 12px 12px 0; }
+
+        .scale-table td {
+            background: var(--bg-soft);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .scale-table td:first-child {
+            border-radius: 12px 0 0 12px;
+            font-weight: 700;
+            color: var(--purple);
+        }
+        .scale-table td:last-child { border-radius: 0 12px 12px 0; }
+
+        /* Instructor Section */
+        .instructor-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .instructor-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .instructor-bio {
+            color: var(--text-body);
+            line-height: 1.8;
+            max-width: 700px;
+        }
+
+        .instructor-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .instructor-stat {
+            text-align: center;
+        }
+
+        .instructor-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--purple);
+        }
+
+        .instructor-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { padding: 2rem 1rem; }
+            .section { padding: 1.5rem; }
+            .week-content { padding: 1.5rem; }
+            .sessions-grid { grid-template-columns: 1fr; }
+            .header-stats { gap: 1rem; }
+            .stat-pill { font-size: 0.8rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Decorative Background -->
+    <div class="bg-decoration blob-1"></div>
+    <div class="bg-decoration blob-2"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-badge">Smart Academy 2026</div>
+            <h1>კურსის სილაბუსი</h1>
+            <p class="header-subtitle">AI მოზარდებისთვის - ხელოვნური ინტელექტი 15-18 წლის ახალგაზრდებისთვის</p>
+            <div class="header-stats">
+                <div class="stat-pill"><span>8</span> სესია</div>
+                <div class="stat-pill"><span>20</span> საათი</div>
+                <div class="stat-pill"><span>4</span> კვირა</div>
+                <div class="stat-pill">შაბათ-კვირა <span>14:00-16:30</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <a href="index.html" class="nav-back">← უკან მთავარ გვერდზე</a>
+
+        <!-- Learning Objectives -->
+        <div class="section">
+            <h2 class="section-title">სწავლის მიზნები</h2>
+            <div class="objectives-grid">
+                <div class="objective-item">
+                    <div class="objective-check">✓</div>
+                    <div class="objective-text">AI ინსტრუმენტების ეფექტურად გამოყენება სასწავლო დავალებებში</div>
+                </div>
+                <div class="objective-item">
+                    <div class="objective-check">✓</div>
+                    <div class="objective-text">კრეატიული კონტენტის შექმნა (სურათები, ვიდეო, მუსიკა)</div>
+                </div>
+                <div class="objective-item">
+                    <div class="objective-check">✓</div>
+                    <div class="objective-text">კრიტიკული აზროვნებით AI-გენერირებული კონტენტის შეფასება</div>
+                </div>
+                <div class="objective-item">
+                    <div class="objective-check">✓</div>
+                    <div class="objective-text">უსაფრთხო და ეთიკური AI გამოყენების პრინციპების დაცვა</div>
+                </div>
+                <div class="objective-item">
+                    <div class="objective-check">✓</div>
+                    <div class="objective-text">საკუთარი AI პროექტის დამოუკიდებლად შექმნა</div>
+                </div>
+                <div class="objective-item">
+                    <div class="objective-check">✓</div>
+                    <div class="objective-text">AI-ს როლის გაცნობიერება მომავალ კარიერაში</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 1 -->
+        <div class="week-card">
+            <div class="week-header">
+                <div class="week-number">კვირა 1</div>
+                <div class="week-title">AI-ის სამყაროში შესვლა</div>
+                <div class="week-badges">
+                    <span class="week-badge">ფიზიკური</span>
+                    <span class="week-badge">7-8 თებერვალი</span>
+                </div>
+            </div>
+            <div class="week-content">
+                <div class="sessions-grid">
+                    <!-- Session 1 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 1</span>
+                            <span class="session-day day-saturday">შაბათი</span>
+                        </div>
+                        <h3 class="session-title">AI-ის შესავალი და ChatGPT-ის პირველი ნაბიჯები</h3>
+                        <p class="session-subtitle">Introduction to AI World</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:20</td><td>გაცნობა და Ice-breaker</td></tr>
+                            <tr><td>14:20-14:50</td><td>რა არის AI? ისტორია და ევოლუცია</td></tr>
+                            <tr><td>14:50-15:25</td><td>ChatGPT-ს პირველი ნაბიჯები</td></tr>
+                            <tr><td>15:25-15:40</td><td>შესვენება</td></tr>
+                            <tr><td>15:40-16:15</td><td>პრაქტიკა: პირველი საუბარი AI-თან</td></tr>
+                            <tr><td>16:15-16:30</td><td>შეჯამება და დავალება</td></tr>
+                        </table>
+
+                        <div class="topics-title">საკვანძო თემები:</div>
+                        <ul class="topics-list">
+                            <li>რა არის გენერაციული AI?</li>
+                            <li>AI vs ადამიანის ინტელექტი</li>
+                            <li>ChatGPT, Claude, Gemini - მიმოხილვა</li>
+                            <li>🛡️ პირადი მონაცემების დაცვა და ანგარიშის უსაფრთხოება</li>
+                        </ul>
+                    </div>
+
+                    <!-- Session 2 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 2</span>
+                            <span class="session-day day-sunday">კვირა</span>
+                        </div>
+                        <h3 class="session-title">Prompt Engineering-ის საფუძვლები</h3>
+                        <p class="session-subtitle">Basics of Prompt Engineering</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:20</td><td>დავალების განხილვა</td></tr>
+                            <tr><td>14:20-14:55</td><td>Prompt-ის ანატომია</td></tr>
+                            <tr><td>14:55-15:30</td><td>პრაქტიკა: კარგი vs ცუდი prompts</td></tr>
+                            <tr><td>15:30-15:45</td><td>შესვენება</td></tr>
+                            <tr><td>15:45-16:15</td><td>Prompt Battle - გუნდური შეჯიბრი</td></tr>
+                            <tr><td>16:15-16:30</td><td>შეჯამება</td></tr>
+                        </table>
+
+                        <div class="topics-title">საკვანძო თემები:</div>
+                        <ul class="topics-list">
+                            <li>CLEAR ჩარჩო მარტივად</li>
+                            <li>კონტექსტის მიცემა</li>
+                            <li>როლის მინიჭება AI-ის</li>
+                            <li>🛡️ AI-ს ეთიკური გამოყენება — რა შეიძლება და რა არა</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 2 -->
+        <div class="week-card">
+            <div class="week-header" style="background: linear-gradient(135deg, var(--purple), var(--pink));">
+                <div class="week-number">კვირა 2</div>
+                <div class="week-title">სწავლა და კრეატივი</div>
+                <div class="week-badges">
+                    <span class="week-badge">ჰიბრიდული</span>
+                    <span class="week-badge">14-15 თებერვალი</span>
+                </div>
+            </div>
+            <div class="week-content">
+                <div class="sessions-grid">
+                    <!-- Session 3 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 3</span>
+                            <span class="session-day day-saturday">შაბათი</span>
+                            <span class="session-format format-online">ონლაინ</span>
+                        </div>
+                        <h3 class="session-title">AI სასწავლო ასისტენტად</h3>
+                        <p class="session-subtitle">AI as Your Study Assistant</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:20</td><td>ონლაინ შეერთება და განხილვა</td></tr>
+                            <tr><td>14:20-14:55</td><td>დახმარება ესეებისა და რეფერატების მომზადებაში</td></tr>
+                            <tr><td>14:55-15:30</td><td>კვლევა და ინფორმაციის მოძიება</td></tr>
+                            <tr><td>15:30-15:45</td><td>შესვენება</td></tr>
+                            <tr><td>15:45-16:15</td><td>შენიშვნების და კონსპექტის შექმნა</td></tr>
+                            <tr><td>16:15-16:30</td><td>Q&A და დავალება</td></tr>
+                        </table>
+
+                        <div class="topics-title">საკვანძო თემები:</div>
+                        <ul class="topics-list">
+                            <li>ესეების სტრუქტურირება AI-თ</li>
+                            <li>წყაროების მოძიება და შემოწმება</li>
+                            <li>გამოცდისთვის მომზადება</li>
+                            <li>🛡️ Fact-checking, პლაგიატი vs დახმარება</li>
+                        </ul>
+                    </div>
+
+                    <!-- Session 4 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 4</span>
+                            <span class="session-day day-sunday">კვირა</span>
+                            <span class="session-format format-physical">ფიზიკური</span>
+                        </div>
+                        <h3 class="session-title">ვიზუალური კონტენტის Workshop</h3>
+                        <p class="session-subtitle">Visual Content Creation Workshop</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:15</td><td>დავალების პრეზენტაცია</td></tr>
+                            <tr><td>14:15-14:50</td><td>Image Generation ინსტრუმენტები</td></tr>
+                            <tr><td>14:50-15:25</td><td>Hands-on: სურათების გენერირება</td></tr>
+                            <tr><td>15:25-15:40</td><td>შესვენება</td></tr>
+                            <tr><td>15:40-16:15</td><td>მინი-პროექტი: პოსტერის შექმნა</td></tr>
+                            <tr><td>16:15-16:30</td><td>გალერეა და შეფასება</td></tr>
+                        </table>
+
+                        <div class="topics-title">საკვანძო თემები:</div>
+                        <ul class="topics-list">
+                            <li>DALL-E, Midjourney, Leonardo AI</li>
+                            <li>Canva AI ფუნქციები</li>
+                            <li>Image prompts - სურათის აღწერა</li>
+                            <li>საავტორო უფლებები გამოსახულებებზე</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 3 -->
+        <div class="week-card">
+            <div class="week-header" style="background: linear-gradient(135deg, var(--pink), var(--peach));">
+                <div class="week-number">კვირა 3</div>
+                <div class="week-title">მულტიმედია და თამაშები</div>
+                <div class="week-badges">
+                    <span class="week-badge">ჰიბრიდული</span>
+                    <span class="week-badge">21-22 თებერვალი</span>
+                </div>
+            </div>
+            <div class="week-content">
+                <div class="sessions-grid">
+                    <!-- Session 5 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 5</span>
+                            <span class="session-day day-saturday">შაბათი</span>
+                            <span class="session-format format-online">ონლაინ</span>
+                        </div>
+                        <h3 class="session-title">აუდიო და ვიდეო კონტენტი</h3>
+                        <p class="session-subtitle">Audio & Video Content Creation</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:25</td><td>AI მუსიკა და ხმა</td></tr>
+                            <tr><td>14:25-15:00</td><td>Suno, ElevenLabs დემონსტრაცია</td></tr>
+                            <tr><td>15:00-15:30</td><td>ვიდეოს გენერირება — RunwayML, Pika</td></tr>
+                            <tr><td>15:30-15:45</td><td>შესვენება</td></tr>
+                            <tr><td>15:45-16:15</td><td>TikTok/Reels კონტენტის იდეები</td></tr>
+                            <tr><td>16:15-16:30</td><td>პროექტის დაგეგმვა</td></tr>
+                        </table>
+
+                        <div class="topics-title">საკვანძო თემები:</div>
+                        <ul class="topics-list">
+                            <li>AI მუსიკის გენერატორები (Suno, Udio)</li>
+                            <li>ხმის კლონირება და Text-to-Speech</li>
+                            <li>მოკლე ვიდეოების შექმნა</li>
+                            <li>🛡️ Deepfakes - როგორ ამოვიცნოთ ყალბი კონტენტი</li>
+                        </ul>
+                    </div>
+
+                    <!-- Session 6 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 6</span>
+                            <span class="session-day day-sunday">კვირა</span>
+                            <span class="session-format format-physical">ფიზიკური</span>
+                        </div>
+                        <h3 class="session-title">🎮 თამაშების შექმნა AI-ით</h3>
+                        <p class="session-subtitle">Game Creation with AI</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:25</td><td>თამაშის კონცეფციის შექმნა ChatGPT-ით</td></tr>
+                            <tr><td>14:25-15:00</td><td>Lovable.dev / v0.dev - მარტივი ვებ-თამაშები</td></tr>
+                            <tr><td>15:00-15:30</td><td>პერსონაჟებისა და ასეტების დიზაინი</td></tr>
+                            <tr><td>15:30-15:45</td><td>შესვენება</td></tr>
+                            <tr><td>15:45-16:15</td><td>მინი-პროექტი: ინტერაქტიული Quiz თამაში</td></tr>
+                            <tr><td>16:15-16:30</td><td>პროექტების გაზიარება და შეჯამება</td></tr>
+                        </table>
+
+                        <div class="topics-title">საკვანძო თემები:</div>
+                        <ul class="topics-list">
+                            <li>თამაშის იდეის გენერირება AI-თ</li>
+                            <li>No-Code თამაშების პლატფორმები</li>
+                            <li>AI-გენერირებული გრაფიკა თამაშებისთვის</li>
+                            <li>ინტერაქტიული ისტორიების შექმნა</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 4 -->
+        <div class="week-card">
+            <div class="week-header" style="background: linear-gradient(135deg, var(--mint), var(--cyan));">
+                <div class="week-number">კვირა 4</div>
+                <div class="week-title">პროექტი და დასკვნა</div>
+                <div class="week-badges">
+                    <span class="week-badge">ფიზიკური</span>
+                    <span class="week-badge">28 თებ - 1 მარტი</span>
+                </div>
+            </div>
+            <div class="week-content">
+                <div class="sessions-grid">
+                    <!-- Session 7 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 7</span>
+                            <span class="session-day day-saturday">შაბათი</span>
+                        </div>
+                        <h3 class="session-title">პროექტზე მუშაობის Workshop</h3>
+                        <p class="session-subtitle">Project Development Workshop</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:20</td><td>ფინალური პროექტის მოთხოვნები</td></tr>
+                            <tr><td>14:20-14:50</td><td>იდეების გენერირება და არჩევა</td></tr>
+                            <tr><td>14:50-15:25</td><td>ინდივიდუალური მუშაობა + კონსულტაცია</td></tr>
+                            <tr><td>15:25-15:40</td><td>შესვენება</td></tr>
+                            <tr><td>15:40-16:15</td><td>პროექტზე მუშაობის გაგრძელება</td></tr>
+                            <tr><td>16:15-16:30</td><td>პროგრესის შემოწმება</td></tr>
+                        </table>
+
+                        <div class="topics-title">პროექტის ვარიანტები:</div>
+                        <ul class="topics-list">
+                            <li>🎮 მარტივი ვებ-თამაში / ინტერაქტიული ისტორია</li>
+                            <li>სოციალური მედიის კამპანია (5+ პოსტი)</li>
+                            <li>ციფრული ხელოვნების კოლექცია</li>
+                            <li>სასწავლო რესურსი / მუსიკალური პროექტი</li>
+                        </ul>
+                    </div>
+
+                    <!-- Session 8 -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <span class="session-number">სესია 8</span>
+                            <span class="session-day day-sunday">კვირა</span>
+                        </div>
+                        <h3 class="session-title">პრეზენტაციები და სერტიფიკატები</h3>
+                        <p class="session-subtitle">Final Presentations & Graduation</p>
+
+                        <table class="schedule-table">
+                            <tr><th>დრო</th><th>აქტივობა</th></tr>
+                            <tr><td>14:00-14:10</td><td>დღის გახსნა</td></tr>
+                            <tr><td>14:10-15:20</td><td>პროექტების პრეზენტაცია (5-7 წუთი)</td></tr>
+                            <tr><td>15:20-15:35</td><td>შესვენება და ხმის მიცემა</td></tr>
+                            <tr><td>15:35-16:00</td><td>AI და მომავალი კარიერა</td></tr>
+                            <tr><td>16:00-16:20</td><td>სერტიფიკატების გადაცემა</td></tr>
+                            <tr><td>16:20-16:30</td><td>დასასრული და ფოტო</td></tr>
+                        </table>
+
+                        <div class="topics-title">საუკეთესო პროექტების ჯილდოები:</div>
+                        <ul class="topics-list">
+                            <li>🥇 ყველაზე კრეატიული</li>
+                            <li>🥈 ყველაზე პრაქტიკული</li>
+                            <li>🥉 ყველაზე ინოვაციური</li>
+                            <li>⭐ აუდიტორიის ფავორიტი</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment Section -->
+        <div class="section">
+            <h2 class="section-title">შეფასების სისტემა</h2>
+
+            <div class="assessment-grid">
+                <div class="assessment-card">
+                    <div class="assessment-value">30%</div>
+                    <div class="assessment-label">მონაწილეობა</div>
+                    <div class="assessment-desc">დასწრება, აქტიურობა</div>
+                </div>
+                <div class="assessment-card">
+                    <div class="assessment-value">30%</div>
+                    <div class="assessment-label">მინი-დავალებები</div>
+                    <div class="assessment-desc">4 პატარა პროექტი</div>
+                </div>
+                <div class="assessment-card">
+                    <div class="assessment-value">40%</div>
+                    <div class="assessment-label">ფინალური პროექტი</div>
+                    <div class="assessment-desc">პრეზენტაცია + პორტფოლიო</div>
+                </div>
+            </div>
+
+            <table class="scale-table">
+                <thead>
+                    <tr>
+                        <th>ქულა</th>
+                        <th>შეფასება</th>
+                        <th>აღწერა</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>90-100</td>
+                        <td>⭐ შესანიშნავი</td>
+                        <td>სერტიფიკატი გამორჩეული შედეგით</td>
+                    </tr>
+                    <tr>
+                        <td>75-89</td>
+                        <td>✅ კარგი</td>
+                        <td>სტანდარტული სერტიფიკატი</td>
+                    </tr>
+                    <tr>
+                        <td>60-74</td>
+                        <td>📝 დამაკმაყოფილებელი</td>
+                        <td>სერტიფიკატი დასწრებისთვის</td>
+                    </tr>
+                    <tr>
+                        <td>0-59</td>
+                        <td>❌ არასაკმარისი</td>
+                        <td>სერტიფიკატი არ გაიცემა</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tools Section -->
+        <div class="section">
+            <h2 class="section-title">AI ინსტრუმენტები კურსში</h2>
+            <p style="color: var(--text-body); margin-bottom: 1.5rem;">ყველა ინსტრუმენტს აქვს <strong>უფასო ვერსია</strong> - არ არის საჭირო ფასიანი გამოწერა!</p>
+
+            <div class="tools-grid">
+                <div class="tools-category">
+                    <h4>💬 ტექსტის გენერირება</h4>
+                    <div class="tool-item">
+                        <span class="tool-name">ChatGPT</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">Claude</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">Gemini</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                </div>
+
+                <div class="tools-category">
+                    <h4>🎨 ვიზუალური კონტენტი</h4>
+                    <div class="tool-item">
+                        <span class="tool-name">Canva AI</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">Leonardo AI</span>
+                        <span class="tool-free">უფასო კრედიტები</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">DALL-E</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                </div>
+
+                <div class="tools-category">
+                    <h4>🎵 აუდიო და ვიდეო</h4>
+                    <div class="tool-item">
+                        <span class="tool-name">Suno</span>
+                        <span class="tool-free">უფასო კრედიტები</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">ElevenLabs</span>
+                        <span class="tool-free">უფასო ვერსია</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">RunwayML</span>
+                        <span class="tool-free">უფასო Trial</span>
+                    </div>
+                </div>
+
+                <div class="tools-category">
+                    <h4>📚 სასწავლო</h4>
+                    <div class="tool-item">
+                        <span class="tool-name">NotebookLM</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">Gamma</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">Quillbot</span>
+                        <span class="tool-free">უფასო ვერსია</span>
+                    </div>
+                </div>
+
+                <div class="tools-category">
+                    <h4>🎮 თამაშები</h4>
+                    <div class="tool-item">
+                        <span class="tool-name">Lovable.dev</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                    <div class="tool-item">
+                        <span class="tool-name">v0.dev</span>
+                        <span class="tool-free">უფასო</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructor Section -->
+        <div class="section">
+            <h2 class="section-title">ინსტრუქტორი</h2>
+            <div class="instructor-card">
+                <div class="instructor-name">გიორგი ბასილაია</div>
+                <p class="instructor-bio">
+                    <strong>25+ წლიანი გამოცდილება</strong> ტექნოლოგიების სფეროში. უნივერსიტეტის პროფესორი და მკვლევარი,
+                    რომელიც თანამშრომლობდა ისეთ გლობალურ კომპანიებთან, როგორიცაა <strong>Google, Microsoft, Amazon, IBM, Dell, HP-Enterprise, VMware</strong>.
+                </p>
+                <div class="instructor-stats">
+                    <div class="instructor-stat">
+                        <div class="instructor-stat-value">25+</div>
+                        <div class="instructor-stat-label">წლიანი გამოცდილება</div>
+                    </div>
+                    <div class="instructor-stat">
+                        <div class="instructor-stat-value">14</div>
+                        <div class="instructor-stat-label">სამეცნიერო ნაშრომი</div>
+                    </div>
+                    <div class="instructor-stat">
+                        <div class="instructor-stat-value">3388</div>
+                        <div class="instructor-stat-label">ციტირება</div>
+                    </div>
+                    <div class="instructor-stat">
+                        <div class="instructor-stat-value">18</div>
+                        <div class="instructor-stat-label">საერთაშორისო პროექტი</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Navigation -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="index.html" class="nav-back">← უკან მთავარ გვერდზე</a>
+            <a href="course-info.html" class="nav-back" style="margin-left: 1rem; background: linear-gradient(135deg, var(--cyan), var(--purple)); color: white;">შეფასების დეტალები →</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Smart Academy © 2026 | AI მოზარდებისთვის
+        </div>
+    </div>
+</body>
+</html>

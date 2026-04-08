@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="MDQ - განწყობის აშლილობის კითხვარი (Mood Disorder Questionnaire). ბიპოლარული სპექტრის სკრინინგი. მხოლოდ საგანმანათლებლო მიზნით.">
+    <title>MDQ - განწყობის აშლილობის კითხვარი</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f1923;
+            --bg-secondary: #162231;
+            --bg-card: #1a2a3a;
+            --bg-card-hover: #1f3347;
+            --accent: #c9a44d;
+            --accent-glow: rgba(201, 164, 77, 0.12);
+            --accent-soft: #a8863a;
+            --accent-light: #e8c87a;
+            --text-primary: #e8edf2;
+            --text-secondary: #8fa3b8;
+            --text-muted: #5a7089;
+            --border: rgba(201, 164, 77, 0.12);
+            --border-active: rgba(201, 164, 77, 0.35);
+            --danger: #c94d6d;
+            --danger-soft: rgba(201, 77, 109, 0.15);
+            --warning: #c9a44d;
+            --warning-soft: rgba(201, 164, 77, 0.15);
+            --success: #4dc98a;
+            --success-soft: rgba(77, 201, 138, 0.15);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Georgian', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 20%, rgba(201, 164, 77, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(201, 77, 109, 0.04) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative; z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 14px; margin-bottom: 20px; transition: color 0.3s ease;
+        }
+        .back-link:hover { color: var(--accent); }
+
+        /* Language toggle */
+        .lang-toggle {
+            position: fixed; top: 16px; right: 62px; z-index: 200;
+            display: flex; border-radius: var(--radius-sm);
+            overflow: hidden; border: 1px solid var(--border-active);
+            background: var(--bg-card);
+        }
+        .lang-btn {
+            padding: 6px 14px; font-family: inherit; font-size: 12px;
+            font-weight: 600; cursor: pointer; border: none;
+            background: transparent; color: var(--text-muted);
+            transition: var(--transition); letter-spacing: 0.5px;
+        }
+        .lang-btn:hover { color: var(--text-primary); }
+        .lang-btn.active { background: var(--accent); color: #1a1a1a; }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed; top: 16px; right: 16px; z-index: 300;
+            width: 38px; height: 38px; border-radius: 50%;
+            border: 1px solid var(--border-active); background: var(--bg-card);
+            color: var(--text-secondary); font-size: 17px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition); box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .theme-toggle:hover { transform: scale(1.08); color: var(--text-primary); }
+
+        /* Header */
+        .header {
+            text-align: center; margin-bottom: 36px;
+            animation: fadeInDown 0.8s ease;
+        }
+        .header-icon {
+            width: 60px; height: 60px;
+            background: var(--accent-glow);
+            border: 1px solid var(--border-active);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px; font-size: 28px;
+        }
+        .header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 6px; }
+        .header .subtitle { font-size: 15px; color: var(--accent-light); font-weight: 500; margin-bottom: 8px; }
+        .header p { font-size: 13px; color: var(--text-secondary); max-width: 520px; margin: 0 auto; font-weight: 300; }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: var(--danger-soft);
+            border: 1px solid rgba(201, 77, 109, 0.25);
+            border-radius: var(--radius); padding: 16px 20px;
+            margin-bottom: 24px; font-size: 13px; color: #d4a0b0; line-height: 1.8;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+        .disclaimer strong { color: var(--danger); font-weight: 600; }
+
+        /* Info box */
+        .info-box {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-active);
+            border-radius: var(--radius); padding: 16px 20px;
+            margin-bottom: 28px; font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+            animation: fadeIn 0.8s ease 0.3s both;
+        }
+        .info-box strong { color: var(--accent-light); }
+
+        /* Progress */
+        .progress-container {
+            margin-bottom: 24px; animation: fadeIn 0.8s ease 0.4s both;
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg-primary); padding: 12px 0;
+        }
+        .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .progress-label { font-size: 13px; color: var(--text-muted); }
+        .progress-count { font-size: 13px; color: var(--accent); font-weight: 500; }
+        .progress-bar { height: 4px; background: var(--bg-card); border-radius: 2px; overflow: hidden; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+            border-radius: 2px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Section header */
+        .section-header {
+            display: flex; align-items: flex-start; gap: 14px;
+            margin: 28px 0 14px; padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-active);
+            border-radius: var(--radius);
+        }
+        .section-letter {
+            width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+            background: var(--accent-glow); border: 1px solid var(--border-active);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700; color: var(--accent);
+        }
+        .section-text-wrap { flex: 1; }
+        .section-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .section-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+
+        /* Question blocks */
+        .question-block {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 18px 20px; margin-bottom: 10px;
+            transition: var(--transition); position: relative; overflow: hidden;
+        }
+        .question-block::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 3px; background: var(--text-muted); transition: var(--transition);
+        }
+        .question-block.answered::before { background: var(--accent); }
+        .question-block.answered { border-color: var(--border-active); }
+
+        .question-body {
+            display: flex; align-items: flex-start; gap: 14px;
+        }
+        .question-number {
+            display: flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+            background: var(--accent-glow); color: var(--accent);
+            font-size: 11px; font-weight: 700; margin-top: 1px;
+        }
+        .question-text { flex: 1; font-size: 14px; line-height: 1.55; padding-top: 2px; }
+
+        /* Yes/No buttons */
+        .yn-buttons {
+            display: flex; gap: 8px; margin-top: 14px; margin-left: 40px;
+        }
+        .yn-btn {
+            flex: 1; padding: 10px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border); background: var(--bg-secondary);
+            color: var(--text-secondary); font-family: inherit;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            transition: var(--transition); text-align: center;
+        }
+        .yn-btn:hover { border-color: var(--border-active); color: var(--text-primary); background: var(--bg-card-hover); }
+        .yn-btn.sel-yes { background: var(--success-soft); border-color: rgba(77,201,138,0.4); color: var(--success); }
+        .yn-btn.sel-no  { background: rgba(90,112,137,0.15); border-color: rgba(90,112,137,0.3); color: var(--text-secondary); }
+
+        /* Section C severity options */
+        .severity-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+            margin-top: 14px; margin-left: 40px;
+        }
+        @media (max-width: 460px) {
+            .severity-grid { grid-template-columns: 1fr; margin-left: 0; }
+            .yn-buttons { margin-left: 0; }
+        }
+        .sev-opt {
+            padding: 12px 14px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border); background: var(--bg-secondary);
+            color: var(--text-secondary); font-family: inherit;
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            transition: var(--transition); text-align: center; line-height: 1.4;
+        }
+        .sev-opt:hover { border-color: var(--border-active); color: var(--text-primary); background: var(--bg-card-hover); }
+        .sev-opt.sel-0 { background: var(--success-soft); border-color: rgba(77,201,138,0.4); color: var(--success); }
+        .sev-opt.sel-1 { background: rgba(77,201,138,0.08); border-color: rgba(77,201,138,0.2); color: #6dd9a0; }
+        .sev-opt.sel-2 { background: var(--warning-soft); border-color: rgba(201,164,77,0.4); color: var(--warning); }
+        .sev-opt.sel-3 { background: var(--danger-soft); border-color: rgba(201,77,109,0.4); color: var(--danger); }
+
+        /* Submit */
+        .submit-area { margin-top: 28px; text-align: center; }
+        .btn {
+            padding: 14px 36px; border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+            border: none; background: var(--accent); color: #1a1a1a;
+        }
+        .btn:hover { background: var(--accent-soft); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,164,77,0.4); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Results */
+        .results-container { display: none; animation: fadeInUp 0.8s ease; }
+        .results-container.active { display: block; }
+
+        .result-main {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 36px 32px;
+            margin-bottom: 24px; text-align: center;
+        }
+        .result-icon { font-size: 52px; margin-bottom: 16px; }
+        .result-title { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+        .result-subtitle { font-size: 14px; color: var(--text-secondary); font-weight: 300; margin-bottom: 22px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+        .screen-badge { display: inline-block; padding: 8px 24px; border-radius: 20px; font-size: 14px; font-weight: 700; letter-spacing: 0.3px; }
+        .screen-positive { background: var(--warning-soft); color: var(--warning); border: 1px solid rgba(201,164,77,0.3); }
+        .screen-negative { background: var(--success-soft); color: var(--success); border: 1px solid rgba(77,201,138,0.3); }
+
+        /* Criteria card */
+        .criteria-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+        }
+        .criteria-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--accent-light); }
+
+        /* Section A bar */
+        .bar-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .section-a-bar {
+            background: var(--bg-secondary); border-radius: 14px;
+            overflow: hidden; height: 28px; position: relative;
+            border: 1px solid var(--border); margin-bottom: 16px;
+        }
+        .section-a-fill {
+            height: 100%; background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: flex-end; padding-right: 10px;
+            font-size: 12px; font-weight: 700; color: rgba(0,0,0,0.75); min-width: 28px;
+            border-radius: 14px 0 0 14px;
+        }
+        .section-a-threshold {
+            position: absolute; top: 0; bottom: 0;
+            width: 2px; background: rgba(255,255,255,0.4);
+            left: calc((7 / 13) * 100%);
+        }
+        .threshold-label {
+            position: absolute; top: -18px;
+            left: calc((7 / 13) * 100%);
+            transform: translateX(-50%);
+            font-size: 10px; color: var(--text-muted); white-space: nowrap;
+        }
+        .bar-wrap { position: relative; padding-top: 20px; }
+
+        .criteria-row {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .criteria-row:last-child { border-bottom: none; }
+        .crit-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .crit-label { flex: 1; color: var(--text-secondary); line-height: 1.5; }
+        .crit-value { font-weight: 600; white-space: nowrap; }
+        .crit-met { color: var(--warning); }
+        .crit-not-met { color: var(--success); }
+
+        /* Info sections */
+        .scoring-info {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 22px; margin-bottom: 16px;
+        }
+        .scoring-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: var(--accent-light); }
+        .scoring-info p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+
+        .treatment-note {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 24px; margin-top: 16px;
+        }
+        .treatment-note h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: var(--accent); }
+        .treatment-note p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+
+        .restart-btn {
+            display: block; width: 100%; margin-top: 14px; padding: 14px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); color: var(--text-secondary);
+            font-family: inherit; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: var(--transition);
+        }
+        .restart-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) {
+            .container { padding: 24px 14px 60px; }
+            .header h1 { font-size: 20px; }
+            .question-block { padding: 16px 14px; }
+            .result-main { padding: 28px 20px; }
+            .result-title { font-size: 18px; }
+        }
+
+        @media print {
+            body { background: white; color: #1a1a1a; }
+            body::before { display: none; }
+            .container { max-width: 100%; padding: 20px; }
+            .lang-toggle, .theme-toggle, #questionsContainer, #submitArea, .progress-container, .info-box, .restart-btn { display: none !important; }
+            .results-container { display: block !important; }
+            .result-main, .criteria-card, .scoring-info, .treatment-note { background: #f5f5f5; border: 1px solid #ccc; break-inside: avoid; }
+        }
+
+        /* Light mode */
+        body.light {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #e2e8f0;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --text-primary: #1e2d3d;
+            --text-secondary: #4a6580;
+            --text-muted: #8fa3b8;
+            --border: rgba(0,0,0,0.10);
+            --border-active: rgba(0,0,0,0.25);
+        }
+        body.light::before { opacity: 0.15; }
+        body.light .section-a-fill { color: rgba(255,255,255,0.9); }
+    </style>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Dark / Light Mode">☀️</button>
+<script>if(localStorage.getItem('psycho-theme')==='light'){document.body.classList.add('light');document.getElementById('themeToggle').textContent='🌙';}</script>
+
+<div class="lang-toggle">
+    <button class="lang-btn active" id="btnKa" onclick="setLang('ka')">KA</button>
+    <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="container">
+    <a href="index.html" class="back-link">← მთავარი</a>
+
+    <div class="header">
+        <div class="header-icon">🎭</div>
+        <h1 id="headerTitle">განწყობის აშლილობის კითხვარი</h1>
+        <div class="subtitle">Mood Disorder Questionnaire (MDQ)</div>
+        <p id="headerDesc">ბიპოლარული სპექტრის სკრინინგის ინსტრუმენტი. ავტორები: Hirschfeld et al. (2000).</p>
+    </div>
+
+    <div class="disclaimer" id="disclaimerBox"></div>
+    <div class="info-box" id="infoBox"></div>
+
+    <div class="progress-container" id="progressArea">
+        <div class="progress-info">
+            <span class="progress-label" id="progressLabel">0 / 15 კითხვა</span>
+            <span class="progress-count" id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="submit-area" id="submitArea">
+        <button class="btn" id="submitBtn" onclick="calculateResults()" disabled>📊 შედეგის ნახვა</button>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:10px;" id="submitHint"></p>
+    </div>
+
+    <div class="results-container" id="results"></div>
+</div>
+
+<script>
+// ===================== I18N =====================
+const i18n = {
+    ka: {
+        htmlLang: 'ka',
+        headerTitle: 'განწყობის აშლილობის კითხვარი',
+        headerDesc: 'ბიპოლარული სპექტრის სკრინინგის ინსტრუმენტი. ავტორები: Hirschfeld et al. (2000).',
+        disclaimer: '<strong>⚠️ გაფრთხილება:</strong> MDQ არის <strong>სკრინინგის ინსტრუმენტი</strong> და <strong>არ ცვლის</strong> პსიქიატრიულ შეფასებას. დადებითი სკრინინგი <strong>არ ნიშნავს</strong> ბიპოლარული აშლილობის დიაგნოზს - მხოლოდ ფსიქიატრს ან კლინიკურ ფსიქოლოგს შეუძლია დიაგნოზის დასმა.',
+        infoBox: '<strong>📋 ინსტრუქცია:</strong> კითხვარი <strong>სამ ნაწილადაა</strong>. <strong>A ნაწილი</strong> - დიახ/არა პასუხი 13 სიმპტომზე (ცხოვრებაში ოდესმე ნებისმიერ პერიოდში); <strong>B ნაწილი</strong> - სიმპტომების თანადროულობა; <strong>C ნაწილი</strong> - ფუნქციური დარღვევის სიმძიმე.',
+        sectionA_letter: 'A',
+        sectionA_title: 'A ნაწილი - სიმპტომების ჩამონათვალი',
+        sectionA_desc: 'ოდესმე ცხოვრებაში ყოფილა პერიოდი, რომლის განმავლობაშიც...',
+        sectionB_letter: 'B',
+        sectionB_title: 'B ნაწილი - თანადროულობა',
+        sectionB_desc: 'თუ A ნაწილში ერთზე მეტ კითხვაზე "დიახ" უპასუხეთ:',
+        sectionB_q: 'A ნაწილში მონიშნული ქცევები / მდგომარეობები ერთდროულად ხდებოდა?',
+        sectionC_letter: 'C',
+        sectionC_title: 'C ნაწილი - ფუნქციური დარღვევა',
+        sectionC_desc: 'ამ ქცევებ(ებ)მა / განცდებ(ებ)მა რამდენი პრობლემა შეგიქმნათ?',
+        sectionC_q: 'სამსახური, ოჯახი, ფული, სამართლებრივი საკითხები, კამათი ან კონფლიქტი.',
+        sevOpts: ['პრობლემა არ შეუქმნია', 'მცირე პრობლემა', 'საშუალო პრობლემა', 'სერიოზული პრობლემა'],
+        yes: 'დიახ',
+        no: 'არა',
+        submitBtn: '📊 შედეგის ნახვა',
+        progressQ: 'კითხვა',
+        hintAll: 'ყველა კითხვა შევსებულია ✓',
+        hintRemain: (n) => `გთხოვთ, უპასუხოთ ყველა კითხვას (დარჩა: ${n})`,
+        screenPosTitle: 'სკრინინგი დადებითია',
+        screenNegTitle: 'სკრინინგი უარყოფითია',
+        screenPosSubtitle: 'MDQ-ის კრიტერიუმები დაკმაყოფილებულია. <strong>ეს არ ნიშნავს დიაგნოზს</strong> - გთხოვთ, მიმართოთ ფსიქიატრს სრული შეფასებისთვის.',
+        screenNegSubtitle: 'MDQ-ის სკრინინგის კრიტერიუმები სრულად არ არის დაკმაყოფილებული. თუ მაინც ახლოს გრძნობთ თავს ამ სიმპტომებთან, გთხოვთ, მიმართოთ სპეციალისტს.',
+        screenPosLabel: '⚠️ პოზიტიური სკრინინგი',
+        screenNegLabel: '✅ ნეგატიური სკრინინგი',
+        criteriaTitle: '📋 კრიტერიუმების შეფასება',
+        critALabel: 'A ნაწილი - ≥7 „დიახ" (ახლა:',
+        critBLabel: 'B ნაწილი - სიმპტომები ერთდროულად',
+        critCLabel: 'C ნაწილი - საშუალო ან სერიოზული პრობლემა',
+        critMet: '✓ დაკმაყოფილდა',
+        critNotMet: '✗ არ დაკმაყოფილდა',
+        thresholdLabel: 'ზღვარი: 7',
+        sectionAOf: '/ 13',
+        sectionBVal: (v) => v ? 'დიახ' : 'არა',
+        sectionCVal: (i, opts) => opts[i],
+        interpretTitle: '📈 ინტერპრეტაცია',
+        interpretText: 'MDQ-ის <strong>პოზიტიური სკრინინგი</strong> მოითხოვს სამი კრიტერიუმის ერთდროულ დაკმაყოფილებას: (1) ≥7 „დიახ" A ნაწილში - 13 სიმპტომიდან; (2) სიმპტომების თანადროულობა (B = „დიახ"); (3) საშუალო ან სერიოზული ფუნქციური დარღვევა (C). ინსტრუმენტის მგრძნობელობა ~73%, სპეციფიკურობა ~90% ბიპოლარული I/II-ის მიმართ (Hirschfeld et al., 2000).',
+        treatmentTitle: '⚕️ რეკომენდაცია',
+        treatmentText: 'MDQ შექმნილია <strong>სკრინინგისთვის</strong>, არა დიაგნოსტიკისთვის. <strong>პოზიტიური სკრინინგის</strong> ან განწყობის მკვეთრი ცვლილებების შემთხვევაში, გთხოვთ, მიმართოთ ფსიქიატრს სრული შეფასებისთვის. ბიპოლარული სპექტრის აშლილობები კარგად პასუხობს მკურნალობაზე, განსაკუთრებით ადრეული გამოვლენისას.',
+        printBtn: '🖨️ შედეგის ამობეჭდვა',
+        restartBtn: '🔄 თავიდან დაწყება'
+    },
+    en: {
+        htmlLang: 'en',
+        headerTitle: 'Mood Disorder Questionnaire',
+        headerDesc: 'Bipolar spectrum screening instrument. Authors: Hirschfeld et al. (2000).',
+        disclaimer: '<strong>⚠️ Warning:</strong> The MDQ is a <strong>screening tool</strong> and <strong>does not replace</strong> a psychiatric evaluation. A positive screen does <strong>not mean</strong> a diagnosis of bipolar disorder - only a psychiatrist or clinical psychologist can establish a diagnosis.',
+        infoBox: '<strong>📋 Instructions:</strong> The questionnaire has <strong>three parts</strong>. <strong>Part A</strong> - Yes/No answers to 13 symptom questions (any time in your life); <strong>Part B</strong> - symptom co-occurrence; <strong>Part C</strong> - functional impairment severity.',
+        sectionA_letter: 'A',
+        sectionA_title: 'Part A - Symptom Checklist',
+        sectionA_desc: 'Has there ever been a period of time when you...',
+        sectionB_letter: 'B',
+        sectionB_title: 'Part B - Co-occurrence',
+        sectionB_desc: 'If you answered YES to more than one question in Part A:',
+        sectionB_q: 'Have several of these behaviors or experiences happened during the same period of time?',
+        sectionC_letter: 'C',
+        sectionC_title: 'Part C - Functional Impairment',
+        sectionC_desc: 'How much of a problem did any of these cause you?',
+        sectionC_q: 'Such as being unable to work; having family, money, or legal troubles; getting into arguments or fights.',
+        sevOpts: ['No problem', 'Minor problem', 'Moderate problem', 'Serious problem'],
+        yes: 'Yes',
+        no: 'No',
+        submitBtn: '📊 View Results',
+        progressQ: 'items',
+        hintAll: 'All questions answered ✓',
+        hintRemain: (n) => `Please answer all questions (remaining: ${n})`,
+        screenPosTitle: 'Screen is Positive',
+        screenNegTitle: 'Screen is Negative',
+        screenPosSubtitle: 'MDQ criteria are met. <strong>This is not a diagnosis</strong> - please consult a psychiatrist for a full evaluation.',
+        screenNegSubtitle: 'MDQ screening criteria are not fully met. If you remain concerned about mood symptoms, please consult a specialist.',
+        screenPosLabel: '⚠️ Positive Screen',
+        screenNegLabel: '✅ Negative Screen',
+        criteriaTitle: '📋 Criteria Evaluation',
+        critALabel: 'Part A - ≥7 "Yes" answers (current:',
+        critBLabel: 'Part B - Symptoms occurred simultaneously',
+        critCLabel: 'Part C - Moderate or Serious impairment',
+        critMet: '✓ Met',
+        critNotMet: '✗ Not met',
+        thresholdLabel: 'Threshold: 7',
+        sectionAOf: '/ 13',
+        sectionBVal: (v) => v ? 'Yes' : 'No',
+        sectionCVal: (i, opts) => opts[i],
+        interpretTitle: '📈 Interpretation',
+        interpretText: 'A <strong>positive MDQ screen</strong> requires all three criteria simultaneously: (1) ≥7 "Yes" answers in Part A (out of 13 symptoms); (2) symptom co-occurrence (B = "Yes"); (3) moderate or serious functional impairment (C). The instrument has sensitivity ~73%, specificity ~90% for bipolar I/II disorder (Hirschfeld et al., 2000).',
+        treatmentTitle: '⚕️ Recommendation',
+        treatmentText: 'The MDQ is designed for <strong>screening</strong>, not diagnosis. With a <strong>positive screen</strong> or if you experience significant mood swings, please consult a psychiatrist for a comprehensive evaluation. Bipolar spectrum disorders respond well to treatment, especially when identified early.',
+        printBtn: '🖨️ Print Results',
+        restartBtn: '🔄 Start Over'
+    }
+};
+
+// ===================== QUESTIONS =====================
+const questionsA = [
+    { id:1,  ka:'...განწყობა ისე ამაღლდა ან "ჰიპერი" გახდით, რომ სხვებმა შეამჩნიეს ან პრობლემები შეგექმნათ?',
+              en:'...you felt so good or so hyper that other people thought you were not your normal self, or you were so hyper that you got into trouble?' },
+    { id:2,  ka:'...ისე გაგაღიზიანათ, რომ სხვებს ყვიროდით ან ჩხუბი/კამათი გაიმართა?',
+              en:'...you were so irritable that you shouted at people or started fights or arguments?' },
+    { id:3,  ka:'...ჩვეულებრივზე გაცილებით თავდაჯერებული იყავით?',
+              en:'...you felt much more self-confident than usual?' },
+    { id:4,  ka:'...ჩვეულებრივზე ბევრად ნაკლები ძილი გქონდათ და მაინც ნორმალურად გრძნობდით თავს?',
+              en:'...you got much less sleep than usual and found you didn\'t really miss it?' },
+    { id:5,  ka:'...ჩვეულებრივზე ბევრად მჭერმეტყველი იყავით ან ჩვეულებრივზე სწრაფად ლაპარაკობდით?',
+              en:'...you were much more talkative or spoke much faster than usual?' },
+    { id:6,  ka:'...აზრები ისე სწრაფად გეწყობოდა ან გონება ისე "ბრუნდებოდა", რომ შეჩერება გიჭირდათ?',
+              en:'...thoughts raced through your head or you couldn\'t slow your mind down?' },
+    { id:7,  ka:'...ისე ადვილად ყურადღება გფანტდებოდათ, რომ კონცენტრაცია ან ერთ საქმეზე ყოფნა გიჭირდათ?',
+              en:'...you were so easily distracted by things around you that you had trouble concentrating or staying on task?' },
+    { id:8,  ka:'...ჩვეულებრივზე ბევრად მეტი ენერგია გქონდათ?',
+              en:'...you had much more energy than usual?' },
+    { id:9,  ka:'...ჩვეულებრივზე ბევრად უფრო აქტიური იყავით ან ბევრად მეტ საქმეს ასრულებდით?',
+              en:'...you were much more active or did many more things than usual?' },
+    { id:10, ka:'...ჩვეულებრივზე ბევრად კომუნიკაბელური ან სოციალური იყავით (მაგ., ღამით მეგობრებს ურეკავდით)?',
+              en:'...you were much more social or outgoing than usual (e.g., telephoning friends in the middle of the night)?' },
+    { id:11, ka:'...სექსით ჩვეულებრივზე ბევრად მეტად დაინტერესებული ხართ?',
+              en:'...you were much more interested in sex than usual?' },
+    { id:12, ka:'...ისეთ საქმეებს სჩადიოდით, რომლებიც სხვებს გადამეტებულ, სულელურ ან სარისკო ქმედებებად ეჩვენებოდა?',
+              en:'...you did things that were unusual for you or that other people might have seen as excessive, foolish, or risky?' },
+    { id:13, ka:'...ფულის ხარჯვამ თქვენ ან ოჯახს პრობლემები შეუქმნა?',
+              en:'...spending money got you or your family into trouble?' }
+];
+
+// ===================== STATE =====================
+const answersA  = {};   // id → true/false
+let answerB     = null; // true/false
+let answerC     = null; // 0-3
+let answeredCount = 0;
+const TOTAL_ITEMS = questionsA.length + 2; // 15
+let currentLang = 'ka';
+
+// ===================== LANGUAGE =====================
+function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = i18n[lang].htmlLang;
+    document.getElementById('btnKa').classList.toggle('active', lang === 'ka');
+    document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+    const t = i18n[lang];
+    document.getElementById('headerTitle').textContent = t.headerTitle;
+    document.getElementById('headerDesc').textContent  = t.headerDesc;
+    document.getElementById('disclaimerBox').innerHTML = t.disclaimer;
+    document.getElementById('infoBox').innerHTML       = t.infoBox;
+    document.getElementById('submitBtn').textContent   = t.submitBtn;
+    rebuildQuestions();
+    updateProgress();
+    if (document.getElementById('results').classList.contains('active')) {
+        calculateResults();
+    }
+}
+
+// ===================== BUILD =====================
+function rebuildQuestions() {
+    const container = document.getElementById('questionsContainer');
+    container.innerHTML = '';
+    const t = i18n[currentLang];
+
+    // ── Section A ──
+    container.appendChild(makeSectionHeader(t.sectionA_letter, t.sectionA_title, t.sectionA_desc));
+
+    questionsA.forEach(q => {
+        const text = currentLang === 'en' ? q.en : q.ka;
+        const answered = q.id in answersA;
+        const isYes = answered && answersA[q.id] === true;
+        const isNo  = answered && answersA[q.id] === false;
+
+        const block = document.createElement('div');
+        block.className = 'question-block' + (answered ? ' answered' : '');
+        block.id = `qblock-${q.id}`;
+        block.innerHTML = `
+            <div class="question-body">
+                <div class="question-number">${q.id}</div>
+                <div class="question-text">${text}</div>
+            </div>
+            <div class="yn-buttons">
+                <button class="yn-btn${isYes ? ' sel-yes' : ''}" onclick="selectA(${q.id}, true)">${t.yes}</button>
+                <button class="yn-btn${isNo  ? ' sel-no'  : ''}" onclick="selectA(${q.id}, false)">${t.no}</button>
+            </div>`;
+        container.appendChild(block);
+    });
+
+    // ── Section B ──
+    container.appendChild(makeSectionHeader(t.sectionB_letter, t.sectionB_title, t.sectionB_desc));
+
+    const blockB = document.createElement('div');
+    blockB.className = 'question-block' + (answerB !== null ? ' answered' : '');
+    blockB.id = 'qblock-B';
+    blockB.innerHTML = `
+        <div class="question-body">
+            <div class="question-number">B</div>
+            <div class="question-text">${t.sectionB_q}</div>
+        </div>
+        <div class="yn-buttons">
+            <button class="yn-btn${answerB === true  ? ' sel-yes' : ''}" onclick="selectB(true)">${t.yes}</button>
+            <button class="yn-btn${answerB === false ? ' sel-no'  : ''}" onclick="selectB(false)">${t.no}</button>
+        </div>`;
+    container.appendChild(blockB);
+
+    // ── Section C ──
+    container.appendChild(makeSectionHeader(t.sectionC_letter, t.sectionC_title, t.sectionC_desc));
+
+    const blockC = document.createElement('div');
+    blockC.className = 'question-block' + (answerC !== null ? ' answered' : '');
+    blockC.id = 'qblock-C';
+    let sevHtml = '<div class="severity-grid">';
+    t.sevOpts.forEach((label, idx) => {
+        sevHtml += `<button class="sev-opt${answerC === idx ? ' sel-' + idx : ''}" onclick="selectC(${idx})">${label}</button>`;
+    });
+    sevHtml += '</div>';
+    blockC.innerHTML = `
+        <div class="question-body">
+            <div class="question-number">C</div>
+            <div class="question-text">${t.sectionC_q}</div>
+        </div>
+        ${sevHtml}`;
+    container.appendChild(blockC);
+}
+
+function makeSectionHeader(letter, title, desc) {
+    const div = document.createElement('div');
+    div.className = 'section-header';
+    div.innerHTML = `
+        <div class="section-letter">${letter}</div>
+        <div class="section-text-wrap">
+            <div class="section-title">${title}</div>
+            <div class="section-desc">${desc}</div>
+        </div>`;
+    return div;
+}
+
+// ===================== INTERACTION =====================
+function selectA(id, val) {
+    const wasNew = !(id in answersA);
+    answersA[id] = val;
+    if (wasNew) answeredCount++;
+
+    const block = document.getElementById(`qblock-${id}`);
+    block.classList.add('answered');
+    const btns = block.querySelectorAll('.yn-btn');
+    btns[0].className = 'yn-btn' + (val === true  ? ' sel-yes' : '');
+    btns[1].className = 'yn-btn' + (val === false ? ' sel-no'  : '');
+    updateProgress();
+}
+
+function selectB(val) {
+    const wasNew = answerB === null;
+    answerB = val;
+    if (wasNew) answeredCount++;
+
+    const block = document.getElementById('qblock-B');
+    block.classList.add('answered');
+    const btns = block.querySelectorAll('.yn-btn');
+    btns[0].className = 'yn-btn' + (val === true  ? ' sel-yes' : '');
+    btns[1].className = 'yn-btn' + (val === false ? ' sel-no'  : '');
+    updateProgress();
+}
+
+function selectC(idx) {
+    const wasNew = answerC === null;
+    answerC = idx;
+    if (wasNew) answeredCount++;
+
+    const block = document.getElementById('qblock-C');
+    block.classList.add('answered');
+    block.querySelectorAll('.sev-opt').forEach((b, i) => {
+        b.className = 'sev-opt' + (i === idx ? ' sel-' + i : '');
+    });
+    updateProgress();
+}
+
+function updateProgress() {
+    const t   = i18n[currentLang];
+    const pct = Math.round((answeredCount / TOTAL_ITEMS) * 100);
+
+    document.getElementById('progressFill').style.width    = pct + '%';
+    document.getElementById('progressPercent').textContent = pct + '%';
+    document.getElementById('progressLabel').textContent   = `${answeredCount} / ${TOTAL_ITEMS} ${t.progressQ}`;
+
+    const btn  = document.getElementById('submitBtn');
+    const hint = document.getElementById('submitHint');
+    if (answeredCount === TOTAL_ITEMS) {
+        btn.disabled     = false;
+        hint.textContent = t.hintAll;
+        hint.style.color = 'var(--success)';
+    } else {
+        btn.disabled     = true;
+        hint.textContent = t.hintRemain(TOTAL_ITEMS - answeredCount);
+        hint.style.color = 'var(--text-muted)';
+    }
+}
+
+// ===================== RESULTS =====================
+function calculateResults() {
+    if (answeredCount < TOTAL_ITEMS) return;
+    const t = i18n[currentLang];
+
+    const scoreA   = questionsA.filter(q => answersA[q.id] === true).length;
+    const critA    = scoreA >= 7;
+    const critB    = answerB === true;
+    const critC    = answerC >= 2; // Moderate or Serious
+    const positive = critA && critB && critC;
+
+    const icon       = positive ? '⚠️' : '✅';
+    const mainColor  = positive ? 'var(--warning)' : 'var(--success)';
+    const borderCol  = positive ? 'rgba(201,164,77,0.35)' : 'rgba(77,201,138,0.25)';
+    const badgeClass = positive ? 'screen-positive' : 'screen-negative';
+
+    const barPct = Math.min((scoreA / 13) * 100, 100);
+    const sevLabel = t.sevOpts[answerC];
+
+    let html = `
+        <div class="result-main" style="border-color:${borderCol}">
+            <div class="result-icon">${icon}</div>
+            <div class="result-title" style="color:${mainColor}">${positive ? t.screenPosTitle : t.screenNegTitle}</div>
+            <div class="result-subtitle">${positive ? t.screenPosSubtitle : t.screenNegSubtitle}</div>
+            <span class="${badgeClass} screen-badge">${positive ? t.screenPosLabel : t.screenNegLabel}</span>
+        </div>`;
+
+    // Criteria card
+    html += `
+        <div class="criteria-card">
+            <h3>${t.criteriaTitle}</h3>
+            <div class="bar-wrap">
+                <div class="threshold-label">${t.thresholdLabel}</div>
+                <div class="bar-labels">
+                    <span style="color:${critA ? 'var(--warning)' : 'var(--text-secondary)'}; font-weight:600">${t.critALabel} ${scoreA}) ${t.sectionAOf}</span>
+                    <span>${scoreA} / 13</span>
+                </div>
+                <div class="section-a-bar">
+                    <div class="section-a-fill" style="width:${barPct}%">${scoreA > 0 ? scoreA : ''}</div>
+                    <div class="section-a-threshold"></div>
+                </div>
+            </div>
+            <div class="criteria-row">
+                <div class="crit-icon">${critA ? '⚠️' : '✅'}</div>
+                <div class="crit-label">${t.critALabel} ${scoreA}) ${t.sectionAOf}</div>
+                <div class="crit-value ${critA ? 'crit-met' : 'crit-not-met'}">${critA ? t.critMet : t.critNotMet}</div>
+            </div>
+            <div class="criteria-row">
+                <div class="crit-icon">${critB ? '⚠️' : '✅'}</div>
+                <div class="crit-label">${t.critBLabel} - <strong>${t.sectionBVal(answerB)}</strong></div>
+                <div class="crit-value ${critB ? 'crit-met' : 'crit-not-met'}">${critB ? t.critMet : t.critNotMet}</div>
+            </div>
+            <div class="criteria-row">
+                <div class="crit-icon">${critC ? '⚠️' : '✅'}</div>
+                <div class="crit-label">${t.critCLabel} - <strong>${sevLabel}</strong></div>
+                <div class="crit-value ${critC ? 'crit-met' : 'crit-not-met'}">${critC ? t.critMet : t.critNotMet}</div>
+            </div>
+        </div>`;
+
+    html += `<div class="scoring-info"><h3>${t.interpretTitle}</h3><p>${t.interpretText}</p></div>`;
+    html += `<div class="treatment-note"><h3>${t.treatmentTitle}</h3><p>${t.treatmentText}</p></div>`;
+    html += `
+        <button class="restart-btn" onclick="window.print()" style="margin-top:20px;">${t.printBtn}</button>
+        <button class="restart-btn" onclick="restart()">${t.restartBtn}</button>`;
+
+    document.getElementById('questionsContainer').style.display = 'none';
+    document.getElementById('submitArea').style.display         = 'none';
+    document.getElementById('progressArea').style.display       = 'none';
+    document.querySelector('.info-box').style.display           = 'none';
+
+    const el = document.getElementById('results');
+    el.innerHTML = html;
+    el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+    Object.keys(answersA).forEach(k => delete answersA[k]);
+    answerB = null;
+    answerC = null;
+    answeredCount = 0;
+
+    document.getElementById('questionsContainer').style.display = 'block';
+    document.getElementById('submitArea').style.display         = 'block';
+    document.getElementById('progressArea').style.display       = 'block';
+    document.querySelector('.info-box').style.display           = 'block';
+    document.getElementById('results').classList.remove('active');
+    document.getElementById('results').innerHTML = '';
+
+    rebuildQuestions();
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================== THEME =====================
+function toggleTheme() {
+    var isLight = document.body.classList.toggle('light');
+    localStorage.setItem('psycho-theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeToggle').textContent = isLight ? '🌙' : '☀️';
+}
+
+// ===================== INIT =====================
+setLang('ka');
+</script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>კითხვარის შედეგები - GIPA AI Intensive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#001a33', 900: '#003366', 800: '#004080',
+              700: '#004d99', 600: '#0059b3', 500: '#0066cc',
+              400: '#3385d6', 300: '#66a3e0', 200: '#99c2eb',
+              100: '#cce0f5', 50: '#e6f0fa'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+    html { scroll-behavior: smooth; }
+    .card { border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; }
+    .stat { border: 1px solid #e5e7eb; border-radius: 12px; }
+    .bar-row { display: grid; grid-template-columns: 1fr 160px; gap: 12px; align-items: center; }
+    .bar-track { height: 10px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, #004d99, #66a3e0); }
+    .bar-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .pill { font-size: 11px; background: #e6f0fa; color: #003366; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-navy-900 text-white">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="text-xs uppercase tracking-widest text-blue-200">GIPA · 2026 · AI Intensive</div>
+      <h1 class="text-3xl font-extrabold mt-2">კითხვარის შედეგები</h1>
+      <p class="text-blue-200 text-sm mt-1">მონაცემების წყარო: `responses.csv` ან ატვირთული ფაილი</p>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-10 space-y-6">
+    <div class="card p-6">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900">მონაცემების ატვირთვა</h2>
+          <p class="text-xs text-gray-500 mt-1">
+            შედეგები ავტომატურად ახლდება, როცა `responses.csv`-ში დაამატებთ ახალ რიგს.
+          </p>
+        </div>
+        <label class="inline-flex items-center gap-2 bg-navy-900 text-white px-4 py-2 rounded-lg text-sm cursor-pointer">
+          CSV ფაილის ატვირთვა
+          <input id="csvFile" type="file" accept=".csv,text/csv" class="hidden">
+        </label>
+      </div>
+      <div class="mt-4 text-xs text-gray-500">
+        თუ ფაილი ატვირთეთ, ეკრანზე ნაჩვენები შედეგები იქნება ატვირთული ფაილიდან (არ ინახება დისკზე).
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="stat p-4 bg-white">
+        <div class="text-xs text-gray-500">სულ პასუხები</div>
+        <div id="totalResponses" class="text-2xl font-extrabold text-navy-900">—</div>
+      </div>
+      <div class="stat p-4 bg-white">
+        <div class="text-xs text-gray-500">საშუალო საერთო შეფასება (1-5)</div>
+        <div id="avgOverall" class="text-2xl font-extrabold text-navy-900">—</div>
+      </div>
+      <div class="stat p-4 bg-white">
+        <div class="text-xs text-gray-500">რეკომენდაცია (აუცილებლად)</div>
+        <div id="pctYes" class="text-2xl font-extrabold text-navy-900">—</div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900 mb-3">საერთო შეჯამება</h2>
+      <p id="summaryText" class="text-sm text-gray-700 leading-relaxed">
+        —
+      </p>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900 mb-4">ძირითადი განაწილებები</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">რეკომენდაცია</h3>
+          <ul id="npsBreakdown" class="text-sm text-gray-700 space-y-2"></ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">სირთულის შეფასება</h3>
+          <ul id="difficultyBreakdown" class="text-sm text-gray-700 space-y-2"></ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">მოლოდინები</h3>
+          <ul id="expectationsBreakdown" class="text-sm text-gray-700 space-y-2"></ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">AI გამოცდილება</h3>
+          <ul id="experienceBreakdown" class="text-sm text-gray-700 space-y-2"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900 mb-4">ინსტრუქტორის შეფასება (1-3)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="stat p-4">
+          <div class="text-xs text-gray-500">სიცხადე</div>
+          <div id="avgInstrClarity" class="text-xl font-extrabold text-navy-900">—</div>
+        </div>
+        <div class="stat p-4">
+          <div class="text-xs text-gray-500">კითხვებზე პასუხი</div>
+          <div id="avgInstrQa" class="text-xl font-extrabold text-navy-900">—</div>
+        </div>
+        <div class="stat p-4">
+          <div class="text-xs text-gray-500">ტემპი</div>
+          <div id="avgInstrPace" class="text-xl font-extrabold text-navy-900">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900 mb-4">დღე 1 და დღე 2 საშუალოები (1-3)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">დღე 1</h3>
+          <ul id="day1Averages" class="text-sm text-gray-700 space-y-2"></ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">დღე 2</h3>
+          <ul id="day2Averages" class="text-sm text-gray-700 space-y-2"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900 mb-4">მომავალი თემები (საშუალო 1-3)</h2>
+      <div id="futureTopicAverages" class="space-y-2 text-sm text-gray-700"></div>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900 mb-4">პრაქტიკული გამოყენება (მონიშნულია)</h2>
+      <ul id="useBreakdown" class="text-sm text-gray-700 space-y-2"></ul>
+    </div>
+
+    <div class="card p-6">
+      <h2 class="text-sm font-bold uppercase tracking-widest text-navy-900 mb-4">ღია პასუხები</h2>
+      <div class="space-y-4 text-sm text-gray-700">
+        <details class="group border border-gray-200 rounded-xl p-4">
+          <summary class="cursor-pointer font-semibold text-gray-800 flex items-center justify-between">
+            <span>საუკეთესო ნაწილი</span>
+            <span class="text-xs text-gray-400 group-open:hidden">გახსნა</span>
+            <span class="text-xs text-gray-400 hidden group-open:inline">დახურვა</span>
+          </summary>
+          <div class="mt-3">
+            <ul id="bestPartList" class="space-y-1"></ul>
+          </div>
+        </details>
+        <details class="group border border-gray-200 rounded-xl p-4">
+          <summary class="cursor-pointer font-semibold text-gray-800 flex items-center justify-between">
+            <span>გასაუმჯობესებელი</span>
+            <span class="text-xs text-gray-400 group-open:hidden">გახსნა</span>
+            <span class="text-xs text-gray-400 hidden group-open:inline">დახურვა</span>
+          </summary>
+          <div class="mt-3">
+            <ul id="improveList" class="space-y-1"></ul>
+          </div>
+        </details>
+        <details class="group border border-gray-200 rounded-xl p-4">
+          <summary class="cursor-pointer font-semibold text-gray-800 flex items-center justify-between">
+            <span>სხვა კომენტარები</span>
+            <span class="text-xs text-gray-400 group-open:hidden">გახსნა</span>
+            <span class="text-xs text-gray-400 hidden group-open:inline">დახურვა</span>
+          </summary>
+          <div class="mt-3">
+            <ul id="otherList" class="space-y-1"></ul>
+          </div>
+        </details>
+        <details class="group border border-gray-200 rounded-xl p-4">
+          <summary class="cursor-pointer font-semibold text-gray-800 flex items-center justify-between">
+            <span>სხვა თემები / გამოყენება</span>
+            <span class="text-xs text-gray-400 group-open:hidden">გახსნა</span>
+            <span class="text-xs text-gray-400 hidden group-open:inline">დახურვა</span>
+          </summary>
+          <div class="mt-3">
+            <ul id="otherTopicList" class="space-y-1"></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const day1Questions = [
+      { name: 'd1_theory',    text: 'AI საფუძვლები, მოდელების მიმოხილვა და უსაფრთხოება (GDPR/Bias)' },
+      { name: 'd1_prompt',    text: 'პრომპტინგის ტექნიკები (CREATE, Role, Few-Shot, Reasoning)' },
+      { name: 'd1_creative',  text: 'იდეების გენერაცია და კრეატიული აზროვნება (Six Thinking Hats)' },
+      { name: 'd1_design',    text: 'სასწავლო მასალების დიზაინი (სილაბუსი, Lesson Plan, ადაპტაცია)' },
+      { name: 'd1_pace',      text: 'პირველი დღის ტემპი და მოცულობა' }
+    ];
+
+    const day2Questions = [
+      { name: 'd2_assess',    text: 'შეფასება, პერსონალიზებული უკუკავშირი და რუბრიკების გენერირება' },
+      { name: 'd2_content',   text: 'სასწავლო ქეისებისა და ვიზუალური მასალების (სლაიდები) შექმნა' },
+      { name: 'd2_research',  text: 'სამეცნიერო კვლევა, ლიტერატურის მიმოხილვა და NotebookLM' },
+      { name: 'd2_ethics',    text: 'ეთიკა, AI-Resistant დავალებები და კურიკულუმის რეფორმა (3+1)' },
+      { name: 'd2_pace',      text: 'მეორე დღის ტემპი და მოცულობა' }
+    ];
+
+    const futureTopics = [
+      { id: 'ft1',  grp: 'პოლიტიკა და სტრატეგია',
+        text: 'AI პოლიტიკის შემუშავება უნივერსიტეტში (institutional AI policy)' },
+      { id: 'ft2',  grp: 'პოლიტიკა და სტრატეგია',
+        text: 'EU AI Act და საქართველოს მარეგულირებელი ჩარჩო - რა ვალდებულებები გვაქვს?' },
+      { id: 'ft3',  grp: 'პოლიტიკა და სტრატეგია',
+        text: 'AI სტრატეგია უნივერსიტეტის ადმინისტრაციაში (ჩარიცხვა, HR, ბიუჯეტი)' },
+      { id: 'ft4',  grp: 'სწავლება და შეფასება',
+        text: 'Custom AI ასისტენტის შექმნა ფაკულტეტისთვის (GPTs, Claude Projects)' },
+      { id: 'ft5',  grp: 'სწავლება და შეფასება',
+        text: 'AI-გენერირებული კონტენტის პოლიტიკა - plagiarism, დეტექცია, სტუდენტთა სახელმძღვანელო' },
+      { id: 'ft6',  grp: 'სწავლება და შეფასება',
+        text: 'AI-Resistant (AI-გამძლე) დავალებებისა და გამოცდების დიზაინი - ღრმა განხილვა' },
+      { id: 'ft7',  grp: 'კვლევა',
+        text: 'AI სამეცნიერო კვლევაში - სრული workflow: ლიტერატურა, ანალიზი, სტატია' },
+      { id: 'ft8',  grp: 'კვლევა',
+        text: 'AI-ით გრანტის განაცხადების მომზადება' },
+      { id: 'ft10', grp: 'ავტომატიზაცია',
+        text: 'AI სამუშაო პროცესების ავტომატიზაცია (Make.com, n8n) - კონკრეტული უნივერსიტეტის use cases' },
+      { id: 'ft11', grp: 'ავტომატიზაცია',
+        text: 'RAG სისტემები - საკუთარი ცოდნის ბაზის შექმნა ფაკულტეტის დოკუმენტებიდან' },
+      { id: 'ft12', grp: 'ავტომატიზაცია',
+        text: 'AI-ით HR პროცესების ავტომატიზაცია (შერჩევა, შეფასება, onboarding)' },
+      { id: 'ft13', grp: 'სტუდენტებთან მუშაობა',
+        text: 'AI-ით სტუდენტთა კარიერული მხარდაჭერა და პროფორიენტაცია' },
+      { id: 'ft14', grp: 'სტუდენტებთან მუშაობა',
+        text: 'AI ტუტორინგი და სტუდენტთა ინდივიდუალური სწავლის მხარდაჭერა' },
+      { id: 'ft15', grp: 'სტუდენტებთან მუშაობა',
+        text: 'სტუდენტების კარიერული განვითარება, დასაქმება და მათი ტრეინინგი AI ხელსაწყოებში' },
+      { id: 'ft20', grp: 'ტექნიკური',
+        text: 'AI მულტიმედია კონტენტის შექმნაში (ვიდეო, podcast, ინფოგრაფიკა)' }
+    ];
+
+    const allKeys = [
+      'overall', 'instr_clarity', 'instr_qa', 'instr_pace', 'nps', 'expectations', 'difficulty', 'experience',
+      ...day1Questions.map(q => q.name),
+      ...day2Questions.map(q => q.name),
+      ...futureTopics.map(t => `topic_${t.id}`),
+      'format', 'use_syllabus', 'use_lessonplan', 'use_feedback', 'use_rubrics', 'use_research', 'use_grants',
+      'use_slides', 'use_admin', 'use_plagiarism', 'use_other', 'use_other_text',
+      'best_part', 'improve', 'other', 'other_topic_text'
+    ];
+
+    function parseCsv(text) {
+      const rows = [];
+      let i = 0;
+      let cur = '';
+      let row = [];
+      let inQuotes = false;
+      while (i < text.length) {
+        const ch = text[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            if (text[i + 1] === '"') {
+              cur += '"';
+              i += 2;
+              continue;
+            } else {
+              inQuotes = false;
+            }
+          } else {
+            cur += ch;
+          }
+        } else {
+          if (ch === '"') {
+            inQuotes = true;
+          } else if (ch === ',') {
+            row.push(cur);
+            cur = '';
+          } else if (ch === '\n' || ch === '\r') {
+            if (cur.length || row.length) {
+              row.push(cur);
+              rows.push(row);
+              row = [];
+              cur = '';
+            }
+          } else {
+            cur += ch;
+          }
+        }
+        i += 1;
+      }
+      if (cur.length || row.length) {
+        row.push(cur);
+        rows.push(row);
+      }
+      return rows.filter(r => r.some(v => v.trim() !== ''));
+    }
+
+    function toNum(v) {
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function avg(values) {
+      const filtered = values.filter(v => v !== null);
+      if (!filtered.length) return null;
+      return filtered.reduce((a, b) => a + b, 0) / filtered.length;
+    }
+
+    function pct(part, total) {
+      if (!total) return '0%';
+      return Math.round((part / total) * 100) + '%';
+    }
+
+    function renderList(elId, items) {
+      const el = document.getElementById(elId);
+      el.innerHTML = '';
+      if (!items.length) {
+        el.innerHTML = '<li class="text-gray-400">—</li>';
+        return;
+      }
+      items.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        el.appendChild(li);
+      });
+    }
+
+    function renderBars(elId, items, total, maxValue) {
+      const el = document.getElementById(elId);
+      el.innerHTML = '';
+      if (!items.length) {
+        el.innerHTML = '<li class="text-gray-400">—</li>';
+        return;
+      }
+      if ((total === 0 || total === null || total === undefined) && !maxValue) {
+        el.innerHTML = '<li class="text-gray-400">—</li>';
+        return;
+      }
+      items.forEach(item => {
+        const li = document.createElement('li');
+        const pctVal = maxValue
+          ? Math.round((item.value / maxValue) * 100)
+          : Math.round((item.value / total) * 100);
+        li.innerHTML = `
+          <div class="bar-row">
+            <div class="bar-label">
+              <span>${item.label}</span>
+              <span class="pill">${item.value}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${Math.max(2, pctVal)}%"></div>
+            </div>
+          </div>
+        `;
+        el.appendChild(li);
+      });
+    }
+
+    function render() {
+      const total = dataRows.length;
+      document.getElementById('totalResponses').textContent = total;
+
+      const overallAvg = avg(dataRows.map(r => toNum(r.map.overall)));
+      document.getElementById('avgOverall').textContent = overallAvg ? overallAvg.toFixed(2) : '—';
+
+      const yesCount = dataRows.filter(r => r.map.nps === 'yes').length;
+      document.getElementById('pctYes').textContent = total ? pct(yesCount, total) : '—';
+
+      const rightCount = dataRows.filter(r => r.map.difficulty === 'right').length;
+
+      const npsBreakdown = [
+        { label: 'აუცილებლად', value: dataRows.filter(r => r.map.nps === 'yes').length },
+        { label: 'ალბათ', value: dataRows.filter(r => r.map.nps === 'maybe').length },
+        { label: 'არა', value: dataRows.filter(r => r.map.nps === 'no').length }
+      ];
+      renderBars('npsBreakdown', npsBreakdown, total);
+
+      const diffBreakdown = [
+        { label: 'ძალიან მარტივი', value: dataRows.filter(r => r.map.difficulty === 'easy').length },
+        { label: 'შესაფერისი', value: dataRows.filter(r => r.map.difficulty === 'right').length },
+        { label: 'ძალიან რთული', value: dataRows.filter(r => r.map.difficulty === 'hard').length }
+      ];
+      renderBars('difficultyBreakdown', diffBreakdown, total);
+
+      const expBreakdown = [
+        { label: 'სრულად', value: dataRows.filter(r => r.map.expectations === 'yes').length },
+        { label: 'მეტწილად', value: dataRows.filter(r => r.map.expectations === 'mostly').length },
+        { label: 'ნაწილობრივ', value: dataRows.filter(r => r.map.expectations === 'partial').length },
+        { label: 'არ შეესაბამებოდა', value: dataRows.filter(r => r.map.expectations === 'no').length }
+      ];
+      renderBars('expectationsBreakdown', expBreakdown, total);
+
+      const aiBreakdown = [
+        { label: 'არ მქონია', value: dataRows.filter(r => r.map.experience === 'none').length },
+        { label: 'დამწყები', value: dataRows.filter(r => r.map.experience === 'beginner').length },
+        { label: 'საშუალო', value: dataRows.filter(r => r.map.experience === 'mid').length },
+        { label: 'მოწინავე', value: dataRows.filter(r => r.map.experience === 'advanced').length }
+      ];
+      renderBars('experienceBreakdown', aiBreakdown, total);
+
+      document.getElementById('avgInstrClarity').textContent =
+        avg(dataRows.map(r => toNum(r.map.instr_clarity)))?.toFixed(2) || '—';
+      document.getElementById('avgInstrQa').textContent =
+        avg(dataRows.map(r => toNum(r.map.instr_qa)))?.toFixed(2) || '—';
+      document.getElementById('avgInstrPace').textContent =
+        avg(dataRows.map(r => toNum(r.map.instr_pace)))?.toFixed(2) || '—';
+
+      const day1List = day1Questions.map(q => {
+        const a = avg(dataRows.map(r => toNum(r.map[q.name])));
+        return { label: q.text, value: a ? Number(a.toFixed(2)) : 0 };
+      }).sort((a, b) => b.value - a.value);
+      renderBars('day1Averages', day1List, null, 3);
+
+      const day2List = day2Questions.map(q => {
+        const a = avg(dataRows.map(r => toNum(r.map[q.name])));
+        return { label: q.text, value: a ? Number(a.toFixed(2)) : 0 };
+      }).sort((a, b) => b.value - a.value);
+      renderBars('day2Averages', day2List, null, 3);
+
+      const futureList = [];
+      futureTopics.forEach(t => {
+        const key = `topic_${t.id}`;
+        const a = avg(dataRows.map(r => toNum(r.map[key])));
+        futureList.push({
+          label: `${t.grp} — ${t.text}`,
+          value: a ? Number(a.toFixed(2)) : 0
+        });
+      });
+      futureList.sort((a, b) => b.value - a.value);
+      renderBars('futureTopicAverages', futureList, null, 3);
+
+      const useFields = [
+        { key: 'use_syllabus', label: 'სილაბუსი' },
+        { key: 'use_lessonplan', label: 'Lesson Plan' },
+        { key: 'use_feedback', label: 'უკუკავშირი' },
+        { key: 'use_rubrics', label: 'რუბრიკები' },
+        { key: 'use_research', label: 'კვლევა' },
+        { key: 'use_grants', label: 'გრანტები' },
+        { key: 'use_slides', label: 'სლაიდები' },
+        { key: 'use_admin', label: 'ადმინისტრაცია' },
+        { key: 'use_plagiarism', label: 'პლაგიატი' },
+        { key: 'use_other', label: 'სხვა' }
+      ];
+      const useList = useFields.map(f => {
+        const c = dataRows.filter(r => r.map[f.key] === '1').length;
+        return { label: f.label, value: c };
+      }).sort((a, b) => b.value - a.value);
+      renderBars('useBreakdown', useList, total);
+
+      const summaryEl = document.getElementById('summaryText');
+      if (total && overallAvg !== null) {
+        const yesPct = pct(yesCount, total);
+        const topTopics = futureList.slice(0, 3).map(t => t.label).join('; ');
+        const summary = `საერთო შეფასება საშუალოდ ${overallAvg.toFixed(2)}/5. ` +
+          `რეკომენდაცია: ${yesCount}/${total} (${yesPct}) “აუცილებლად”. ` +
+          `სირთულე უმეტესად “შესაფერისი” (${rightCount}/${total}). ` +
+          `გაუმჯობესების მთავარ თემებად გამოვიდა მეტი პრაქტიკული/ინდივიდუალური დავალება და ფორმატის გახანგრძლივება. ` +
+          `მომავალი სასურველი თემების პრიორიტეტი: ${topTopics}.`;
+        summaryEl.textContent = summary;
+      } else {
+        summaryEl.textContent = '—';
+      }
+
+      renderList('bestPartList', dataRows.map(r => r.map.best_part).filter(Boolean));
+      renderList('improveList', dataRows.map(r => r.map.improve).filter(Boolean));
+      renderList('otherList', dataRows.map(r => r.map.other).filter(Boolean));
+      const otherTopic = dataRows.map(r => r.map.other_topic_text).filter(Boolean);
+      const otherUse = dataRows.map(r => r.map.use_other_text).filter(Boolean);
+      renderList('otherTopicList', [...otherTopic, ...otherUse]);
+    }
+
+    function mapRow(row) {
+      const m = {};
+      allKeys.forEach((k, idx) => {
+        m[k] = row[idx] ?? '';
+      });
+      return m;
+    }
+
+    let dataRows = [];
+
+    async function loadDefault() {
+      try {
+        const res = await fetch('responses.csv', { cache: 'no-store' });
+        if (!res.ok) throw new Error('missing');
+        const text = await res.text();
+        const rows = parseCsv(text);
+        dataRows = rows.map(r => ({ raw: r, map: mapRow(r) }));
+        render();
+      } catch (e) {
+        dataRows = [];
+        render();
+      }
+    }
+
+    document.getElementById('csvFile').addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const text = await file.text();
+      const rows = parseCsv(text);
+      dataRows = rows.map(r => ({ raw: r, map: mapRow(r) }));
+      render();
+    });
+
+    loadDefault();
+  </script>
+</body>
+</html>

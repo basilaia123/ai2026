@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ინტეგრაციის მატრიცა - GIPA AI Masterclass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#001a33', 900: '#003366', 800: '#004080',
+                            700: '#004d99', 600: '#0059b3', 500: '#0066cc',
+                            400: '#3385d6', 300: '#66a3e0', 200: '#99c2eb',
+                            100: '#cce0f5', 50: '#e6f0fa',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; }
+        .matrix-cell { transition: all 0.2s ease; }
+        .matrix-cell:hover { transform: scale(1.05); }
+        .rating-best { background: #dcfce7; color: #166534; }
+        .rating-good { background: #dbeafe; color: #1e40af; }
+        .rating-ok { background: #fef9c3; color: #854d0e; }
+        .rating-na { background: #f1f5f9; color: #94a3b8; }
+        .filter-btn { transition: all 0.2s ease; }
+        .filter-btn.active { background: #003366 !important; color: #fff !important; border-color: #003366 !important; }
+        @media print { #gipaControls { display: none !important; } }
+        @media (max-width: 768px) {
+            .matrix-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .matrix-scroll table { min-width: 700px; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- Header -->
+    <header class="bg-navy-900 text-white">
+        <div class="max-w-5xl mx-auto px-6 py-12 text-center">
+            <a href="index.html" class="text-xs text-blue-300 hover:text-white transition-colors inline-flex items-center gap-1 mb-4">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                მთავარი გვერდი
+            </a>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-2">AI ინტეგრაციის მატრიცა</h1>
+            <p class="text-blue-300 text-sm">რომელი ინსტრუმენტი - რომელი ამოცანისთვის?</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-12">
+
+        <!-- Legend -->
+        <div class="flex flex-wrap items-center gap-4 mb-8 bg-white rounded-xl border border-gray-200 px-5 py-3">
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">აღნიშვნები:</span>
+            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm rating-best"></span><span class="text-xs text-gray-600">საუკეთესო არჩევანი</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm rating-good"></span><span class="text-xs text-gray-600">კარგი ვარიანტი</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm rating-ok"></span><span class="text-xs text-gray-600">შესაძლებელია</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm rating-na"></span><span class="text-xs text-gray-600">არ არის შესაფერისი</span></div>
+        </div>
+
+        <!-- Filter -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="filterDept('all')" class="filter-btn active text-xs font-semibold border border-gray-200 px-3 py-1.5 rounded-lg bg-white text-gray-600">ყველა</button>
+            <button onclick="filterDept('teaching')" class="filter-btn text-xs font-semibold border border-gray-200 px-3 py-1.5 rounded-lg bg-white text-gray-600">სწავლება</button>
+            <button onclick="filterDept('research')" class="filter-btn text-xs font-semibold border border-gray-200 px-3 py-1.5 rounded-lg bg-white text-gray-600">კვლევა</button>
+            <button onclick="filterDept('assessment')" class="filter-btn text-xs font-semibold border border-gray-200 px-3 py-1.5 rounded-lg bg-white text-gray-600">შეფასება</button>
+            <button onclick="filterDept('admin')" class="filter-btn text-xs font-semibold border border-gray-200 px-3 py-1.5 rounded-lg bg-white text-gray-600">ადმინისტრირება</button>
+        </div>
+
+        <!-- Main Matrix Table -->
+        <div class="matrix-scroll bg-white rounded-2xl border border-gray-200 overflow-hidden mb-10">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-navy-900 text-white">
+                        <th class="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider w-1/4">ამოცანა</th>
+                        <th class="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider">ChatGPT</th>
+                        <th class="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider">Claude</th>
+                        <th class="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider">Gemini</th>
+                        <th class="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider">Perplexity</th>
+                        <th class="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider">NotebookLM</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <!-- Teaching -->
+                    <tr data-dept="teaching">
+                        <td class="px-4 py-3 font-medium text-gray-800">სილაბუსის შექმნა / განახლება</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="teaching">
+                        <td class="px-4 py-3 font-medium text-gray-800">ლექციის გეგმა (Lesson Plan)</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="teaching">
+                        <td class="px-4 py-3 font-medium text-gray-800">მასალების ადაპტაცია (Differentiation)</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="teaching">
+                        <td class="px-4 py-3 font-medium text-gray-800">პრეზენტაციის გენერაცია</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ტექსტი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">Slides AI</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="teaching">
+                        <td class="px-4 py-3 font-medium text-gray-800">Case Study-ს შექმნა</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ფაქტებით</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+
+                    <!-- Research -->
+                    <tr class="bg-gray-50"><td colspan="6" class="px-4 py-2 text-[10px] font-bold text-navy-900 uppercase tracking-widest opacity-50">კვლევა</td></tr>
+                    <tr data-dept="research">
+                        <td class="px-4 py-3 font-medium text-gray-800">ლიტერატურის მიმოხილვა</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ხარვეზით</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ხარვეზით</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">სანდო</span></td>
+                    </tr>
+                    <tr data-dept="research">
+                        <td class="px-4 py-3 font-medium text-gray-800">წყაროების ძიება და ციტირება</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ჰალუცინაცია!</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ჰალუცინაცია!</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ხარვეზით</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">ატვირთული</span></td>
+                    </tr>
+                    <tr data-dept="research">
+                        <td class="px-4 py-3 font-medium text-gray-800">ტექსტის შეჯამება</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">მოკლედ</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">სანდო</span></td>
+                    </tr>
+                    <tr data-dept="research">
+                        <td class="px-4 py-3 font-medium text-gray-800">მონაცემთა ანალიზი</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">Code + Charts</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">Artifacts</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">Sheets AI</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="research">
+                        <td class="px-4 py-3 font-medium text-gray-800">APA / Harvard ფორმატირება</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+
+                    <!-- Assessment -->
+                    <tr class="bg-gray-50"><td colspan="6" class="px-4 py-2 text-[10px] font-bold text-navy-900 uppercase tracking-widest opacity-50">შეფასება</td></tr>
+                    <tr data-dept="assessment">
+                        <td class="px-4 py-3 font-medium text-gray-800">Feedback-ის გენერაცია</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="assessment">
+                        <td class="px-4 py-3 font-medium text-gray-800">რუბრიკების შექმნა</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="assessment">
+                        <td class="px-4 py-3 font-medium text-gray-800">ტესტების / ქვიზების შექმნა</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">Forms AI</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="assessment">
+                        <td class="px-4 py-3 font-medium text-gray-800">AI-ს მიერ დაწერილი ტექსტის ამოცნობა</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">სუსტი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">სუსტი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">სუსტი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+
+                    <!-- Admin -->
+                    <tr class="bg-gray-50"><td colspan="6" class="px-4 py-2 text-[10px] font-bold text-navy-900 uppercase tracking-widest opacity-50">ადმინისტრირება</td></tr>
+                    <tr data-dept="admin">
+                        <td class="px-4 py-3 font-medium text-gray-800">ელ-ფოსტის / მიმოწერის მონახაზი</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">Gmail AI</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="admin">
+                        <td class="px-4 py-3 font-medium text-gray-800">შეხვედრის ოქმი / ჩანაწერები</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">Meet AI</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">ტრანსკრიპტი</span></td>
+                    </tr>
+                    <tr data-dept="admin">
+                        <td class="px-4 py-3 font-medium text-gray-800">პერსონალიზებული AI ასისტენტი</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">Custom GPTs</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">Projects</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">Gems</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                    <tr data-dept="admin">
+                        <td class="px-4 py-3 font-medium text-gray-800">თარგმნა (EN↔KA)</td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-best text-[11px] font-semibold px-2 py-0.5 rounded-md">საუკეთესო</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-good text-[11px] font-semibold px-2 py-0.5 rounded-md">კარგი</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-ok text-[11px] font-semibold px-2 py-0.5 rounded-md">მოკლედ</span></td>
+                        <td class="px-3 py-3 text-center"><span class="matrix-cell inline-block rating-na text-[11px] font-semibold px-2 py-0.5 rounded-md">-</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Department-specific recommendations -->
+        <h2 class="text-xl font-bold text-navy-900 mb-5">რეკომენდაციები ფაკულტეტების მიხედვით</h2>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-10">
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm font-bold">L</span>
+                    <h3 class="font-bold text-gray-800 text-sm">სამართალი / Law</h3>
+                </div>
+                <ul class="text-xs text-gray-600 space-y-1.5">
+                    <li>- Case Study გენერაცია: <strong>ChatGPT</strong></li>
+                    <li>- კანონმდებლობის ანალიზი: <strong>Claude</strong> (გრძელი ტექსტი)</li>
+                    <li>- წყაროების ძიება: <strong>Perplexity</strong></li>
+                    <li>- სტუდენტის ნაშრომის შეფასება: <strong>ChatGPT + Claude</strong></li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold">B</span>
+                    <h3 class="font-bold text-gray-800 text-sm">ბიზნესი / Business</h3>
+                </div>
+                <ul class="text-xs text-gray-600 space-y-1.5">
+                    <li>- ბიზნეს-ქეისები: <strong>ChatGPT</strong></li>
+                    <li>- მონაცემთა ანალიზი: <strong>ChatGPT</strong> (Code Interpreter)</li>
+                    <li>- ბაზრის კვლევა: <strong>Perplexity</strong></li>
+                    <li>- პრეზენტაციები: <strong>Gemini → Google Slides</strong></li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-sm font-bold">H</span>
+                    <h3 class="font-bold text-gray-800 text-sm">ჰუმანიტარული / Humanities</h3>
+                </div>
+                <ul class="text-xs text-gray-600 space-y-1.5">
+                    <li>- ტექსტის ანალიზი: <strong>Claude</strong> (ღრმა ანალიზი)</li>
+                    <li>- ლიტერატურის მიმოხილვა: <strong>NotebookLM</strong></li>
+                    <li>- სადისკუსიო კითხვები: <strong>ChatGPT</strong></li>
+                    <li>- თარგმნა: <strong>Claude</strong> (ქართულისთვის)</li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center text-sm font-bold">S</span>
+                    <h3 class="font-bold text-gray-800 text-sm">STEM / საბუნებისმეტყველო</h3>
+                </div>
+                <ul class="text-xs text-gray-600 space-y-1.5">
+                    <li>- კოდის გენერაცია: <strong>ChatGPT</strong> (Code Interpreter)</li>
+                    <li>- ფორმულების ახსნა: <strong>ChatGPT + Claude</strong></li>
+                    <li>- სტატისტიკური ანალიზი: <strong>ChatGPT</strong> (Python)</li>
+                    <li>- ლიტერატურა: <strong>Perplexity + NotebookLM</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Back -->
+        <div class="text-center">
+            <a href="index.html" class="inline-flex items-center gap-2 bg-navy-900 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-navy-800 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                მთავარ გვერდზე დაბრუნება
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy-900 text-center py-8 px-6 mt-8">
+        <p class="text-blue-300 text-sm mb-1">GIPA AI Intensive - Executive Masterclass</p>
+        <p class="text-blue-400/60 text-xs">მომზადებულია გიორგი ბასილაიას მიერ | 2026</p>
+    </footer>
+
+    <script>
+        function filterDept(dept) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('tr[data-dept]').forEach(row => {
+                row.style.display = (dept === 'all' || row.dataset.dept === dept) ? '' : 'none';
+            });
+        }
+    </script>
+
+    <!-- GIPA Controls -->
+    <script>
+    (function(){
+        var s=document.createElement('style');
+        s.textContent=`
+    body.dark{background:#0f172a!important;color:#cbd5e1!important}
+    body.dark .bg-white{background:#1e293b!important}
+    body.dark .bg-gray-50{background:#0f172a!important}
+    body.dark .text-gray-900,body.dark .text-gray-800{color:#f1f5f9!important}
+    body.dark .text-gray-700,body.dark .text-gray-600{color:#cbd5e1!important}
+    body.dark .text-gray-500,body.dark .text-gray-400{color:#94a3b8!important}
+    body.dark .border-gray-200,body.dark .border-gray-100{border-color:#334155!important}
+    body.dark table{border-color:#334155!important}
+    body.dark thead{background:#1e293b!important}
+    body.dark tbody tr{border-color:#334155!important}
+    body.dark td,body.dark th{color:#cbd5e1!important}
+    body.dark .filter-btn{background:#1e293b!important;color:#94a3b8!important;border-color:#334155!important}
+    body.dark .filter-btn.active{background:#003366!important;color:#fff!important;border-color:#003366!important}
+    #gipaControls{position:fixed;bottom:1.5rem;left:1.5rem;z-index:45;display:flex;flex-direction:column;gap:4px;background:rgba(0,51,102,0.92);backdrop-filter:blur(8px);padding:5px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+    #gipaControls button{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:transparent;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:background .2s}
+    #gipaControls button:hover{background:rgba(255,255,255,0.15)}
+    @media print{#gipaControls{display:none!important}}`;
+        document.head.appendChild(s);
+        var c=document.createElement('div');c.id='gipaControls';
+        c.innerHTML='<button id="darkToggle" title="Dark / Light"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></button><button onclick="gipaFontSize(-1)" title="A-">A-</button><button onclick="gipaFontSize(1)" title="A+">A+</button>';
+        document.body.appendChild(c);
+        var saved=localStorage.getItem('gipa-dark');
+        if(saved==='true')document.body.classList.add('dark');
+        var moonSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+        var sunSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+        function updIcon(){document.getElementById('darkToggle').innerHTML=document.body.classList.contains('dark')?sunSvg:moonSvg;}
+        updIcon();
+        document.getElementById('darkToggle').onclick=function(){document.body.classList.toggle('dark');localStorage.setItem('gipa-dark',document.body.classList.contains('dark'));updIcon();};
+        var fs=parseInt(localStorage.getItem('gipa-fontsize')||'0');
+        if(fs)document.documentElement.style.fontSize=(100+fs*8)+'%';
+        window.gipaFontSize=function(d){fs=Math.max(-3,Math.min(3,fs+d));localStorage.setItem('gipa-fontsize',fs);document.documentElement.style.fontSize=(100+fs*8)+'%';};
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მოდული 6: Visual Content Creation - დიზაინი მენეჯერებისთვის</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #f5576c;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #f093fb;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .key-points {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .key-points ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 2;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+        }
+
+        .demo-box {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #f5576c;
+            text-align: left;
+        }
+
+        .demo-box strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .tool-card strong {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .exercise-box {
+            background: #fff8e1;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ffc107;
+            text-align: left;
+        }
+
+        .exercise-box strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .role-visual {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .role-visual strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: white;
+            color: #f5576c;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #f5576c;
+            font-weight: 600;
+        }
+
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #f5576c;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .navigation {
+                bottom: 20px;
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-btn">🏠 მთავარი</a>
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <div class="slide-content">
+            <h1>მოდული 6</h1>
+            <h2>Visual Content Creation</h2>
+            <div class="highlight-box">
+                🎨 დიზაინი მენეჯერებისთვის - უნარების გარეშე პროფესიონალური ვიზუალები!
+            </div>
+            <p style="text-align: center; font-size: 1.2em; color: #666; margin-top: 30px;">
+                ⏱️ ხანგრძლივობა: 45 წუთი
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Why Visual Content? -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>რატომ არის Visual Content მნიშვნელოვანი მენეჯერებისთვის?</h2>
+            <p>მენეჯერებს ყოველდღიურად სჭირდებათ ვიზუალური კონტენტი - პრეზენტაციები, რეპორტები, training materials, SOPs.</p>
+
+            <div class="key-points">
+                <strong>📊 რა სჭირდებათ მენეჯერებს:</strong>
+                <ul>
+                    <li>📈 <strong>Management Reports:</strong> ვიზუალური რეპორტები executive-ებისთვის</li>
+                    <li>🎓 <strong>Training Materials:</strong> პერსონალის ტრენინგის ვიზუალები</li>
+                    <li>📋 <strong>SOP Visuals:</strong> პროცესების ილუსტრირებული გაიდები</li>
+                    <li>📊 <strong>Presentations:</strong> პრეზენტაციები meetings-ისთვის</li>
+                    <li>📱 <strong>Communication Materials:</strong> გუნდთან კომუნიკაციის ვიზუალები</li>
+                    <li>🎯 <strong>Performance Dashboards:</strong> KPI dashboards</li>
+                </ul>
+            </div>
+
+            <div class="demo-box">
+                <strong>❌ ტრადიციული პრობლემა:</strong>
+                <p>• დიზაინის უნარი არ მაქვს → ბევრი დრო ხარჯვა<br>
+                • გრაფიკული დიზაინერის ლოდინი → delay-ები<br>
+                • PowerPoint basic templates → არაპროფესიონალური look<br>
+                • ძვირი დიზაინის software → ბიუჯეტის პრობლემა</p>
+            </div>
+
+            <div class="highlight-box">
+                ✨ AI Visual Tools = პროფესიონალური დიზაინი დიზაინერების გარეშე!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Canva AI Overview -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Canva AI - თქვენი დიზაინის ასისტენტი</h2>
+            <p>Canva არის ყველაზე simple და powerful დიზაინის პლატფორმა AI შესაძლებლობებით.</p>
+
+            <div class="tool-card">
+                <strong>🎨 Canva - შესავალი</strong>
+                <p><strong>Website:</strong> canva.com<br>
+                <strong>ფასი:</strong> უფასო + Pro ($13/თვე) + Teams ($30/თვე 5 users-ით)<br>
+                <strong>Platform:</strong> Web + Mobile Apps (iOS/Android)<br>
+                <strong>Templates:</strong> 250,000+ მზა შაბლონები</p>
+            </div>
+
+            <div class="key-points">
+                <strong>✨ Canva AI შესაძლებლობები:</strong>
+                <ul>
+                    <li>🎨 <strong>Magic Design:</strong> სურათის ატვირთვა → ავტომატური დიზაინის გენერაცია</li>
+                    <li>✍️ <strong>Magic Write:</strong> AI-ით ტექსტის შექმნა პირდაპირ Canva-ში</li>
+                    <li>🖼️ <strong>Background Remover:</strong> background-ის წაშლა 1 click-ით</li>
+                    <li>🎨 <strong>Brand Kit:</strong> კომპანიის colors, fonts, logos ავტომატურად</li>
+                    <li>📐 <strong>Magic Resize:</strong> ერთი დიზაინი → ყველა ზომაში</li>
+                    <li>🖌️ <strong>AI Image Generator:</strong> Text-to-Image პირდაპირ Canva-ში</li>
+                    <li>📱 <strong>Smart Templates:</strong> role-specific templates</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                🎯 დღევანდელი მოდულის მიზანი: LIVE Demo - ვქმნით Management Report-ს 10 წუთში!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: LIVE DEMO - Management Report -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🔴 LIVE DEMO: Management Report Template</h2>
+            <p>დავაკვირდეთ როგორ იქმნება professional management report Canva-ში.</p>
+
+            <div class="demo-box">
+                <strong>📊 რას ვქმნით: კვირეული Performance Report</strong>
+                <p><strong>სცენარიო:</strong> საწყობის მენეჯერმა უნდა წარადგინოს კვირეული რეპორტი operations director-ისთვის.</p>
+            </div>
+
+            <div class="key-points">
+                <strong>📋 Demo ნაბიჯები (10 წუთი):</strong>
+                <ul>
+                    <li><strong>1. Template არჩევა (1 წთ):</strong> Canva → "Report" search → Business Report template</li>
+                    <li><strong>2. Brand Kit Setup (2 წთ):</strong> Gastronome.ge colors და logo-ს დამატება</li>
+                    <li><strong>3. Content Structure (3 წთ):</strong>
+                        <br>• Title slide: "Warehouse Weekly Performance - Week 45"
+                        <br>• KPI Overview: Inventory Accuracy, Stock Levels, Reorder Points
+                        <br>• Charts: AI-generated charts მონაცემებიდან
+                        <br>• Key Insights: Magic Write-ით generated summary</li>
+                    <li><strong>4. Visual Enhancement (2 წთ):</strong> AI-generated icons და ილუსტრაციები</li>
+                    <li><strong>5. Export (1 წთ):</strong> PDF download → მზადაა გასაგზავნად</li>
+                    <li><strong>6. Magic Resize (1 წთ):</strong> იგივე კონტენტი PowerPoint format-ში</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                ⏱️ 10 წუთი vs 2-3 საათი ტრადიციულად PowerPoint-ში!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Brand Kit Setup -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🎨 Brand Kit - Gastronome.ge Style</h2>
+            <p>Brand Kit ინახავს კომპანიის visual identity-ს და ავტომატურად იყენებს ყველა დიზაინში.</p>
+
+            <div class="tool-card">
+                <strong>🍽️ Gastronome.ge Brand Kit Setup:</strong>
+                <p><strong>Brand Colors:</strong><br>
+                • Primary: #2c5530 (მუქი მწვანე - premium feel)<br>
+                • Secondary: #d4af37 (ოქროსფერი - luxury)<br>
+                • Accent: #8b4513 (ყავისფერი - warm, organic)<br>
+                • Background: #f8f8f8 (ღია neutral)<br><br>
+                <strong>Fonts:</strong><br>
+                • Headings: Playfair Display (elegant, premium)<br>
+                • Body: Open Sans (clean, readable)<br><br>
+                <strong>Logo:</strong> ატვირთე Gastronome.ge logo (PNG with transparent background)</p>
+            </div>
+
+            <div class="demo-box">
+                <strong>💡 Brand Kit-ის სარგებელი:</strong>
+                <p>• ყველა დიზაინში კონსისტენტური brand identity<br>
+                • ავტომატური color palette suggestions<br>
+                • ერთი click-ით brand colors apply<br>
+                • არ დაგავიწყდება სწორი font ან color<br>
+                • პროფესიონალური და branded look ყოველთვის</p>
+            </div>
+
+            <div class="exercise-box">
+                <strong>✏️ პრაქტიკა: შექმენით თქვენი Brand Kit</strong>
+                <p>1. Canva → Settings → Brand Kit<br>
+                2. დაამატეთ Gastronome.ge colors<br>
+                3. დაამატეთ fonts (Playfair Display + Open Sans)<br>
+                4. ატვირთეთ logo<br>
+                5. შეინახეთ → ახლა ყველა template-ში ხელმისაწვდომია!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Magic Design & Templates -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>✨ Magic Design - ავტომატური დიზაინი</h2>
+            <p>Magic Design-ით Canva ავტომატურად ქმნის დიზაინებს თქვენი content-ის საფუძველზე.</p>
+
+            <div class="demo-box">
+                <strong>🎨 როგორ მუშაობს Magic Design:</strong>
+                <p><strong>Scenario 1: Training Presentation შექმნა</strong><br>
+                1. Canva → "Presentation" → Magic Design<br>
+                2. ატვირთე სურათები და ტექსტი (მაგ.: Safety Training photos და bullet points)<br>
+                3. AI აგენერირებს 10+ design options<br>
+                4. აირჩიე საუკეთესო → customize → done!<br><br>
+                ⏱️ 5 წუთი vs 1-2 საათი</p>
+            </div>
+
+            <div class="key-points">
+                <strong>📚 Template ტიპები მენეჯერებისთვის:</strong>
+                <ul>
+                    <li>📊 <strong>Reports & Dashboards:</strong> KPI reports, performance dashboards</li>
+                    <li>🎓 <strong>Training Materials:</strong> onboarding, safety training, SOP guides</li>
+                    <li>📋 <strong>Process Documentation:</strong> flowcharts, workflows, checklists</li>
+                    <li>📈 <strong>Presentations:</strong> team meetings, executive updates</li>
+                    <li>📱 <strong>Posters & Signage:</strong> safety posters, announcement boards</li>
+                    <li>📧 <strong>Internal Communications:</strong> newsletters, announcements</li>
+                </ul>
+            </div>
+
+            <div class="tool-card">
+                <strong>💡 Magic Design Use Cases:</strong>
+                <p><strong>საწყობის მენეჯერი:</strong> Safety Training Presentation<br>
+                <strong>რესტორნის მენეჯერი:</strong> Menu Engineering Report<br>
+                <strong>დისტრიბუციის მენეჯერი:</strong> Route Efficiency Dashboard<br>
+                <strong>საოპერაციო მენეჯერი:</strong> Process Improvement Flowchart<br>
+                <strong>მაღაზიის მენეჯერი:</strong> Sales Performance Report</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Midjourney Basics -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🎨 Midjourney - AI Image Generation</h2>
+            <p>Midjourney ქმნის high-quality სურათებს ტექსტური აღწერის საფუძველზე - სასარგებლოა training materials-ისთვის.</p>
+
+            <div class="tool-card">
+                <strong>🖼️ Midjourney - შესავალი</strong>
+                <p><strong>Platform:</strong> Discord-ის საშუალებით<br>
+                <strong>ფასი:</strong> $10/თვე (Basic) - $30/თვე (Standard)<br>
+                <strong>Output:</strong> High-quality artistic images<br>
+                <strong>Use Case:</strong> Training visuals, concept illustrations, presentations</p>
+            </div>
+
+            <div class="key-points">
+                <strong>✍️ Midjourney Prompt Formula:</strong>
+                <ul>
+                    <li><strong>Subject:</strong> რა უნდა გამოისახოს
+                        <br><em>"warehouse worker wearing safety equipment"</em>
+                    </li>
+                    <li><strong>Style:</strong> რა სტილით
+                        <br><em>"professional photography, bright lighting"</em>
+                    </li>
+                    <li><strong>Details:</strong> დამატებითი დეტალები
+                        <br><em>"modern warehouse, clean organized shelves"</em>
+                    </li>
+                    <li><strong>Quality:</strong> ხარისხის პარამეტრები
+                        <br><em>"4K, professional, high quality --ar 16:9"</em>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="demo-box">
+                <strong>📸 მაგალითი Prompts მენეჯერებისთვის:</strong>
+                <p><strong>Safety Training Image:</strong><br>
+                "warehouse worker wearing safety vest and helmet, inspecting inventory on tall shelves, bright warehouse lighting, professional photography, safety-focused, 4K quality --ar 16:9"<br><br>
+                <strong>Team Collaboration Image:</strong><br>
+                "diverse team of restaurant staff in meeting, discussing menu planning, modern restaurant setting, professional, collaborative atmosphere, natural lighting --ar 16:9"<br><br>
+                <strong>Delivery Excellence Image:</strong><br>
+                "delivery driver loading premium food products into clean van, professional uniform, organized efficient process, morning light, professional photography --ar 16:9"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Training Materials Creation -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🎓 Training Materials - პრაქტიკული მაგალითი</h2>
+            <p>ვქმნით visual training material-ს Canva + AI-ით.</p>
+
+            <div class="demo-box">
+                <strong>🔴 Demo: "Safety Training for Warehouse Staff"</strong>
+                <p><strong>Scenario:</strong> საწყობის მენეჯერმა უნდა შექმნას safety training presentation ახალი თანამშრომლებისთვის.</p>
+            </div>
+
+            <div class="key-points">
+                <strong>📋 Training Material Structure:</strong>
+                <ul>
+                    <li><strong>Slide 1: Title</strong> - "Warehouse Safety Training - Gastronome.ge"</li>
+                    <li><strong>Slide 2: Objectives</strong> - "რას ვისწავლით დღეს"</li>
+                    <li><strong>Slide 3-5: Safety Rules</strong> - ილუსტრაციებით და ვიზუალებით</li>
+                    <li><strong>Slide 6-7: Equipment Usage</strong> - step-by-step visuals</li>
+                    <li><strong>Slide 8: Emergency Procedures</strong> - flowchart ვიზუალი</li>
+                    <li><strong>Slide 9: Quiz</strong> - interactive check questions</li>
+                    <li><strong>Slide 10: Summary</strong> - key takeaways</li>
+                </ul>
+            </div>
+
+            <div class="exercise-box">
+                <strong>✏️ პრაქტიკული სავარჯიშო (15 წთ):</strong>
+                <p><strong>თითოეული როლი ქმნის თავის training material-ს:</strong><br><br>
+                📦 <strong>საწყობი:</strong> "Inventory Management Best Practices"<br>
+                🍽️ <strong>რესტორანი:</strong> "Guest Service Excellence Training"<br>
+                🚚 <strong>დისტრიბუცია:</strong> "Safe Driving & Delivery Protocol"<br>
+                ⚙️ <strong>ოპერაციები:</strong> "Process Standardization Guide"<br>
+                🏪 <strong>მაღაზია:</strong> "Customer Engagement Techniques"<br><br>
+                <strong>Steps:</strong><br>
+                1. Canva → "Presentation" template<br>
+                2. Brand Kit apply<br>
+                3. Magic Write for content<br>
+                4. AI images ან Midjourney visuals<br>
+                5. 8-10 slides შექმნა</p>
+            </div>
+        </div>
+    </slide>
+
+    <!-- Slide 9: SOP Visuals -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>📋 SOP Visuals - პროცესების ვიზუალიზაცია</h2>
+            <p>Standard Operating Procedures უფრო გასაგებია ვიზუალური გაიდებით.</p>
+
+            <div class="tool-card">
+                <strong>📊 SOP Visual Elements:</strong>
+                <p>• <strong>Flowcharts:</strong> process flow ვიზუალიზაცია<br>
+                • <strong>Step-by-step infographics:</strong> numbered visual guides<br>
+                • <strong>Checklists:</strong> visual checklists printable format-ში<br>
+                • <strong>Before/After visuals:</strong> comparison images<br>
+                • <strong>Icons & illustrations:</strong> process-specific icons</p>
+            </div>
+
+            <div class="demo-box">
+                <strong>🔄 Example: "Product Receiving SOP" (საწყობი)</strong>
+                <p><strong>Visual SOP Structure:</strong><br>
+                <strong>Step 1: Receive Delivery</strong> → Icon: delivery truck + checklist<br>
+                • Check delivery documentation<br>
+                • Verify product quantities<br>
+                • Inspect for damage<br><br>
+                <strong>Step 2: Quality Check</strong> → Icon: magnifying glass<br>
+                • Temperature check (cold products)<br>
+                • Expiration date verification<br>
+                • Packaging integrity<br><br>
+                <strong>Step 3: System Entry</strong> → Icon: computer<br>
+                • Log into inventory system<br>
+                • Enter product details<br>
+                • Print barcode labels<br><br>
+                <strong>Step 4: Storage</strong> → Icon: shelves<br>
+                • FIFO placement<br>
+                • Proper location labeling<br>
+                • Update system location</p>
+            </div>
+
+            <div class="highlight-box">
+                💡 Visual SOPs = 60% უკეთესი staff comprehension vs text-only SOPs!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Presentation Images -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>📊 Presentation Images - თქვენი როლის Visuals</h2>
+            <p>თითოეული როლისთვის სპეციფიკური visual content საჭიროებები.</p>
+
+            <div class="role-visual">
+                <strong>📦 საწყობის მენეჯერი:</strong>
+                <p>• Inventory level charts და dashboards<br>
+                • Warehouse layout diagrams<br>
+                • Stock rotation visual guides<br>
+                • Safety equipment infographics<br>
+                • Supplier performance comparisons</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <strong>🍽️ რესტორნის მენეჯერი:</strong>
+                <p>• Menu engineering matrices<br>
+                • Guest satisfaction trend charts<br>
+                • Staff scheduling grids<br>
+                • Food cost analysis visuals<br>
+                • Service flow diagrams</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <strong>🚚 დისტრიბუციის მენეჯერი:</strong>
+                <p>• Route maps და optimization visuals<br>
+                • Delivery performance dashboards<br>
+                • Vehicle maintenance schedules<br>
+                • On-time delivery trend charts<br>
+                • Driver safety scorecards</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <strong>⚙️ საოპერაციო მენეჯერი:</strong>
+                <p>• Process flowcharts და workflows<br>
+                • Efficiency metrics dashboards<br>
+                • Bottleneck analysis visuals<br>
+                • Cross-functional process maps<br>
+                • Improvement initiative trackers</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <strong>🏪 მაღაზიის მენეჯერი:</strong>
+                <p>• Sales performance charts<br>
+                • Customer traffic heatmaps<br>
+                • Visual merchandising guides<br>
+                • Promotional calendar visuals<br>
+                • Product category performance</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Hands-on Exercise -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>✏️ პრაქტიკული სავარჯიშო - თქვენი Role Presentation</h2>
+            <p>ახლა თითოეული მონაწილე შექმნის თავის role-specific presentation-ს.</p>
+
+            <div class="exercise-box">
+                <strong>🎯 დავალება (15 წთ):</strong>
+                <p><strong>შექმენით 5-slide presentation თქვენი როლისთვის:</strong></p>
+            </div>
+
+            <div class="role-visual">
+                <strong>📦 საწყობი:</strong> "Weekly Inventory Performance Report"
+                <p>Slides: Title, KPIs, Stock Levels Chart, Reorder Alerts, Action Plan</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <strong>🍽️ რესტორანი:</strong> "Guest Satisfaction Improvement Plan"
+                <p>Slides: Title, Current Ratings, Problem Areas, Solutions, Timeline</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <strong>🚚 დისტრიბუცია:</strong> "Delivery Performance Review"
+                <p>Slides: Title, On-time %, Route Efficiency, Issues, Improvements</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <strong>⚙️ ოპერაციები:</strong> "Process Optimization Proposal"
+                <p>Slides: Title, Current Process, Bottlenecks, New Process, ROI</p>
+            </div>
+
+            <div class="role-visual" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <strong>🏪 მაღაზია:</strong> "Monthly Sales Performance"
+                <p>Slides: Title, Sales Trends, Top Products, Customer Insights, Next Month Plan</p>
+            </div>
+
+            <div class="highlight-box">
+                ⏱️ 15 წუთი - შექმენით, გამოიყენეთ Canva Magic Design, Brand Kit და AI tools!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Summary -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🎯 მოდული 6 - შეჯამება</h2>
+
+            <div class="key-points">
+                <strong>✅ რა ვისწავლეთ:</strong>
+                <ul>
+                    <li>✅ Visual Content-ის მნიშვნელობა მენეჯერებისთვის</li>
+                    <li>✅ Canva AI - Magic Design, Magic Write, Brand Kit</li>
+                    <li>✅ Management Report Template-ის შექმნა</li>
+                    <li>✅ Brand Kit Setup Gastronome.ge-ისთვის</li>
+                    <li>✅ Midjourney Basics - AI Image Generation</li>
+                    <li>✅ Training Materials Creation</li>
+                    <li>✅ SOP Visual Guides</li>
+                    <li>✅ Role-Specific Presentation Images</li>
+                    <li>✅ პრაქტიკული სავარჯიშო - თითოეული როლისთვის</li>
+                </ul>
+            </div>
+
+            <div class="tool-card">
+                <strong>🛠️ თქვენი Visual Content Toolkit:</strong>
+                <p>✅ <strong>Canva Pro:</strong> ყველა ტიპის დიზაინი<br>
+                ✅ <strong>Brand Kit:</strong> Gastronome.ge identity<br>
+                ✅ <strong>Magic Design:</strong> ავტომატური layouts<br>
+                ✅ <strong>Magic Write:</strong> AI copywriting<br>
+                ✅ <strong>Midjourney:</strong> training visuals (optional)<br>
+                ✅ <strong>Templates:</strong> role-specific ready templates</p>
+            </div>
+
+            <div class="exercise-box">
+                <strong>💡 Key Takeaways:</strong>
+                <p>• დიზაინის უნარები აღარ არის საჭირო - AI აკეთებს მას<br>
+                • 10 წუთში რასაც 2 საათი სჭირდებოდა<br>
+                • Brand consistency ყველა communication-ში<br>
+                • Professional look ყველა material-ში<br>
+                • Visual communication უფრო ეფექტური text-only-ზე</p>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px;">
+                🚀 შემდეგი: მოდული 7 - Advanced AI Workflows<br><br>
+                ვისწავლით Custom GPTs-ს, Automation Tools და AI ჩვევების ჩამოყალიბებას!
+            </div>
+
+            <p style="text-align: center; margin-top: 30px; font-size: 1.3em; color: #f5576c;">
+                <strong>☕ 30-წუთიანი შესვენება!</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← წინა</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">შემდეგი →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            // If on last slide, change button text
+            if (currentSlide === totalSlides - 1) {
+                document.getElementById('nextBtn').textContent = 'შემდეგი მოდული →';
+                document.getElementById('nextBtn').onclick = function() {
+                    window.location.href = 'module7.html';
+                };
+            } else {
+                document.getElementById('nextBtn').textContent = 'შემდეგი →';
+                document.getElementById('nextBtn').onclick = function() {
+                    changeSlide(1);
+                };
+            }
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

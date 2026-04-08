@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მოდული 4: Problem Solving და Decision Making AI-ით</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .key-points {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .key-points ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 2;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+        }
+
+        .example-box {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            text-align: left;
+        }
+
+        .example-box strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .matrix-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.8;
+        }
+
+        .fishbone-box {
+            background: #fff8e1;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            border-left: 5px solid #ffc107;
+        }
+
+        .solution-box {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .solution-box strong {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .role-example {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .role-example strong {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .navigation {
+                bottom: 20px;
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-btn">🏠 მთავარი</a>
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <div class="slide-content">
+            <h1>მოდული 4</h1>
+            <h2>Problem Solving და Decision Making AI-ით</h2>
+            <div class="highlight-box">
+                🧠 მენეჯერული გადაწყვეტილებების მიღება და პრობლემების გადაჭრა AI-ის დახმარებით
+            </div>
+            <p style="text-align: center; font-size: 1.2em; color: #666;">
+                ხანგრძლივობა: 30 წუთი
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Why Problem Solving with AI? -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>რატომ Problem Solving AI-ით?</h2>
+            <p>მენეჯერები ყოველდღიურად იღებენ ასობით გადაწყვეტილებას - მცირედან უდიდესამდე. AI ეხმარება სტრუქტურირებული, data-driven გადაწყვეტილებების მიღებას.</p>
+
+            <div class="key-points">
+                <strong>🎯 ტრადიციული Problem Solving-ის გამოწვევები:</strong>
+                <ul>
+                    <li>⏰ <strong>დროის ნაკლებობა:</strong> სწრაფი გადაწყვეტილებები გრძნობის საფუძველზე</li>
+                    <li>📊 <strong>მონაცემების სიმრავლე:</strong> ძნელია ყველაფრის გათვალისწინება</li>
+                    <li>🤯 <strong>Bias და სუბიექტურობა:</strong> პირადი გამოცდილება და preconceptions</li>
+                    <li>💭 <strong>სიღრმისეული ანალიზის ნაკლებობა:</strong> არ ვხედავთ root causes-ს</li>
+                    <li>🔄 <strong>იგივე პრობლემები ხელახლა:</strong> symptoms-ს ვაკეთებთ, არა causes-ს</li>
+                    <li>🎲 <strong>Scenario Analysis:</strong> რთულია ყველა ვარიანტის გათვალისწინება</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                💡 AI არის თქვენი ობიექტური თანაზომავე - უკეთესი გადაწყვეტილებები, სტრუქტურირებული მიდგომა!
+            </div>
+
+            <div class="example-box">
+                <strong>🍽️ Gastronome.ge-ის მენეჯერული გადაწყვეტილებები:</strong>
+                <p>• საწყობი: რა რაოდენობა უნდა შევუკვეთოთ? რა პროდუქტები stockout-ზეა?<br>
+                • რესტორანი: როგორ გავაუმჯობესოთ guest experience? რატომ დაბალი ratings?<br>
+                • დისტრიბუცია: რატომ არის ხშირი delays? როგორ ავაჩქაროთ delivery?<br>
+                • ოპერაციები: რა პროცესები უნდა გავაუმჯობესოთ? სად არის bottlenecks?<br>
+                • მაღაზია: რა პროდუქტები ცუდად იყიდება? როგორ გავზარდოთ sales per customer?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Decision Matrix & Scenario Analysis -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Decision Matrix - ოპტიმალური არჩევანი</h2>
+            <p>Decision Matrix არის სტრუქტურირებული მეთოდი რამდენიმე ვარიანტის შესადარებლად კრიტერიუმების მიხედვით. AI ეხმარება objective შეფასებებს.</p>
+
+            <div class="key-points">
+                <strong>📊 Decision Matrix კომპონენტები:</strong>
+                <ul>
+                    <li><strong>Options:</strong> ვარიანტები, რომლებიც ვიხილავთ</li>
+                    <li><strong>Criteria:</strong> კრიტერიუმები შეფასებისთვის</li>
+                    <li><strong>Weights:</strong> თითოეული კრიტერიუმის მნიშვნელობა (1-10)</li>
+                    <li><strong>Scores:</strong> თითოეული ვარიანტის შეფასება კრიტერიუმების მიხედვით</li>
+                    <li><strong>Weighted Score:</strong> საბოლოო ქულა = Score × Weight</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <strong>💡 Prompt ChatGPT-ში:</strong>
+                <p>"შექმენი Decision Matrix 3 POS სისტემის შესადარებლად ჩემი რესტორნისთვის. კრიტერიუმები: ფასი, მოხერხებულობა, ინტეგრაციები, support, reporting. Weight-ები: ფასი (8), მოხერხებულობა (10), ინტეგრაციები (7), support (9), reporting (8). ვარიანტები: Square POS, Toast POS, Lightspeed. შეაფასე თითოეული 1-10 სკალით და დამითვალე საბოლოო scores."</p>
+            </div>
+
+            <div class="matrix-box">
+<strong style="color: #667eea;">Decision Matrix - POS სისტემა რესტორნისთვის</strong>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+კრიტერიუმი           Weight │ Square  │ Toast   │ Lightspeed
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ფასი                    8    │  9×8=72 │ 6×8=48  │ 5×8=40
+მოხერხებულობა          10    │  9×10=90│ 8×10=80 │ 7×10=70
+ინტეგრაციები           7    │  7×7=49 │ 9×7=63  │ 8×7=56
+Support                 9    │  7×9=63 │ 9×9=81  │ 8×9=72
+Reporting               8    │  8×8=64 │ 9×8=72  │ 9×8=72
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TOTAL SCORE                  │   338   │   344   │   310
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏆 Winner: Toast POS (344 points)
+            </div>
+
+            <div class="highlight-box">
+                🎯 AI-ის უპირატესობა: ობიექტური შეფასება, ყველა კრიტერიუმის გათვალისწინება!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Decision Matrix - Role Examples -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Decision Matrix - როლისთვის სპეციფიკური მაგალითები</h2>
+
+            <div class="role-example">
+                <strong>📦 საწყობის მენეჯერი - Inventory Management Software</strong>
+                <p><strong>Prompt:</strong> "შექმენი Decision Matrix 3 inventory management software-ს შესადარებლად. კრიტერიუმები: ფასი (7), Real-time tracking (10), Reporting (9), მოხერხებულობა (8), ინტეგრაცია accounting-თან (9). ვარიანტები: Zoho Inventory, inFlow, Cin7."</p>
+                <p style="margin-top: 10px;"><strong>შედეგი:</strong> AI დაგეხმარებათ არჩიოთ საუკეთესო software თქვენი საწყობისთვის!</p>
+            </div>
+
+            <div class="role-example" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <strong>🚚 დისტრიბუციის მენეჯერი - Delivery Vehicle Purchase</strong>
+                <p><strong>Prompt:</strong> "შექმენი Decision Matrix 3 delivery vehicle-ის შესადარებლად. კრიტერიუმები: ფასი (9), საწვავის ეფექტურობა (8), ტევადობა (10), maintenance cost (7), reliability (9). ვარიანტები: Ford Transit, Mercedes Sprinter, Fiat Ducato."</p>
+            </div>
+
+            <div class="role-example" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <strong>🏪 მაღაზიის მენეჯერი - Promotional Campaign Selection</strong>
+                <p><strong>Prompt:</strong> "შექმენი Decision Matrix 3 promotional campaign-ის შესადარებლად. კრიტერიუმები: budget (8), expected reach (10), conversion probability (9), დროის ხანგრძლივობა (6), brand alignment (7). ვარიანტები: Instagram Ads, In-store Promotions, Email Campaign."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Root Cause Analysis - 5 Whys -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Root Cause Analysis - 5 Whys Method</h2>
+            <p>5 Whys არის მარტივი, მაგრამ ეფექტური ტექნიკა პრობლემის ნამდვილი მიზეზის საპოვნელად. კითხე "რატომ?" 5-ჯერ და მიაღწევ root cause-ს.</p>
+
+            <div class="key-points">
+                <strong>🔍 როგორ მუშაობს 5 Whys:</strong>
+                <ul>
+                    <li><strong>1. დაწერეთ პრობლემა:</strong> რა არის გამოწვევა ან issue</li>
+                    <li><strong>2. დაკითხეთ "რატომ?"</strong> - რატომ ხდება ეს პრობლემა?</li>
+                    <li><strong>3. გააგრძელეთ კითხვა</strong> - თითოეულ პასუხზე კითხეთ "რატომ?"</li>
+                    <li><strong>4. 5-ჯერ გაიმეორეთ</strong> - ან მანამ, სანამ root cause-ს არ მიაღწევთ</li>
+                    <li><strong>5. გადაწყვიტეთ Root Cause</strong> - არა symptoms</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <strong>💡 Prompt ChatGPT-ში:</strong>
+                <p>"დამეხმარე Root Cause Analysis-ში 5 Whys method-ით. პრობლემა: ჩემს საწყობში ხშირად ხდება stockouts და customers უკმაყოფილო არიან. გააანალიზე და დამეხმარე მივაღწიო root cause-ს, შემდეგ შემოგთავაზე action plan."</p>
+            </div>
+
+            <div class="matrix-box">
+<strong style="color: #667eea;">5 Whys მაგალითი - Stockouts საწყობში</strong>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+<strong>პრობლემა:</strong> ხშირი stockouts და customers უკმაყოფილო არიან
+
+<strong>Why 1:</strong> რატომ ხდება stockouts?
+→ პროდუქტები ამოიწურება სანამ ახალი შეკვეთა მოვა
+
+<strong>Why 2:</strong> რატომ აგვიანებს შეკვეთა?
+→ არ ვუკვეთავთ დროულად (როცა კი inventory დაბალია)
+
+<strong>Why 3:</strong> რატომ არ უკვეთავთ დროულად?
+→ არ გვაქვს real-time visibility inventory levels-ზე
+
+<strong>Why 4:</strong> რატომ არ არის real-time tracking?
+→ ვიყენებთ manual Excel sheets რომელიც ყოველდღე არ update-დება
+
+<strong>Why 5:</strong> რატომ არ update-დება ყოველდღე?
+→ არ გვაქვს ავტომატიზებული inventory management system
+
+<strong>🎯 ROOT CAUSE:</strong> არ არის inventory management software
+                  ავტომატური tracking და alerts-ებისთვის
+
+<strong>💡 SOLUTION:</strong>
+1. დავნერგოთ inventory management software (real-time tracking)
+2. დავაყენოთ automatic reorder points
+3. შევქმნათ alerts low stock-ისთვის
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: 5 Whys - Role Examples -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>5 Whys - როლისთვის სპეციფიკური მაგალითები</h2>
+
+            <div class="role-example">
+                <strong>🍽️ რესტორნის მენეჯერი - Low Guest Ratings</strong>
+                <p><strong>Prompt:</strong> "დამეხმარე 5 Whys ანალიზში. პრობლემა: ბოლო თვეს Google Reviews-ზე გვაქვს 3.8 rating (ადრე იყო 4.6). რატომ ხდება ეს და რა არის root cause?"</p>
+                <p style="margin-top: 10px; font-size: 0.95em;"><strong>AI პასუხი:</strong> Why 1: სერვისის ხარისხი დაბალია → Why 2: უფროსი მიმტანები ჩქარობენ → Why 3: არის understaffed → Why 4: არ ვიყენებთ demand forecasting-ს → Why 5: არ გვაქვს historical data analysis<br>
+                <strong>Root Cause:</strong> scheduling არ არის data-driven → <strong>Solution:</strong> AI-ით demand prediction და optimized scheduling!</p>
+            </div>
+
+            <div class="role-example" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <strong>🚚 დისტრიბუციის მენეჯერი - Late Deliveries</strong>
+                <p><strong>Prompt:</strong> "გამოიყენე 5 Whys Method. პრობლემა: ბოლო 2 თვეში 25% deliveries არის late (> 30 წუთი). რა არის root cause და რა გადაწყვეტა შემიძლია მოვძებნო?"</p>
+                <p style="margin-top: 10px; font-size: 0.95em;"><strong>Root Cause:</strong> როუტები არ არის ოპტიმიზებული → <strong>Solution:</strong> Route optimization software + real-time traffic data!</p>
+            </div>
+
+            <div class="role-example" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <strong>⚙️ საოპერაციო მენეჯერი - Process Inefficiencies</strong>
+                <p><strong>Prompt:</strong> "დამეხმარე 5 Whys-ით. პრობლემა: order fulfillment პროცესი საშუალოდ 48 საათს სჭირდება, მაგრამ კონკურენტები 24 საათში აკეთებენ. რა არის root cause?"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Ishikawa (Fishbone) Analysis -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Ishikawa (Fishbone) Diagram</h2>
+            <p>Fishbone Diagram არის ვიზუალური ინსტრუმენტი პრობლემის ყველა შესაძლო მიზეზის იდენტიფიცირებისთვის. AI ეხმარება სრულყოფილი და სტრუქტურირებული ანალიზის ჩატარებას.</p>
+
+            <div class="key-points">
+                <strong>🐟 Fishbone კატეგორიები (6 M's):</strong>
+                <ul>
+                    <li><strong>Methods:</strong> პროცესები და პროცედურები</li>
+                    <li><strong>Machines:</strong> ტექნოლოგია და ინსტრუმენტები</li>
+                    <li><strong>Materials:</strong> რესურსები და მასალები</li>
+                    <li><strong>Manpower:</strong> პერსონალი და ტრენინგი</li>
+                    <li><strong>Measurement:</strong> მეტრიკები და tracking</li>
+                    <li><strong>Mother Nature (Environment):</strong> გარე ფაქტორები</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <strong>💡 Prompt ChatGPT-ში:</strong>
+                <p>"შექმენი Fishbone (Ishikawa) Diagram ანალიზი შემდეგი პრობლემისთვის: ჩემს რესტორანში food waste არის ძალიან მაღალი (20% ყოველდღიური inventory-ს). გამოიყენე 6 M's კატეგორიები და იდენტიფიცირე ყველა შესაძლო მიზეზი თითოეულ კატეგორიაში."</p>
+            </div>
+
+            <div class="fishbone-box">
+                <strong style="color: #2c3e50; font-size: 1.1em;">🐟 Fishbone მაგალითი - High Food Waste რესტორანში</strong>
+                <p style="margin-top: 15px;"><strong>Methods (პროცესები):</strong><br>
+                • არ არის inventory rotation system (FIFO)<br>
+                • პროდუქტის მომზადება advance-ში ძალიან ბევრი<br>
+                • არ არის standardized recipes</p>
+
+                <p style="margin-top: 10px;"><strong>Machines (ტექნოლოგია):</strong><br>
+                • მაცივრის ტემპერატურა არ არის consistent<br>
+                • არ არის inventory tracking software<br>
+                • storage სისტემა არაეფექტურია</p>
+
+                <p style="margin-top: 10px;"><strong>Materials (რესურსები):</strong><br>
+                • ვუკვეთავთ ზედმეტად დიდი batch-ები<br>
+                • supplier delivery არასანდო - იძულებულები ვართ stock up<br>
+                • პროდუქტის ხარისხი ზოგჯერ დაბალია</p>
+
+                <p style="margin-top: 10px;"><strong>Manpower (პერსონალი):</strong><br>
+                • staff-ს არ აქვს ტრენინგი portion control-ზე<br>
+                • კომუნიკაცია kitchen და floor-ს შორის weak<br>
+                • არ არის პასუხისმგებლობა waste tracking-ზე</p>
+
+                <p style="margin-top: 10px;"><strong>Measurement (მეტრიკები):</strong><br>
+                • არ ვზომავთ waste-ს სისტემატურად<br>
+                • არ არის demand forecasting<br>
+                • არ ვაკეთებთ menu item analysis</p>
+
+                <p style="margin-top: 10px;"><strong>Mother Nature (გარე ფაქტორები):</strong><br>
+                • სეზონური fluctuations customer demand-ში<br>
+                • weather-ის გავლენა delivery schedules-ზე</p>
+            </div>
+
+            <div class="highlight-box">
+                🎯 Fishbone-ის უპირატესობა: სრული სურათი, არა მხოლოდ ერთი მიზეზი!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Fishbone - Role Examples -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Fishbone Analysis - როლისთვის სპეციფიკური მაგალითები</h2>
+
+            <div class="role-example">
+                <strong>📦 საწყობის მენეჯერი - Inaccurate Inventory Counts</strong>
+                <p><strong>Prompt:</strong> "შექმენი Fishbone Diagram ანალიზი: პრობლემა - ჩვენი physical inventory counts არ ემთხვევა system records-ს (10-15% difference). გამოიყენე 6 M's და იდენტიფიცირე ყველა შესაძლო მიზეზი."</p>
+                <p style="margin-top: 10px; font-size: 0.95em;"><strong>AI გამოავლენს:</strong> Methods (არა standardized counting process), Machines (barcode scanners არ მუშაობს), Manpower (არასაკმარისი ტრენინგი), Measurement (manual entry errors) და ა.შ.</p>
+            </div>
+
+            <div class="role-example" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <strong>🏪 მაღაზიის მენეჯერი - Low Customer Conversion Rate</strong>
+                <p><strong>Prompt:</strong> "გააანალიზე Fishbone method-ით: ბევრი ადამიანი შემოდის მაღაზიაში, მაგრამ მხოლოდ 25% რამეს ყიდულობს. რა შეიძლება იყოს მიზეზები 6 M's კატეგორიებში?"</p>
+            </div>
+
+            <div class="role-example" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <strong>🚚 დისტრიბუციის მენეჯერი - Damaged Products During Delivery</strong>
+                <p><strong>Prompt:</strong> "დამეხმარე Fishbone ანალიზში: 5-7% პროდუქტების დაზიანდება delivery-ს დროს. რა არის შესაძლო მიზეზები Methods, Machines, Materials, Manpower, Measurement, Environment კატეგორიებში?"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Solution Brainstorming with AI -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Solution Brainstorming და Action Plans</h2>
+            <p>როცა იდენტიფიცირდა პრობლემის root causes, AI ეხმარება გენერირების ინოვაციურ გადაწყვეტებს და სტრუქტურირებული action plans-ს.</p>
+
+            <div class="key-points">
+                <strong>💡 AI Solution Generation:</strong>
+                <ul>
+                    <li><strong>მრავალი პერსპექტივა:</strong> AI იძლევა იდეებს სხვადასხვა კუთხიდან</li>
+                    <li><strong>Best Practices:</strong> რა მუშაობს industry-ში</li>
+                    <li><strong>Quick Wins vs Long-term:</strong> მოკლევადიანი და გრძელვადიანი solutions</li>
+                    <li><strong>Cost-Benefit:</strong> თითოეული გადაწყვეტის ROI</li>
+                    <li><strong>Prioritization:</strong> რა პირველი უნდა დავიწყოთ</li>
+                    <li><strong>Action Plan:</strong> ნაბიჯ-ნაბიჯ implementation roadmap</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <strong>💡 Prompt ChatGPT-ში:</strong>
+                <p>"დამეხმარე solution brainstorming-ში. Root cause: ჩვენ არ გვაქვს inventory management software და ამიტომ ხშირი stockouts გვაქვს. მომიგზავნე: 1) 5 შესაძლო გადაწყვეტა (Quick Wins და Long-term), 2) თითოეულის cost-benefit ანალიზი, 3) რეკომენდაცია რა დავიწყოთ პირველ რიგში, 4) Step-by-step action plan 30/60/90 დღით."</p>
+            </div>
+
+            <div class="solution-box">
+                <strong>🎯 AI-Generated Solutions მაგალითი:</strong>
+                <p><strong>Quick Wins (1-30 დღე):</strong><br>
+                1. Google Sheets + Daily Manual Updates → Cost: 0₾, Impact: Low<br>
+                2. Excel Templates with Alerts → Cost: 0₾, Impact: Medium<br>
+                3. Simple Mobile App (e.g., Sortly) → Cost: 50₾/თვე, Impact: Medium-High</p>
+
+                <p style="margin-top: 15px;"><strong>Long-term Solutions (30-90 დღე):</strong><br>
+                4. Cloud-based Inventory System (Zoho Inventory) → Cost: 200₾/თვე, Impact: High<br>
+                5. Full ERP Integration → Cost: 5,000₾+, Impact: Very High</p>
+
+                <p style="margin-top: 15px;"><strong>🏆 რეკომენდაცია:</strong> დაიწყეთ #3 (Mobile App), შემდეგ გადადით #4-ზე</p>
+
+                <p style="margin-top: 15px;"><strong>Action Plan:</strong><br>
+                Week 1-2: Research და trial accounts<br>
+                Week 3-4: Staff training და implementation<br>
+                Month 2: Monitor და optimize<br>
+                Month 3: Evaluate და scale</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Summary -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>მოდული 4 - შეჯამება</h2>
+
+            <div class="key-points">
+                <strong>🎓 რა ვისწავლეთ:</strong>
+                <ul>
+                    <li>✅ Decision Matrix - ოპტიმალური არჩევანის გაკეთება</li>
+                    <li>✅ Scenario Analysis და კრიტერიუმების შეფასება</li>
+                    <li>✅ 5 Whys Method - Root Cause-მდე მისვლა</li>
+                    <li>✅ Fishbone (Ishikawa) Diagram - ყველა მიზეზის იდენტიფიცირება</li>
+                    <li>✅ AI-ით Solution Brainstorming</li>
+                    <li>✅ Action Plans - step-by-step implementation</li>
+                    <li>✅ როლისთვის სპეციფიკური მაგალითები ყველა 5 როლისთვის</li>
+                </ul>
+            </div>
+
+            <div class="solution-box">
+                <strong>🍽️ Gastronome.ge-სთვის მნიშვნელოვანი:</strong>
+                <p>• <strong>Decision Matrix:</strong> Software არჩევა, vendor selection, campaign planning<br>
+                • <strong>5 Whys:</strong> ოპერაციული პრობლემების root causes<br>
+                • <strong>Fishbone:</strong> კომპლექსური issues comprehensive ანალიზი<br>
+                • <strong>AI Solutions:</strong> სწრაფი, data-driven გადაწყვეტილებები<br><br>
+                = უკეთესი გადაწყვეტილებები, ნაკლები bias, მეტი impact!</p>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px;">
+                🎉 დღე 1 დასრულებულია!<br><br>
+                <strong>📝 საშინაო დავალება:</strong><br>
+                3 დავალება დღე 2-მდე:<br>
+                1. პერსონალური AI Use Case - custom prompt<br>
+                2. Excel/Sheets Automation - spreadsheet გაუმჯობესება<br>
+                3. Role-Specific Challenge - თქვენი როლისთვის სპეციფიკური ამოცანა
+            </div>
+
+            <div class="highlight-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                🚀 დღე 2 Preview:<br><br>
+                • Homework Review & Best Practices<br>
+                • Visual Content Creation (Canva AI, Midjourney)<br>
+                • Custom GPTs და Advanced Workflows<br>
+                • Capstone Project - Real Business Challenge<br>
+                • AI Strategy და სერტიფიცირება
+            </div>
+
+            <p style="text-align: center; margin-top: 30px; font-size: 1.3em; color: #667eea;">
+                <strong>🙏 დაისვენეთ და გამოცადეთ AI თქვენს სამუშაოში!</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← წინა</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">შემდეგი →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            // If on last slide, change button text
+            if (currentSlide === totalSlides - 1) {
+                document.getElementById('nextBtn').textContent = 'დღე 1 დასრულებული ✓';
+                document.getElementById('nextBtn').onclick = function() {
+                    window.location.href = 'day1.html';
+                };
+            } else {
+                document.getElementById('nextBtn').textContent = 'შემდეგი →';
+                document.getElementById('nextBtn').onclick = function() {
+                    changeSlide(1);
+                };
+            }
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

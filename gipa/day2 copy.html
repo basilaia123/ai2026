@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIPA AI Masterclass - Day 2: კვლევა და ეთიკა</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#003366', 800: '#004080', 700: '#004d99', 600: '#0059b3' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link.active { background: rgba(255,255,255,0.12); border-left: 3px solid #60a5fa; }
+        .nav-link:hover { background: rgba(255,255,255,0.08); }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .topic-card { border-left: 4px solid #003366; }
+        @media print {
+            #sidebar, #menuBtn, #overlay, #backToTop, .resource-nav, #topicProgress, #langToggle { display: none !important; }
+            main, #mainContent { margin-left: 0 !important; }
+            body { background: white; }
+            .topic-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc; margin-bottom: 0.75rem; }
+            pre { font-size: 11px; padding: 0.5rem; background: #f9f9f9 !important; color: #333 !important; border: 1px solid #ddd; }
+            .bg-gradient-to-br, .bg-navy-900 { background: #003366 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            header { break-after: avoid; }
+            @page { margin: 1.5cm; }
+        }
+
+        #backToTop {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #backToTop.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #backToTop:hover {
+            transform: translateY(-2px);
+        }
+
+        #langToggle { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Language Toggle -->
+<div id="langToggle">
+    <button id="btnEn" onclick="setLanguage('en')" class="active">EN</button>
+    <button id="btnKa" onclick="setLanguage('ka')">KA</button>
+</div>
+
+<!-- Mobile overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Toggle button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-navy-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-navy-800 transition-colors" title="მენიუ">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-navy-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold leading-tight">GIPA AI Masterclass</h1>
+        <p class="text-blue-300 text-sm mt-1">Day 2: კვლევა და ეთიკა</p>
+        <p class="text-blue-400/70 text-xs mt-1">180 წუთი | 10 თემა + 3 Q&A + შესვენება</p>
+        <div id="topicProgress" class="mt-2 bg-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-blue-200 text-center hidden">
+            თემა <span id="currentTopic">1</span> / <span id="totalTopics">10</span>
+        </div>
+    </div>
+    <nav class="py-3">
+        <!-- Module 1 -->
+        <div class="px-5 pt-4 pb-2 text-[11px] uppercase tracking-wider text-blue-300 font-semibold">მოდული 1: სწავლების ხელშეწყობა</div>
+        <a href="#topic-14" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-14">
+            <span class="leading-snug pr-2">Feedback-ის პერსონალიზაცია</span>
+            <span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">15 წთ</span>
+        </a>
+        <a href="#topic-15" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-15">
+            <span class="leading-snug pr-2">Case Studies (ქეისების შექმნა)</span>
+            <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span>
+        </a>
+        <a href="#topic-16" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-16">
+            <span class="leading-snug pr-2">შეფასების ინსტრუმენტები (Rubrics)</span>
+            <span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">20 წთ</span>
+        </a>
+        <a href="#qa-1" class="flex items-center justify-between px-5 py-2 text-sm text-yellow-300/80 transition-all duration-200 border-l-[3px] border-transparent">
+            <span class="leading-snug pr-2">Q&A</span>
+            <span class="shrink-0 text-[10px] bg-yellow-500/20 text-yellow-300 px-1.5 py-0.5 rounded">10 წთ</span>
+        </a>
+
+        <!-- Module 2 -->
+        <div class="px-5 pt-5 pb-2 text-[11px] uppercase tracking-wider text-blue-300 font-semibold">მოდული 2: კვლევა და ვიზუალიზაცია</div>
+        <a href="#topic-17" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-17">
+            <span class="leading-snug pr-2">ვიზუალიზაცია (Slides Generation)</span>
+            <span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">12 წთ</span>
+        </a>
+        <a href="#topic-18" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-18">
+            <span class="leading-snug pr-2">ლიტერატურის მიმოხილვის ავტომატიზაცია</span>
+            <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span>
+        </a>
+        <a href="#topic-19" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-19">
+            <span class="leading-snug pr-2">Google NotebookLM: სანდო წყაროები და აუდიო</span>
+            <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">15 წთ</span>
+        </a>
+        <a href="#topic-20" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-20">
+            <span class="leading-snug pr-2">ციტირების მართვა</span>
+            <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span>
+        </a>
+        <a href="#qa-2" class="flex items-center justify-between px-5 py-2 text-sm text-yellow-300/80 transition-all duration-200 border-l-[3px] border-transparent">
+            <span class="leading-snug pr-2">Q&A</span>
+            <span class="shrink-0 text-[10px] bg-yellow-500/20 text-yellow-300 px-1.5 py-0.5 rounded">10 წთ</span>
+        </a>
+        <a href="#break" class="flex items-center justify-between px-5 py-2 text-sm text-emerald-300/80 transition-all duration-200 border-l-[3px] border-transparent">
+            <span class="leading-snug pr-2">შესვენება</span>
+            <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">10 წთ</span>
+        </a>
+
+        <!-- Module 3 -->
+        <div class="px-5 pt-5 pb-2 text-[11px] uppercase tracking-wider text-blue-300 font-semibold">მოდული 3: ეთიკა და კეთილსინდისიერება</div>
+        <a href="#topic-21" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-21">
+            <span class="leading-snug pr-2">AI დეტექტორები და მათი ხარვეზები</span>
+            <span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">13 წთ</span>
+        </a>
+        <a href="#topic-22" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-22">
+            <span class="leading-snug pr-2">პლაგიატის პრევენცია</span>
+            <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">15 წთ</span>
+        </a>
+        <a href="#topic-23" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="topic-23">
+            <span class="leading-snug pr-2">AI-Resistant დავალებების დიზაინი</span>
+            <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">20 წთ</span>
+        </a>
+        <a href="#qa-3" class="flex items-center justify-between px-5 py-2 text-sm text-yellow-300/80 transition-all duration-200 border-l-[3px] border-transparent">
+            <span class="leading-snug pr-2">Q&A</span>
+            <span class="shrink-0 text-[10px] bg-yellow-500/20 text-yellow-300 px-1.5 py-0.5 rounded">10 წთ</span>
+        </a>
+    </nav>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-navy-900 to-navy-700 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+        <div class="max-w-4xl">
+            <p class="text-blue-300 text-sm font-medium tracking-wide uppercase mb-2">GIPA AI Masterclass 2026</p>
+            <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">Day 2: კვლევა და ეთიკა</h1>
+            <p class="text-blue-200 text-base max-w-2xl leading-relaxed">სტუდენტთა Feedback-ის პერსონალიზაცია, აკადემიური კვლევის ავტომატიზაცია, AI დეტექტორები და აკადემიური კეთილსინდისიერების უზრუნველყოფა.</p>
+            <div class="flex flex-wrap gap-4 mt-5">
+                <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 180 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg> 3 მოდული</span>
+                <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> 10 თემა</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
+
+        <!-- ═══════════════ MODULE 1 ═══════════════ -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-navy-900 text-white flex items-center justify-center font-bold text-sm">M1</div>
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">სწავლების ხელშეწყობა</h2>
+                <p class="text-sm text-gray-500">50 წუთი | 3 თემა</p>
+            </div>
+        </div>
+
+        <!-- Topic 14: 15 min - Feedback-ის პერსონალიზაცია -->
+        <section id="topic-14" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Feedback-ის პერსონალიზაცია</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-green-50 text-green-700 px-2.5 py-1 rounded-full">15 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> პერსონალიზებული უკუკავშირი (Feedback) - ინდივიდუალურად მორგებული შეფასება თითოეული სტუდენტის ნაშრომზე. AI-ს შეუძლია ტექსტის ანალიზი და კონსტრუქციული კომენტარების გენერაცია რამდენიმე წამში - იმას, რასაც ლექტორი ნაშრომზე 15-20 წუთს ანდომებს, AI 30 წამში აკეთებს. ეს არ ნიშნავს, რომ AI ცვლის ლექტორს - ის აჩქარებს პროცესს და ქმნის საწყის მონახაზს (draft), რომელსაც ლექტორი არედაქტირებს.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - ესეს Feedback:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='You are an experienced university professor providing constructive feedback. Review this student essay and provide:
+
+1. Overall impression (2-3 sentences)
+2. Three specific strengths with exact quotes from the text
+3. Three areas for improvement with concrete suggestions (not vague - show how to fix it)
+4. A "Next Steps" section with 2 actionable items the student can work on
+5. A score out of 100 based on these criteria: argument quality (30%), evidence use (25%), structure (20%), writing quality (15%), originality (10%)
+
+Tone: Encouraging but honest. Address the student directly ("You did well..." not "The student...")
+
+Essay: [paste here]'
+                 data-ka='შენ ხარ გამოცდილი უნივერსიტეტის პროფესორი, რომელიც გასცემს კონსტრუქციულ უკუკავშირს. შეაფასე სტუდენტის ესე და მოამზადე:
+
+1. ზოგადი შთაბეჭდილება (2-3 წინადადება).
+2. სამი კონკრეტული ძლიერი მხარე ტექსტიდან ზუსტი ციტატების მოყვანით.
+3. სამი გასაუმჯობესებელი ასპექტი კონკრეტული რჩევებით (არა ზოგადი, არამედ აჩვენე როგორ გამოსწორდეს).
+4. „შემდეგი ნაბიჯები“ - 2 კონკრეტული დავალება, რომელზეც სტუდენტმა უნდა იმუშაოს.
+5. ქულა 100-დან შემდეგი კრიტერიუმებით: არგუმენტაციის ხარისხი (30%), წყაროების გამოყენება (25%), სტრუქტურა (20%), წერის ხარისხი (15%), ორიგინალურობა (10%).
+
+ტონი: დადებითი, მაგრამ გულწრფელი. მიმართე სტუდენტს პირდაპირ („შენ კარგად გაართვი თავი...“ და არა „სტუდენტმა...“).
+
+ესე: [ჩასვით აქ]'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="inline-flex items-center gap-1 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        სცადეთ ახლავე!
+                    </span>
+                    <span class="text-[10px] text-indigo-500 font-semibold">2 წუთი</span>
+                </div>
+                <p class="text-sm text-indigo-900 mb-3">აიღეთ ერთი აბზაცი სტუდენტის ნაშრომიდან (ან თქვენი ტექსტიდან) და ჩააკოპირეთ პრომპტში [paste here]-ს ნაცვლად:</p>
+                <div class="rounded-lg overflow-hidden prompt-container"
+                     data-en='You are an experienced professor giving constructive feedback. Review this student paragraph and provide:
+1. Two specific strengths (with quotes from the text)
+2. Two areas for improvement (with concrete suggestions)
+3. One actionable next step
+
+Tone: Encouraging but honest.
+
+Text: [paste here]'
+                     data-ka='შენ ხარ გამოცდილი პროფესორი, რომელიც გასცემს კონსტრუქციულ უკუკავშირს. შეაფასე სტუდენტის ეს აბზაცი და მოამზადე:
+1. ორი კონკრეტული ძლიერი მხარე (ტექსტიდან ციტატებით)
+2. ორი გასაუმჯობესებელი ასპექტი (კონკრეტული რჩევებით)
+3. ერთი შემდეგი ნაბიჯი
+
+ტონი: დადებითი, მაგრამ გულწრფელი.
+
+ტექსტი: [ჩასვით აქ]'>
+                    <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                        <span class="text-xs text-slate-300">პრომპტი</span>
+                        <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                    </div>
+                    <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Topic 15: 10 min - Case Studies -->
+        <section id="topic-15" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Case Studies (ქეისების შექმნა)</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">10 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> Case Study - რეალურ ან რეალისტურ სიტუაციაზე დაფუძნებული სასწავლო მასალა, რომელიც სტუდენტებს ანალიზის, გადაწყვეტილების მიღებისა და კრიტიკული აზროვნების უნარებს უვითარებს. AI-ს შეუძლია სრული ქეისის შექმნა - კონტექსტი, მონაცემები, დილემა და დისკუსიის კითხვები - რამდენიმე წუთში.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - Case Study გენერაცია:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Create a detailed case study for a Master"s level course in Public Administration. The case should:
+
+1. Be set in Georgia (use realistic institutional names and context)
+2. Present a policy dilemma with no clear "right answer"
+3. Include 3-4 stakeholder perspectives with conflicting interests
+4. Provide data tables or statistics relevant to the decision
+5. End with 5 discussion questions (ordered by Bloom"s taxonomy: comprehension → analysis → evaluation)
+
+Topic: [e.g., "Municipal budget allocation for education vs infrastructure in a small Georgian town"]
+
+Length: 800-1000 words. Format as a professional academic teaching case.'
+                 data-ka='შექმენი დეტალური ქეისი (Case Study) საჯარო მმართველობის სამაგისტრო კურსისთვის. ქეისი უნდა აკმაყოფილებდეს შემდეგ მოთხოვნებს:
+
+1. მოქმედება ხდება საქართველოში (გამოიყენე რეალისტური ინსტიტუციური სახელები და კონტექსტი).
+2. წარმოადგინე პოლიტიკის დილემა, რომელსაც არ აქვს ცალსახა „სწორი პასუხი“.
+3. მოიცავი 3-4 დაინტერესებული მხარის (stakeholder) პერსპექტივა კონფლიქტური ინტერესებით.
+4. მოამზადე მონაცემთა ცხრილები ან სტატისტიკა, რომელიც საჭიროა გადაწყვეტილების მისაღებად.
+5. ბოლოს დაამატე 5 სადისკუსიო კითხვა (ბლუმის ტაქსონომიის მიხედვით: გაგება → ანალიზი → შეფასება).
+
+თემა: [მაგ: „მუნიციპალური ბიუჯეტის განაწილება განათლებასა და ინფრასტრუქტურას შორის საქართველოს მცირე ქალაქში“]
+
+მოცულობა: 800-1000 სიტყვა. გააფორმე როგორც პროფესიული აკადემიური ქეისი.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 2 (არასავალდებულო) - დისკუსიის გეგმა:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Based on the case study above, create a 30-minute seminar facilitation plan:
+1. Opening question (2 minutes)
+2. Group work task (10 minutes)
+3. Stakeholder negotiation role-play (10 minutes)
+4. Debrief with 4 guided questions (8 minutes)
+
+Include expected student mistakes and quick facilitator interventions.'
+                 data-ka='ზემოთ მოცემულ ქეისზე დაყრდნობით, შექმენი 30-წუთიანი სემინარის ფასილიტაციის გეგმა:
+1. გახსნის კითხვა (2 წუთი)
+2. ჯგუფური დავალება (10 წუთი)
+3. stakeholder-ების მოლაპარაკების როლური თამაში (10 წუთი)
+4. შეჯამება 4 სახელმძღვანელო კითხვით (8 წუთი)
+
+დაამატე მოსალოდნელი შეცდომები და ფასილიტატორის სწრაფი ჩარევის გზები.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (არასავალდებულო)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+        </section>
+
+        <!-- Topic 16: 20 min - Rubrics -->
+        <section id="topic-16" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-8 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">შეფასების ინსტრუმენტები (Rubrics)</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-green-50 text-green-700 px-2.5 py-1 rounded-full">20 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> რუბრიკა (Rubric) - სტრუქტურირებული შეფასების ინსტრუმენტი, რომელიც კრიტერიუმებისა და დონეების მატრიცაა. იგი შეფასებას გამჭვირვალეს, თანმიმდევრულსა და სამართლიანს ხდის. AI-ს შეუძლია რუბრიკის სრული შექმნა - კრიტერიუმების განსაზღვრა, დონეების აღწერა და სწავლის შედეგებთან მიბმა.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - ანალიტიკური რუბრიკის შექმნა:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Create a detailed analytical rubric for a Master"s level research paper (3000 words) in Political Science.
+
+Requirements:
+- 5 criteria: Thesis/Argument, Evidence & Sources, Analysis, Structure & Organization, Academic Writing
+- 4 performance levels: Excellent (90-100), Good (75-89), Satisfactory (60-74), Needs Improvement (0-59)
+- Each cell must contain specific, observable descriptors (not vague like "good analysis")
+- Include point weights that total 100
+- Align criteria with Bloom"s taxonomy levels
+
+Format as a table ready to share with students.'
+                 data-ka='შექმენი დეტალური ანალიტიკური რუბრიკა პოლიტიკის მეცნიერების სამაგისტრო ნაშრომისთვის (3000 სიტყვა).
+
+მოთხოვნები:
+- 5 კრიტერიუმი: თეზისი/არგუმენტაცია, მტკიცებულებები და წყაროები, ანალიზი, სტრუქტურა და ორგანიზება, აკადემიური წერა.
+- 4 დონე: შესანიშნავი (90-100), კარგი (75-89), დამაკმაყოფილებელი (60-74), საჭიროებს გაუმჯობესებას (0-59).
+- თითოეული უჯრა უნდა შეიცავდეს სპეციფიკურ, დაკვირვებად აღწერას (არა ზოგადს, მაგ: „კარგი ანალიზი“).
+- მიუთითე წონები ქულებში, ჯამში 100 ქულა.
+- დაუკავშირე კრიტერიუმები ბლუმის ტაქსონომიის დონეებს.
+
+ფორმატი: ცხრილი, რომელიც მზად იქნება სტუდენტებისთვის გასაზიარებლად.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 2 (არასავალდებულო) - რუბრიკის ტესტირება:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Use the rubric above to grade this student paragraph sample.
+Return:
+1. Criterion-by-criterion score
+2. One sentence justification per criterion
+3. Final score out of 100
+4. Two specific revision suggestions
+
+Sample text: [paste here]'
+                 data-ka='ზემოთ შექმნილი რუბრიკით შეაფასე ეს სტუდენტის ტექსტის ნიმუში.
+დააბრუნე:
+1. ქულა თითოეული კრიტერიუმის მიხედვით
+2. თითო კრიტერიუმზე ერთწინადადებიანი დასაბუთება
+3. საბოლოო ქულა 100-დან
+4. ორი კონკრეტული რჩევა გადასამუშავებლად
+
+ტექსტის ნიმუში: [ჩასვით აქ]'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (არასავალდებულო)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+        </section>
+
+        <!-- ═══════════════ MODULE 2 ═══════════════ -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-navy-800 text-white flex items-center justify-center font-bold text-sm">M2</div>
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">კვლევა და ვიზუალიზაცია</h2>
+                <p class="text-sm text-gray-500">47 წუთი | 4 თემა</p>
+            </div>
+        </div>
+
+        <!-- Topic 17: 12 min - ვიზუალიზაცია -->
+        <section id="topic-17" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">ვიზუალიზაცია (Slides Generation)</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-green-50 text-green-700 px-2.5 py-1 rounded-full">12 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> AI-ს შეუძლია პრეზენტაციის სრული სტრუქტურისა და შინაარსის გენერირება - სლაიდების სათაურები, შინაარსი და სპიკერის შენიშვნები. ინსტრუმენტები, როგორიცაა Gamma.app, Canva AI და ChatGPT, პირდაპირ ქმნიან ვიზუალურ პრეზენტაციებს. ეს პროცესი, რომელსაც ჩვეულებრივ 3-4 საათი სჭირდება, 10-15 წუთამდე მცირდება.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - პრეზენტაციის სტრუქტურა:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Create a 15-slide presentation outline for a 90-minute lecture on "[Topic]" for undergraduate students.
+
+For each slide provide:
+- Slide title
+- 3-4 bullet points (concise, not full sentences)
+- Speaker notes (what to say - 3-4 sentences)
+- Suggested visual: photo, diagram, chart, or quote
+
+Structure: Title slide → Learning objectives → Content (10 slides) → Interactive activity → Summary → Q&A → Next week preview'
+                 data-ka='შექმენი 15-სლაიდიანი პრეზენტაციის სტრუქტურა 90-წუთიანი ლექციისთვის თემაზე: „[თემა]“ ბაკალავრიატის სტუდენტებისთვის.
+
+თითოეული სლაიდისთვის მოამზადე:
+- სლაიდის სათაური.
+- 3-4 პუნქტი (მოკლედ, არა სრული წინადადებებით).
+- სპიკერის შენიშვნები (რა უნდა ვთქვა - 3-4 წინადადება).
+- ვიზუალის იდეა: ფოტო, დიაგრამა, გრაფიკი ან ციტატა.
+
+სტრუქტურა: სატიტულო სლაიდი → სწავლის შედეგები → ძირითადი ნაწილი (10 სლაიდი) → ინტერაქტიული აქტივობა → შეჯამება → Q&A → შემდეგი კვირის პრევიუ.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="inline-flex items-center gap-1 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        სცადეთ ახლავე!
+                    </span>
+                    <span class="text-[10px] text-indigo-500 font-semibold">2 წუთი</span>
+                </div>
+                <p class="text-sm text-indigo-900 mb-3">ChatGPT-ში ჩააკოპირეთ ეს პრომპტი და [Topic]-ის ნაცვლად ჩაწერეთ თქვენი ლექციის თემა:</p>
+                <div class="rounded-lg overflow-hidden prompt-container"
+                     data-en='Create a 10-slide presentation outline for a 90-minute lecture on "[Topic]" for undergraduate students.
+
+For each slide provide:
+- Slide title
+- 3 bullet points (concise)
+- Suggested visual: photo, diagram, or chart
+
+Structure: Title → Objectives → 6 content slides → Activity → Summary → Q&A'
+                     data-ka='შექმენი 10-სლაიდიანი პრეზენტაციის სტრუქტურა 90-წუთიანი ლექციისთვის თემაზე: „[თემა]" ბაკალავრიატის სტუდენტებისთვის.
+
+თითოეული სლაიდისთვის მოამზადე:
+- სლაიდის სათაური
+- 3 პუნქტი (მოკლედ)
+- ვიზუალის იდეა: ფოტო, დიაგრამა ან გრაფიკი
+
+სტრუქტურა: სათაური → შედეგები → 6 შინაარსობრივი სლაიდი → აქტივობა → შეჯამება → Q&A'>
+                    <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                        <span class="text-xs text-slate-300">პრომპტი</span>
+                        <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                    </div>
+                    <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+                </div>
+                <p class="text-xs text-indigo-700 mt-2">ალტერნატივა: გახსენით <a href="https://gamma.app" target="_blank" class="text-indigo-700 underline font-semibold">gamma.app</a> და ატვირთეთ შედეგი - 30 წამში მზად პრეზენტაციაა.</p>
+            </div>
+        </section>
+
+        <!-- Topic 18: 10 min - ლიტერატურის მიმოხილვა -->
+        <section id="topic-18" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">ლიტერატურის მიმოხილვის ავტომატიზაცია</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">10 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> AI-ს შეუძლია აკადემიური ტექსტების სწრაფი შეჯამება, თემების სტრუქტურირება და კვლევის ხარვეზების იდენტიფიცირება. <strong>მაგრამ:</strong> AI ხშირად იგონებს წყაროებს - ყოველი ციტატა ხელით უნდა გადამოწმდეს Google Scholar-ში. გამოიყენეთ AI სტრუქტურისთვის და არა წყაროების მოსაძიებლად.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - ტექსტის შეჯამება:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Summarize the following academic text in 3 sections:
+1. Key argument (2-3 sentences)
+2. Methodology and evidence used
+3. Main limitations and what questions remain unanswered
+
+Keep it concise. Do NOT add information that is not in the original text.
+
+Text: [paste here]'
+                 data-ka='შეაჯამე მოცემული აკადემიური ტექსტი 3 ნაწილად:
+1. მთავარი არგუმენტი (2-3 წინადადება).
+2. გამოყენებული მეთოდოლოგია და მტკიცებულებები.
+3. ძირითადი შეზღუდვები და პასუხგაუცემელი კითხვები.
+
+იყავი ლაკონიური. ნუ დაამატებ ინფორმაციას, რომელიც არ არის ორიგინალ ტექსტში.
+
+ტექსტი: [ჩასვით აქ]'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 2 (არასავალდებულო) - ლიტერატურის ხარვეზები:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Based on this summary, identify:
+1. 3 research gaps
+2. 3 testable research questions
+3. Suggested methods for each question
+
+Do not invent sources. Use only information present in the provided text.'
+                 data-ka='ამ შეჯამებაზე დაყრდნობით, გამოკვეთე:
+1. 3 კვლევითი ხარვეზი
+2. 3 ტესტირებადი კვლევის კითხვა
+3. თითოეულ კითხვაზე შესაბამისი მეთოდური მიდგომა
+
+არ გამოიგონო წყაროები. გამოიყენე მხოლოდ მოცემულ ტექსტში არსებული ინფორმაცია.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (არასავალდებულო)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+        </section>
+
+        <!-- Topic 19: 15 min - Google NotebookLM -->
+        <section id="topic-19" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Google NotebookLM: სანდო წყაროები და აუდიო</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">15 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> Google NotebookLM პრინციპულად განსხვავდება ChatGPT-სა და Claude-სგან: იგი მუშაობს <strong>მხოლოდ</strong> თქვენ მიერ ატვირთულ წყაროებზე და არ იგონებს ინფორმაციას. ატვირთეთ PDF-ები, Google Docs-ები ან ვებბმულები - AI აანალიზებს მხოლოდ ამ მასალებს და ყოველ პასუხში მიუთითებს ზუსტ ციტატას წყაროდან. ეს ნიშნავს <strong>ჰალუცინაციების ნულოვან რისკს</strong> თქვენს მონაცემებზე.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - წყაროების სინთეზი:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Based on all uploaded sources, create a synthesis table:
+- Author(s) and year
+- Research question
+- Methodology
+- Key findings
+- Limitations
+
+Then answer: (1) What do most sources agree on? (2) Where do they disagree? (3) What gaps remain?'
+                 data-ka='ყველა ატვირთულ წყაროზე დაყრდნობით, შექმენი სინთეზის ცხრილი:
+- ავტორ(ებ)ი და წელი.
+- კვლევის კითხვა.
+- მეთოდოლოგია.
+- მთავარი მიგნებები.
+- შეზღუდვები.
+
+შემდეგ უპასუხე: (1) რაზე თანხმდება წყაროების უმეტესობა? (2) სად ჩანს აზრთა სხვადასხვაობა? (3) რა კვლევითი ხარვეზები რჩება?'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (NotebookLM)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 2 (არასავალდებულო) - აუდიო სკრიპტი:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Using the same uploaded sources, write a 5-minute podcast-style script for students:
+1. Core topic explanation
+2. Two competing viewpoints
+3. One real-world implication
+4. Three reflection questions
+
+Keep citations traceable to the uploaded documents.'
+                 data-ka='იმავე ატვირთულ წყაროებზე დაყრდნობით, დაწერე 5-წუთიანი podcast-სტილის სკრიპტი სტუდენტებისთვის:
+1. ძირითადი თემის ახსნა
+2. ორი კონკურენტული პოზიცია
+3. ერთი პრაქტიკული იმპლიკაცია
+4. სამი რეფლექსიური კითხვა
+
+ციტირებები იყოს დაკავშირებადი ატვირთულ დოკუმენტებთან.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (არასავალდებულო)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+        </section>
+
+        <!-- Topic 20: 10 min - ციტირების მართვა -->
+        <section id="topic-20" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-8 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">ციტირების მართვა</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">10 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> ციტირების მართვა მოიცავს წყაროების სწორ ფორმატირებას (APA, Harvard, Chicago), ბიბლიოგრაფიის შედგენას და ტექსტში ციტატების თანმიმდევრულ ჩასმას. AI-ს შეუძლია ციტატის ფორმატის კონვერტაცია, ბიბლიოგრაფიის გაფორმება და თანმიმდევრულობის შემოწმება. <strong>მაგრამ:</strong> ყოველთვის გადაამოწმეთ შედეგი - AI ხშირად ურევს APA 6-ს და APA 7-ს.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - ციტატების ფორმატირება:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Convert the following list of references to APA 7th edition format. For each entry:
+1. Fix any formatting errors
+2. Flag entries that appear incomplete (missing year, publisher, etc.)
+3. Sort alphabetically by first author"s last name
+4. Add DOI where the pattern suggests one exists (but mark it as [VERIFY DOI])
+
+References: [paste here]'
+                 data-ka='გადაიყვანე წყაროების შემდეგი სია APA მე-7 გამოცემის ფორმატში. თითოეული ჩანაწერისთვის:
+1. გაასწორე ფორმატირების შეცდომები.
+2. მონიშნე ჩანაწერები, რომლებიც არასრულია (აკლია წელი, გამომცემელი და ა.შ.).
+3. დაალაგე ანბანური თანმიმდევრობით პირველი ავტორის გვარის მიხედვით.
+4. დაამატე DOI, სადაც შესაძლებელია (მაგრამ მონიშნე როგორც [გადამოწმება]).
+
+წყაროები: [ჩასვით აქ]'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 2 (არასავალდებულო) - in-text citation:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Given this paragraph and reference list, insert correct APA 7 in-text citations.
+Then return:
+1. Revised paragraph with citations
+2. Citation map (which claim uses which source)
+3. Any citation-confidence warnings
+
+Paragraph: [paste here]
+References: [paste here]'
+                 data-ka='ამ აბზაცისა და წყაროების სიის მიხედვით, ჩასვი სწორად APA 7-ის ტექსტშიდა ციტირებები.
+შემდეგ დააბრუნე:
+1. რედაქტირებული აბზაცი ციტირებებით
+2. ციტირების რუკა (რომელი მტკიცება რომელ წყაროს ეყრდნობა)
+3. გაფრთხილებები საეჭვო/დაბალი სანდოობის ციტირებებზე
+
+აბზაცი: [ჩასვით აქ]
+წყაროები: [ჩასვით აქ]'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (არასავალდებულო)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+        </section>
+
+        <!-- ═══════════════ MODULE 3 ═══════════════ -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-navy-700 text-white flex items-center justify-center font-bold text-sm">M3</div>
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">ეთიკა და კეთილსინდისიერება</h2>
+                <p class="text-sm text-gray-500">48 წუთი | 3 თემა</p>
+            </div>
+        </div>
+
+        <!-- Topic 21: 13 min - AI დეტექტორები -->
+        <section id="topic-21" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">AI დეტექტორები და მათი ხარვეზები</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-green-50 text-green-700 px-2.5 py-1 rounded-full">13 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> AI დეტექტორები (GPTZero, Turnitin AI, ZeroGPT) ცდილობენ განასხვაონ ადამიანის მიერ დაწერილი ტექსტი AI-ს მიერ გენერირებულისგან. <strong>პრობლემა:</strong> ისინი არასაიმედოა - ხშირია ცრუ-დადებითი (False Positive) შედეგები (ადამიანის მიერ დაწერილი ტექსტის შეცდომით AI-ად მონიშვნა), განსაკუთრებით არაინგლისურ ენებზე. ქართული ტექსტების შემთხვევაში მათი სიზუსტე კრიტიკულად დაბალია.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - AI-პოლიტიკის პროექტი (draft):</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Draft an AI usage policy for a university course. The policy should:
+1. Clearly define what AI use is permitted and what is not
+2. Specify which assignments allow AI and which don"t
+3. Require students to cite AI use (tool name, date, how it was used)
+4. Explain consequences of unauthorized AI use
+5. Include a "spectrum of AI use" from acceptable to unacceptable
+
+Tone: Fair and educational, not punitive. Assume students are adults.
+Context: Georgian university, Master"s level, Social Sciences.'
+                 data-ka='შეადგინე AI-ს გამოყენების პოლიტიკის პროექტი საუნივერსიტეტო კურსისთვის. პოლიტიკა უნდა მოიცავდეს შემდეგს:
+1. მკაფიოდ განსაზღვროს რომელი ტიპის AI გამოყენებაა დაშვებული და რომელი - არა.
+2. მიუთითოს რომელ დავალებებშია ნებადართული AI და რომელში - არა.
+3. მოსთხოვოს სტუდენტებს AI-ს გამოყენების ციტირება (ხელსაწყო, თარიღი, გამოყენების ფორმა).
+4. განმარტოს უნებართვო გამოყენების შედეგები.
+5. მოიცავდეს „AI გამოყენების სპექტრს“ მისაღებიდან მიუღებელ ქმედებებამდე.
+
+ტონი: სამართლიანი და საგანმანათლებლო, არა სადამსჯელო. ჩათვალე, რომ სტუდენტები ზრდასრული ადამიანები არიან.
+კონტექსტი: საქართველოს უნივერსიტეტი, სამაგისტრო საფეხური, სოციალური მეცნიერებები.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="inline-flex items-center gap-1 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        სცადეთ ახლავე!
+                    </span>
+                    <span class="text-[10px] text-indigo-500 font-semibold">2 წუთი</span>
+                </div>
+                <p class="text-sm text-indigo-900 mb-3">ჯერ სთხოვეთ AI-ს მოკლე ტექსტის დაწერა, შემდეგ შეამოწმეთ <a href="https://gptzero.me" target="_blank" class="text-indigo-700 underline font-semibold">gptzero.me</a>-ზე:</p>
+                <div class="rounded-lg overflow-hidden mb-3 prompt-container"
+                     data-en='Write a 150-word academic paragraph about the impact of social media on democratic participation in developing countries. Use formal academic tone.'
+                     data-ka='დაწერე 150-სიტყვიანი აკადემიური აბზაცი სოციალური მედიის გავლენის შესახებ დემოკრატიულ მონაწილეობაზე განვითარებად ქვეყნებში. გამოიყენე ფორმალური აკადემიური ტონი.'>
+                    <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                        <span class="text-xs text-slate-300">პრომპტი</span>
+                        <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                    </div>
+                    <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+                </div>
+                <p class="text-xs text-indigo-700">შემდეგ ჩააკოპირეთ AI-ს პასუხი GPTZero-ში. ასევე ჩააკოპირეთ <strong>თქვენი საკუთარი</strong> ტექსტი - შეადარეთ, სწორად „ამოიცნო" თუ არა.</p>
+            </div>
+        </section>
+
+        <!-- Topic 22: 15 min - პლაგიატის პრევენცია -->
+        <section id="topic-22" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">პლაგიატის პრევენცია („შეიარაღებული თვალი")</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full">15 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> „შეიარაღებული თვალი" - ლექტორის უნარი, ამოიცნოს AI-ს მიერ გენერირებული ტექსტი ტექნოლოგიური ინსტრუმენტების გარეშე, მხოლოდ პროფესიული გამოცდილებით. იგი მოიცავს ტექსტის ენობრივი ნიშნების ცოდნას, სტუდენტის ინდივიდუალური სტილის ცნობასა და კრიტიკული შეკითხვის ტექნიკას. ეს ხშირად უფრო საიმედოა, ვიდრე ნებისმიერი დეტექტორი.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - ტექსტის ანალიზი:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Analyze this student essay for signs that suggest AI-generated content. Do NOT make a definitive judgment - only identify linguistic patterns. Look for:
+
+1. Overly consistent paragraph structure
+2. Generic transitional phrases ("It is important to note...")
+3. Lack of personal voice or original perspective
+4. Suspicious source references (check if they look fabricated)
+5. Vocabulary that"s inconsistent with the stated student level
+6. Perfect balance of arguments (real students usually have a bias)
+
+Provide a nuanced analysis, not a binary "AI or not" verdict.
+
+Essay: [paste here]'
+                 data-ka='გააანალიზე სტუდენტის ესე იმ ენობრივი ნიშნების გამოსავლენად, რომლებიც AI-ს მიერ გენერირებულ ტექსტს ახასიათებს. ნუ გამოიტან კატეგორიულ დასკვნას, მხოლოდ გამოკვეთე პატერნები:
+
+1. ზედმეტად ერთფეროვანი აბზაცების სტრუქტურა.
+2. შაბლონური გარდამავალი ფრაზები („აღსანიშნავია, რომ...“).
+3. პერსონალური ხმის ან ორიგინალური პერსპექტივის ნაკლებობა.
+4. საეჭვო წყაროები (შეამოწმე, ხომ არ არის მოგონილი).
+5. სტუდენტის დონესთან შეუსაბამო ლექსიკა.
+6. არგუმენტების იდეალური ბალანსი (რეალურ სტუდენტებს, როგორც წესი, გამოკვეთილი პოზიცია აქვთ).
+
+მოამზადე ნიუანსური ანალიზი და არა ბინარული პასუხი („AI-ა თუ არა“).
+
+ესე: [ჩასვით აქ]'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 2 (არასავალდებულო) - ზეპირი გადამოწმება:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='Design a 7-minute oral follow-up protocol for this essay to verify authorship.
+Include:
+1. 5 targeted questions
+2. What strong answers look like
+3. Red flags to monitor
+4. A fair grading adjustment rule
+
+Essay topic: [paste here]'
+                 data-ka='შექმენი 7-წუთიანი ზეპირი გადამოწმების პროტოკოლი ამ ესეს ავტორობის დასაზუსტებლად.
+შეიტანე:
+1. 5 მიზნობრივი კითხვა
+2. როგორი პასუხია ძლიერი
+3. რომელი ნიშნებია საეჭვო
+4. სამართლიანი წესები შეფასების კორექტირებისთვის
+
+ესეს თემა: [ჩასვით აქ]'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (არასავალდებულო)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+        </section>
+
+        <!-- Topic 23: 20 min - AI-Resistant დავალებები -->
+        <section id="topic-23" class="topic-card bg-white rounded-xl shadow-sm p-6 md:p-8 mb-6 scroll-mt-6">
+            <div class="flex items-start justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">AI-Resistant დავალებების დიზაინი</h3>
+                <span class="shrink-0 ml-3 text-xs font-medium bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full">20 წთ</span>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4"><strong>განმარტება:</strong> AI-Resistant დავალებები - სასწავლო ამოცანები, რომლებიც ისეა შედგენილი, რომ AI-ს გამოყენება პასუხის პირდაპირი „კოპირებისთვის“ პრაქტიკულად შეუძლებელია ან უშედეგო. ეს არ ნიშნავს AI-ს აკრძალვას - ეს ნიშნავს დავალების ისე ფორმულირებას, რომ სტუდენტმა <em>აუცილებლად</em> საკუთარი აზროვნება ჩადოს მასში.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 1 - დავალების AI-Resistant-ად გარდაქმნა:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='I currently assign this essay topic to students: "[paste your essay topic]"
+
+This topic is easy for AI to answer. Redesign it to be AI-resistant while keeping the same learning objectives. Apply these strategies:
+1. Add a personal experience or local context requirement
+2. Include a process component (drafts, reflection)
+3. Add an oral defense component
+4. Require specific, verifiable data sources
+
+Provide 3 alternative versions of the assignment, ordered from least to most AI-resistant.'
+                 data-ka='ამჟამად სტუდენტებს ვაძლევ შემდეგ საკითხს ესესთვის: „[ჩასვით თემა]“
+
+ეს თემა AI-სთვის ძალიან მარტივია საპასუხოდ. მოახდინე მისი რედიზაინი ისე, რომ გახდეს AI-Resistant, მაგრამ შეინარჩუნოს სწავლის შედეგები. გამოიყენე შემდეგი სტრატეგიები:
+1. დაამატე პირადი გამოცდილების ან ლოკალური კონტექსტის მოთხოვნა.
+2. ჩართე პროცესზე ორიენტირებული კომპონენტი (მონახაზები, რეფლექსია).
+3. დაამატე ზეპირი დაცვის კომპონენტი.
+4. მოითხოვე სპეციფიკური, გადამოწმებადი მონაცემების წყაროები.
+
+შემომთავაზე დავალების 3 ალტერნატიული ვერსია, დალაგებული AI-მედეგობის მიხედვით.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">პრომპტი 2 (არასავალდებულო) - შეფასების კრიტერიუმები:</p>
+            <div class="rounded-lg overflow-hidden mb-4 prompt-container"
+                 data-en='For this AI-resistant assignment, create an assessment rubric with 5 criteria:
+1. Original thinking
+2. Use of local or personal evidence
+3. Process transparency
+4. Oral defense quality
+5. Source verification
+
+Give 4 performance levels and a total score out of 100.'
+                 data-ka='ამ AI-Resistant დავალებისთვის შექმენი შეფასების რუბრიკა 5 კრიტერიუმით:
+1. ორიგინალური აზროვნება
+2. ლოკალური ან პირადი მტკიცებულებების გამოყენება
+3. პროცესის გამჭვირვალობა
+4. ზეპირი დაცვის ხარისხი
+5. წყაროების გადამოწმება
+
+დაამატე 4 შესრულების დონე და საბოლოო ქულა 100-დან.'>
+                <div class="flex items-center justify-between px-4 py-2 bg-slate-700">
+                    <span class="text-xs text-slate-300">პრომპტი (არასავალდებულო)</span>
+                    <button onclick="copyCode(this)" class="text-xs text-slate-300 hover:text-white bg-slate-600 hover:bg-slate-500 px-2.5 py-1 rounded transition-colors">კოპირება</button>
+                </div>
+                <pre class="bg-slate-800 px-4 py-3 text-sm text-slate-200 leading-relaxed"><code></code></pre>
+            </div>
+        </section>
+
+        <!-- Q&A Break 3 -->
+        <div id="qa-3" class="scroll-mt-6 flex items-center gap-4 my-8 px-4 py-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+            <div class="w-10 h-10 rounded-full bg-yellow-400 text-yellow-900 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-yellow-900">Q&A - კითხვები და პასუხები</p>
+                <p class="text-xs text-yellow-700">10 წუთი | დასკვნითი შეკითხვები და დისკუსია</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ════════════ KEY TAKEAWAYS ════════════ -->
+    <div class="bg-emerald-50 border-t border-b border-emerald-200 px-6 py-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">დღის მთავარი დასკვნები</h3>
+                    <p class="text-sm text-gray-500">5 საკვანძო აზრი, რომელიც უნდა დაიმახსოვროთ</p>
+                </div>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-emerald-100">
+                    <span class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">AI-ს მიერ გენერირებულ ბიბლიოგრაფიას არასოდეს ენდოთ - ყოველთვის გადაამოწმეთ</p>
+                        <p class="text-xs text-gray-500 mt-1">AI ხშირად „იგონებს" ციტატებს. ყველა ბიბლიოგრაფიული ჩანაწერი ხელით უნდა შემოწმდეს Google Scholar-ით ან DOI-ით.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-emerald-100">
+                    <span class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">AI დეტექტორები არ არის საიმედო - „შეიარაღებული თვალი" უმჯობესია</p>
+                        <p class="text-xs text-gray-500 mt-1">GPTZero და Turnitin ხშირად ცრუ-დადებით (False Positive) შედეგებს იძლევიან. უკეთესი სტრატეგიაა: იცნობდეთ სტუდენტის სტილს და საკონტროლო შეკითხვებით გადაამოწმოთ იგი.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-emerald-100">
+                    <span class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">AI-Resistant დავალებები - პრევენცია > დეტექცია</p>
+                        <p class="text-xs text-gray-500 mt-1">პირადი მონაცემები, ეტაპობრივი ჩაბარება და in-class კომპონენტი - ასეთი დიზაინი მკვეთრად ამცირებს AI-ზე სტუდენტის არაჯანსაღ დამოკიდებულებას.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-emerald-100">
+                    <span class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">NotebookLM - სანდო წყაროებზე დაფუძნებული კვლევა</p>
+                        <p class="text-xs text-gray-500 mt-1">განსხვავებით ChatGPT/Claude-სგან, NotebookLM მხოლოდ თქვენ მიერ ატვირთულ მასალას იყენებს - შესაბამისად, ჰალუცინაციების რისკი მინიმალურია.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-emerald-100">
+                    <span class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">5</span>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">გამჭვირვალე AI პოლიტიკა - სტუდენტებისა და პროფესორების საერთო პასუხისმგებლობა</p>
+                        <p class="text-xs text-gray-500 mt-1">სილაბუსში მკაფიოდ გაწერეთ: რა არის დაშვებული, რა - არა, როგორ ხდება AI-ს ციტირება და რა შედეგი მოჰყვება დარღვევას.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════ SELF-CHECK QUIZ ════════════ -->
+    <div class="bg-gradient-to-b from-gray-50 to-white px-6 py-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-navy-900 text-white flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">თვითშემოწმება</h3>
+                    <p class="text-sm text-gray-500">შეამოწმეთ დღეს ნასწავლი მასალა</p>
+                </div>
+            </div>
+
+            <div id="quiz2" class="space-y-4">
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">1. AI-ს მიერ გენერირებულ ბიბლიოგრაფიას:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q1" value="a" class="accent-navy-700"><span>შეგიძლიათ პირდაპირ ენდოთ და გამოიყენოთ</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q1" value="b" class="accent-navy-700"><span>არასოდეს უნდა ენდოთ ბრმად - ყოველი ციტატა ხელით უნდა გადამოწმდეს</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q1" value="c" class="accent-navy-700"><span>მხოლოდ DOI-ს არსებობის შემოწმება სრულიად საკმარისია</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">2. AI დეტექტორების (GPTZero, Turnitin) მთავარი პრობლემა არის:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q2" value="a" class="accent-navy-700"><span>ანალიზისთვის საჭირო ძალიან დიდი დრო</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q2" value="b" class="accent-navy-700"><span>მაღალი ყოველთვიური გადასახადი</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q2" value="c" class="accent-navy-700"><span>False Positive - როცა ადამიანის მიერ დაწერილ ტექსტს AI-ს გენერირებულად მიიჩნევს</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">3. AI-Resistant დავალების 3 ძირითადი პრინციპია:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q3" value="a" class="accent-navy-700"><span>ლოკალური კონტექსტი, პირადი რეფლექსია და პროცესზე დაფუძნებული შეფასება</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q3" value="b" class="accent-navy-700"><span>შესრულების მოკლე ვადა, მეტი გვერდი და რთული სამეცნიერო თემა</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q3" value="c" class="accent-navy-700"><span>მხოლოდ ხელით წერა, ოფისში ჩაბარება და ზეპირი დაცვა</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">4. ანალიტიკური რუბრიკის მთავარი უპირატესობა ჰოლისტურთან შედარებით არის ის, რომ:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q4" value="a" class="accent-navy-700"><span>იგი გაცილებით უფრო სწრაფია შესავსებად</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q4" value="b" class="accent-navy-700"><span>თითოეულ კრიტერიუმს ცალ-ცალკე აფასებს, რაც სტუდენტს დეტალურ უკუკავშირს აძლევს</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q4" value="c" class="accent-navy-700"><span>სტუდენტებს იგი ვიზუალურად უფრო მოსწონთ</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">5. Google NotebookLM-ის მთავარი უპირატესობა სხვა AI ინსტრუმენტებთან შედარებით არის:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q5" value="a" class="accent-navy-700"><span>ანალიზის სისწრაფე და ინტერფეისის სიმარტივე</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q5" value="b" class="accent-navy-700"><span>იგი პასუხობს მხოლოდ თქვენ მიერ ატვირთული წყაროებიდან, რაც მინიმუმამდე დაჰყავს ჰალუცინაცია</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q5" value="c" class="accent-navy-700"><span>მას საერთოდ არ გააჩნია ფასიანი ვერსია</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">6. პერსონალიზებული feedback-ის მიზანია:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q6" value="a" class="accent-navy-700"><span>ყველა სტუდენტისთვის იდენტური ტექსტის გაგზავნა</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q6" value="b" class="accent-navy-700"><span>სტუდენტის ძლიერ და გასაუმჯობესებელ მხარეებზე მორგებული კონკრეტული უკუკავშირი</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q6" value="c" class="accent-navy-700"><span>მხოლოდ საბოლოო ქულის მიწერა განმარტების გარეშე</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">7. AI-ის გამოყენების პოლიტიკაში რა უნდა ეწეროს სავალდებულოდ?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q7" value="a" class="accent-navy-700"><span>რა არის ნებადართული, რა არის აკრძალული და როგორ უნდა მოხდეს გამოყენების დოკუმენტირება</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q7" value="b" class="accent-navy-700"><span>მხოლოდ პლატფორმების სია (ChatGPT, Claude, Gemini)</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q7" value="c" class="accent-navy-700"><span>მხოლოდ სანქციები, პოზიტიური მითითებების გარეშე</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">8. AI-Resistant დავალებაში „პროცესზე დაფუძნებული შეფასება“ ნიშნავს:</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q8" value="a" class="accent-navy-700"><span>მხოლოდ საბოლოო ტექსტის შეფასებას</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q8" value="b" class="accent-navy-700"><span>შუალედური ეტაპების, მონახაზებისა და გადაწყვეტილებების დასაბუთების შეფასებას</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q8" value="c" class="accent-navy-700"><span>დავალების შეფასებას მხოლოდ ჯგუფური პრეზენტაციით</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">9. პლაგიატის პრევენციისთვის რომელი მიდგომაა ყველაზე ეფექტური?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q9" value="a" class="accent-navy-700"><span>მხოლოდ AI დეტექტორის ქულაზე დაყრდნობა</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q9" value="b" class="accent-navy-700"><span>პროცესზე დაფუძნებული დავალება + შუალედური ჩაბარებები + ზეპირი დაცვა</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q9" value="c" class="accent-navy-700"><span>მხოლოდ საბოლოო ფაილის მოთხოვნა ერთი ვადით</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+                <div class="quiz-q bg-white rounded-xl border border-gray-200 p-4">
+                    <p class="text-sm font-medium text-gray-800 mb-3">10. როდის არის AI დეტექტორის შედეგი ყველაზე სანდო გამოყენებისთვის?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q10" value="a" class="accent-navy-700"><span>როცა მას ვიყენებთ როგორც ერთ-ერთ ინდიკატორს და არა საბოლოო მტკიცებულებას</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q10" value="b" class="accent-navy-700"><span>როცა მხოლოდ AI დეტექტორის ქულაზე ვიღებთ აკადემიურ გადაწყვეტილებას</span></label>
+                        <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"><input type="radio" name="d2q10" value="c" class="accent-navy-700"><span>როცა არ ვამოწმებთ ტექსტის კონტექსტს და წყაროებს</span></label>
+                    </div>
+                    <p class="quiz-feedback text-xs mt-2 hidden"></p>
+                </div>
+            </div>
+
+            <button onclick="checkQuiz('quiz2', {d2q1:'b',d2q2:'c',d2q3:'a',d2q4:'b',d2q5:'b',d2q6:'b',d2q7:'a',d2q8:'b',d2q9:'b',d2q10:'a'})" class="mt-5 bg-navy-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-navy-800 transition-colors">შემოწმება</button>
+            <p id="quiz2Score" class="mt-3 text-sm font-bold text-gray-700 hidden"></p>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="bg-white border-t border-gray-200 px-6 py-6">
+        <div class="max-w-3xl mx-auto">
+            <!-- Resource links -->
+            <div class="flex flex-wrap gap-2 mb-5">
+                <a href="glossary.html" class="inline-flex items-center gap-1.5 text-xs font-medium bg-navy-50 text-navy-700 px-3 py-1.5 rounded-lg hover:bg-navy-100 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    ლექსიკონი
+                </a>
+                <a href="prompts.html" class="inline-flex items-center gap-1.5 text-xs font-medium bg-navy-50 text-navy-700 px-3 py-1.5 rounded-lg hover:bg-navy-100 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    პრომპტები
+                </a>
+                <a href="practice_day2.html" class="inline-flex items-center gap-1.5 text-xs font-medium bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                    Practice Lab
+                </a>
+                <a href="practice-week-2.html" class="inline-flex items-center gap-1.5 text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    პრაქტიკის კვირეული #2
+                </a>
+            </div>
+            <!-- Day navigation -->
+            <div class="flex items-center justify-between">
+                <a href="day1.html" class="inline-flex items-center gap-2 text-sm font-semibold text-navy-700 hover:text-navy-900 transition-colors group">
+                    <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    დღე 1: საფუძვლები
+                </a>
+                <a href="index.html" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-navy-700 transition-colors group">
+                    მთავარი
+                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-navy-900 text-center py-6 px-4">
+        <p class="text-blue-200 text-sm">მომზადებულია გიორგი ბასილაიას მიერ | 2026</p>
+    </footer>
+
+</main>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.getElementById('mainContent');
+    const menuBtn = document.getElementById('menuBtn');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    let sidebarOpen = false;
+    let currentLang = localStorage.getItem('gipa-prompt-lang') || 'en';
+
+    function updatePrompts() {
+        document.querySelectorAll('.prompt-container').forEach(container => {
+            const codeEl = container.querySelector('code');
+            const text = container.getAttribute(`data-${currentLang}`);
+            codeEl.textContent = text;
+        });
+        
+        // Update toggle buttons
+        document.getElementById('btnEn').classList.toggle('active', currentLang === 'en');
+        document.getElementById('btnKa').classList.toggle('active', currentLang === 'ka');
+        var ge=document.getElementById('gcBtnEn'),gk=document.getElementById('gcBtnKa');
+        if(ge){ge.classList.toggle('active', currentLang === 'en');}
+        if(gk){gk.classList.toggle('active', currentLang === 'ka');}
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('gipa-prompt-lang', lang);
+        updatePrompts();
+    }
+
+    // Initialize prompts on load
+    updatePrompts();
+
+    function setSidebarState(open) {
+        sidebarOpen = open;
+        if (open) {
+            sidebar.classList.remove('-translate-x-full');
+            menuIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            if (window.innerWidth >= 768) {
+                mainContent.style.marginLeft = '18rem';
+                menuBtn.style.left = '18.75rem';
+            } else {
+                overlay.classList.remove('hidden');
+            }
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            menuIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+            mainContent.style.marginLeft = '0';
+            menuBtn.style.left = '1rem';
+            overlay.classList.add('hidden');
+        }
+    }
+
+    function toggleSidebar() {
+        setSidebarState(!sidebarOpen);
+    }
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 768) setSidebarState(false);
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        if (sidebarOpen && window.innerWidth >= 768) {
+            overlay.classList.add('hidden');
+            mainContent.style.marginLeft = '18rem';
+            menuBtn.style.left = '18.75rem';
+        } else if (sidebarOpen && window.innerWidth < 768) {
+            overlay.classList.remove('hidden');
+            mainContent.style.marginLeft = '0';
+            menuBtn.style.left = '1rem';
+        }
+    });
+
+    function copyCode(button) {
+        const code = button.closest('.rounded-lg').querySelector('code');
+        navigator.clipboard.writeText(code.textContent.trim()).then(() => {
+            const original = button.textContent;
+            button.textContent = 'კოპირებულია!';
+            button.classList.add('bg-green-600');
+            setTimeout(() => {
+                button.textContent = original;
+                button.classList.remove('bg-green-600');
+            }, 1500);
+        });
+    }
+
+    const sections = document.querySelectorAll('section[id^="topic-"]:not(.hidden)');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    const topicProgress = document.getElementById('topicProgress');
+    const currentTopicEl = document.getElementById('currentTopic');
+    const totalTopicsEl = document.getElementById('totalTopics');
+    totalTopicsEl.textContent = sections.length;
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(l => l.classList.remove('active'));
+                const active = document.querySelector(`.nav-link[data-topic="${entry.target.id}"]`);
+                if (active) {
+                    active.classList.add('active');
+                    active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+                const idx = Array.from(sections).indexOf(entry.target);
+                if (idx >= 0) {
+                    currentTopicEl.textContent = idx + 1;
+                    topicProgress.classList.remove('hidden');
+                }
+            }
+        });
+    }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+
+    sections.forEach(s => observer.observe(s));
+
+    // Quiz checker
+    function checkQuiz(quizId, answers) {
+        let correct = 0;
+        const total = Object.keys(answers).length;
+        for (const [name, answer] of Object.entries(answers)) {
+            const selected = document.querySelector(`#${quizId} input[name="${name}"]:checked`);
+            const feedback = document.querySelector(`#${quizId} input[name="${name}"]`).closest('.quiz-q').querySelector('.quiz-feedback');
+            if (selected && selected.value === answer) {
+                correct++;
+                feedback.textContent = 'სწორია!';
+                feedback.className = 'quiz-feedback text-xs mt-2 text-emerald-600 font-semibold';
+            } else {
+                feedback.textContent = 'არასწორია';
+                feedback.className = 'quiz-feedback text-xs mt-2 text-red-600 font-semibold';
+            }
+        }
+        const scoreEl = document.getElementById(quizId + 'Score');
+        scoreEl.textContent = `შედეგი: ${correct} / ${total}`;
+        scoreEl.classList.remove('hidden');
+    }
+
+    // Back to top button
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('visible', window.scrollY > 600);
+    });
+</script>
+
+<!-- GIPA Controls: Dark Mode + Font Size -->
+<script>
+(function(){
+    var s=document.createElement('style');
+    s.textContent=`
+body.dark{background:#0f172a!important;color:#cbd5e1!important}
+body.dark .bg-white{background:#1e293b!important}
+body.dark .bg-gray-50{background:#0f172a!important}
+body.dark .bg-gray-100,body.dark .bg-slate-50,body.dark .bg-slate-100{background:#1e293b!important}
+body.dark .text-gray-900,body.dark .text-gray-800{color:#f1f5f9!important}
+body.dark .text-gray-700,body.dark .text-gray-600{color:#cbd5e1!important}
+body.dark .text-gray-500,body.dark .text-gray-400{color:#94a3b8!important}
+body.dark .text-navy-900,body.dark .text-navy-800,body.dark .text-navy-700{color:#93c5fd!important}
+body.dark .text-blue-900,body.dark .text-blue-800,body.dark .text-blue-700{color:#93c5fd!important}
+body.dark .text-emerald-900,body.dark .text-emerald-800,body.dark .text-emerald-700{color:#6ee7b7!important}
+body.dark .text-green-900,body.dark .text-green-800,body.dark .text-green-700{color:#86efac!important}
+body.dark .text-indigo-900,body.dark .text-indigo-800,body.dark .text-indigo-700{color:#a5b4fc!important}
+body.dark .text-cyan-900,body.dark .text-cyan-800,body.dark .text-cyan-700{color:#67e8f9!important}
+body.dark .text-red-900,body.dark .text-red-800,body.dark .text-red-700{color:#fca5a5!important}
+body.dark .text-amber-900,body.dark .text-amber-800,body.dark .text-amber-700{color:#fcd34d!important}
+body.dark .text-orange-900,body.dark .text-orange-800,body.dark .text-orange-700{color:#fdba74!important}
+body.dark .text-purple-900,body.dark .text-purple-800,body.dark .text-purple-700{color:#c4b5fd!important}
+body.dark .border-gray-200,body.dark .border-gray-100,body.dark .border-gray-50{border-color:#334155!important}
+body.dark .bg-navy-50,body.dark .bg-navy-100{background:#0c2340!important}
+body.dark .bg-blue-50{background:#1e3a5f!important}
+body.dark .bg-emerald-50{background:#0d3320!important}
+body.dark .bg-red-50{background:#3b1010!important}
+body.dark .bg-amber-50{background:#3b2506!important}
+body.dark .bg-orange-50{background:#3b2006!important}
+body.dark .bg-purple-50{background:#2d1548!important}
+body.dark .bg-cyan-50{background:#0c3547!important}
+body.dark .bg-sky-50{background:#0c2847!important}
+body.dark .bg-green-50{background:#0d3320!important}
+body.dark table{border-color:#334155!important}
+body.dark thead{background:#1e293b!important}
+body.dark tbody tr{border-color:#334155!important}
+body.dark td,body.dark th{color:#cbd5e1!important}
+body.dark input[type="text"],body.dark textarea{background:#1e293b!important;color:#e2e8f0!important;border-color:#334155!important}
+body.dark input[type="radio"]{accent-color:#60a5fa}
+body.dark .topic-card{border-left-color:#3b82f6!important}
+body.dark .filter-btn{background:#1e293b!important;color:#94a3b8!important;border-color:#334155!important}
+body.dark .filter-btn.active{background:#003366!important;color:#fff!important;border-color:#003366!important}
+body.dark .quiz-q{background:#1e293b!important;border-color:#334155!important}
+body.dark .bg-gradient-to-b{background:linear-gradient(to bottom,#111827,#0f172a)!important}
+#gipaControls{position:fixed;bottom:1.5rem;right:1.5rem;z-index:45;display:flex;flex-direction:row;align-items:center;gap:2px;background:rgba(0,51,102,0.92);backdrop-filter:blur(8px);padding:4px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+#gipaControls button{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:transparent;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:background .2s}
+#gipaControls button:hover{background:rgba(255,255,255,0.15)}
+#gipaControls button.active{background:rgba(255,255,255,0.2)}
+#gipaControls .divider{width:1px;height:22px;background:rgba(255,255,255,0.2);margin:0 2px}
+#gipaControls svg{width:18px;height:18px}
+@media print{#gipaControls{display:none!important}}
+`;
+    document.head.appendChild(s);
+    var c=document.createElement('div');c.id='gipaControls';
+    c.innerHTML='<button id="darkToggle" title="Dark / Light"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></button><button onclick="gipaFontSize(-1)" title="A-">A-</button><button onclick="gipaFontSize(1)" title="A+">A+</button><span class="divider"></span><button id="gcBtnEn" onclick="setLanguage(\'en\')" class="active" title="English">EN</button><button id="gcBtnKa" onclick="setLanguage(\'ka\')" title="ქართული">KA</button>';
+    document.body.appendChild(c);
+    var pref=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var saved=localStorage.getItem('gipa-dark');
+    if((saved!==null?saved==='true':pref))document.body.classList.add('dark');
+    var moonSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+    var sunSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+    function updIcon(){document.getElementById('darkToggle').innerHTML=document.body.classList.contains('dark')?sunSvg:moonSvg;}
+    updIcon();
+    document.getElementById('darkToggle').onclick=function(){document.body.classList.toggle('dark');localStorage.setItem('gipa-dark',document.body.classList.contains('dark'));updIcon();};
+    var fs=parseInt(localStorage.getItem('gipa-fontsize')||'0');
+    if(fs)document.documentElement.style.fontSize=(100+fs*8)+'%';
+    window.gipaFontSize=function(d){fs=Math.max(-3,Math.min(3,fs+d));localStorage.setItem('gipa-fontsize',fs);document.documentElement.style.fontSize=(100+fs*8)+'%';};
+})();
+</script>
+
+</body>
+</html>

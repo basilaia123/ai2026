@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მოდული 2: ChatGPT მენეჯერული სუპერპაუერისთვის</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1100px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .key-points {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .key-points ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 2;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+        }
+
+        .formula-box {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 3px solid #667eea;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .formula-box .formula {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+        }
+
+        .example-box {
+            background: #fff8e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ffc107;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .example-box strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .role-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .role-card h4 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .component-card {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .component-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .tip-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .navigation {
+                bottom: 20px;
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="day1.html" class="home-btn">← დღე 1</a>
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">18</span>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <div class="slide-content">
+            <h1>მოდული 2</h1>
+            <h2>ChatGPT მენეჯერული სუპერპაუერისთვის</h2>
+            <div class="highlight-box">
+                🚀 გახდი prompt engineering ოსტატი და დააჩქარე შენი სამუშაო 10X-ით!
+            </div>
+            <p style="text-align: center; font-size: 1.2em; color: #666;">
+                ხანგრძლივობა: 70 წუთი
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: ChatGPT Setup -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>ChatGPT-ის Setup და დაწყება</h2>
+
+            <div class="key-points">
+                <strong>🌐 ანგარიშის შექმნა:</strong>
+                <ul>
+                    <li><strong>1. გადადი:</strong> chat.openai.com</li>
+                    <li><strong>2. რეგისტრაცია:</strong> Email ან Google/Microsoft account-ით</li>
+                    <li><strong>3. ვერიფიკაცია:</strong> Email confirmation</li>
+                    <li><strong>4. დაწყება:</strong> უფასო ვერსიით შეგიძლია დაიწყო</li>
+                </ul>
+            </div>
+
+            <div class="formula-box">
+                <h3>ChatGPT Free vs Plus</h3>
+                <p style="text-align: left; margin: 15px 0;">
+                    <strong>უფასო ვერსია (GPT-3.5):</strong><br>
+                    ✓ ძირითადი ფუნქციები<br>
+                    ✓ შეზღუდული სისწრაფე<br>
+                    ✓ სტანდარტული პასუხები<br><br>
+
+                    <strong style="color: #667eea;">ChatGPT Plus - $20/თვე (GPT-4):</strong><br>
+                    ✓ ბევრად უფრო ჭკვიანი მოდელი<br>
+                    ✓ სწრაფი რეაგირება<br>
+                    ✓ Priority access peak hours-ში<br>
+                    ✓ Custom GPTs შექმნის შესაძლებლობა<br>
+                    ✓ Advanced Data Analysis<br>
+                    ✓ Image generation (DALL-E)
+                </p>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 რეკომენდაცია მენეჯერებისთვის:</strong>
+                <p>ChatGPT Plus ($20/თვე) ღირს ყველა ფულს! თუ დაზოგავ მხოლოდ 1 საათს კვირაში, უკვე მოგიგია ინვესტიცია.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Prompt Engineering Intro -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Prompt Engineering - რა არის?</h2>
+
+            <p><strong>Prompt Engineering</strong> არის ხელოვნება, როგორ სწორად ვესაუბროთ AI-ს, რომ მივიღოთ სრულყოფილი პასუხები.</p>
+
+            <div class="example-box">
+                <strong>❌ ცუდი Prompt:</strong>
+                "დამწერე რაღაც კვირის რეპორტის შესახებ"
+
+                <strong style="margin-top: 15px;">✅ კარგი Prompt:</strong>
+                "შენ ხარ operations manager გამოცდილებით premium food retail-ში.
+                შექმენი კვირის operations რეპორტი Gastronome.ge-ისთვის,
+                რომელიც მოიცავს: 1) Executive Summary, 2) Key Metrics (sales, inventory, staff),
+                3) Achievements, 4) Challenges, 5) Next Week Priorities.
+                ფორმატი: professional, 2 გვერდი, bullet points-ებით."
+            </div>
+
+            <div class="highlight-box">
+                📈 სწორი Prompt = 10X უკეთესი შედეგი!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Prompt Formula -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>მენეჯერული Prompt Formula</h2>
+
+            <div class="formula-box">
+                <p>პერფექტული Prompt შედგება 5 კომპონენტისგან:</p>
+                <div class="formula">
+                    [ROLE] + [CONTEXT] + [TASK] + [FORMAT] + [CONSTRAINTS]
+                </div>
+                <p>= პერფექტული AI პასუხი 🎯</p>
+            </div>
+
+            <div class="key-points">
+                <strong>5 კომპონენტი:</strong>
+                <ul>
+                    <li><strong>1️⃣ ROLE:</strong> ვინ უნდა იყოს AI (ექსპერტი, კონსულტანტი)</li>
+                    <li><strong>2️⃣ CONTEXT:</strong> ვინ ხარ, რა კომპანია, რა სიტუაცია</li>
+                    <li><strong>3️⃣ TASK:</strong> რა კონკრეტულად უნდა გააკეთოს AI</li>
+                    <li><strong>4️⃣ FORMAT:</strong> როგორ უნდა გამოიყურებოდეს პასუხი</li>
+                    <li><strong>5️⃣ CONSTRAINTS:</strong> შეზღუდვები და მოთხოვნები</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Component 1 - Role -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>1️⃣ ROLE - როლის განსაზღვრა</h2>
+
+            <p>AI-ს აძლევ სპეციფიკურ როლს და ექსპერტიზას.</p>
+
+            <div class="component-card">
+                <h4>შაბლონი:</h4>
+                <p>"შენ ხარ [სპეციალობა] [გამოცდილების წლები] გამოცდილებით [ინდუსტრია]-ში..."</p>
+            </div>
+
+            <div class="key-points">
+                <strong>მაგალითები თქვენი როლებისთვის:</strong>
+                <ul>
+                    <li>📦 "შენ ხარ supply chain ოპტიმიზაციის ექსპერტი luxury retail-ში"</li>
+                    <li>🍽️ "შენ ხარ fine dining operations manager-ი Michelin-star გამოცდილებით"</li>
+                    <li>🚚 "შენ ხარ logistics strategist food & beverage sector-ში"</li>
+                    <li>⚙️ "შენ ხარ business process optimization consultant retail-ში"</li>
+                    <li>🏪 "შენ ხარ retail operations expert პრემიუმ food retail-ში"</li>
+                </ul>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 რატომ მნიშვნელოვანია:</strong>
+                <p>როლი აყალიბებს AI-ის "ეგ્સპერტობას" და აძლევს კონტექსტს, თუ როგორი სახის ცოდნა უნდა გამოიყენოს.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Component 2 - Context -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>2️⃣ CONTEXT - კონტექსტის მიწოდება</h2>
+
+            <p>მიეცი AI-ს დეტალური ინფორმაცია თქვენი სიტუაციის შესახებ.</p>
+
+            <div class="component-card">
+                <h4>რა უნდა შევიდეს კონტექსტში:</h4>
+                <ul style="margin-left: 20px; color: #555;">
+                    <li>კომპანია და ინდუსტრია</li>
+                    <li>თქვენი როლი და პასუხისმგებლობები</li>
+                    <li>სპეციფიკური სიტუაცია ან პრობლემა</li>
+                    <li>რელევანტური მონაცემები</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <strong>კონტექსტის მაგალითი:</strong>
+                "კომპანია: Gastronome.ge - პრემიუმ დელიკატესების ქსელი
+                7 მაღაზია + რესტორნები თბილისში
+                2000+ SKU პრემიუმ იმპორტირებული პროდუქტი
+                Target: affluent customers 30-55 წლის
+
+                ვარ საწყობის მენეჯერი, პასუხისმგებელი 2000+ SKU-ის inventory-ზე.
+                გამოწვევა: ზოგიერთი პროდუქტი stock-out-ში ხვდება, სხვები კი ზედმეტად გვაქვს."
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Component 3 - Task -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>3️⃣ TASK - დავალების ფორმულირება</h2>
+
+            <p>კონკრეტული, გასაზომი, ქმედითი ზმნით ჩამოაყალიბე რა გინდა.</p>
+
+            <div class="component-card">
+                <h4>ქმედითი ზმნები:</h4>
+                <p style="margin: 10px 0;">✅ <strong>გამოიყენე:</strong> შექმენი, გააანალიზე, შეადარე, ოპტიმიზირე, დააგენერირე, შეაფასე</p>
+                <p style="margin: 10px 0;">❌ <strong>თავი აარიდე:</strong> მომიხსენე რაღაც, მიმიწერე რამე, დამეხმარე</p>
+            </div>
+
+            <div class="key-points">
+                <strong>კარგი Task-ის მაგალითები:</strong>
+                <ul>
+                    <li>"შექმენი demand forecasting სისტემის კონცეფცია"</li>
+                    <li>"გააანალიზე ეს sales data და მომეცი 5 insight"</li>
+                    <li>"დააგენერირე კვირის training schedule 10 თანამშრომლისთვის"</li>
+                    <li>"შეადარე 3 delivery route ოფცია efficiency-ის მიხედვით"</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ თავი აარიდე ზოგად ფრაზებს:</strong>
+                <p>"მომიხსენე inventory management-ის შესახებ" - ზედმეტად ზოგადია!<br>
+                "შექმენი inventory forecasting framework-ი ჩემი 2000 SKU-სთვის" - კონკრეტული!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Component 4 - Format -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>4️⃣ FORMAT - სტრუქტურის განსაზღვრა</h2>
+
+            <p>მიუთითე AI-ს, როგორ უნდა გამოიყურებოდეს პასუხი.</p>
+
+            <div class="component-card">
+                <h4>შაბლონი:</h4>
+                <p>"გამოიტანე შედეგი ამ სტრუქტურით:<br>
+                1. [სექცია 1]<br>
+                2. [სექცია 2]<br>
+                3. [სექცია 3]"</p>
+            </div>
+
+            <div class="example-box">
+                <strong>ფორმატის მაგალითი:</strong>
+                "გამოიტანე შედეგი ამ სტრუქტურით:
+                1. Executive Summary (3 bullet point)
+                2. დეტალური ანალიზი (400 სიტყვა)
+                3. 5 კონკრეტული რეკომენდაცია priority-ის მიხედვით
+                4. Implementation timeline (კვირების მიხედვით)
+                5. Expected ROI და success metrics
+
+                გამოიყენე bullet points, ცხრილები და clear headers."
+            </example-box>
+
+            <div class="tip-box">
+                <strong>💡 Pro Tip:</strong>
+                <p>რაც უფრო დეტალური ფორმატი, მით უკეთესი და გამოსაყენებელი იქნება AI-ის პასუხი!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Component 5 - Constraints -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>5️⃣ CONSTRAINTS - შეზღუდვები</h2>
+
+            <p>დააზუსტე რა არ უნდა იყოს და რა მოთხოვნები გაქვს.</p>
+
+            <div class="component-card">
+                <h4>რა შეზღუდვები შეიძლება დაემატოს:</h4>
+                <ul style="margin-left: 20px; color: #555;">
+                    <li>მაქსიმალური სიგრძე (სიტყვები, გვერდები)</li>
+                    <li>ენა და ტონი (professional, friendly, formal)</li>
+                    <li>რისი თავიდან არიდება (technical jargon, ზოგადი ფრაზები)</li>
+                    <li>ბიუჯეტური შეზღუდვები</li>
+                    <li>დროის ჩარჩოები</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <strong>Constraints მაგალითი:</strong>
+                "მოთხოვნები:
+                - მაქსიმუმ 500 სიტყვა
+                - მხოლოდ რეალისტური, დაუყოვნებლივ დასანერგი რეკომენდაციები
+                - არა expensive software solutions
+                - თავიდან აიცილე ზოგადი ფრაზები და clichés
+                - ფოკუსი ღირებულებაზე და quick wins-ებზე
+                - professional tone, მაგრამ accessible language"
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Complete Example -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>სრული Prompt მაგალითი</h2>
+
+            <div class="example-box">
+                <strong>📦 საწყობის მენეჯერის სრული Prompt:</strong>
+
+                <strong style="color: #667eea; margin-top: 10px;">1️⃣ ROLE:</strong>
+                შენ ხარ inventory optimization specialist luxury food retail-ში 10+ წლიანი გამოცდილებით.
+
+                <strong style="color: #667eea; margin-top: 10px;">2️⃣ CONTEXT:</strong>
+                Gastronome.ge - პრემიუმ დელიკატესების ქსელი, 2000+ SKU, 7 ლოკაცია თბილისში.
+                გვაქვს პრობლემა: high-end პროდუქტები (truffle, premium cheese) expiry-მდე ვერ იყიდება,
+                ხოლო bestseller-ები (prosciutto, parmigiano) ხშირად stock-out-ში ხვდება.
+
+                <strong style="color: #667eea; margin-top: 10px;">3️⃣ TASK:</strong>
+                შექმენი demand forecasting სისტემის კონცეფცია AI-ის გამოყენებით.
+
+                <strong style="color: #667eea; margin-top: 10px;">4️⃣ FORMAT:</strong>
+                გამოიტანე:
+                1. რა დატა გვჭირდება
+                2. ChatGPT/Excel კომბინაცია forecasting-ისთვის
+                3. 3 კონკრეტული ნაბიჯი 2 კვირაში
+                4. Expected impact
+
+                <strong style="color: #667eea; margin-top: 10px;">5️⃣ CONSTRAINTS:</strong>
+                - No-cost/low-cost გადაწყვეტები
+                - არა ძვირადღირებული software
+                - დაუყოვნებლივ დასანერგი
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Role-Specific Examples - Warehouse -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>პრაქტიკული Prompts როლებისთვის</h2>
+            <h3>📦 საწყობის მენეჯერები</h3>
+
+            <div class="role-card">
+                <h4>Use Case: Smart Reorder System</h4>
+                <p style="font-size: 0.95em; line-height: 1.6;">
+                    "შენ ხარ inventory specialist luxury food retail-ში.<br><br>
+
+                    კონტექსტი: Gastronome.ge, 2000+ SKU, 30 ქვეყნიდან იმპორტი.<br><br>
+
+                    დავალება: შექმენი Excel-based reorder tracking system რომელიც:<br>
+                    1. გამოითვლის reorder point-ებს<br>
+                    2. იდენტიფიცირებს critical low stock items<br>
+                    3. მოგცემს weekly order recommendations<br><br>
+
+                    ფორმატი: Excel formulas + step-by-step setup guide<br><br>
+
+                    Constraints: მხოლოდ Google Sheets/Excel, არა software"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Role-Specific Examples - Restaurant -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>პრაქტიკული Prompts როლებისთვის</h2>
+            <h3>🍽️ რესტორნის მენეჯერები</h3>
+
+            <div class="role-card">
+                <h4>Use Case: Seasonal Menu Planning</h4>
+                <p style="font-size: 0.95em; line-height: 1.6;">
+                    "შენ ხარ restaurant operations consultant fine dining გამოცდილებით.<br><br>
+
+                    კონტექსტი: Steakhouse by Gastronome, average check 150-250 GEL, upscale clientele.<br><br>
+
+                    დავალება: შექმენი შემოდგომის seasonal menu concept:<br>
+                    1. 3 menu theme ideas<br>
+                    2. თითოეულისთვის: 5-course tasting menu<br>
+                    3. ინგრედიენტები და target food cost 28-32%<br>
+                    4. ღვინის pairing (ქართული)<br><br>
+
+                    ფორმატი: detailed menu დაწერა + costing + descriptions<br><br>
+
+                    Constraints: seasonal ქართული ინგრედიენტები, premium positioning"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: Role-Specific Examples - Distribution -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>პრაქტიკული Prompts როლებისთვის</h2>
+            <h3>🚚 დისტრიბუციის მენეჯერები</h3>
+
+            <div class="role-card">
+                <h4>Use Case: Route Optimization</h4>
+                <p style="font-size: 0.95em; line-height: 1.6;">
+                    "შენ ხარ logistics expert food distribution-ში.<br><br>
+
+                    კონტექსტი: Gastronome delivery - 7 stores + B2B clients, 3 vehicles, ცენტრალური საწყობი.<br><br>
+
+                    დავალება: შექმენი daily route optimization system:<br>
+                    1. Excel template delivery planning-ისთვის<br>
+                    2. ChatGPT prompt optimal routes-ისთვის<br>
+                    3. Priority logic (urgent vs standard)<br>
+                    4. Weekly performance dashboard<br><br>
+
+                    ფორმატი: Template + prompts + example routes<br><br>
+
+                    Constraints: არსებული tools (Excel, Google Maps), easy for drivers"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Role-Specific Examples - Operations -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>პრაქტიკული Prompts როლებისთვის</h2>
+            <h3>⚙️ საოპერაციო მენეჯერები</h3>
+
+            <div class="role-card">
+                <h4>Use Case: SOP Creation System</h4>
+                <p style="font-size: 0.95em; line-height: 1.6;">
+                    "შენ ხარ operations excellence consultant retail-ში.<br><br>
+
+                    კონტექსტი: Gastronome - 7 locations, inconsistent processes, need standardization.<br><br>
+
+                    დავალება: შექმენი AI-powered SOP creation system:<br>
+                    1. Template SOP structure<br>
+                    2. ChatGPT prompts SOP-ების დასაწერად<br>
+                    3. 5 priority SOP examples<br>
+                    4. Training checklist template<br><br>
+
+                    ფორმატი: SOP template + 5 full examples + implementation guide<br><br>
+
+                    Constraints: simple, max 2 pages per SOP, visual-friendly, easy to update"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: Role-Specific Examples - Store -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>პრაქტიკული Prompts როლებისთვის</h2>
+            <h3>🏪 მაღაზიის მენეჯერები</h3>
+
+            <div class="role-card">
+                <h4>Use Case: Product Knowledge Training</h4>
+                <p style="font-size: 0.95em; line-height: 1.6;">
+                    "შენ ხარ retail operations expert luxury food retail-ში.<br><br>
+
+                    კონტექსტი: Gastronome store - premium products, need better staff product knowledge for upselling.<br><br>
+
+                    დავალება: შექმენი product knowledge training system:<br>
+                    1. Product fact sheet template<br>
+                    2. 10 example fact sheets (top products)<br>
+                    3. Sales scripts და pairing suggestions<br>
+                    4. Daily quiz system (5 min pre-shift)<br><br>
+
+                    ფორმატი: Flashcard-style sheets + quiz questions + training schedule<br><br>
+
+                    Constraints: digestible, not text-heavy, staff can self-study, 25% avg check increase goal"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 16: Email Communication -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Email კომუნიკაცია AI-ით</h2>
+
+            <div class="key-points">
+                <strong>📧 პროფესიული Email-ების სწრაფი დაწერა:</strong>
+            </div>
+
+            <div class="example-box">
+                <strong>Email Prompt Template:</strong>
+                "დამწერე professional email:
+
+                მიმღები: [თანამშრომელი/მომწოდებელი/კოლეგა]
+                კონტექსტი: [აღწერე სიტუაცია]
+                მიზანი: [რა გინდა მიაღწიო]
+                Tone: [professional/friendly/firm/diplomatic]
+
+                მოთხოვნები:
+                - clear და concise
+                - action items-ები გამოყოფილი
+                - professional მაგრამ warm tone
+                - optimal სიგრძე (არა ძალიან გრძელი)"
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 დროის დაზოგვა:</strong>
+                <p>ტრადიციული email-ის დაწერა: 10-15 წუთი<br>
+                AI-ით: 2-3 წუთი (review და customization)<br>
+                = 80% დროის დაზოგვა!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Difficult Conversations -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>რთული კომუნიკაცია AI-ით</h2>
+
+            <div class="example-box">
+                <strong>Difficult Conversation Template:</strong>
+                "დამწერე diplomatic message:
+
+                სიტუაცია: [აღწერე sensitive თემა]
+                მიმღები: [თანამშრომელი/მომწოდებელი]
+                საჭირო ტონი: diplomatic, firm მაგრამ fair
+
+                სტრუქტურა:
+                1. Acknowledge მათი perspective/contribution
+                2. State the issue objectively (არა emotional)
+                3. Clear expectations going forward
+                4. Support და resources რომელიც ვთავაზობთ
+                5. Positive, collaborative closing
+
+                Avoid:
+                - Blame language
+                - Emotion-loaded words
+                - Vague statements
+                - Threats"
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ მნიშვნელოვანი:</strong>
+                <p>AI დაგეხმარება draft-ის შექმნაში, მაგრამ ყოველთვის გადახედე და დაარედაქტირე პერსონალური ტჩით-ით. განსაკუთრებით sensitive communications-ისთვის!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Summary -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>მოდული 2 - შეჯამება</h2>
+
+            <div class="key-points">
+                <strong>🎓 რა ვისწავლეთ:</strong>
+                <ul>
+                    <li>✅ ChatGPT-ის Setup და ანგარიშის შექმნა</li>
+                    <li>✅ Prompt Engineering Formula - 5 კომპონენტი</li>
+                    <li>✅ ROLE + CONTEXT + TASK + FORMAT + CONSTRAINTS</li>
+                    <li>✅ როლისთვის სპეციფიკური prompt მაგალითები (5 როლი)</li>
+                    <li>✅ Email კომუნიკაციის ავტომატიზაცია</li>
+                    <li>✅ რთული საუბრების დაწერა AI-ით</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                🚀 Prompt Engineering = მენეჯერის უძლიერესი AI სკილი!
+                <br><br>
+                Practice makes perfect - რაც მეტს გამოიყენებთ, მით უკეთესები გახდებით!
+            </div>
+
+            <div class="tip-box">
+                <strong>🎯 შემდეგი მოდული: Automation - დროის დაზოგვის ხელოვნება</strong>
+                <p>ვისწავლით როგორ ავტომატიზირდეს Excel/Sheets, documents და სხვა რუტინული ამოცანები.</p>
+            </div>
+
+            <p style="text-align: center; margin-top: 30px; font-size: 1.3em; color: #667eea;">
+                <strong>🙏 მზად ხართ Automation-ისთვის?</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← წინა</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">შემდეგი →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            // If on last slide, change button text
+            if (currentSlide === totalSlides - 1) {
+                document.getElementById('nextBtn').textContent = 'შემდეგი მოდული →';
+                document.getElementById('nextBtn').onclick = function() {
+                    window.location.href = 'module3.html';
+                };
+            } else {
+                document.getElementById('nextBtn').textContent = 'შემდეგი →';
+                document.getElementById('nextBtn').onclick = function() {
+                    changeSlide(1);
+                };
+            }
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მოდული 7: Advanced AI Workflows</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .key-points {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .key-points ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 2;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+        }
+
+        .demo-box {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            text-align: left;
+        }
+
+        .demo-box strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .gpt-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .gpt-card strong {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .automation-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .automation-box strong {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .habit-box {
+            background: #fff8e1;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ffc107;
+            text-align: left;
+        }
+
+        .habit-box strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .navigation {
+                bottom: 20px;
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-btn">🏠 მთავარი</a>
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">13</span>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <div class="slide-content">
+            <h1>მოდული 7</h1>
+            <h2>Advanced AI Workflows</h2>
+            <div class="highlight-box">
+                🚀 Custom GPTs, Automation Tools და AI ჩვევების ჩამოყალიბება
+            </div>
+            <p style="text-align: center; font-size: 1.2em; color: #666; margin-top: 30px;">
+                ⏱️ ხანგრძლივობა: 50 წუთი
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: What are Custom GPTs? -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Custom GPTs - პერსონალიზებული AI ასისტენტები</h2>
+            <p>Custom GPT არის ChatGPT-ის სპეციალიზებული ვერსია, რომელიც სპეციფიკურად თქვენი საჭიროებისთვის და კონტექსტისთვის არის მორგებული.</p>
+
+            <div class="key-points">
+                <strong>🤖 რა არის Custom GPT:</strong>
+                <ul>
+                    <li>📝 <strong>Pre-configured Instructions:</strong> წინასწარ ჩაწერილი role, tone, და behavior</li>
+                    <li>🧠 <strong>Domain Knowledge:</strong> სპეციფიკური ინდუსტრიის და კომპანიის ცოდნა</li>
+                    <li>📄 <strong>Document Upload:</strong> PDFs, docs, spreadsheets knowledge base-ისთვის</li>
+                    <li>🎯 <strong>Task-Specific:</strong> ერთი კონკრეტული სამუშაოსთვის ოპტიმიზებული</li>
+                    <li>🔒 <strong>Private or Public:</strong> მხოლოდ თქვენთვის ან გაზიარებადი</li>
+                    <li>⚡ <strong>Consistent Output:</strong> ყოველთვის იდენტური approach</li>
+                </ul>
+            </div>
+
+            <div class="demo-box">
+                <strong>💡 რატომ გჭირდებათ Custom GPT:</strong>
+                <p><strong>ტრადიციული ChatGPT:</strong><br>
+                • ყოველთვის წერ იგივე context-ს თავიდან<br>
+                • უნდა ახსენო Gastronome.ge-ის შესახებ<br>
+                • არასტაბილური outputs - ყოველთვის განსხვავებული<br>
+                • არ იცის კომპანიის სპეციფიკა<br><br>
+                <strong>Custom GPT:</strong><br>
+                • ერთხელ ააწყობ → ყოველთვის მზადაა<br>
+                • იცის Gastronome.ge context<br>
+                • კონსისტენტური outputs<br>
+                • როლისთვის სპეციალიზებული</p>
+            </div>
+
+            <div class="highlight-box">
+                🎯 დღეს ვქმნით "Gastronome Operations Assistant" - LIVE!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: LIVE DEMO - Creating Custom GPT -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🔴 LIVE DEMO: "Gastronome Operations Assistant"</h2>
+            <p>ვქმნით Custom GPT-ს რომელიც დაეხმარება საოპერაციო მენეჯერებს ყოველდღიურ სამუშაოში.</p>
+
+            <div class="demo-box">
+                <strong>📋 Demo Steps (15 წთ):</strong>
+                <p><strong>1. ChatGPT → "Explore GPTs" → "Create a GPT"</strong></p>
+            </div>
+
+            <div class="key-points">
+                <strong>🎨 GPT Configuration:</strong>
+                <ul>
+                    <li><strong>Name:</strong> "Gastronome Operations Assistant"</li>
+                    <li><strong>Description:</strong> "AI assistant for Gastronome.ge operations managers - process optimization, SOP creation, and performance tracking"</li>
+                    <li><strong>Instructions:</strong> Full role definition (ქვემოთ)</li>
+                    <li><strong>Conversation Starters:</strong> Pre-written prompts</li>
+                    <li><strong>Knowledge Files:</strong> Upload კომპანიის documents</li>
+                    <li><strong>Capabilities:</strong> Web browsing, Code Interpreter, DALL-E</li>
+                </ul>
+            </div>
+
+            <div class="demo-box">
+                <strong>📝 Custom Instructions Template:</strong>
+                <p style="font-family: 'Courier New', monospace; font-size: 0.95em; line-height: 1.6;">
+                "You are Gastronome Operations Assistant - specialized AI for Gastronome.ge operations managers.<br><br>
+                CONTEXT:<br>
+                • Gastronome.ge is premium gourmet food retailer in Tbilisi<br>
+                • 5 locations: warehouse, restaurants, distribution, retail stores<br>
+                • Focus on Italian and European gourmet products<br>
+                • Premium brand positioning<br><br>
+                YOUR ROLE:<br>
+                • Help create and optimize Standard Operating Procedures (SOPs)<br>
+                • Analyze operational metrics and identify bottlenecks<br>
+                • Provide process improvement recommendations<br>
+                • Draft performance reports და KPI dashboards<br>
+                • Support cross-functional coordination<br><br>
+                OUTPUT STYLE:<br>
+                • Professional but practical language<br>
+                • Data-driven recommendations<br>
+                • Action-oriented solutions<br>
+                • Use Georgian language when requested<br>
+                • Include specific metrics and timelines<br><br>
+                ALWAYS ASK FOR:<br>
+                • Specific department or location<br>
+                • Current vs desired state<br>
+                • Available resources და constraints"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Conversation Starters -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>💬 Conversation Starters - Ready Prompts</h2>
+            <p>Conversation Starters არის წინასწარ მომზადებული prompts-ები, რომლებიც ეხმარება მომხმარებლებს სწრაფად დაიწყონ.</p>
+
+            <div class="gpt-card">
+                <strong>🎯 Gastronome Operations Assistant - Starter Prompts:</strong>
+                <p><strong>1. SOP Creation:</strong><br>
+                "დამეხმარე შევქმნა SOP ახალი პროდუქტის მიღების პროცესისთვის საწყობში"<br><br>
+                <strong>2. Process Optimization:</strong><br>
+                "გააანალიზე ჩემი order fulfillment პროცესი და მოძებნე bottlenecks"<br><br>
+                <strong>3. Performance Report:</strong><br>
+                "შექმენი კვირის operational performance report-ის template"<br><br>
+                <strong>4. Problem Solving:</strong><br>
+                "დამეხმარე გადავჭრა cross-departmental coordination issue დისტრიბუციასა და საწყობს შორის"</p>
+            </div>
+
+            <div class="key-points">
+                <strong>✅ Conversation Starters-ის სარგებელი:</strong>
+                <ul>
+                    <li>👥 <strong>User Guidance:</strong> ეხმარება მომხმარებლებს რა შეუძლიათ შეკითხვა</li>
+                    <li>⚡ <strong>Quick Start:</strong> დაწკაპუნება → მაშინვე დაწყება</li>
+                    <li>📝 <strong>Best Practices:</strong> აჩვენებს როგორ დაწერონ კარგი prompts</li>
+                    <li>🎯 <strong>Common Use Cases:</strong> ყველაზე ხშირი სცენარები</li>
+                </ul>
+            </div>
+
+            <div class="demo-box">
+                <strong>🔴 Testing the Custom GPT:</strong>
+                <p>LIVE: დავასრულებთ Gastronome Operations Assistant-ს და ვსინჯავთ ერთ-ერთ Conversation Starter-ს.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Custom GPT Ideas for 5 Roles -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🎨 Custom GPT Ideas - 5 როლისთვის</h2>
+            <p>თითოეული როლისთვის შეიძლება შეიქმნას სპეციალიზებული Custom GPT.</p>
+
+            <div class="gpt-card">
+                <strong>📦 საწყობის მენეჯერი - "Inventory Optimization Assistant"</strong>
+                <p><strong>ფუნქციები:</strong><br>
+                • Reorder point calculations<br>
+                • Stock rotation optimization (FIFO/FEFO)<br>
+                • Supplier performance tracking<br>
+                • Storage space optimization<br>
+                • Inventory accuracy improvement tips</p>
+            </div>
+
+            <div class="gpt-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <strong>🍽️ რესტორნის მენეჯერი - "Guest Experience Maximizer"</strong>
+                <p><strong>ფუნქციები:</strong><br>
+                • Menu engineering analysis<br>
+                • Guest feedback response templates<br>
+                • Staff scheduling optimization<br>
+                • Food cost და portion control<br>
+                • Service quality improvement plans</p>
+            </div>
+
+            <div class="gpt-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <strong>🚚 დისტრიბუციის მენეჯერი - "Delivery Excellence Coach"</strong>
+                <p><strong>ფუნქციები:</strong><br>
+                • Route optimization suggestions<br>
+                • On-time delivery tracking<br>
+                • Driver performance coaching<br>
+                • Vehicle maintenance scheduling<br>
+                • Customer delivery window planning</p>
+            </div>
+
+            <div class="gpt-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <strong>⚙️ საოპერაციო მენეჯერი - "Operations Assistant"</strong>
+                <p>← უკვე შევქმენით LIVE Demo-ში!</p>
+            </div>
+
+            <div class="gpt-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <strong>🏪 მაღაზიის მენეჯერი - "Retail Performance Partner"</strong>
+                <p><strong>ფუნქციები:</strong><br>
+                • Sales performance analysis<br>
+                • Customer segmentation insights<br>
+                • Visual merchandising recommendations<br>
+                • Promotional campaign planning<br>
+                • Product category optimization</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Automation Tools Intro -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🔗 AI + Automation Tools</h2>
+            <p>AI-ის შესაძლებლობები მრავალჯერ იზრდება automation platforms-თან ინტეგრაციით.</p>
+
+            <div class="key-points">
+                <strong>🤖 რა არის Automation Tools:</strong>
+                <ul>
+                    <li>🔗 <strong>App Connections:</strong> აკავშირებს სხვადასხვა აპლიკაციებს ერთმანეთთან</li>
+                    <li>⚡ <strong>Trigger-Action Logic:</strong> "როცა X ხდება → გააკეთე Y"</li>
+                    <li>🤖 <strong>AI Integration:</strong> AI-ს აკავშირებს სხვა tools-თან</li>
+                    <li>📊 <strong>Data Flow:</strong> ავტომატურად გადააქვს data აპებს შორის</li>
+                    <li>⏰ <strong>Scheduled Tasks:</strong> განრიგით სამუშაოების შესრულება</li>
+                </ul>
+            </div>
+
+            <div class="automation-box">
+                <strong>🛠️ Top Automation Platforms:</strong>
+                <p><strong>1. Zapier</strong> (easiest, most apps)<br>
+                • 6,000+ app integrations<br>
+                • ფასი: უფასო 100 tasks/month, Pro $20/month<br>
+                • User-friendly interface<br><br>
+                <strong>2. Make (Integromat)</strong> (advanced, visual)<br>
+                • Visual workflow builder<br>
+                • ფასი: უფასო 1,000 operations/month, Pro $9/month<br>
+                • უფრო complex scenarios<br><br>
+                <strong>3. n8n</strong> (open-source, self-hosted)<br>
+                • უფასო (self-hosted)<br>
+                • Cloud option $20/month<br>
+                • ტექნიკური knowledge საჭირო</p>
+            </div>
+
+            <div class="highlight-box">
+                🎯 დღეს ვისწავლით Zapier basics - უმარტივესი და ყველაზე პოპულარული!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Zapier Workflow Examples -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>⚡ Zapier Workflows - პრაქტიკული მაგალითები</h2>
+            <p>კონკრეტული automation სცენარები Gastronome.ge-ისთვის.</p>
+
+            <div class="automation-box">
+                <strong>📧 Workflow 1: Email Summarizer</strong>
+                <p><strong>Trigger:</strong> ახალი email მოდის Gmail-ში (specific label: "Reports")<br>
+                <strong>Action 1:</strong> Email content → ChatGPT → "Summarize this in 3 bullet points"<br>
+                <strong>Action 2:</strong> Summary → Slack channel "daily-summaries"<br>
+                <strong>Action 3:</strong> Save summary → Google Sheets log<br><br>
+                <strong>შედეგი:</strong> ყოველი მნიშვნელოვანი email ავტომატურად summarize-დება და შეინახება!</p>
+            </div>
+
+            <div class="automation-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <strong>📝 Workflow 2: Automatic Meeting Notes</strong>
+                <p><strong>Trigger:</strong> Google Calendar meeting ends<br>
+                <strong>Action 1:</strong> Get meeting transcription (Google Meet / Zoom)<br>
+                <strong>Action 2:</strong> Transcription → Claude → "Extract action items და key decisions"<br>
+                <strong>Action 3:</strong> Results → Notion page "Meeting Notes"<br>
+                <strong>Action 4:</strong> Email summary → all attendees<br><br>
+                <strong>შედეგი:</strong> არ გჭირდება notes-ის წერა meeting-ის დროს!</p>
+            </div>
+
+            <div class="automation-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <strong>📊 Workflow 3: Daily Data Reports</strong>
+                <p><strong>Trigger:</strong> Schedule (ყოველდღე 9:00 AM)<br>
+                <strong>Action 1:</strong> Google Sheets → get yesterday's sales data<br>
+                <strong>Action 2:</strong> Data → ChatGPT → "Analyze trends და create brief report"<br>
+                <strong>Action 3:</strong> Report → Email to management team<br>
+                <strong>Action 4:</strong> Save → Google Drive "Daily Reports" folder<br><br>
+                <strong>შედეგი:</strong> ყოველდღიური რეპორტი ავტომატურად მზადდება და იგზავნება!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Setting Up First Zap -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🛠️ First Zap Setup - Step by Step</h2>
+            <p>მარტივი automation-ის დაყენება Zapier-ით.</p>
+
+            <div class="demo-box">
+                <strong>🔴 DEMO: "Gmail → ChatGPT → Slack" Automation</strong>
+                <p><strong>სცენარიო:</strong> Customer feedback emails ავტომატურად summarize-დება და გაიგზავნება Slack-ში.</p>
+            </div>
+
+            <div class="key-points">
+                <strong>📋 Setup Steps:</strong>
+                <ul>
+                    <li><strong>1. Zapier-ში რეგისტრაცია:</strong> zapier.com → Sign Up (უფასო)</li>
+                    <li><strong>2. "Create Zap":</strong> ახალი automation-ის შექმნა</li>
+                    <li><strong>3. Trigger Setup:</strong>
+                        <br>• App: Gmail
+                        <br>• Event: "New Email Matching Search"
+                        <br>• Search: label:customer-feedback
+                        <br>• Connect Gmail account
+                        <br>• Test trigger
+                    </li>
+                    <li><strong>4. Action 1 - ChatGPT:</strong>
+                        <br>• App: OpenAI (ChatGPT)
+                        <br>• Event: "Conversation"
+                        <br>• Model: GPT-4
+                        <br>• Prompt: "Summarize this customer feedback in 2-3 sentences and rate sentiment (positive/neutral/negative): {email body}"
+                        <br>• Test action
+                    </li>
+                    <li><strong>5. Action 2 - Slack:</strong>
+                        <br>• App: Slack
+                        <br>• Event: "Send Channel Message"
+                        <br>• Channel: #customer-feedback
+                        <br>• Message: "📧 New Feedback Summary: {ChatGPT output}"
+                        <br>• Test action
+                    </li>
+                    <li><strong>6. Turn On Zap:</strong> Activate → მზადაა!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: AI ჩვევები - Daily Routine -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>📅 Building AI ჩვევები - დილის რუტინა</h2>
+            <p>AI-ის ეფექტურად გამოყენება მოითხოვს ჩვევების ჩამოყალიბებას. დავიწყოთ დილის რუტინით.</p>
+
+            <div class="habit-box">
+                <strong>🌅 დილის AI Routine (30 წთ | 9:00-9:30 AM)</strong>
+                <p><strong>📊 Step 1: Data Review (5 წთ)</strong><br>
+                • Google Analytics AI Insights → გუშინდელი performance<br>
+                • Zapier Daily Report → email-ის გახსნა<br>
+                • Quick overview რა მოხდა 24 საათში<br><br>
+                <strong>💬 Step 2: Communication Prep (10 წთ)</strong><br>
+                • ChatGPT → დღის 3 social media post<br>
+                • Customer emails → AI drafts პასუხებისთვის<br>
+                • Team announcement → AI-ით drafting<br><br>
+                <strong>🎨 Step 3: Content Creation (10 წთ)</strong><br>
+                • Canva → დღის Instagram post დიზაინი<br>
+                • Magic Write → captions<br>
+                • Schedule posts<br><br>
+                <strong>📋 Step 4: Priorities Setup (5 წთ)</strong><br>
+                • ChatGPT → "აი ჩემი დღის tasks list, დაალაგე პრიორიტეტის მიხედვით"<br>
+                • Notion AI → დღის action plan<br>
+                • Calendar review</p>
+            </div>
+
+            <div class="highlight-box">
+                ⏰ 30 წუთი დილით = 2-3 საათის სამუშაო უკვე შესრულებული!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Weekly Routine -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>📅 კვირის AI Routine</h2>
+            <p>გარდა ყოველდღიური routine-ისა, კვირის განმავლობაში არის სპეციფიკური AI tasks-ები.</p>
+
+            <div class="habit-box">
+                <strong>🗓️ კვირის AI Schedule</strong>
+                <p><strong>📅 ორშაბათი - Week Planning (30 წთ)</strong><br>
+                • ChatGPT → კვირის priorities დაგეგმვა<br>
+                • Claude → წინა კვირის ანალიზი და insights<br>
+                • Notion AI → კვირის goals და milestones<br><br>
+                <strong>📊 ოთხშაბათი - Mid-Week Check (20 წთ)</strong><br>
+                • Progress review AI-ით<br>
+                • Adjustments და pivots თუ საჭიროა<br>
+                • Data analysis - რა მუშაობს, რა არა<br><br>
+                <strong>📈 პარასკევი - Week Wrap-Up (45 წთ)</strong><br>
+                • Claude → კვირის detailed analysis<br>
+                • Canva → კვირის performance report<br>
+                • AI → next week preparation<br>
+                • Team summary email AI-ით<br><br>
+                <strong>💡 კვირაში ერთხელ - Skills Development (1 საათი)</strong><br>
+                • ახალი AI tool-ის ცდა<br>
+                • Prompt engineering practice<br>
+                • AI community სიახლეების მიმოხილვა</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Monthly AI Tasks -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>📅 თვიური AI Tasks</h2>
+            <p>თვის დონეზე AI გამოიყენება strategic planning-ისთვის.</p>
+
+            <div class="habit-box">
+                <strong>📆 Monthly AI Routine</strong>
+                <p><strong>🔍 Month-End Review (2 საათი)</strong><br>
+                • Claude → სრული თვის performance analysis<br>
+                • ყველა data source-ის კონსოლიდაცია<br>
+                • Trends და patterns identification<br>
+                • Successes და failures breakdown<br><br>
+                <strong>📊 Strategic Planning (2 საათი)</strong><br>
+                • Next month goals AI-assisted planning<br>
+                • Resource allocation optimization<br>
+                • Risk identification და mitigation<br>
+                • Scenario planning 3 სცენარით<br><br>
+                <strong>📈 Reporting (1.5 საათი)</strong><br>
+                • Executive report Canva-ით<br>
+                • Data visualization და insights<br>
+                • Recommendations AI-generated<br>
+                • Presentation preparation<br><br>
+                <strong>🎓 Team Training (1 საათი)</strong><br>
+                • AI wins sharing session<br>
+                • New techniques demonstration<br>
+                • Best practices documentation<br>
+                • Custom GPT updates based on feedback</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: AI Habit Building Tips -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>💡 AI ჩვევების ჩამოყალიბება - რჩევები</h2>
+
+            <div class="key-points">
+                <strong>✅ როგორ ჩამოვაყალიბოთ AI ჩვევები:</strong>
+                <ul>
+                    <li><strong>1. Start Small:</strong> დაიწყეთ 1-2 task-ით, არა ყველაფრის ერთად შეცვლა
+                        <br><em>მაგ: პირველ კვირაში - მხოლოდ დილის social media posts</em>
+                    </li>
+                    <li><strong>2. Same Time, Same Place:</strong> განსაზღვრული დრო და ადგილი
+                        <br><em>ყოველდღე 9:00-9:30 → დილის AI routine</em>
+                    </li>
+                    <li><strong>3. Template Everything:</strong> შეინახეთ კარგად მომუშავე prompts
+                        <br><em>Notion-ში "AI Prompts Library"</em>
+                    </li>
+                    <li><strong>4. Track Time Saved:</strong> გაზომეთ რამდენი დრო დაზოგეთ
+                        <br><em>Spreadsheet: task, old time, new time, savings</em>
+                    </li>
+                    <li><strong>5. Iterate Weekly:</strong> კვირაში ერთხელ review და optimize
+                        <br><em>რა მუშაობს? რა არა? რა გავაუმჯობესო?</em>
+                    </li>
+                    <li><strong>6. Share Wins:</strong> გაზიარეთ წარმატებები გუნდთან
+                        <br><em>კვირის Slack post: "This Week's AI Win"</em>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="demo-box">
+                <strong>🎯 21-Day AI Habit Challenge:</strong>
+                <p><strong>Week 1:</strong> დილის routine (social posts + email drafts)<br>
+                <strong>Week 2:</strong> + mid-day tasks (reports + analysis)<br>
+                <strong>Week 3:</strong> + evening wrap-up (summaries + planning)<br><br>
+                <strong>📊 Track:</strong> Time saved, quality improvement, consistency<br>
+                <strong>🏆 Goal:</strong> 21 დღის შემდეგ ეს იქნება თქვენი natural workflow!</p>
+            </div>
+
+            <div class="highlight-box">
+                💪 ჩვევა ყალიბდება 21 დღეში - დაიწყეთ დღეს!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: Summary -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>🎯 მოდული 7 - შეჯამება</h2>
+
+            <div class="key-points">
+                <strong>✅ რა ვისწავლეთ:</strong>
+                <ul>
+                    <li>✅ Custom GPTs - პერსონალიზებული AI ასისტენტების შექმნა</li>
+                    <li>✅ LIVE Demo: "Gastronome Operations Assistant" შექმნა</li>
+                    <li>✅ 5 Custom GPT Ideas - თითოეული როლისთვის</li>
+                    <li>✅ Automation Tools - Zapier Introduction</li>
+                    <li>✅ Email Summarizer, Meeting Notes, Data Reports automation</li>
+                    <li>✅ AI ჩვევები - დილის, კვირის, თვიური routines</li>
+                    <li>✅ Habit Building Tips და 21-Day Challenge</li>
+                </ul>
+            </div>
+
+            <div class="automation-box">
+                <strong>🛠️ თქვენი Advanced AI Toolkit:</strong>
+                <p>✅ <strong>Custom GPTs:</strong> role-specific assistants<br>
+                ✅ <strong>Zapier:</strong> automation workflows<br>
+                ✅ <strong>Daily Routine:</strong> consistent AI usage<br>
+                ✅ <strong>Weekly Review:</strong> optimization cycle<br>
+                ✅ <strong>Prompt Library:</strong> saved templates<br>
+                ✅ <strong>Time Tracking:</strong> measurable ROI</p>
+            </div>
+
+            <div class="habit-box">
+                <strong>💡 Key Takeaways:</strong>
+                <p>• Custom GPTs = consistent და specialized assistance<br>
+                • Automation = time savings ხარჯვის გარეშე<br>
+                • Daily routines = AI becomes natural workflow<br>
+                • Track everything = continuous improvement<br>
+                • Share wins = team-wide adoption</p>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px;">
+                🚀 შემდეგი: მოდული 8 - Capstone Project<br><br>
+                Real Business Challenge - 5 ჯგუფი, 55 წუთი, Full AI Workflow!
+            </div>
+
+            <p style="text-align: center; margin-top: 30px; font-size: 1.3em; color: #667eea;">
+                <strong>🔥 მზად ხართ Capstone-ისთვის?</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← წინა</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">შემდეგი →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            // If on last slide, change button text
+            if (currentSlide === totalSlides - 1) {
+                document.getElementById('nextBtn').textContent = 'შემდეგი მოდული →';
+                document.getElementById('nextBtn').onclick = function() {
+                    window.location.href = 'module8.html';
+                };
+            } else {
+                document.getElementById('nextBtn').textContent = 'შემდეგი →';
+                document.getElementById('nextBtn').onclick = function() {
+                    changeSlide(1);
+                };
+            }
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="BDI-II - ბეკის დეპრესიის კითხვარი, დეპრესიული სიმპტომების სიმძიმის შეფასება. მხოლოდ საგანმანათლებლო მიზნით.">
+    <title>BDI-II - ბეკის დეპრესიის კითხვარი</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f1923;
+            --bg-secondary: #162231;
+            --bg-card: #1a2a3a;
+            --bg-card-hover: #1f3347;
+            --accent: #6b8aad;
+            --accent-glow: rgba(107, 138, 173, 0.12);
+            --accent-soft: #5a7a9d;
+            --accent-light: #8badc9;
+            --text-primary: #e8edf2;
+            --text-secondary: #8fa3b8;
+            --text-muted: #5a7089;
+            --border: rgba(107, 138, 173, 0.12);
+            --border-active: rgba(107, 138, 173, 0.35);
+            --danger: #c94d6d;
+            --danger-soft: rgba(201, 77, 109, 0.15);
+            --warning: #c9a44d;
+            --warning-soft: rgba(201, 164, 77, 0.15);
+            --success: #4dc98a;
+            --success-soft: rgba(77, 201, 138, 0.15);
+            --orange: #c98c4d;
+            --orange-soft: rgba(201, 140, 77, 0.15);
+            --cognitive: #7b9fc9;
+            --cognitive-soft: rgba(123, 159, 201, 0.10);
+            --somatic: #9b7bc9;
+            --somatic-soft: rgba(155, 123, 201, 0.10);
+            --affective: #c97b9f;
+            --affective-soft: rgba(201, 123, 159, 0.10);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Georgian', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 15% 15%, rgba(107, 138, 173, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 40% at 85% 85%, rgba(155, 123, 201, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 740px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+                /* Language/Theme toggle */
+        .lang-toggle {
+            position: fixed; top: 16px; right: 16px; z-index: 200;
+            display: flex; border-radius: var(--radius-sm);
+            overflow: hidden; border: 1px solid var(--border-active); background: var(--bg-card);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .lang-btn {
+            padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600;
+            cursor: pointer; border: none; background: transparent; color: var(--text-muted);
+            transition: var(--transition); letter-spacing: 0.5px;
+        }
+        .lang-btn:hover { color: var(--text-primary); background: var(--bg-card-hover); }
+        .lang-btn.active { background: var(--accent); color: var(--bg-primary); }
+
+        .theme-btn {
+            padding: 6px 12px; font-family: inherit; font-size: 14px;
+            cursor: pointer; border: none; background: transparent; color: var(--text-secondary);
+            transition: var(--transition); border-left: 1px solid var(--border-active);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .theme-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header-icon {
+            width: 56px; height: 56px;
+            background: var(--accent-glow);
+            border: 1px solid var(--border-active);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+        }
+
+        .header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 6px; }
+
+        .header .subtitle { font-size: 15px; color: var(--accent-light); font-weight: 500; margin-bottom: 8px; }
+
+        .header p { font-size: 13px; color: var(--text-secondary); max-width: 540px; margin: 0 auto; font-weight: 300; }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: var(--danger-soft);
+            border: 1px solid rgba(201, 77, 109, 0.25);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            font-size: 13px; color: #d4a0b0; line-height: 1.8;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+
+        .disclaimer strong { color: var(--danger); font-weight: 600; }
+
+        /* Info */
+        .info-box {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-active);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin-bottom: 28px;
+            font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+            animation: fadeIn 0.8s ease 0.3s both;
+        }
+
+        .info-box strong { color: var(--accent-light); }
+
+        /* Progress */
+        .progress-container {
+            margin-bottom: 24px;
+            animation: fadeIn 0.8s ease 0.4s both;
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg-primary);
+            padding: 12px 0;
+        }
+
+        .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .progress-label { font-size: 13px; color: var(--text-muted); }
+        .progress-count { font-size: 13px; color: var(--accent); font-weight: 500; }
+
+        .progress-bar { height: 4px; background: var(--bg-card); border-radius: 2px; overflow: hidden; }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+            border-radius: 2px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Question blocks */
+        .question-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px; margin-bottom: 16px;
+            transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+
+        .question-block::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 3px; background: var(--text-muted); transition: var(--transition);
+        }
+
+        .question-block.answered::before { background: var(--accent); }
+        .question-block.answered { border-color: var(--border-active); }
+        .question-block.score-high::before { background: var(--danger); }
+
+        .question-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+
+        .question-number {
+            display: flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 8px;
+            font-size: 12px; font-weight: 700; flex-shrink: 0;
+        }
+
+        .qn-cognitive { background: var(--cognitive-soft); color: var(--cognitive); }
+        .qn-somatic { background: var(--somatic-soft); color: var(--somatic); }
+        .qn-affective { background: var(--affective-soft); color: var(--affective); }
+
+        .question-title { font-size: 15px; font-weight: 600; }
+
+        .domain-tag {
+            margin-left: auto; font-size: 10px; padding: 3px 8px;
+            border-radius: 4px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.8px; flex-shrink: 0;
+        }
+
+        .dt-cognitive { background: var(--cognitive-soft); color: var(--cognitive); }
+        .dt-somatic { background: var(--somatic-soft); color: var(--somatic); }
+        .dt-affective { background: var(--affective-soft); color: var(--affective); }
+
+        /* Options */
+        .option-list { display: flex; flex-direction: column; gap: 6px; }
+
+        .option-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 12px 16px; border-radius: var(--radius-sm);
+            cursor: pointer; transition: var(--transition);
+            border: 1px solid transparent; position: relative;
+        }
+
+        .option-item:hover { background: var(--bg-card-hover); border-color: var(--border); }
+        .option-item.selected { background: var(--accent-glow); border-color: var(--border-active); }
+
+        .option-item.selected.opt-score-0 { background: var(--success-soft); border-color: rgba(77, 201, 138, 0.25); }
+        .option-item.selected.opt-score-1 { background: var(--warning-soft); border-color: rgba(201, 164, 77, 0.25); }
+        .option-item.selected.opt-score-2 { background: var(--orange-soft); border-color: rgba(201, 140, 77, 0.25); }
+        .option-item.selected.opt-score-3 { background: var(--danger-soft); border-color: rgba(201, 77, 109, 0.25); }
+
+        .option-score {
+            display: flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            font-size: 11px; font-weight: 700; flex-shrink: 0;
+            margin-top: 1px; transition: var(--transition); color: transparent;
+        }
+
+        .option-item.selected .option-score { border-color: var(--accent); background: var(--accent); color: var(--bg-primary); }
+        .option-item.selected.opt-score-0 .option-score { border-color: var(--success); background: var(--success); }
+        .option-item.selected.opt-score-1 .option-score { border-color: var(--warning); background: var(--warning); }
+        .option-item.selected.opt-score-2 .option-score { border-color: var(--orange); background: var(--orange); }
+        .option-item.selected.opt-score-3 .option-score { border-color: var(--danger); background: var(--danger); }
+
+        .option-text { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; transition: var(--transition); }
+        .option-item.selected .option-text { color: var(--text-primary); }
+
+        /* Submit */
+        .submit-area { margin-top: 32px; text-align: center; }
+
+        .btn {
+            padding: 14px 36px; border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+            border: none; background: var(--accent); color: var(--bg-primary);
+        }
+
+        .btn:hover { background: var(--accent-soft); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(107, 138, 173, 0.3); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Results */
+        .results-container { display: none; animation: fadeInUp 0.8s ease; }
+        .results-container.active { display: block; }
+
+        .result-main {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 36px 32px;
+            margin-bottom: 24px; text-align: center;
+        }
+
+        .result-icon { font-size: 44px; margin-bottom: 16px; }
+        .result-score { font-size: 56px; font-weight: 700; margin-bottom: 4px; }
+        .result-max { font-size: 16px; color: var(--text-muted); font-weight: 400; margin-bottom: 16px; }
+        .result-title { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+        .result-subtitle { font-size: 14px; color: var(--text-secondary); font-weight: 300; margin-bottom: 20px; max-width: 460px; margin-left: auto; margin-right: auto; }
+
+        .severity-badge { display: inline-block; padding: 7px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+        .sev-minimal { background: var(--success-soft); color: var(--success); }
+        .sev-mild { background: var(--warning-soft); color: var(--warning); }
+        .sev-moderate { background: var(--orange-soft); color: var(--orange); }
+        .sev-severe { background: var(--danger-soft); color: var(--danger); }
+
+        /* Score bar */
+        .score-bar-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+        .score-bar-label { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+
+        .score-bar-track { height: 28px; border-radius: 14px; background: var(--bg-secondary); position: relative; overflow: hidden; display: flex; }
+
+        .score-bar-segment {
+            height: 100%; position: relative;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7); transition: var(--transition);
+        }
+
+        .seg-minimal { background: rgba(77, 201, 138, 0.25); }
+        .seg-mild { background: rgba(201, 164, 77, 0.25); }
+        .seg-moderate { background: rgba(201, 140, 77, 0.25); }
+        .seg-severe { background: rgba(201, 77, 109, 0.25); }
+
+        .score-marker {
+            position: absolute; top: -8px; width: 3px; height: 44px;
+            background: var(--text-primary); border-radius: 2px; z-index: 5;
+            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .score-marker::after {
+            content: attr(data-score); position: absolute; top: -22px; left: 50%;
+            transform: translateX(-50%); font-size: 12px; font-weight: 700;
+            color: var(--text-primary); white-space: nowrap;
+        }
+
+        .score-bar-labels { display: flex; margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+        .score-bar-labels span { display: flex; align-items: center; justify-content: center; }
+
+        /* Domain scores */
+        .domain-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+
+        .domain-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; position: relative; overflow: hidden; }
+
+        .domain-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .domain-card.dc-cognitive::before { background: var(--cognitive); }
+        .domain-card.dc-somatic::before { background: var(--somatic); }
+        .domain-card.dc-affective::before { background: var(--affective); }
+
+        .domain-card-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .domain-card-value { font-size: 28px; font-weight: 700; margin-bottom: 2px; }
+        .dc-cognitive .domain-card-value { color: var(--cognitive); }
+        .dc-somatic .domain-card-value { color: var(--somatic); }
+        .dc-affective .domain-card-value { color: var(--affective); }
+        .domain-card-sub { font-size: 11px; color: var(--text-muted); }
+
+        /* Detail */
+        .detail-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; }
+        .detail-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+
+        .detail-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-num { flex-shrink: 0; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+        .detail-name { flex: 1; color: var(--text-secondary); }
+
+        .detail-score-pill { flex-shrink: 0; padding: 3px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; min-width: 32px; text-align: center; }
+        .pill-0 { background: var(--success-soft); color: var(--success); }
+        .pill-1 { background: var(--warning-soft); color: var(--warning); }
+        .pill-2 { background: var(--orange-soft); color: var(--orange); }
+        .pill-3 { background: var(--danger-soft); color: var(--danger); }
+
+        /* Scoring info */
+        .scoring-info { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; }
+        .scoring-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: var(--accent-light); }
+        .scoring-info p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+
+        .scoring-table { width: 100%; margin-top: 12px; border-collapse: collapse; }
+        .scoring-table th, .scoring-table td { padding: 8px 12px; font-size: 13px; text-align: left; border-bottom: 1px solid var(--border); }
+        .scoring-table th { color: var(--text-muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Treatment note */
+        .treatment-note { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-top: 16px; }
+        .treatment-note h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: var(--accent); }
+        .treatment-note p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+
+        .restart-btn {
+            display: block; width: 100%; margin-top: 28px; padding: 14px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); color: var(--text-secondary);
+            font-family: inherit; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: var(--transition);
+        }
+        .restart-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+        /* Suicidal alert */
+        .suicide-alert { background: var(--danger-soft); border: 1px solid rgba(201, 77, 109, 0.35); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 20px; }
+        .suicide-alert h3 { color: var(--danger); font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+        .suicide-alert p { font-size: 13px; color: #d4a0b0; line-height: 1.8; }
+
+        /* Crisis banner */
+        .crisis-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(201, 77, 109, 0.2), rgba(201, 77, 109, 0.1));
+            border: 2px solid var(--danger); border-radius: var(--radius);
+            padding: 20px 24px; margin-bottom: 24px;
+            animation: fadeIn 0.5s ease;
+        }
+        .crisis-banner.visible { display: block; }
+        .crisis-banner strong { color: var(--danger); font-size: 15px; }
+        .crisis-banner p { color: var(--text-primary); font-size: 13px; margin-top: 8px; line-height: 1.8; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) {
+            .container { padding: 24px 14px 60px; }
+            .header h1 { font-size: 20px; }
+            .domain-grid { grid-template-columns: 1fr; }
+            .question-block { padding: 18px 16px; }
+            .domain-tag { display: none; }
+            .result-score { font-size: 44px; }
+        }
+
+        @media print {
+            body { background: white; color: #1a1a1a; }
+            body::before { display: none; }
+            .container { max-width: 100%; padding: 20px; }
+            .lang-toggle, #questionsContainer, #submitArea, .progress-container, .info-box, .restart-btn { display: none !important; }
+            .results-container { display: block !important; }
+            .result-main, .score-bar-container, .domain-card, .detail-section, .scoring-info, .treatment-note { background: #f5f5f5; border: 1px solid #ccc; break-inside: avoid; }
+            .severity-badge { border: 1px solid currentColor; }
+            .domain-card::before, .score-bar-segment { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .crisis-banner, .suicide-alert { border: 2px solid #c94d6d; background: #fff0f3; }
+        }
+    
+        /* ─── Light Mode ─── */
+        body.light {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #e2e8f0;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --text-primary: #1e2d3d;
+            --text-secondary: #4a6580;
+            --text-muted: #8fa3b8;
+            --border: rgba(0, 0, 0, 0.10);
+            --border-active: rgba(0, 0, 0, 0.25);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        }
+        body.light::before { opacity: 0.2; }
+
+        
+    </style>
+</head>
+<body>
+
+
+
+
+<!-- Language toggle -->
+<div class="lang-toggle">
+    <button class="lang-btn active" id="btnKa" onclick="setLang('ka')">KA</button>
+    <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Dark / Light Mode">☀️</button>
+</div>
+<script>if(localStorage.getItem('psycho-theme')==='light'){document.body.classList.add('light');document.getElementById('themeToggle').textContent='🌙';}</script>
+
+<div class="container">
+    <div class="header">
+        <div class="header-icon">📋</div>
+        <h1 id="headerTitle">ბეკის დეპრესიის კითხვარი - II</h1>
+        <div class="subtitle">BDI-II (Beck Depression Inventory - Second Edition)</div>
+        <p id="headerDesc">21-კითხვიანი თვითშეფასების ინსტრუმენტი დეპრესიის სიმძიმის შესაფასებლად. ფართოდ გამოყენებული კლინიკურ პრაქტიკასა და კვლევაში.</p>
+    </div>
+
+    <div class="disclaimer" id="disclaimerBox"></div>
+
+    <div class="crisis-banner" id="crisisBanner">
+        <strong id="crisisTitle">🆘 სასწრაფო დახმარება</strong>
+        <p id="crisisText"></p>
+    </div>
+
+    <div class="info-box" id="infoBox"></div>
+
+    <div class="progress-container" id="progressArea">
+        <div class="progress-info">
+            <span class="progress-label" id="progressLabel">0 / 21 კითხვა</span>
+            <span class="progress-count" id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="submit-area" id="submitArea">
+        <button class="btn" id="submitBtn" onclick="calculateResults()" disabled>📊 შედეგის ნახვა</button>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;" id="submitHint"></p>
+    </div>
+
+    <div class="results-container" id="results"></div>
+</div>
+
+<script>
+// ==================== I18N ====================
+const i18n = {
+    ka: {
+        htmlLang: 'ka',
+        headerTitle: 'ბეკის დეპრესიის კითხვარი (BDI-II)',
+        headerDesc: '21-პუნქტიანი თვითშეფასების ინსტრუმენტი დეპრესიის სიმძიმის შესაფასებლად. ფართოდ გამოიყენება კლინიკურ პრაქტიკასა და კვლევებში.',
+        disclaimer: '<strong>⚠️ გაფრთხილება:</strong> მოცემული კითხვარი წარმოადგენს სკრინინგის ინსტრუმენტს და <strong>არ ცვლის</strong> პროფესიონალურ დიაგნოსტიკას. შედეგი ასახავს დეპრესიული სიმპტომების სიმძიმეს და არა დიაგნოზს. დიაგნოზის დასმა შეუძლია მხოლოდ კვალიფიციურ სპეციალისტს.',
+        crisisTitle: '🆘 სასწრაფო დახმარება',
+        crisisText: 'თუ გაქვთ სუიციდური აზრები ან თვითდაზიანების სურვილი, გთხოვთ, <strong>დაუყოვნებლივ</strong> მიმართოთ სასწრაფო სამედიცინო დახმარებას ან დარეკოთ <strong>112</strong>-ზე. გახსოვდეთ, თქვენ მარტო არ ხართ.',
+        infoBox: '<strong>📋 ინსტრუქცია:</strong> ყურადღებით წაიკითხოთ თითოეული ჯგუფის ყველა დებულება. აირჩიეთ ის ერთი წინადადება, რომელიც საუკეთესოდ აღწერს თქვენს მდგომარეობას <strong>ბოლო ორი კვირის განმავლობაში</strong>, დღევანდელი დღის ჩათვლით. თუ ერთ ჯგუფში რამდენიმე დებულება ერთნაირად შეესაბამება თქვენს მდგომარეობას, აირჩიეთ ის, რომელსაც მეტი ქულა აქვს.',
+        submitBtn: '📊 შედეგის ნახვა',
+        progressQ: 'პუნქტი',
+        hintAll: 'ყველა პუნქტი შევსებულია ✓',
+        hintRemain: (n) => `გთხოვთ, უპასუხოთ ყველა პუნქტს (დარჩა: ${n})`,
+        domainLabels: { cognitive: 'კოგნიტური', somatic: 'სომატური', affective: 'აფექტური' },
+        sevLabels: { minimal: 'მინიმალური', mild: 'მსუბუქი', moderate: 'საშუალო', severe: 'მძიმე' },
+        sevDescs: {
+            minimal: 'დეპრესიული სიმპტომები მინიმალურად არის გამოხატული ან საერთოდ არ აღინიშნება.',
+            mild: 'მსუბუქი დეპრესიული სიმპტომატიკა. რეკომენდებულია მდგომარეობის მონიტორინგი და საჭიროების შემთხვევაში სპეციალისტთან კონსულტაცია.',
+            moderate: 'საშუალო სიმძიმის დეპრესიული სიმპტომები. რეკომენდებულია კლინიკური შეფასება და მკურნალობის ტაქტიკის განსაზღვრა.',
+            severe: 'მძიმე დეპრესიული სიმპტომები. საჭიროა დაუყოვნებლივი პროფესიონალური შეფასება და მკურნალობის დაწყება.'
+        },
+        resultTitleMinimal: 'მინიმალური გამოხატულება',
+        resultTitlePattern: (s) => s + ' სიმძიმის დეპრესია',
+        resultMax: '/ 63 ქულიდან',
+        suicideAlertTitle: '⚠️ სუიციდის რისკის მაჩვენებელი',
+        suicideAlertText: (s) => `მე-9 პუნქტზე (სუიციდური აზრები) თქვენი პასუხი მიუთითებს სუიციდურ იდეაციაზე (ქულა: ${s}/3). ${s >= 2 ? '<strong>ეს მაღალი რისკის ნიშანია.</strong> ' : ''}გთხოვთ, დაუყოვნებლივ მიმართოთ ფსიქიატრს ან კრიზისულ ინტერვენციულ სამსახურს. თუ საფრთხე ემუქრება თქვენს სიცოცხლეს, დარეკეთ ნომერზე <strong>112</strong>.`,
+        scoreBarLabel: 'სიმძიმის შკალა',
+        detailTitle: 'პასუხების დეტალური ანალიზი',
+        guideTitle: '📐 ინტერპრეტაციის გზამკვლევი',
+        guideHeaders: ['ქულათა დიაპაზონი', 'სიმძიმის დონე', 'რეკომენდაცია'],
+        guideRecs: ['კლინიკურ ჩარევას არ საჭიროებს', 'მონიტორინგი, ცხოვრების წესის კორექცია', 'ფსიქოთერაპია ± ფარმაკოთერაპია', 'კომბინირებული მკურნალობა (ფარმაკო + ფსიქო)'],
+        domainNote: '<strong>დომეინები:</strong> <span style="color: var(--cognitive);">კოგნიტური</span> - აზროვნება, თვითშეფასება, გადაწყვეტილების მიღება; <span style="color: var(--somatic);">სომატური</span> - ძილი, მადა, ენერგია, ფიზიკური სიმპტომები; <span style="color: var(--affective);">აფექტური</span> - განწყობა, ინტერესები, ემოციური ფონი.',
+        clinicalTitle: '🔬 კლინიკური შენიშვნები',
+        clinicalText: 'BDI-II-ის პუნქტები შეესაბამება DSM-IV/DSM-5-ის დეპრესიულ კრიტერიუმებს. კითხვარი განსაკუთრებით მგრძნობიარეა კოგნიტური სიმპტომების მიმართ (ბეკის კოგნიტური მოდელის შესაბამისად).',
+        clinicalPoints: '• BDI-II ზომავს სიმპტომების <strong>სიმძიმეს</strong> და არა დიაგნოზს<br>• განმეორებითი ტესტირება (2–4 კვირიანი ინტერვალით) ასახავს მკურნალობის დინამიკას<br>• 17 და მეტი ქულა, როგორც წესი, კლინიკურად მნიშვნელოვან დეპრესიაზე მიუთითებს<br>• მე-9 პუნქტი (სუიციდი) ყოველთვის საჭიროებს დამოუკიდებელ კლინიკურ შეფასებას',
+        factorTitle: '📊 ფაქტორული სტრუქტურა',
+        factorText: 'ზემოთ მოცემული სამ-დომეინიანი დაყოფა გამოიყენება საგანმანათლებლო მიზნებისთვის. ა. ბეკის ორიგინალური კვლევის მიხედვით, BDI-II-ის სტანდარტული სტრუქტურა ორფაქტორიანია:',
+        factorPoints: '• <strong>კოგნიტურ-აფექტური ფაქტორი</strong> (პუნქტები 1–14): პესიმიზმი, წარუმატებლობა, დანაშაული, დასჯის მოლოდინი, თვითმიუღებლობა და სხვ.<br>• <strong>სომატურ-ვეგეტატიური ფაქტორი</strong> (პუნქტები 15–21): ენერგია, ძილი, მადა, კონცენტრაცია, დაღლილობა, სექსუალური ინტერესი',
+        treatmentTitle: '⚕️ რეკომენდაცია',
+        treatmentText: 'ეს შედეგი <strong>არ წარმოადგენს დიაგნოზს</strong>. BDI-II არის სკრინინგის ინსტრუმენტი. დეპრესიის დიაგნოსტიკა საჭიროებს კლინიკურ ინტერვიუს, ანამნეზის შეფასებას და დიფერენციულ დიაგნოსტიკას. გთხოვთ, კონსულტაციისთვის მიმართოთ ფსიქიატრს ან კლინიკურ ფსიქოლოგს.',
+        disclaimerRepeat: '<strong>⚠️ გაფრთხილება:</strong> მოცემული შედეგი არის მხოლოდ სიმპტომების სიმძიმის წინასწარი შეფასება. ნუ მიიღებთ სამედიცინო გადაწყვეტილებებს მხოლოდ ამ ტესტზე დაყრდნობით.',
+        printBtn: '🖨️ შედეგის ამობეჭდვა',
+        restartBtn: '🔄 თავიდან დაწყება'
+    },
+    en: {
+        htmlLang: 'en',
+        headerTitle: "Beck's Depression Inventory - II",
+        headerDesc: 'A 21-item self-report measure for assessing the severity of depression. Widely used in clinical practice and research.',
+        disclaimer: '<strong>⚠️ Warning:</strong> This questionnaire is a screening tool and <strong>does not replace</strong> professional diagnosis. The result shows the severity of depressive symptoms, not a diagnosis. Only a qualified specialist can make a diagnosis.',
+        crisisTitle: '🆘 Emergency Help',
+        crisisText: 'If you have suicidal thoughts or desire to self-harm, please <strong>immediately</strong> contact emergency medical services or call <strong>112</strong>. You are not alone.',
+        infoBox: '<strong>📋 Instructions:</strong> Please read each group of statements carefully. Then pick out the one statement in each group that best describes the way you have been feeling during the <strong>past two weeks</strong>, including today. If several statements in a group seem to apply equally well, choose the highest number.',
+        submitBtn: '📊 View Results',
+        progressQ: 'questions',
+        hintAll: 'All questions answered ✓',
+        hintRemain: (n) => `Please answer all 21 questions (remaining: ${n})`,
+        domainLabels: { cognitive: 'Cognitive', somatic: 'Somatic', affective: 'Affective' },
+        sevLabels: { minimal: 'Minimal', mild: 'Mild', moderate: 'Moderate', severe: 'Severe' },
+        sevDescs: {
+            minimal: 'Depressive symptoms are minimal or absent.',
+            mild: 'Mild depressive symptoms. Monitoring and lifestyle changes recommended; consult a specialist if needed.',
+            moderate: 'Moderate depressive symptoms. Clinical evaluation and treatment discussion recommended.',
+            severe: 'Severe depressive symptoms. Professional evaluation and treatment initiation required.'
+        },
+        resultTitleMinimal: 'Minimal Symptoms',
+        resultTitlePattern: (s) => s + ' Depression',
+        resultMax: '/ 63 points',
+        suicideAlertTitle: '⚠️ Suicide Risk Indicator',
+        suicideAlertText: (s) => `Your response to question #9 (suicidal thoughts) indicates suicidal ideation (score: ${s}/3). ${s >= 2 ? '<strong>This is a high-risk sign.</strong> ' : ''}Please immediately contact a psychiatrist or crisis service. If your life is in danger, call emergency services at <strong>112</strong>.`,
+        scoreBarLabel: 'Severity Scale',
+        detailTitle: 'Response Details',
+        guideTitle: '📐 Interpretation Guide',
+        guideHeaders: ['Score Range', 'Severity Level', 'Recommendation'],
+        guideRecs: ['No clinical attention needed', 'Monitoring, lifestyle changes', 'Psychotherapy ± pharmacotherapy', 'Pharmacotherapy + psychotherapy, specialist consultation'],
+        domainNote: '<strong>Domains:</strong> <span style="color: var(--cognitive);">Cognitive</span> - thinking, self-esteem, decision-making; <span style="color: var(--somatic);">Somatic</span> - sleep, appetite, energy, physical symptoms; <span style="color: var(--affective);">Affective</span> - mood, interest, sadness, emotions.',
+        clinicalTitle: '🔬 Clinical Notes',
+        clinicalText: "BDI-II contains items corresponding to DSM-IV/DSM-5 depression criteria. The questionnaire is particularly sensitive to cognitive symptoms (in line with Beck's cognitive model). Key points:",
+        clinicalPoints: '• BDI-II measures <strong>severity</strong>, not diagnosis<br>• Re-administration (2–4 week intervals) shows treatment response<br>• Score ≥17 typically indicates clinically significant depression<br>• Item #9 (suicide) always requires separate clinical evaluation',
+        factorTitle: '📊 Factor Structure',
+        factorText: "The three-domain classification (cognitive, somatic, affective) shown above is used for educational purposes. According to Beck et al.'s original research, the standard BDI-II factor structure is <strong>two-factor</strong>:",
+        factorPoints: '• <strong>Cognitive-Affective factor</strong> (items 1–14): sadness, pessimism, failure, loss of pleasure, guilt, self-dislike, suicidal thoughts, etc.<br>• <strong>Somatic-Performance factor</strong> (items 15–21): energy, sleep, appetite, concentration, fatigue, sexual interest',
+        treatmentTitle: '⚕️ Recommendation',
+        treatmentText: 'This result <strong>is not a diagnosis</strong>. BDI-II is a screening and severity assessment tool. Diagnosing depression requires a clinical interview, history evaluation, and differential diagnosis. Please consult a psychiatrist or clinical psychologist.',
+        disclaimerRepeat: '<strong>⚠️ Warning:</strong> This result is only a preliminary severity assessment and <strong>is not a diagnosis</strong>. Do not make medical decisions based on this result. Consult a qualified specialist.',
+        printBtn: '🖨️ Print Results',
+        restartBtn: '🔄 Start Over'
+    }
+};
+
+// ==================== QUESTIONS ====================
+const bdiQuestions = [
+    { id: 1, name: 'სევდა', nameEn: 'Sadness', domain: 'affective',
+      options: ['სევდას არ ვგრძნობ', 'ხშირად სევდიანად ვგრძნობ თავს', 'სულ სევდიანი ვარ და ვერაფრით ვიშორებ ამ გრძნობას', 'იმდენად სევდიანი ან უბედური ვარ, რომ ამის ატანა აღარ შემიძლია'],
+      optionsEn: ['I do not feel sad', 'I feel sad much of the time', 'I am sad all the time and I can\'t snap out of it', 'I am so sad or unhappy that I cannot stand it'] },
+    { id: 2, name: 'პესიმიზმი', nameEn: 'Pessimism', domain: 'cognitive',
+      options: ['მომავლის მიმართ იმედდაკარგული არ ვარ', 'მომავლის მიმართ უფრო მეტად იმედდაკარგული ვარ, ვიდრე ადრე', 'არ ველოდები, რომ ჩემს ცხოვრებაში რამე კარგად წარიმართება', 'ვგრძნობ, რომ მომავალი უიმედოა და მხოლოდ გაუარესდება'],
+      optionsEn: ['I am not discouraged about my future', 'I feel more discouraged about my future than I used to', 'I do not expect things to work out for me', 'I feel my future is hopeless and will only get worse'] },
+    { id: 3, name: 'წარსული წარუმატებლობა', nameEn: 'Past Failure', domain: 'cognitive',
+      options: ['თავს წარუმატებლად არ ვგრძნობ', 'იმაზე მეტი მარცხი მქონია, ვიდრე უნდა მქონოდა', 'წარსულს რომ ვუყურებ, ბევრ წარუმატებლობას ვხედავ', 'ვგრძნობ, რომ როგორც პიროვნება, სრულიად წარუმატებელი ვარ'],
+      optionsEn: ['I do not feel like a failure', 'I have failed more than I should have', 'As I look back, I see a lot of failures', 'I feel I am a total failure as a person'] },
+    { id: 4, name: 'სიამოვნების დაკარგვა', nameEn: 'Loss of Pleasure', domain: 'affective',
+      options: ['ისევე ვიღებ სიამოვნებას ყველაფრისგან, როგორც ადრე', 'ნაკლებ სიამოვნებას ვიღებ, ვიდრე ადრე', 'ძალიან მცირე სიამოვნებას ვიღებ იმისგან, რაც ადრე მხიბლავდა', 'ვერანაირ სიამოვნებას ვეღარ ვიღებ იმისგან, რაც ადრე მხიბლავდა'],
+      optionsEn: ['I get as much pleasure as I ever did from the things I enjoy', 'I do not enjoy things as much as I used to', 'I get very little pleasure from the things I used to enjoy', 'I cannot get any pleasure from the things I used to enjoy'] },
+    { id: 5, name: 'დანაშაულის გრძნობა', nameEn: 'Guilty Feelings', domain: 'cognitive',
+      options: ['განსაკუთრებულ დანაშაულს არ ვგრძნობ', 'დანაშაულს ვგრძნობ ბევრი რამის გამო, რაც გავაკეთე ან უნდა გამეკეთებინა', 'უმეტეს დროს თავს დამნაშავედ ვგრძნობ', 'მუდმივად ვგრძნობ დანაშაულის გრძნობას'],
+      optionsEn: ['I do not feel particularly guilty', 'I feel guilty over many things I have done or should have done', 'I feel quite guilty most of the time', 'I feel guilty all of the time'] },
+    { id: 6, name: 'დასჯის მოლოდინი', nameEn: 'Punishment Feelings', domain: 'cognitive',
+      options: ['არ მაქვს განცდა, რომ ვისჯები', 'ვგრძნობ, რომ შესაძლოა დავისაჯო', 'ველოდები, რომ დავისაჯები', 'ვგრძნობ, რომ ვისჯები'],
+      optionsEn: ['I do not feel I am being punished', 'I feel I may be punished', 'I expect to be punished', 'I feel I am being punished'] },
+    { id: 7, name: 'თვითმიუღებლობა', nameEn: 'Self-Dislike', domain: 'cognitive',
+      options: ['საკუთარი თავის მიმართ ისევე განვეწყობი, როგორც ადრე', 'საკუთარი თავის რწმენა დავკარგე', 'იმედგაცრუებული ვარ საკუთარი თავით', 'საკუთარი თავი მძულს'],
+      optionsEn: ['I feel the same about myself as ever', 'I have lost confidence in myself', 'I am disappointed in myself', 'I dislike myself'] },
+    { id: 8, name: 'თვითკრიტიკა', nameEn: 'Self-Criticalness', domain: 'cognitive',
+      options: ['საკუთარ თავს არ ვაკრიტიკებ და არ ვადანაშაულებ ჩვეულებრივზე მეტად', 'ჩვეულებრივზე უფრო კრიტიკული ვარ საკუთარი თავის მიმართ', 'საკუთარ თავს ყველა ჩემი ნაკლოვანების გამო ვაკრიტიკებ', 'საკუთარ თავს ვადანაშაულებ ყველაფერ ცუდში, რაც ხდება'],
+      optionsEn: ['I do not criticize or blame myself more than usual', 'I am more critical of myself than I used to be', 'I criticize myself for all of my faults', 'I blame myself for everything bad that happens'] },
+    { id: 9, name: 'სუიციდური აზრები', nameEn: 'Suicidal Thoughts', domain: 'cognitive',
+      options: ['თვითმკვლელობაზე არ ვფიქრობ', 'მაქვს ფიქრები თვითმკვლელობაზე, მაგრამ ამას არ გავაკეთებ', 'მინდა, რომ თავი მოვიკლა', 'თავს მოვიკლავდი, შესაძლებლობა რომ მომეცეს'],
+      optionsEn: ['I do not have any thoughts of killing myself', 'I have thoughts of killing myself, but I would not carry them out', 'I would like to kill myself', 'I would kill myself if I had the chance'] },
+    { id: 10, name: 'ტირილი', nameEn: 'Crying', domain: 'affective',
+      options: ['ჩვეულებრივზე მეტს არ ვტირი', 'ჩვეულებრივზე მეტს ვტირი', 'ახლა ყოველ წვრილმანზე მეტირება', 'ტირილი მინდა, მაგრამ ვეღარ ვტირი'],
+      optionsEn: ['I do not cry any more than I used to', 'I cry more than I used to', 'I cry over every little thing', 'I feel like crying, but I cannot'] },
+    { id: 11, name: 'აჟიტაცია', nameEn: 'Agitation', domain: 'somatic',
+      options: ['ჩვეულებრივზე მეტად მოუსვენარი ან დაძაბული არ ვარ', 'ჩვეულებრივზე მეტად მოუსვენარი ან დაძაბული ვარ', 'იმდენად მოუსვენარი ან აგზნებული ვარ, რომ ადგილზე გაჩერება მიჭირს', 'იმდენად მოუსვენარი ან აგზნებული ვარ, რომ მუდმივად უნდა ვიმოძრაო ან რამე ვაკეთო'],
+      optionsEn: ['I am no more restless or wound up than usual', 'I feel more restless or wound up than usual', 'I am so restless or agitated that it is hard to stay still', 'I am so restless or agitated that I have to keep moving or doing something'] },
+    { id: 12, name: 'ინტერესის დაკარგვა', nameEn: 'Loss of Interest', domain: 'affective',
+      options: ['სხვა ადამიანების ან აქტივობების მიმართ ინტერესი არ დამიკარგავს', 'ნაკლებად ვინტერესდები სხვა ადამიანებით ან მოვლენებით, ვიდრე ადრე', 'ინტერესის უდიდესი ნაწილი დავკარგე სხვა ადამიანებისა და აქტივობების მიმართ', 'რაიმეთი დაინტერესება ძალიან მიჭირს'],
+      optionsEn: ['I have not lost interest in other people or activities', 'I am less interested in other people or things than before', 'I have lost most of my interest in other people or things', 'It is hard to get interested in anything'] },
+    { id: 13, name: 'გადაწყვეტილების მიუღებლობა', nameEn: 'Indecisiveness', domain: 'cognitive',
+      options: ['გადაწყვეტილებებს ისევე ვიღებ, როგორც ადრე', 'ჩვეულებრივზე მეტად მიჭირს გადაწყვეტილებების მიღება', 'გაცილებით მეტად მიჭირს გადაწყვეტილებების მიღება, ვიდრე ადრე', 'ნებისმიერი გადაწყვეტილების მიღება მიჭირს'],
+      optionsEn: ['I make decisions about as well as ever', 'I find it more difficult to make decisions than usual', 'I have much greater difficulty in making decisions than I used to', 'I have trouble making any decisions'] },
+    { id: 14, name: 'უღირსობა', nameEn: 'Worthlessness', domain: 'cognitive',
+      options: ['თავს უღირსად არ ვგრძნობ', 'საკუთარ თავს ისეთ ფასეულად და საჭიროდ აღარ მივიჩნევ, როგორც ადრე', 'სხვებთან შედარებით უფრო უღირსად ვგრძნობ თავს', 'სრულიად უღირსად ვგრძნობ თავს'],
+      optionsEn: ['I do not feel I am worthless', 'I do not consider myself as worthwhile and useful as I used to', 'I feel more worthless as compared to others', 'I feel utterly worthless'] },
+    { id: 15, name: 'ენერგიის დაკარგვა', nameEn: 'Loss of Energy', domain: 'somatic',
+      options: ['ენერგია ისევე მაქვს, როგორც ყოველთვის', 'იმაზე ნაკლები ენერგია მაქვს, ვიდრე ადრე', 'არ მაქვს საკმარისი ენერგია, რომ ბევრი რამ გავაკეთო', 'ენერგია არაფრისთვის აღარ მყოფნის'],
+      optionsEn: ['I have as much energy as ever', 'I have less energy than I used to have', 'I do not have enough energy to do very much', 'I do not have enough energy to do anything'] },
+    { id: 16, name: 'ძილის ცვლილება', nameEn: 'Changes in Sleep', domain: 'somatic',
+      options: ['ძილის მხრივ ცვლილებები არ მაქვს', 'ჩვეულებრივზე ცოტათი მეტად ან ნაკლებად მძინავს', 'ჩვეულებრივზე ბევრად მეტი ან ნაკლებად მძინავს', 'დღის უმეტესი ნაწილი მძინავს / ჩვეულებრივზე 1-2 საათით ადრე მეღვიძება და ხელახლა დაძინება მიჭირს'],
+      optionsEn: ['I have not experienced any change in my sleeping', 'I sleep somewhat more or less than usual', 'I sleep a lot more or less than usual', 'I sleep most of the day / I wake up 1-2 hours early and cannot get back to sleep'] },
+    { id: 17, name: 'გაღიზიანება', nameEn: 'Irritability', domain: 'affective',
+      options: ['ჩვეულებრივზე მეტად გაღიზიანებული არ ვარ', 'ჩვეულებრივზე მეტად გაღიზიანებული ვარ', 'ჩვეულებრივზე გაცილებით მეტად გაღიზიანებული ვარ', 'მუდმივად გაღიზიანებული ვარ'],
+      optionsEn: ['I am no more irritable than usual', 'I am more irritable than usual', 'I am much more irritable than usual', 'I am irritable all the time'] },
+    { id: 18, name: 'მადის ცვლილება', nameEn: 'Changes in Appetite', domain: 'somatic',
+      options: ['მადა არ შემცვლია', 'ჩვეულებრივზე ცოტათი მეტი ან ნაკლები მადა მაქვს', 'ჩვეულებრივზე ბევრად მეტი ან ნაკლები მადა მაქვს', 'საერთოდ არ მაქვს მადა / მუდმივად მშია'],
+      optionsEn: ['I have not experienced any change in my appetite', 'My appetite is somewhat less or greater than usual', 'My appetite is much less or greater than usual', 'I have no appetite at all / I crave food all the time'] },
+    { id: 19, name: 'კონცენტრაციის სირთულე', nameEn: 'Concentration Difficulty', domain: 'cognitive',
+      options: ['ისევე კარგად შემიძლია კონცენტრაცია, როგორც ყოველთვის', 'ისე კარგად ვეღარ ვახერხებ კონცენტრაციას, როგორც ადრე', 'მიჭირს რამეზე ყურადღების დიდხანს შეჩერება', 'ვერაფერზე ვახერხებ კონცენტრაციას'],
+      optionsEn: ['I can concentrate as well as ever', 'I cannot concentrate as well as usual', 'It is hard to keep my mind on anything for very long', 'I find I cannot concentrate on anything'] },
+    { id: 20, name: 'დაღლილობა', nameEn: 'Tiredness/Fatigue', domain: 'somatic',
+      options: ['ჩვეულებრივზე მეტად დაღლილი არ ვარ', 'ჩვეულებრივზე ადვილად ვიღლები', 'იმდენად დაღლილი ვარ, რომ ბევრ რამეს, რასაც ადრე ვაკეთებდი, ვეღარ ვაკეთებ', 'იმდენად დაღლილი ვარ, რომ თითქმის ვეღარაფერს ვაკეთებ'],
+      optionsEn: ['I am no more tired or fatigued than usual', 'I get more tired or fatigued more easily than usual', 'I am too tired or fatigued to do a lot of the things I used to do', 'I am too tired or fatigued to do most of the things I used to do'] },
+    { id: 21, name: 'სექსუალური ინტერესის დაკარგვა', nameEn: 'Loss of Interest in Sex', domain: 'somatic',
+      options: ['სექსისადმი ინტერესის მხრივ ცვლილებები არ შემიმჩნევია', 'სექსი იმაზე ნაკლებად მაინტერესებს, ვიდრე ადრე', 'ახლა სექსისადმი ინტერესი ბევრად უფრო მცირეა', 'სექსისადმი ინტერესი სრულიად დავკარგე'],
+      optionsEn: ['I have not noticed any recent change in my interest in sex', 'I am less interested in sex than I used to be', 'I am much less interested in sex now', 'I have lost interest in sex completely'] }
+];
+
+// ==================== STATE ====================
+const userAnswers = {};
+let answeredCount = 0;
+let currentLang = 'ka';
+
+// ==================== LANGUAGE ====================
+function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = i18n[lang].htmlLang;
+    document.getElementById('btnKa').classList.toggle('active', lang === 'ka');
+    document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+
+    const t = i18n[lang];
+
+    // Static UI
+    document.getElementById('headerTitle').textContent = t.headerTitle;
+    document.getElementById('headerDesc').textContent = t.headerDesc;
+    document.getElementById('disclaimerBox').innerHTML = t.disclaimer;
+    document.getElementById('crisisTitle').innerHTML = t.crisisTitle;
+    document.getElementById('crisisText').innerHTML = t.crisisText;
+    document.getElementById('infoBox').innerHTML = t.infoBox;
+    document.getElementById('submitBtn').textContent = t.submitBtn;
+
+    // Rebuild questions with current language
+    rebuildQuestions();
+    updateProgress();
+
+    // If results are visible, recalculate
+    if (document.getElementById('results').classList.contains('active')) {
+        calculateResults();
+    }
+}
+
+function getQName(q) { return currentLang === 'en' ? q.nameEn : q.name; }
+function getQOptions(q) { return currentLang === 'en' ? q.optionsEn : q.options; }
+function getDomainLabel(domain) { return i18n[currentLang].domainLabels[domain]; }
+
+// ==================== BUILD ====================
+function rebuildQuestions() {
+    const container = document.getElementById('questionsContainer');
+    container.innerHTML = '';
+
+    bdiQuestions.forEach(q => {
+        const domainLabel = getDomainLabel(q.domain);
+        const numClass = q.domain === 'cognitive' ? 'qn-cognitive' : q.domain === 'somatic' ? 'qn-somatic' : 'qn-affective';
+        const tagClass = q.domain === 'cognitive' ? 'dt-cognitive' : q.domain === 'somatic' ? 'dt-somatic' : 'dt-affective';
+        const opts = getQOptions(q);
+
+        let optionsHtml = '';
+        opts.forEach((opt, i) => {
+            const sel = userAnswers[q.id] === i ? ' selected' : '';
+            optionsHtml += `
+                <div class="option-item opt-score-${i}${sel}" data-qid="${q.id}" data-score="${i}" onclick="selectOption(this)">
+                    <div class="option-score">${i}</div>
+                    <div class="option-text">${opt}</div>
+                </div>
+            `;
+        });
+
+        const answered = q.id in userAnswers;
+        const scoreHigh = answered && userAnswers[q.id] >= 2;
+
+        const block = document.createElement('div');
+        block.className = 'question-block' + (answered ? ' answered' : '') + (scoreHigh ? ' score-high' : '');
+        block.id = `qblock-${q.id}`;
+        block.innerHTML = `
+            <div class="question-header">
+                <div class="question-number ${numClass}">${q.id}</div>
+                <div class="question-title">${getQName(q)}</div>
+                <div class="domain-tag ${tagClass}">${domainLabel}</div>
+            </div>
+            <div class="option-list">${optionsHtml}</div>
+        `;
+        container.appendChild(block);
+    });
+}
+
+// ==================== INTERACTION ====================
+function selectOption(el) {
+    const qid = parseInt(el.dataset.qid);
+    const score = parseInt(el.dataset.score);
+
+    const block = document.getElementById(`qblock-${qid}`);
+    block.querySelectorAll('.option-item').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+
+    const wasNew = !(qid in userAnswers);
+    userAnswers[qid] = score;
+    if (wasNew) answeredCount++;
+
+    block.classList.add('answered');
+    block.classList.toggle('score-high', score >= 2);
+
+    if (qid === 9) {
+        document.getElementById('crisisBanner').classList.toggle('visible', score >= 1);
+    }
+
+    updateProgress();
+}
+
+function updateProgress() {
+    const t = i18n[currentLang];
+    const pct = Math.round((answeredCount / 21) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPercent').textContent = pct + '%';
+    document.getElementById('progressLabel').textContent = `${answeredCount} / 21 ${t.progressQ}`;
+
+    const btn = document.getElementById('submitBtn');
+    const hint = document.getElementById('submitHint');
+    if (answeredCount === 21) {
+        btn.disabled = false;
+        hint.textContent = t.hintAll;
+        hint.style.color = 'var(--success)';
+    } else {
+        btn.disabled = true;
+        hint.textContent = t.hintRemain(21 - answeredCount);
+        hint.style.color = 'var(--text-muted)';
+    }
+}
+
+// ==================== RESULTS ====================
+function calculateResults() {
+    if (answeredCount < 21) return;
+    const t = i18n[currentLang];
+
+    let totalScore = 0;
+    let cognitiveScore = 0, somaticScore = 0, affectiveScore = 0;
+    let cognitiveMax = 0, somaticMax = 0, affectiveMax = 0;
+
+    bdiQuestions.forEach(q => {
+        const s = userAnswers[q.id];
+        totalScore += s;
+        if (q.domain === 'cognitive') { cognitiveScore += s; cognitiveMax += 3; }
+        else if (q.domain === 'somatic') { somaticScore += s; somaticMax += 3; }
+        else { affectiveScore += s; affectiveMax += 3; }
+    });
+
+    let sevKey, sevClass, icon;
+    if (totalScore <= 13) { sevKey = 'minimal'; sevClass = 'sev-minimal'; icon = '✅'; }
+    else if (totalScore <= 19) { sevKey = 'mild'; sevClass = 'sev-mild'; icon = '🔶'; }
+    else if (totalScore <= 28) { sevKey = 'moderate'; sevClass = 'sev-moderate'; icon = '⚠️'; }
+    else { sevKey = 'severe'; sevClass = 'sev-severe'; icon = '🔴'; }
+
+    const severity = t.sevLabels[sevKey];
+    const sevDesc = t.sevDescs[sevKey];
+    const resultTitle = sevKey === 'minimal' ? t.resultTitleMinimal : t.resultTitlePattern(severity);
+
+    let html = '';
+
+    // Suicide check
+    const suicideScore = userAnswers[9] || 0;
+    if (suicideScore >= 1) {
+        html += `<div class="suicide-alert"><h3>${t.suicideAlertTitle}</h3><p>${t.suicideAlertText(suicideScore)}</p></div>`;
+    }
+
+    // Main result
+    const colorVar = sevClass === 'sev-minimal' ? 'success' : sevClass === 'sev-mild' ? 'warning' : sevClass === 'sev-moderate' ? 'orange' : 'danger';
+    html += `
+        <div class="result-main">
+            <div class="result-icon">${icon}</div>
+            <div class="result-score" style="color: var(--${colorVar})">${totalScore}</div>
+            <div class="result-max">${t.resultMax}</div>
+            <div class="result-title">${resultTitle}</div>
+            <div class="result-subtitle">${sevDesc}</div>
+            <span class="severity-badge ${sevClass}">${severity}</span>
+        </div>
+    `;
+
+    // Score bar
+    const markerPct = Math.min((totalScore / 63) * 100, 100);
+    const barLabels = [t.sevLabels.minimal, t.sevLabels.mild, t.sevLabels.moderate, t.sevLabels.severe];
+    html += `
+        <div class="score-bar-container">
+            <div class="score-bar-label">${t.scoreBarLabel}</div>
+            <div class="score-bar-track" style="position: relative;">
+                <div class="score-bar-segment seg-minimal" style="width: ${(13/63)*100}%;">0–13</div>
+                <div class="score-bar-segment seg-mild" style="width: ${(6/63)*100}%;">14–19</div>
+                <div class="score-bar-segment seg-moderate" style="width: ${(9/63)*100}%;">20–28</div>
+                <div class="score-bar-segment seg-severe" style="width: ${(35/63)*100}%;">29–63</div>
+                <div class="score-marker" style="left: ${markerPct}%;" data-score="${totalScore}"></div>
+                <div style="position:absolute; left:${(17/63)*100}%; top:-6px; width:1px; height:40px; background:var(--text-muted); opacity:0.5; border-radius:1px;" title="Clinical cutoff: 17"></div>
+            </div>
+            <div class="score-bar-labels">
+                <span style="width: ${(13/63)*100}%;">${barLabels[0]}</span>
+                <span style="width: ${(6/63)*100}%;">${barLabels[1]}</span>
+                <span style="width: ${(9/63)*100}%;">${barLabels[2]}</span>
+                <span style="width: ${(35/63)*100}%;">${barLabels[3]}</span>
+            </div>
+        </div>
+    `;
+
+    // Domain cards
+    const dl = t.domainLabels;
+    html += `
+        <div class="domain-grid">
+            <div class="domain-card dc-cognitive"><div class="domain-card-label">${dl.cognitive}</div><div class="domain-card-value">${cognitiveScore}</div><div class="domain-card-sub">/ ${cognitiveMax}</div></div>
+            <div class="domain-card dc-somatic"><div class="domain-card-label">${dl.somatic}</div><div class="domain-card-value">${somaticScore}</div><div class="domain-card-sub">/ ${somaticMax}</div></div>
+            <div class="domain-card dc-affective"><div class="domain-card-label">${dl.affective}</div><div class="domain-card-value">${affectiveScore}</div><div class="domain-card-sub">/ ${affectiveMax}</div></div>
+        </div>
+    `;
+
+    // Item detail
+    html += `<div class="detail-section"><h3>${t.detailTitle}</h3>`;
+    bdiQuestions.forEach(q => {
+        const s = userAnswers[q.id];
+        const numClass = q.domain === 'cognitive' ? 'qn-cognitive' : q.domain === 'somatic' ? 'qn-somatic' : 'qn-affective';
+        const displayName = currentLang === 'en' ? q.nameEn : `${q.name} <span style="color: var(--text-muted); font-size: 11px;">(${q.nameEn})</span>`;
+        html += `<div class="detail-row"><div class="detail-num ${numClass}">${q.id}</div><div class="detail-name">${displayName}</div><div class="detail-score-pill pill-${s}">${s}</div></div>`;
+    });
+    html += `</div>`;
+
+    // Scoring guide
+    const gh = t.guideHeaders;
+    const gr = t.guideRecs;
+    html += `
+        <div class="scoring-info">
+            <h3>${t.guideTitle}</h3>
+            <table class="scoring-table">
+                <thead><tr><th>${gh[0]}</th><th>${gh[1]}</th><th>${gh[2]}</th></tr></thead>
+                <tbody>
+                    <tr><td style="color: var(--success);">0 – 13</td><td>${t.sevLabels.minimal}</td><td>${gr[0]}</td></tr>
+                    <tr><td style="color: var(--warning);">14 – 19</td><td>${t.sevLabels.mild}</td><td>${gr[1]}</td></tr>
+                    <tr><td style="color: var(--orange);">20 – 28</td><td>${t.sevLabels.moderate}</td><td>${gr[2]}</td></tr>
+                    <tr><td style="color: var(--danger);">29 – 63</td><td>${t.sevLabels.severe}</td><td>${gr[3]}</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 14px;">${t.domainNote}</p>
+        </div>
+    `;
+
+    // Clinical notes
+    html += `<div class="scoring-info"><h3>${t.clinicalTitle}</h3><p>${t.clinicalText}</p><p style="margin-top: 8px;">${t.clinicalPoints}</p></div>`;
+
+    // Factor model
+    html += `<div class="scoring-info"><h3>${t.factorTitle}</h3><p>${t.factorText}</p><p style="margin-top: 8px;">${t.factorPoints}</p></div>`;
+
+    // Treatment
+    html += `<div class="treatment-note"><h3>${t.treatmentTitle}</h3><p>${t.treatmentText}</p></div>`;
+
+    // Repeat disclaimer
+    html += `<div class="disclaimer" style="margin-top: 20px;">${t.disclaimerRepeat}</div>`;
+
+    // Buttons
+    html += `
+        <button class="restart-btn" onclick="window.print()" style="margin-top: 16px;">${t.printBtn}</button>
+        <button class="restart-btn" onclick="restart()">${t.restartBtn}</button>
+    `;
+
+    // Display
+    document.getElementById('questionsContainer').style.display = 'none';
+    document.getElementById('submitArea').style.display = 'none';
+    document.getElementById('progressArea').style.display = 'none';
+    document.querySelector('.info-box').style.display = 'none';
+
+    const resultsEl = document.getElementById('results');
+    resultsEl.innerHTML = html;
+    resultsEl.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+    Object.keys(userAnswers).forEach(k => delete userAnswers[k]);
+    answeredCount = 0;
+
+    document.getElementById('questionsContainer').style.display = 'block';
+    document.getElementById('submitArea').style.display = 'block';
+    document.getElementById('progressArea').style.display = 'block';
+    document.querySelector('.info-box').style.display = 'block';
+    document.getElementById('crisisBanner').classList.remove('visible');
+    document.getElementById('results').classList.remove('active');
+    document.getElementById('results').innerHTML = '';
+
+    rebuildQuestions();
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== INIT ====================
+setLang('ka');
+</script>
+
+<script>
+function toggleTheme() {
+    var isLight = document.body.classList.toggle('light');
+    localStorage.setItem('psycho-theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeToggle').textContent = isLight ? '🌙' : '☀️';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სესია 2: Prompt Engineering-ის საფუძვლები — AI მოზარდებისთვის</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyan: #06b6d4;
+            --cyan-light: #67e8f9;
+            --purple: #8b5cf6;
+            --purple-light: #c4b5fd;
+            --pink: #ec4899;
+            --pink-light: #f9a8d4;
+            --mint: #34d399;
+            --peach: #fb923c;
+            --bg-cream: #fefdfb;
+            --bg-soft: #f8f7f4;
+            --bg-card: #ffffff;
+            --text-dark: #1e1b4b;
+            --text-body: #4b5563;
+            --text-muted: #9ca3af;
+            --shadow-soft: 0 4px 20px rgba(139, 92, 246, 0.08);
+            --shadow-hover: 0 12px 40px rgba(139, 92, 246, 0.15);
+        }
+
+        body {
+            font-family: 'Outfit', 'FiraGO', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 50%, var(--peach) 100%);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .session-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            background: var(--bg-card);
+            color: var(--purple);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--purple);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.next {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            color: white;
+        }
+
+        .nav-link.next:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Slide */
+        .slide {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(139, 92, 246, 0.06);
+            border-left: 5px solid var(--pink);
+            transition: all 0.3s ease;
+        }
+
+        .slide:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .slide-number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .slide h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .slide h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--purple);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .slide p {
+            color: var(--text-body);
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide ul, .slide ol {
+            color: var(--text-body);
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide li {
+            margin-bottom: 0.6rem;
+            font-size: 1.05rem;
+        }
+
+        /* Title Slide */
+        .slide.title-slide {
+            text-align: center;
+            padding: 4rem 2.5rem;
+            border-left: none;
+            border-top: 5px solid transparent;
+            border-image: linear-gradient(90deg, var(--purple), var(--pink), var(--peach)) 1;
+        }
+
+        .title-slide h2 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--purple) 50%, var(--pink) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-slide .emoji-big {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Info Boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(139, 92, 246, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--cyan);
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--cyan);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.08), rgba(236, 72, 153, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--peach);
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: var(--peach);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(6, 182, 212, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--mint);
+            margin: 1.5rem 0;
+        }
+
+        .key-points h4 {
+            color: #059669;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .safety-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--purple);
+            margin: 1.5rem 0;
+        }
+
+        .safety-box h4 {
+            color: var(--purple);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            border-color: var(--purple-light);
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .card h5 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* CLEAR Framework */
+        .clear-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .clear-item {
+            background: var(--bg-soft);
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+
+        .clear-item:nth-child(1) { border-color: var(--cyan); }
+        .clear-item:nth-child(2) { border-color: var(--purple); }
+        .clear-item:nth-child(3) { border-color: var(--pink); }
+        .clear-item:nth-child(4) { border-color: var(--peach); }
+        .clear-item:nth-child(5) { border-color: var(--mint); }
+
+        .clear-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .clear-letter {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .clear-word {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .clear-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Comparison */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-bad {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(251, 146, 60, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .comparison-bad h4 {
+            color: #ef4444;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-good {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(6, 182, 212, 0.08));
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--mint);
+        }
+
+        .comparison-good h4 {
+            color: #059669;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Demo Box */
+        .demo-box {
+            background: linear-gradient(135deg, var(--bg-soft), rgba(139, 92, 246, 0.05));
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 1.5rem 0;
+            border: 2px dashed var(--purple-light);
+        }
+
+        .demo-box h4 {
+            color: var(--purple);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .prompt-example {
+            background: var(--bg-card);
+            padding: 1.2rem;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            margin: 1rem 0;
+        }
+
+        .prompt-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .prompt-bad {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .prompt-good {
+            border-color: var(--mint);
+            background: rgba(52, 211, 153, 0.05);
+        }
+
+        /* Activity Box */
+        .activity-box {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(139, 92, 246, 0.08));
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 1.5rem 0;
+            border: 2px solid var(--pink-light);
+        }
+
+        .activity-box h4 {
+            color: var(--pink);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .activity-steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-steps li {
+            counter-increment: step;
+            padding: 0.8rem 0 0.8rem 3rem;
+            position: relative;
+        }
+
+        .activity-steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--pink), var(--purple));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Battle Box */
+        .battle-box {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            padding: 2rem;
+            border-radius: 20px;
+            color: white;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .battle-box h4 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .battle-rules {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            text-align: left;
+        }
+
+        .battle-rules li {
+            padding: 0.4rem 0;
+        }
+
+        /* Homework Box */
+        .homework-box {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            padding: 2rem;
+            border-radius: 20px;
+            color: white;
+            margin: 1.5rem 0;
+        }
+
+        .homework-box h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .homework-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .homework-box li {
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+        }
+
+        .homework-box li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--cyan-light);
+            font-weight: bold;
+        }
+
+        /* Role Cards */
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .role-card {
+            background: var(--bg-soft);
+            padding: 1.2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .role-emoji {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-name {
+            font-weight: 700;
+            color: var(--purple);
+            font-size: 0.95rem;
+        }
+
+        /* Two Column */
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-soft);
+            border-radius: 50px;
+            padding: 0.3rem;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+            border-radius: 50px;
+            width: 25%; /* 2/8 sessions */
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--purple);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 1.5rem;
+            }
+
+            .title-slide {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .title-slide h2 {
+                font-size: 1.8rem;
+            }
+
+            .cards-grid, .clear-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-bar {
+                justify-content: center;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .header {
+                position: relative;
+            }
+
+            .slide {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="session-badge">სესია 2 / 8</div>
+            <h1>Prompt Engineering-ის საფუძვლები</h1>
+            <p class="header-subtitle">Basics of Prompt Engineering</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <a href="lecture-1-slides.html" class="nav-link">← სესია 1</a>
+            <a href="lecture-3-slides.html" class="nav-link next">სესია 3 →</a>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide">
+            <span class="emoji-big">✨</span>
+            <h2>Prompt Engineering — AI-ისთან საუბრის ხელოვნება</h2>
+            <p style="font-size: 1.2rem; color: var(--text-body);">ისწავლე, როგორ დაწერო იდეალური prompt და მიიღო საუკეთესო შედეგი AI-ისგან</p>
+            <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <div class="session-badge" style="background: var(--purple);">კვირა</div>
+                <div class="session-badge" style="background: var(--pink);">14:00-16:30</div>
+                <div class="session-badge" style="background: var(--peach);">2.5 საათი</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Today's Agenda -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 1</span>
+            <h2>📋 დღევანდელი გეგმა</h2>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">📝</span>
+                    <h5>დავალების განხილვა</h5>
+                    <p>14:00 - 14:20</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🔬</span>
+                    <h5>Prompt ანატომია</h5>
+                    <p>14:20 - 14:55</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">⚖️</span>
+                    <h5>კარგი vs ცუდი</h5>
+                    <p>14:55 - 15:30</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">☕</span>
+                    <h5>შესვენება</h5>
+                    <p>15:30 - 15:45</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">⚔️</span>
+                    <h5>Prompt Battle</h5>
+                    <p>15:45 - 16:15</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🎯</span>
+                    <h5>შეჯამება</h5>
+                    <p>16:15 - 16:30</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Homework Review -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 2</span>
+            <h2>📝 დავალების განხილვა</h2>
+
+            <div class="activity-box">
+                <h4>🎤 გააზიარე შენი გამოცდილება!</h4>
+                <p>გვიამბე შენი „AI-ის დღიურის“ შესახებ:</p>
+                <ol class="activity-steps">
+                    <li>რამდენჯერ გამოიყენე ChatGPT ამ კვირაში?</li>
+                    <li>რომელი საუბარი იყო ყველაზე საინტერესო?</li>
+                    <li>რამემ გაგაკვირვა ან იმედი გაგიცრუვა?</li>
+                    <li>აღმოაჩინე რაიმე „ჰალუცინაცია“?</li>
+                </ol>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 რას შეამჩნევდით?</h4>
+                <p>ზოგიერთი კითხვა უკეთეს პასუხს იღებს, ვიდრე სხვა. <strong>დღეს გავიგებთ, რატომ!</strong></p>
+            </div>
+        </div>
+
+        <!-- Slide 4: What is Prompt Engineering -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 3</span>
+            <h2>🎯 რა არის Prompt Engineering?</h2>
+
+            <p style="font-size: 1.2rem; text-align: center; padding: 1rem; background: var(--bg-soft); border-radius: 12px;">
+                <strong>Prompt Engineering</strong> — AI-ისთვის ისეთი ინსტრუქციის დაწერის ხელოვნება, რომ მიიღო <strong>საუკეთესო შესაძლო შედეგი</strong>
+            </p>
+
+            <div class="two-column" style="margin-top: 2rem;">
+                <div class="highlight-box">
+                    <h4>🤔 რატომ არის მნიშვნელოვანი?</h4>
+                    <ul>
+                        <li>იგივე AI სხვადასხვა პასუხს იძლევა</li>
+                        <li>შენი კითხვის ხარისხი = პასუხის ხარისხი</li>
+                        <li>დაზოგავ დროს და მიიღებ უკეთეს შედეგს</li>
+                    </ul>
+                </div>
+                <div class="key-points">
+                    <h4>✅ კარგი ამბავი:</h4>
+                    <p>Prompt Engineering არის <strong>უნარი</strong>, რომელიც ისწავლება! რაც მეტს ივარჯიშებ, მით უკეთესი გახდები.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: CLEAR Framework -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 4</span>
+            <h2>📐 CLEAR ჩარჩო — შენი საიდუმლო იარაღი</h2>
+
+            <p>დაიმახსოვრე ეს 5 ასო და შენი prompts გაუმჯობესდება მაშინვე!</p>
+
+            <div class="clear-grid">
+                <div class="clear-item">
+                    <span class="clear-letter">C</span>
+                    <div class="clear-word">Context</div>
+                    <div class="clear-desc">Context — ფონური ინფორმაცია</div>
+                </div>
+                <div class="clear-item">
+                    <span class="clear-letter">L</span>
+                    <div class="clear-word">Language</div>
+                    <div class="clear-desc">Language — მარტივი და გასაგები ენა</div>
+                </div>
+                <div class="clear-item">
+                    <span class="clear-letter">E</span>
+                    <div class="clear-word">Examples</div>
+                    <div class="clear-desc">Examples — მაგალითები (რა გსურთ)</div>
+                </div>
+                <div class="clear-item">
+                    <span class="clear-letter">A</span>
+                    <div class="clear-word">Audience</div>
+                    <div class="clear-desc">Audience — აუდიტორია (ვისთვის)</div>
+                </div>
+                <div class="clear-item">
+                    <span class="clear-letter">R</span>
+                    <div class="clear-word">Role</div>
+                    <div class="clear-desc">Role — როლი (ვინ უნდა იყოს AI)</div>
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 მაგალითი CLEAR-ით:</h4>
+                <div class="prompt-example prompt-good">
+                    <strong>[R]</strong> იყავი გამოცდილი მასწავლებელი.<br>
+                    <strong>[C]</strong> ვამზადებ პრეზენტაციას კლიმატის ცვლილებაზე მე-10 კლასისთვის.<br>
+                    <strong>[A]</strong> მოსწავლეები 15–16 წლის არიან.<br>
+                    <strong>[L]</strong> გამოიყენე მარტივი ენა და საინტერესო ფაქტები.<br>
+                    <strong>[E]</strong> მსგავსი სტილით: „იცოდით, რომ...“
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Context -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 5</span>
+            <h2>📍 C = Context (კონტექსტი)</h2>
+
+            <p>უთხარი AI-ს, <strong>რა სიტუაციაში</strong> ხარ და <strong>რისთვის</strong> გჭირდება დახმარება.</p>
+
+            <div class="comparison-container">
+                <div class="comparison-bad">
+                    <h4>❌ კონტექსტის გარეშე:</h4>
+                    <div class="prompt-example prompt-bad">
+                        დაწერე ესე გარემოს შესახებ.
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">ძალიან ბუნდოვანია — AI-მ არ იცის, რა სიგრძის, რა სტილის ან რა დონის პასუხია საჭირო</p>
+                </div>
+                <div class="comparison-good">
+                    <h4>✅ კონტექსტით:</h4>
+                    <div class="prompt-example prompt-good">
+                        მე ვარ მე-10 კლასის მოსწავლე. უნდა დავწერო 500-სიტყვიანი ესე გარემოს დაბინძურებაზე ბიოლოგიის გაკვეთილისთვის.
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--mint); margin-top: 0.5rem;">AI-მ იცის დონე, სიგრძე და მიზანი!</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ კონტექსტში ჩართე:</h4>
+                <ul>
+                    <li><strong>ვინ ხარ:</strong> მოსწავლე, ბლოგერი, მეგობრისთვის მწერი...</li>
+                    <li><strong>რისთვის გჭირდება:</strong> დავალება, პროექტი, სახალისო...</li>
+                    <li><strong>რა შეზღუდვებია:</strong> სიგრძე, დრო, ფორმატი...</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Role -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 6</span>
+            <h2>🎭 R = Role (როლი)</h2>
+
+            <p>უთხარი AI-ს, <strong>ვინ უნდა იყოს</strong> — ეს ცვლის მისი პასუხის სტილსა და ხარისხს!</p>
+
+            <div class="role-cards">
+                <div class="role-card">
+                    <span class="role-emoji">👨‍🏫</span>
+                    <div class="role-name">მასწავლებელი</div>
+                </div>
+                <div class="role-card">
+                    <span class="role-emoji">👨‍💻</span>
+                    <div class="role-name">პროგრამისტი</div>
+                </div>
+                <div class="role-card">
+                    <span class="role-emoji">✍️</span>
+                    <div class="role-name">მწერალი</div>
+                </div>
+                <div class="role-card">
+                    <span class="role-emoji">🎨</span>
+                    <div class="role-name">დიზაინერი</div>
+                </div>
+                <div class="role-card">
+                    <span class="role-emoji">🧑‍🔬</span>
+                    <div class="role-name">მეცნიერი</div>
+                </div>
+                <div class="role-card">
+                    <span class="role-emoji">🎬</span>
+                    <div class="role-name">რეჟისორი</div>
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 სცადე განსხვავება:</h4>
+                <div class="prompt-label">ჩვეულებრივი:</div>
+                <div class="prompt-example">
+                    აგვიხსენი, რა არის ფოტოსინთეზი.
+                </div>
+                <div class="prompt-label">როლით:</div>
+                <div class="prompt-example prompt-good">
+                    იყავი მხიარული ბიოლოგიის მასწავლებელი, რომელიც ბავშვებს ხუმრობებით უხსნის რთულ თემებს. აგვიხსენი, რა არის ფოტოსინთეზი.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Examples -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 7</span>
+            <h2>📝 E = Examples (მაგალითები)</h2>
+
+            <p>თუ აჩვენებ AI-ს, <strong>რა სტილი გსურს</strong>, ის უკეთეს შედეგს მოგცემს!</p>
+
+            <div class="comparison-container">
+                <div class="comparison-bad">
+                    <h4>❌ მაგალითის გარეშე:</h4>
+                    <div class="prompt-example prompt-bad">
+                        დაწერე სოციალური მედიის პოსტი ჩემი კაფეს შესახებ.
+                    </div>
+                </div>
+                <div class="comparison-good">
+                    <h4>✅ მაგალითით:</h4>
+                    <div class="prompt-example prompt-good">
+                        დაწერე სოციალური მედიის პოსტი ჩემი კაფეს შესახებ. სტილი იყოს მსგავსი: „დილა კარგი ყავით იწყება ☕ მოდი და დააგემოვნე ჩვენი ახალი ლატე!“
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 Few-Shot Prompting</h4>
+                <p>როცა AI-ს რამდენიმე მაგალითს აძლევ, ეს ეხმარება მას უკეთ გაიგოს, თუ რა გინდა. ამას ჰქვია <strong>Few-Shot Learning</strong>!</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 Few-Shot მაგალითი:</h4>
+                <div class="prompt-example prompt-good">
+                    შემიქმენი ხუმრობები ცხოველების შესახებ ამ სტილით:<br><br>
+                    მაგალითი 1: რატომ ვერ თამაშობს კატა პოკერს? იმიტომ, რომ ყოველთვის ბლეფავს!<br>
+                    მაგალითი 2: რა უთხრა ძაღლმა ხეს? „გაუ!“<br><br>
+                    ახლა დაწერე 3 ახალი ხუმრობა.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Good vs Bad Prompts -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 8</span>
+            <h2>⚖️ კარგი vs ცუდი Prompts</h2>
+
+            <h3>მაგალითი 1: სასკოლო დავალება</h3>
+            <div class="comparison-container">
+                <div class="comparison-bad">
+                    <h4>❌ ცუდი:</h4>
+                    <div class="prompt-example prompt-bad">დაწერე რაღაც მეორე მსოფლიო ომზე</div>
+                </div>
+                <div class="comparison-good">
+                    <h4>✅ კარგი:</h4>
+                    <div class="prompt-example prompt-good">მე ვარ მე-9 კლასის მოსწავლე. დამეხმარე დავწერო 300-სიტყვიანი შეჯამება მეორე მსოფლიო ომის მთავარ მიზეზებზე. გამოიყენე მარტივი ენა და დაყავი 3 პარაგრაფად.</div>
+                </div>
+            </div>
+
+            <h3>მაგალითი 2: კრეატიული პროექტი</h3>
+            <div class="comparison-container">
+                <div class="comparison-bad">
+                    <h4>❌ ცუდი:</h4>
+                    <div class="prompt-example prompt-bad">დაწერე ისტორია</div>
+                </div>
+                <div class="comparison-good">
+                    <h4>✅ კარგი:</h4>
+                    <div class="prompt-example prompt-good">იყავი ფანტასტიკის მწერალი. დაწერე მოკლე (200 სიტყვა) ისტორია თინეიჯერზე, რომელიც აღმოაჩენს, რომ მის ტელეფონს შეუძლია მომავლის ჩვენება. დასასრული დატოვე ღია.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Practice -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 9</span>
+            <h2>🎯 პრაქტიკა: გადააკეთე Prompts</h2>
+
+            <div class="activity-box">
+                <h4>✏️ დავალება: გააუმჯობესე ეს prompts!</h4>
+                <p>გამოიყენე CLEAR ჩარჩო და გადააკეთე ეს ცუდი prompts გამართულად:</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>გადასაკეთებელი 1:</h4>
+                <div class="prompt-example prompt-bad">„მითხარი რაიმე საინტერესო“</div>
+                <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">🤔 რა კონტექსტს დაამატებდი? რა როლს მისცემდი AI-ის?</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>გადასაკეთებელი 2:</h4>
+                <div class="prompt-example prompt-bad">„დამეხმარე მათემატიკაში“</div>
+                <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">🤔 რა თემა? რომელი კლასი? რა ტიპის დახმარება?</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>გადასაკეთებელი 3:</h4>
+                <div class="prompt-example prompt-bad">„დაწერე პოსტი“</div>
+                <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">🤔 რომელი პლატფორმა? რა თემა? რა სტილი?</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Ethics -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 10</span>
+            <h2>🛡️ AI-ის ეთიკური გამოყენება</h2>
+
+            <p>Prompt Engineering-ის ძალა პასუხისმგებლობით უნდა გამოიყენო!</p>
+
+            <div class="safety-box">
+                <h4>🚫 რა არ უნდა სთხოვო AI-ის:</h4>
+                <ul>
+                    <li><strong>სხვის ნაცვლად დავალების დაწერა</strong> — ეს პლაგიატია!</li>
+                    <li><strong>ყალბი ინფორმაციის შექმნა</strong> — დეზინფორმაცია</li>
+                    <li><strong>სხვისი იმიტაცია</strong> — მეგობრის/მასწავლებლის სტილით წერა</li>
+                    <li><strong>საზიანო კონტენტი</strong> — ბულინგი, სიძულვილი</li>
+                    <li><strong>გამოცდის პასუხები</strong> — ეს მოტყუებაა!</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ როგორ გამოიყენო AI სწორად სკოლაში:</h4>
+                <ul>
+                    <li><strong>იდეების გენერირებისთვის</strong> — „მომეცი 5 თემა ესეისთვის“</li>
+                    <li><strong>ახსნისთვის</strong> — „ამიხსენი ეს კონცეფცია მარტივად“</li>
+                    <li><strong>შემოწმებისთვის</strong> — „გადახედე ჩემს ტექსტს გრამატიკულ შეცდომებზე“</li>
+                    <li><strong>მომზადებისთვის</strong> — „დამისვი კითხვები ამ თემაზე“</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ ოქროს წესი:</h4>
+                <p><strong>AI = დამხმარე, არა შემცვლელი.</strong> შენ უნდა იფიქრო, ისწავლო და შექმნა — AI მხოლოდ გეხმარება პროცესში!</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Prompt Battle -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 11</span>
+            <h2>⚔️ Prompt Battle — გუნდური შეჯიბრი!</h2>
+
+            <div class="battle-box">
+                <h4>🏆 ვინ დაწერს საუკეთესო Prompt-ს?</h4>
+                <div class="battle-rules">
+                    <h5 style="margin-bottom: 0.5rem;">წესები:</h5>
+                    <ul>
+                        <li>დაიყოფით 3–4-კაციან გუნდებად</li>
+                        <li>თითოეული გუნდი მიიღებს ერთსა და იმავე დავალებას</li>
+                        <li>გუნდს აქვს 5 წუთი prompt-ის დასაწერად</li>
+                        <li>ყველა გუნდის prompt იტესტება ChatGPT-ზე</li>
+                        <li>კლასი აფასებს შედეგებს!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">📝</span>
+                    <h5>რაუნდი 1</h5>
+                    <p>სასკოლო დავალება</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🎨</span>
+                    <h5>რაუნდი 2</h5>
+                    <p>კრეატიული პროექტი</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🎭</span>
+                    <h5>რაუნდი 3</h5>
+                    <p>როლის მინიჭება</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🎯 შეფასების კრიტერიუმები:</h4>
+                <ul>
+                    <li><strong>CLEAR</strong> — გამოყენებულია თუ არა ჩარჩოს ელემენტები?</li>
+                    <li><strong>შედეგი</strong> — რამდენად კარგი პასუხი მივიღეთ?</li>
+                    <li><strong>კრეატიულობა</strong> — რამდენად ორიგინალურია მიდგომა?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 13: Battle Challenges -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 12</span>
+            <h2>🎮 Prompt Battle — დავალებები</h2>
+
+            <div class="demo-box">
+                <h4>რაუნდი 1: სასკოლო დავალება</h4>
+                <p style="text-align: center; font-size: 1.1rem;">დაწერეთ prompt, რომელიც დაეხმარება მე-10 კლასელს გაიგოს <strong>პითაგორას თეორემა</strong> და ამოხსნას 3 მაგალითი.</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>რაუნდი 2: კრეატიული პროექტი</h4>
+                <p style="text-align: center; font-size: 1.1rem;">დაწერეთ prompt, რომელიც შექმნის <strong>Instagram პოსტის იდეებს</strong> ეკოლოგიური ცხოვრების წესის პოპულარიზაციისთვის.</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>რაუნდი 3: როლის მინიჭება</h4>
+                <p style="text-align: center; font-size: 1.1rem;">დაწერეთ prompt, სადაც AI უნდა იყოს <strong>კარიერის კონსულტანტი</strong> და დაეხმაროს თინეიჯერს პროფესიის არჩევაში.</p>
+            </div>
+
+            <div class="key-points">
+                <h4>💡 რჩევა გუნდებს:</h4>
+                <ul>
+                    <li>ჯერ განიხილეთ, თუ რა გსურთ მიიღოთ</li>
+                    <li>გამოიყენეთ CLEAR ჩარჩო</li>
+                    <li>იყავით კონკრეტული და დეტალური</li>
+                    <li>მოითხოვეთ კონკრეტული ფორმატი</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 13</span>
+            <h2>📋 რა ვისწავლეთ დღეს?</h2>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <span class="card-icon">📐</span>
+                    <h5>CLEAR ჩარჩო</h5>
+                    <p>Context, Language, Examples, Audience, Role</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">⚖️</span>
+                    <h5>კარგი vs ცუდი</h5>
+                    <p>დეტალური > ბუნდოვანი</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🎭</span>
+                    <h5>როლის ძალა</h5>
+                    <p>AI-ის პერსონა ცვლის შედეგს</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🛡️</span>
+                    <h5>ეთიკა</h5>
+                    <p>AI = დამხმარე, არა შემცვლელი</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ დასამახსოვრებელი ფორმულა:</h4>
+                <p style="font-size: 1.2rem; text-align: center; padding: 1rem;">
+                    <strong>კარგი Prompt = კონტექსტი + როლი + კონკრეტული მოთხოვნა + სასურველი ფორმატი</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Homework -->
+        <div class="slide">
+            <span class="slide-number">სლაიდი 14</span>
+            <h2>📝 საშინაო დავალება</h2>
+
+            <div class="homework-box">
+                <h4>დავალება: „Prompt Portfolio“ (7 ქულა)</h4>
+                <ul>
+                    <li>შექმენი <strong>10 საუკეთესო prompt-ის</strong> კოლექცია</li>
+                    <li>თითოეული prompt უნდა იყოს შენთვის საინტერესო თემაზე</li>
+                    <li>გამოიყენე <strong>CLEAR ჩარჩო</strong></li>
+                    <li>თითოეულ prompt-ს დაურთე AI-ის პასუხის სქრინშოტი</li>
+                    <li>დაწერე, <strong>რატომ მოგეწონა</strong> შედეგი</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📁 ფორმატი:</h4>
+                <p>Google Docs ან Canva პრეზენტაცია</p>
+                <p><strong>ვადა:</strong> 1 კვირა (მომდევნო შაბათამდე)</p>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 შემდეგ სესიაზე (ონლაინ):</h4>
+                <p style="text-align: center; font-size: 1.1rem;">
+                    <strong>AI სასწავლო ასისტენტად</strong> — ისწავლი, როგორ გამოიყენო AI ესეების, რეფერატებისა და გამოცდებისთვის მომზადებაში!
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 16: Questions -->
+        <div class="slide title-slide">
+            <span class="emoji-big">❓</span>
+            <h2>კითხვები?</h2>
+            <p style="font-size: 1.2rem; color: var(--text-body);">ნებისმიერ კითხვას სიამოვნებით ვუპასუხებ!</p>
+
+            <div class="key-points" style="text-align: left; max-width: 500px; margin: 2rem auto;">
+                <h4>📚 დამატებითი რესურსები:</h4>
+                <ul>
+                    <li><a href="https://www.promptingguide.ai/" target="_blank">Prompting Guide</a></li>
+                    <li><a href="https://learnprompting.org/" target="_blank">Learn Prompting</a></li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <p style="color: var(--text-muted);">📧 basilaia@gmail.com</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-bar" style="margin-top: 2rem;">
+            <a href="lecture-1-slides.html" class="nav-link">← სესია 1: AI შესავალი</a>
+            <a href="lecture-3-slides.html" class="nav-link next">სესია 3: AI სასწავლო ასისტენტად →</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>AI მოზარდებისთვის © 2026 | <a href="index.html">Smart Academy</a></p>
+            <p>სესია 2 / 8</p>
+        </div>
+    </div>
+</body>
+</html>

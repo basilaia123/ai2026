@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ტერმინთა ლექსიკონი - GIPA AI Intensive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#001a33',
+                            900: '#003366',
+                            800: '#004080',
+                            700: '#004d99',
+                            600: '#0059b3',
+                            500: '#0066cc',
+                            400: '#3385d6',
+                            300: '#66a3e0',
+                            200: '#99c2eb',
+                            100: '#cce0f5',
+                            50:  '#e6f0fa',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; }
+
+        .term-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .term-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 51, 102, 0.1);
+        }
+        .term-card.hidden-by-search,
+        .term-card.hidden-by-filter {
+            display: none;
+        }
+
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+        .filter-btn.active {
+            background-color: #003366;
+            color: white;
+            border-color: #003366;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+
+    <!-- ════════════ HEADER ════════════ -->
+    <header class="bg-navy-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.04]" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><defs><pattern id=&quot;g&quot; width=&quot;60&quot; height=&quot;60&quot; patternUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M60 0L0 60M-15 15L15-15M45 75L75 45&quot; stroke=&quot;white&quot; stroke-width=&quot;1&quot; fill=&quot;none&quot;/></pattern></defs><rect fill=&quot;url(%23g)&quot; width=&quot;60&quot; height=&quot;60&quot;/></svg>');"></div>
+
+        <div class="relative max-w-4xl mx-auto px-6 py-10 md:py-14">
+            <!-- Back button -->
+            <a href="index.html" class="inline-flex items-center gap-2 text-blue-300 hover:text-white transition-colors text-sm mb-6 group">
+                <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                მთავარ გვერდზე დაბრუნება
+            </a>
+
+            <div class="flex items-center gap-4 mb-3">
+                <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">ტერმინთა ლექსიკონი</h1>
+                    <p class="text-blue-300 text-sm mt-1">AI ტერმინები ქართულ-ინგლისური განმარტებებით</p>
+                </div>
+            </div>
+
+            <a href="prompts.html" class="inline-flex items-center gap-2 mt-4 text-blue-300 hover:text-white transition-colors text-sm group">
+                პრომპტების კოლექცია
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+
+        <!-- Bottom wave -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full"><path d="M0 40V20C240 0 480 0 720 20C960 40 1200 40 1440 20V40H0Z" fill="#f9fafb"/></svg>
+        </div>
+    </header>
+
+    <!-- ════════════ SEARCH ════════════ -->
+    <section class="max-w-4xl mx-auto px-6 pt-8 pb-4 w-full">
+        <div class="relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="ტერმინის ძიება..."
+                class="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent shadow-sm"
+            >
+            <span id="resultCount" class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400"></span>
+        </div>
+    </section>
+
+    <!-- ════════════ CATEGORY FILTERS ════════════ -->
+    <section class="max-w-4xl mx-auto px-6 pb-2 w-full">
+        <div class="flex flex-wrap gap-2">
+            <button onclick="filterCategory('all')" class="filter-btn active text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">ყველა</button>
+            <button onclick="filterCategory('basics')" class="filter-btn text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">AI საფუძვლები</button>
+            <button onclick="filterCategory('prompting')" class="filter-btn text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">პრომპტინგი</button>
+            <button onclick="filterCategory('academic')" class="filter-btn text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">აკადემიური</button>
+            <button onclick="filterCategory('ethics')" class="filter-btn text-sm font-medium border border-gray-200 rounded-lg px-3.5 py-1.5 bg-white text-gray-700 hover:border-navy-300">ეთიკა</button>
+        </div>
+    </section>
+
+    <!-- ════════════ TERMS ════════════ -->
+    <main class="max-w-4xl mx-auto px-6 pb-16 flex-1 w-full">
+        <div id="termsGrid" class="grid gap-3 mt-2">
+
+            <!-- LLM -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="llm large language model დიდი ენობრივი მოდელი" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <span class="text-xs font-bold">LLM</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">LLM</h3>
+                        <span class="text-xs text-gray-400">Large Language Model</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ხელოვნური ინტელექტის მოდელი, რომელიც გაწვრთნილია უზარმაზარ ტექსტურ მონაცემებზე.</p>
+                </div>
+            </div>
+
+            <!-- Prompt -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="prompt პრომპტი ინსტრუქცია რომელსაც ვაძლევთ" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Prompt</h3>
+                        <span class="text-xs text-gray-400">პრომპტი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">შეტყობინება ან ინსტრუქცია, რომელსაც მომხმარებელი აძლევს AI-ს სასურველი პასუხის მისაღებად.</p>
+                </div>
+            </div>
+
+            <!-- Hallucination -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="hallucination ჰალუცინაცია იგონებს არარსებულ ფაქტს" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.834-1.964-.834-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Hallucination</h3>
+                        <span class="text-xs text-gray-400">ჰალუცინაცია</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ფაქტობრივად მცდარი ინფორმაცია, რომელსაც AI წარმოადგენს დამაჯერებელი ფორმით.</p>
+                </div>
+            </div>
+
+            <!-- Token -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="token ტოკენი ტექსტის მცირე ნაწილი სიტყვა მარცვალი" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Token</h3>
+                        <span class="text-xs text-gray-400">ტოკენი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ტექსტის მინიმალური ერთეული (სიტყვა, ნაწილი ან სიმბოლო), რომელსაც AI იყენებს ინფორმაციის დასამუშავებლად.</p>
+                </div>
+            </div>
+
+            <!-- Zero-Shot Prompting -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="zero-shot prompting ზერო-შოტ დავალების მიცემა მაგალითების გარეშე" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <span class="text-xs font-bold">0</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Zero-Shot Prompting</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">AI-სთვის დავალების მიცემა ყოველგვარი წინასწარი მაგალითის გარეშე.</p>
+                </div>
+            </div>
+
+            <!-- Few-Shot Prompting -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="few-shot prompting ფიუ-შოტ დავალების მიცემა რამდენიმე მაგალითთან ერთად" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <span class="text-xs font-bold">N</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Few-Shot Prompting</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">AI-სთვის დავალების მიცემა რამდენიმე მსგავსი მაგალითის გამოყენებით.</p>
+                </div>
+            </div>
+
+            <!-- Chain-of-Thought -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="chain-of-thought cot ეტაპობრივად იაზროვნოს" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Chain-of-Thought</h3>
+                        <span class="text-xs text-gray-400">CoT</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ტექნიკა, რომელიც აიძულებს AI-ს, წარმოადგინოს თავისი მსჯელობის ეტაპობრივი ჯაჭვი საბოლოო პასუხამდე.</p>
+                </div>
+            </div>
+
+            <!-- Generative AI -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="generative ai გენერაციული ხელოვნური ინტელექტი ახალი კონტენტის შექმნა ტექსტი ფოტო" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Generative AI</h3>
+                        <span class="text-xs text-gray-400">გენერაციული AI</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ხელოვნური ინტელექტის ტიპი, რომელსაც შეუძლია სრულიად ახალი კონტენტის (ტექსტი, სურათი, კოდი) შექმნა.</p>
+                </div>
+            </div>
+
+            <!-- Temperature -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="temperature ტემპერატურა პარამეტრი კრეატიულობა ზუსტი კრეატიული" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Temperature</h3>
+                        <span class="text-xs text-gray-400">ტემპერატურა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">პარამეტრი, რომელიც აკონტროლებს AI-ს პასუხების ვარიაციულობას და კრეატიულობას.</p>
+                </div>
+            </div>
+
+            <!-- Multimodal -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="multimodal მულტიმოდალური ტექსტი ფოტო ხმა" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Multimodal</h3>
+                        <span class="text-xs text-gray-400">მულტიმოდალური</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">მოდელი, რომელსაც შეუძლია სხვადასხვა ტიპის მონაცემების (ტექსტი, გამოსახულება, ხმა) ერთდროული დამუშავება.</p>
+                </div>
+            </div>
+
+            <!-- GDPR -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="gdpr მონაცემთა დაცვა რეგულაცია კონფიდენციალურობა" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.213-2.035-.598-2.944z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">GDPR</h3>
+                        <span class="text-xs text-gray-400">მონაცემთა დაცვის რეგულაცია</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ევროკავშირის რეგულაცია, რომელიც იცავს ფიზიკური პირების პერსონალურ მონაცემებსა და კონფიდენციალურობას.</p>
+                </div>
+            </div>
+
+            <!-- Bias -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="bias მიკერძოება სუბიექტურობა შეცდომა მონაცემებში" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Bias</h3>
+                        <span class="text-xs text-gray-400">მიკერძოება</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">წინასწარგანწყობა ან სუბიექტურობა, რომელიც AI მოდელმა მონაცემებიდან აითვისა.</p>
+                </div>
+            </div>
+
+            <!-- Prompt Engineering -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="prompt engineering პრომპტ-ინჟინერია ეფექტური ინსტრუქცია" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Prompt Engineering</h3>
+                        <span class="text-xs text-gray-400">პრომპტ-ინჟინერია</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ეფექტური პრომპტების (მითითებების) შედგენისა და ოპტიმიზაციის პროცესი.</p>
+                </div>
+            </div>
+
+            <!-- C.R.E.A.T.E -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="create formula ფორმულა სტრუქტურა პრომპტის" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <span class="text-xs font-bold">C.R.</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">C.R.E.A.T.E</h3>
+                        <span class="text-xs text-gray-400">პრომპტის ფორმულა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ეფექტური პრომპტის სტრუქტურა: Context, Role, Explicit instructions, Ask, Type of output, Examples.</p>
+                </div>
+            </div>
+
+            <!-- Context Window -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="context window კონტექსტის ფანჯარა მეხსიერება მოცულობა" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Context Window</h3>
+                        <span class="text-xs text-gray-400">კონტექსტის ფანჯარა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ინფორმაციის მაქსიმალური მოცულობა, რომლის „აღქმა“ და გათვალისწინება AI-ს შეუძლია ერთდროულად.</p>
+                </div>
+            </div>
+
+            <!-- Bloom's Taxonomy -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="bloom's taxonomy ბლუმის ტაქსონომია სწავლის დონეები" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Bloom's Taxonomy</h3>
+                        <span class="text-xs text-gray-400">ბლუმის ტაქსონომია</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">საგანმანათლებლო მიზნების იერარქიული კლასიფიკაცია აზროვნების სხვადასხვა დონის მიხედვით.</p>
+                </div>
+            </div>
+
+            <!-- One-Shot Prompting -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="one-shot prompting ვან-შოტ დავალება ერთი მაგალითით" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <span class="text-xs font-bold">1</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">One-Shot Prompting</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">დავალების მიცემა AI-სთვის მხოლოდ ერთი კონკრეტული მაგალითის ჩვენებით.</p>
+                </div>
+            </div>
+
+            <!-- Iterative Refinement -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="iterative refinement იტერაციული გაუმჯობესება დაზუსტება დიალოგით" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Iterative Refinement</h3>
+                        <span class="text-xs text-gray-400">იტერაციული გაუმჯობესება</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">პასუხის ეტაპობრივი დახვეწა და დაზუსტება AI-სთან დიალოგის გაგრძელების გზით.</p>
+                </div>
+            </div>
+
+            <!-- Role Prompting -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="role prompting როლური პრომპტინგი პერსონა ექსპერტის როლი" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Role Prompting</h3>
+                        <span class="text-xs text-gray-400">როლური პრომპტინგი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">AI-სთვის კონკრეტული ექსპერტული როლის ან პერსონის მინიჭება პრომპტში.</p>
+                </div>
+            </div>
+
+            <!-- System Instructions -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="system instructions custom instructions სისტემური ინსტრუქციები წესები" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">System Instructions</h3>
+                        <span class="text-xs text-gray-400">სისტემური ინსტრუქციები</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ძირითადი მითითებები, რომლებიც განსაზღვრავენ AI-ს ზოგად ქცევას, ტონსა და წესებს.</p>
+                </div>
+            </div>
+
+            <!-- Open Source AI -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="open source ai ღია კოდი ხელმისაწვდომი მოდელი llama" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Open Source AI</h3>
+                        <span class="text-xs text-gray-400">ღია კოდის AI</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">AI მოდელები, რომელთა კოდი და პარამეტრები საჯაროდ ხელმისაწვდომია თავისუფალი გამოყენებისთვის.</p>
+                </div>
+            </div>
+
+            <!-- Persona -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="persona პერსონა როლი იმიჯი" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Persona</h3>
+                        <span class="text-xs text-gray-400">პერსონა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ხასიათი, თვისებები ან პროფესიული იმიჯი, რომელსაც AI ირგებს პრომპტის მიხედვით.</p>
+                </div>
+            </div>
+
+            <!-- Markdown -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="markdown მარკდაუნი ტექსტის ფორმატირება სიმბოლოებით" data-category="basics">
+                <div class="w-10 h-10 rounded-lg bg-gray-50 text-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Markdown</h3>
+                        <span class="text-xs text-gray-400">მარკდაუნი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ტექსტის ფორმატირების მსუბუქი სინტაქსი, რომელიც იყენებს სიმბოლოებს სტრუქტურის აღსანიშნავად.</p>
+                </div>
+            </div>
+
+            <!-- Ice-Breaker -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="ice-breaker აის-ბრეიკერი გახსნითი სავარჯიშო ინტერაქცია" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Ice-Breaker</h3>
+                        <span class="text-xs text-gray-400">გახსნითი სავარჯიშო</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">მოკლე ინტერაქტიული აქტივობა აუდიტორიის ყურადღების მისაპყრობად და ჩართულობის გასაზრდელად.</p>
+                </div>
+            </div>
+
+            <!-- Scenario -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="scenario სცენარი სიტუაციური დავალება" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Scenario</h3>
+                        <span class="text-xs text-gray-400">სცენარი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">სპეციფიკური გარემოებების ან სიტუაციის აღწერა, რომელსაც AI-ს პრომპტში ვაწვდით.</p>
+                </div>
+            </div>
+
+            <!-- Practice Lab -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="practice lab პრაქტიკული ლაბორატორია სავარჯიშო" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a2 2 0 00-1.96 1.414l-.477 2.387a2 2 0 00.547 1.022l1.414 1.414a2 2 0 001.022.547l2.387.477a2 2 0 001.96-1.414l.477-2.387a2 2 0 00-.547-1.022l-1.414-1.414z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Practice Lab</h3>
+                        <span class="text-xs text-gray-400">პრაქტიკული ლაბი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">პრაქტიკული მეცადინეობა რეალურ ამოცანებზე სამუშაოდ და უნარების განსამტკიცებლად.</p>
+                </div>
+            </div>
+
+            <!-- Feedback Personalization -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="feedback personalization პერსონალიზებული უკუკავშირი ინდივიდუალური" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Feedback Personalization</h3>
+                        <span class="text-xs text-gray-400">Feedback-ის პერსონალიზაცია</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ინდივიდუალური, დეტალური უკუკავშირის მომზადება თითოეული სტუდენტის ნაშრომზე AI-ს დახმარებით.</p>
+                </div>
+            </div>
+
+            <!-- Case Study -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="case study ქეისი სიტუაციური ანალიზი რეალური მაგალითი" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Case Study</h3>
+                        <span class="text-xs text-gray-400">ქეისი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">რეალურ ან რეალისტურ სიტუაციაზე დაფუძნებული სასწავლო მასალა ანალიზისთვის.</p>
+                </div>
+            </div>
+
+            <!-- Rubric -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="rubric რუბრიკა შეფასების კრიტერიუმები მატრიცა" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Rubric</h3>
+                        <span class="text-xs text-gray-400">შეფასების რუბრიკა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">სტრუქტურირებული ცხრილი, რომელიც განსაზღვრავს დავალების შეფასების კრიტერიუმებსა და დონეებს.</p>
+                </div>
+            </div>
+
+            <!-- Slides Generation -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="slides generation პრეზენტაციის შექმნა ვიზუალიზაცია" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Slides Generation</h3>
+                        <span class="text-xs text-gray-400">სლაიდების გენერაცია</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">პრეზენტაციის სტრუქტურისა და ვიზუალური მხარის ავტომატური შექმნა AI-ს საშუალებით.</p>
+                </div>
+            </div>
+
+            <!-- Literature Review -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="literature review ლიტერატურის მიმოხილვა კვლევა სინთეზი" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Literature Review</h3>
+                        <span class="text-xs text-gray-400">ლიტერატურის მიმოხილვა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">არსებული აკადემიური ნაშრომების კრიტიკული ანალიზი და სინთეზი კვლევის ფარგლებში.</p>
+                </div>
+            </div>
+
+            <!-- Structured Reasoning -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="structured reasoning სტრუქტურირებული ანალიზი ნაბიჯ-ნაბიჯ აზროვნება ჩარჩო" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 14l2 2 4-4"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Structured Reasoning</h3>
+                        <span class="text-xs text-gray-400">სტრუქტურირებული ანალიზი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">პრომპტინგის მიდგომა, სადაც AI-ს პასუხი წინასწარ განსაზღვრულ ჩარჩოში (კრიტერიუმები, ნაბიჯები, შეფასება) იგეგმება.</p>
+                </div>
+            </div>
+
+            <!-- Google Scholar -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="google scholar გუგლ სქოლარი აკადემიური ძიება peer-reviewed doi ციტატა" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0119 16.5c0 2.485-3.134 4.5-7 4.5s-7-2.015-7-4.5c0-2.249.734-4.305 1.84-5.922L12 14z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Google Scholar</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">აკადემიური საძიებო სისტემა, რომელიც გეხმარებათ peer-reviewed წყაროების, ციტირებებისა და DOI ჩანაწერების მოძიებაში.</p>
+                </div>
+            </div>
+
+            <!-- NotebookLM -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="notebooklm google notebooklm ატვირთული წყაროები ციტირება აუდიო შეჯამება" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">NotebookLM</h3>
+                        <span class="text-xs text-gray-400">Google NotebookLM</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ინსტრუმენტი, რომელიც მუშაობს მხოლოდ თქვენ მიერ ატვირთულ წყაროებზე და პასუხში მიუთითებს ციტატებს, რაც კვლევის სანდოობას ზრდის.</p>
+                </div>
+            </div>
+
+            <!-- Gemini Gems -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="gemini gems ჯემინი გემები custom ai assistant ინსტრუქციები" data-category="prompting">
+                <div class="w-10 h-10 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.048 6.305a1 1 0 00.95.69h6.63c.969 0 1.371 1.24.588 1.81l-5.365 3.898a1 1 0 00-.364 1.118l2.049 6.305c.3.921-.755 1.688-1.539 1.118l-5.365-3.898a1 1 0 00-1.176 0l-5.365 3.898c-.783.57-1.838-.197-1.539-1.118l2.049-6.305a1 1 0 00-.364-1.118L.833 11.732c-.783-.57-.38-1.81.588-1.81h6.63a1 1 0 00.95-.69l2.048-6.305z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Gemini Gems</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">Gemini-ში შექმნილი პერსონალიზებული AI ასისტენტი, რომელსაც წინასწარ უნიშნავთ როლს, ინსტრუქციებს და სამუშაო კონტექსტს.</p>
+                </div>
+            </div>
+
+            <!-- Perplexity -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="perplexity ai search საძიებო სისტემა წყაროები ციტირებით" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-cyan-50 text-cyan-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.1-4.15a6.75 6.75 0 11-13.5 0 6.75 6.75 0 0113.5 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Perplexity</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">AI-საძიებო პლატფორმა, რომელიც აერთიანებს მოკლე პასუხებს და წყაროების ბმულებს სწრაფი კვლევისთვის.</p>
+                </div>
+            </div>
+
+            <!-- AI Detector -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="ai detector დეტექტორი შემოწმება ტექსტის ავტორობა" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">AI Detector</h3>
+                        <span class="text-xs text-gray-400">AI დეტექტორი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">პროგრამული უზრუნველყოფა, რომელიც ცდილობს დაადგინოს, არის თუ არა ტექსტი გენერირებული AI-ს მიერ.</p>
+                </div>
+            </div>
+
+            <!-- Armed Eye Technique -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="armed eye technique შეიარაღებული თვალი ენობრივი ნიშნები ავტორობა ზეპირი გადამოწმება" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Armed Eye Technique</h3>
+                        <span class="text-xs text-gray-400">„შეიარაღებული თვალი“</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ლექტორის პროფესიული ანალიზის მეთოდი, რომელიც ტექსტის სტილისტური ნიშნებით აფასებს შესაძლო AI-გენერაციას და საჭიროებისას იყენებს ზეპირ გადამოწმებას.</p>
+                </div>
+            </div>
+
+            <!-- AI-Resistant Assignment -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="ai-resistant assignment დავალება რომელსაც ai ვერ შეასრულებს" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">AI-Resistant Assignment</h3>
+                        <span class="text-xs text-gray-400">AI-გამძლე დავალება</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ისე შედგენილი დავალება, რომლის წარმატებით შესასრულებლად სტუდენტს აუცილებლად სჭირდება საკუთარი კრიტიკული აზროვნება.</p>
+                </div>
+            </div>
+
+            <!-- Academic Integrity -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="academic integrity აკადემიური კეთილსინდისიერება ეთიკა პლაგიატი" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.213-2.035-.598-2.944z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Academic Integrity</h3>
+                        <span class="text-xs text-gray-400">აკადემიური კეთილსინდისიერება</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">აკადემიური საქმიანობის ეთიკური სტანდარტების დაცვა, რაც გამორიცხავს პლაგიატს და სხვისი ნაშრომის მითვისებას.</p>
+                </div>
+            </div>
+
+            <!-- Plagiarism -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="plagiarism პლაგიატი ტექსტის მითვისება წყაროს გარეშე კოპირება" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-5 4v4m-7 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Plagiarism</h3>
+                        <span class="text-xs text-gray-400">პლაგიატი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">სხვისი იდეის ან ტექსტის გამოყენება სათანადო ციტირებისა და წყაროს მითითების გარეშე.</p>
+                </div>
+            </div>
+
+            <!-- False Positive -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="false positive ცრუ-დადებითი შეცდომა დეტექტორის" data-category="ethics">
+                <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.834-1.964-.834-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">False Positive</h3>
+                        <span class="text-xs text-gray-400">ცრუ-დადებითი შედეგი</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">შეცდომა AI დეტექციისას, როდესაც ადამიანის მიერ დაწერილი ტექსტი შეცდომით მიიჩნევა AI-ს გენერირებულად.</p>
+                </div>
+            </div>
+
+            <!-- DOI -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="doi digital object identifier ციფრული იდენტიფიკატორი წყარო" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">DOI</h3>
+                        <span class="text-xs text-gray-400">Digital Object Identifier</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">უნიკალური ციფრული კოდი, რომელიც გამოიყენება აკადემიური სტატიებისა და დოკუმენტების იდენტიფიცირებისთვის.</p>
+                </div>
+            </div>
+
+            <!-- Citation Management -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="citation management ციტირების მართვა ბიბლიოგრაფია zotero mendeley" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Citation Management</h3>
+                        <span class="text-xs text-gray-400">ციტირების მართვა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">აკადემიური წყაროების ორგანიზების, შენახვისა და ბიბლიოგრაფიის ავტომატური ფორმატირების პროცესი.</p>
+                </div>
+            </div>
+
+            <!-- In-Text Citation -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="in-text citation ტექსტშიდა ციტირება apa harvard chicago ავტორი წელი" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">In-Text Citation</h3>
+                        <span class="text-xs text-gray-400">ტექსტშიდა ციტირება</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">ტექსტის შიგნით წყაროზე მითითების ფორმა (მაგ., ავტორი-წელი), რომელიც აკავშირებს კონკრეტულ მტკიცებას ბიბლიოგრაფიულ ჩანაწერთან.</p>
+                </div>
+            </div>
+
+            <!-- Paraphrasing -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="paraphrasing პარაფრაზირება ტექსტის გადაკეთება სხვა სიტყვებით" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Paraphrasing</h3>
+                        <span class="text-xs text-gray-400">პარაფრაზირება</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">სხვისი აზრის გადმოცემა საკუთარი სიტყვებით, ორიგინალური შინაარსის შენარჩუნებით.</p>
+                </div>
+            </div>
+
+            <!-- Socratic Questioning -->
+            <div class="term-card bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-start gap-4" data-term="socratic questioning სოკრატესეული შეკითხვა კრიტიკული აზროვნება" data-category="academic">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
+                        <h3 class="font-bold text-navy-900 text-base">Socratic Questioning</h3>
+                        <span class="text-xs text-gray-400">სოკრატესეული შეკითხვა</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">შეკითხვების დასმის ტექნიკა, რომელიც მიზნად ისახავს კრიტიკული აზროვნების სტიმულირებას და სიღრმისეულ გააზრებას.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- No results message -->
+        <div id="noResults" class="hidden text-center py-12">
+            <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <p class="text-gray-400 text-sm">ტერმინი ვერ მოიძებნა</p>
+        </div>
+    </main>
+
+    <!-- ════════════ FOOTER ════════════ -->
+    <footer class="bg-navy-900 text-center py-6 px-6 mt-auto">
+        <p class="text-blue-300 text-sm mb-1">GIPA AI Intensive - Executive Masterclass</p>
+        <p class="text-blue-400/60 text-xs">მომზადებულია გიორგი ბასილაიას მიერ | 2026</p>
+    </footer>
+
+    <!-- ════════════ SEARCH & FILTER SCRIPT ════════════ -->
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const termsGrid = document.getElementById('termsGrid');
+        const noResults = document.getElementById('noResults');
+        const resultCount = document.getElementById('resultCount');
+        const cards = termsGrid.querySelectorAll('.term-card');
+        const totalTerms = cards.length;
+        let activeCategory = 'all';
+
+        function applyFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+            let visible = 0;
+
+            cards.forEach(card => {
+                const data = card.getAttribute('data-term').toLowerCase();
+                const text = card.textContent.toLowerCase();
+                const category = card.getAttribute('data-category');
+
+                const matchesSearch = !query || data.includes(query) || text.includes(query);
+                const matchesCategory = activeCategory === 'all' || category === activeCategory;
+
+                if (matchesSearch) {
+                    card.classList.remove('hidden-by-search');
+                } else {
+                    card.classList.add('hidden-by-search');
+                }
+
+                if (matchesCategory) {
+                    card.classList.remove('hidden-by-filter');
+                } else {
+                    card.classList.add('hidden-by-filter');
+                }
+
+                if (matchesSearch && matchesCategory) visible++;
+            });
+
+            noResults.classList.toggle('hidden', visible > 0);
+
+            if (query || activeCategory !== 'all') {
+                resultCount.textContent = `${visible} / ${totalTerms}`;
+            } else {
+                resultCount.textContent = '';
+            }
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+
+        function filterCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            applyFilters();
+        }
+    </script>
+
+<!-- GIPA Controls: Dark Mode + Font Size -->
+<script>
+(function(){
+    var s=document.createElement('style');
+    s.textContent=`
+body.dark{background:#0f172a!important;color:#cbd5e1!important}
+body.dark .bg-white{background:#1e293b!important}
+body.dark .bg-gray-50{background:#0f172a!important}
+body.dark .bg-gray-100,body.dark .bg-slate-50,body.dark .bg-slate-100{background:#1e293b!important}
+body.dark .text-gray-900,body.dark .text-gray-800{color:#f1f5f9!important}
+body.dark .text-gray-700,body.dark .text-gray-600{color:#cbd5e1!important}
+body.dark .text-gray-500,body.dark .text-gray-400{color:#94a3b8!important}
+body.dark .border-gray-200,body.dark .border-gray-100,body.dark .border-gray-50{border-color:#334155!important}
+body.dark .bg-navy-50,body.dark .bg-navy-100{background:#0c2340!important}
+body.dark .bg-blue-50{background:#1e3a5f!important}
+body.dark .bg-emerald-50{background:#0d3320!important}
+body.dark input[type="text"],body.dark textarea{background:#1e293b!important;color:#e2e8f0!important;border-color:#334155!important}
+body.dark .term-card{background:#1e293b!important;border-color:#334155!important}
+body.dark .filter-btn{background:#1e293b!important;color:#94a3b8!important;border-color:#334155!important}
+body.dark .filter-btn.active{background:#003366!important;color:#fff!important;border-color:#003366!important}
+#gipaControls{position:fixed;bottom:1.5rem;left:1.5rem;z-index:45;display:flex;flex-direction:column;gap:4px;background:rgba(0,51,102,0.92);backdrop-filter:blur(8px);padding:5px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+#gipaControls button{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:transparent;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:background .2s}
+#gipaControls button:hover{background:rgba(255,255,255,0.15)}
+#gipaControls svg{width:18px;height:18px}
+@media print{#gipaControls{display:none!important}}
+`;
+    document.head.appendChild(s);
+    var c=document.createElement('div');c.id='gipaControls';
+    c.innerHTML='<button id="darkToggle" title="Dark / Light"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></button><button onclick="gipaFontSize(-1)" title="A-">A-</button><button onclick="gipaFontSize(1)" title="A+">A+</button>';
+    document.body.appendChild(c);
+    var pref=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var saved=localStorage.getItem('gipa-dark');
+    if((saved!==null?saved==='true':pref))document.body.classList.add('dark');
+    var moonSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+    var sunSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+    function updIcon(){document.getElementById('darkToggle').innerHTML=document.body.classList.contains('dark')?sunSvg:moonSvg;}
+    updIcon();
+    document.getElementById('darkToggle').onclick=function(){document.body.classList.toggle('dark');localStorage.setItem('gipa-dark',document.body.classList.contains('dark'));updIcon();};
+    var fs=parseInt(localStorage.getItem('gipa-fontsize')||'0');
+    if(fs)document.documentElement.style.fontSize=(100+fs*8)+'%';
+    window.gipaFontSize=function(d){fs=Math.max(-3,Math.min(3,fs+d));localStorage.setItem('gipa-fontsize',fs);document.documentElement.style.fontSize=(100+fs*8)+'%';};
+})();
+</script>
+
+</body>
+</html>

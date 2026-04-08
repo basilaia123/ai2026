@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მოდული 3: Automation - დროის დაზოგვის ხელოვნება</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1100px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .key-points {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .key-points ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 2;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+        }
+
+        .example-box {
+            background: #fff8e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ffc107;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .example-box strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .formula-box {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #667eea;
+            text-align: left;
+        }
+
+        .tip-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .time-save-box {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="day1.html" class="home-btn">← დღე 1</a>
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <div class="slide-content">
+            <h1>მოდული 3</h1>
+            <h2>Automation - დროის დაზოგვის ხელოვნება</h2>
+            <div class="highlight-box">
+                ⚡ ავტომატიზირე რუტინა და გაათავისუფლე დრო სტრატეგიული სამუშაოსთვის!
+            </div>
+            <p style="text-align: center; font-size: 1.2em; color: #666;">
+                ხანგრძლივობა: 40 წუთი
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Why Automation -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>რატომ არის Automation აუცილებელი</h2>
+
+            <p>მენეჯერები ხარჯავენ 40-60% დროის რეპეტიტიურ, მექანიკურ ამოცანებზე რომლებიც შეიძლება ავტომატიზირდეს.</p>
+
+            <div class="key-points">
+                <strong>📊 რა ამოცანები "ჭამს" თქვენს დროს:</strong>
+                <ul>
+                    <li>📧 Email-ების დაწერა და პასუხების გაცემა</li>
+                    <li>📈 რეპორტების მომზადება (Excel/Google Sheets)</li>
+                    <li>📝 Meeting notes-ის დაწერა და გაგზავნა</li>
+                    <li>📊 Data-ს კოპირება და ფორმატირება</li>
+                    <li>📅 Scheduling და კალენდრების მენეჯმენტი</li>
+                    <li>📋 Performance reviews-ის დოკუმენტაცია</li>
+                    <li>🔄 განმეორებადი დოკუმენტების შექმნა</li>
+                </ul>
+            </div>
+
+            <div class="time-save-box">
+                <h3>⏰ AI Automation-ით დაზოგე:</h3>
+                <p style="font-size: 1.3em; margin: 15px 0;">
+                    <strong>6-10 საათი კვირაში!</strong>
+                </p>
+                <p>ეს არის 1-1.5 დღე თვეში რომელიც შეგიძლია დახარჯო სტრატეგიულ სამუშაოზე, გუნდის განვითარებაზე ან ინოვაციაზე.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Excel/Sheets + AI -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Excel/Google Sheets + AI = სუპერპაუერი</h2>
+
+            <p>AI-ს შეუძლია დაგეხმაროს რთული formulas-ების შექმნაში, data-ს ანალიზში და ავტომატურ რეპორტების გენერაციაში.</p>
+
+            <div class="key-points">
+                <strong>🎯 რას შეუძლია AI:</strong>
+                <ul>
+                    <li>✍️ <strong>Formula Generation:</strong> თქვი რა გინდა - AI დაწერს formula-ს</li>
+                    <li>📊 <strong>Data Analysis:</strong> ანალიზი და insights მონაცემებიდან</li>
+                    <li>🎨 <strong>Formatting:</strong> ავტომატური conditional formatting</li>
+                    <li>📈 <strong>Charts & Visualization:</strong> რეკომენდაციები visualization-ისთვის</li>
+                    <li>🔄 <strong>Data Transformation:</strong> data cleaning და reorganization</li>
+                    <li>📋 <strong>Template Creation:</strong> reusable templates-ების შექმნა</li>
+                </ul>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 როგორ გამოვიყენოთ:</strong>
+                <p>1. ChatGPT-ს ვკითხავთ რა formulas გვჭირდება<br>
+                2. AI გვაწვდის ready-to-use formulas<br>
+                3. ვკოპირებთ Excel/Sheets-ში<br>
+                4. ვატესტებთ და ვარეგულირებთ თუ საჭიროა</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Use Case 1 - Inventory Reorder -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Use Case 1: Inventory Reorder Calculator</h2>
+            <h3>📦 საწყობის მენეჯერებისთვის</h3>
+
+            <div class="example-box">
+                <strong>ChatGPT Prompt:</strong>
+                "შექმენი Google Sheets formula:
+
+                მონაცემები:
+                Column A: Product Name
+                Column B: Current Stock
+                Column C: Average Daily Sales (last 30 days)
+                Column D: Lead Time (days from supplier)
+                Column E: Safety Stock Level (days)
+
+                გამოთვალე:
+                Column F: Reorder Point
+                Column G: Optimal Order Quantity
+                Column H: Status (OK / Low / Critical / Overstock)
+
+                Status logic:
+                - Critical: stock < 3 days
+                - Low: stock < reorder point
+                - OK: adequate stock
+                - Overstock: stock > 60 days
+
+                მომეცი ზუსტი formula თითოეული სვეტისთვის"
+            </div>
+
+            <div class="formula-box">
+                <strong>AI მოგცემს Formulas:</strong>
+                <p style="font-family: 'Courier New', monospace; margin-top: 10px;">
+                    F2: =D2*C2+E2*C2<br>
+                    (Reorder Point = Lead Time × Daily Sales + Safety Stock × Daily Sales)<br><br>
+
+                    G2: =SQRT(2*C2*30*50/2)<br>
+                    (Economic Order Quantity - simplified)<br><br>
+
+                    H2: =IF(B2<C2*3,"Critical",IF(B2<F2,"Low",IF(B2>C2*60,"Overstock","OK")))<br>
+                    (Status based on conditions)
+                </p>
+            </div>
+
+            <div class="time-save-box">
+                <p><strong>დროის დაზოგვა:</strong> Manual calculation-ი: 2-3 საათი კვირაში<br>
+                AI-ით: 10 წუთი setup + ავტომატური განახლება = <strong>95% დაზოგვა!</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Use Case 2 - Sales Dashboard -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Use Case 2: Sales Performance Dashboard</h2>
+            <h3>🏪 მაღაზიის მენეჯერებისთვის</h3>
+
+            <div class="example-box">
+                <strong>ChatGPT Prompt:</strong>
+                "შექმენი automated weekly sales report template Google Sheets-ისთვის:
+
+                Input data (Raw):
+                - Date, Product, Quantity, Revenue, Staff Member
+
+                Generate:
+                1. Top 10 products by revenue (pivot table structure)
+                2. Bottom 10 products (slow movers)
+                3. Staff performance ranking
+                4. Day-of-week patterns
+                5. Category performance comparison
+                6. Average transaction value trend
+
+                Output:
+                - Pivot tables structure
+                - Conditional formatting rules
+                - Chart recommendations
+                - Executive summary template
+
+                Formulas უნდა იყოს dynamic - auto-update როცა raw data ემატება"
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 AI დაგეხმარება:</strong>
+                <p>• Pivot table-ების სწორი სტრუქტურის შექმნაში<br>
+                • SUMIFS, AVERAGEIFS, COUNTIFS formulas-ების დაწერაში<br>
+                • Conditional formatting rules-ების განსაზღვრაში<br>
+                • Chart-ის ტიპის არჩევაში (რა დატისთვის რა chart)<br>
+                • Dashboard layout-ის რეკომენდაციებში</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Use Case 3 - Route Optimization -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Use Case 3: Delivery Route Optimizer</h2>
+            <h3>🚚 დისტრიბუციის მენეჯერებისთვის</h3>
+
+            <div class="example-box">
+                <strong>ChatGPT Prompt:</strong>
+                "შექმენი delivery route optimization spreadsheet:
+
+                Input:
+                - Column A: Customer Name
+                - Column B: Address (district/area)
+                - Column C: Order Size (kg)
+                - Column D: Priority (Normal/Urgent)
+                - Column E: Time Window (Morning/Afternoon)
+
+                Calculate:
+                - Optimal route sequence (by district grouping)
+                - Estimated time per stop (15 min base + 2 min per 10kg)
+                - Vehicle load optimization (max 500kg per vehicle)
+                - Route assignments (Route 1, 2, 3)
+                - Total estimated time and distance
+
+                Output:
+                - Driver instruction sheet format
+                - Formulas for all calculations
+                - Conditional formatting (overweight alerts, urgent priority highlighting)"
+            </div>
+
+            <div class="time-save-box">
+                <p><strong>გავლენა:</strong> Manual route planning: 1 საათი დღეში<br>
+                AI-assisted: 10-15 წუთი<br>
+                = <strong>5 საათი კვირაში + უკეთესი routes!</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Document Generation -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>AI Document Generation</h2>
+
+            <p>AI-ს შეუძლია ავტომატურად შექმნას პროფესიონალური დოკუმენტები სტრუქტურირებული ფორმატით.</p>
+
+            <div class="key-points">
+                <strong>📄 რა დოკუმენტები:</strong>
+                <ul>
+                    <li>📝 Meeting Minutes - შეხვედრის ოქმები</li>
+                    <li>📊 Performance Reviews - შეფასების დოკუმენტები</li>
+                    <li>📋 SOPs - Standard Operating Procedures</li>
+                    <li>📧 Email Templates - იმეილის შაბლონები</li>
+                    <li>📑 Reports - სხვადასხვა ტიპის რეპორტები</li>
+                    <li>✅ Checklists - საკონტროლო სიები</li>
+                    <li>📅 Action Plans - სამოქმედო გეგმები</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                🎯 AI არ წერს ყველაფერს თავისით - თქვენ აწვდით ინფორმაციას, AI აფორმებს პროფესიონალურ დოკუმენტად!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Meeting Minutes -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Meeting Minutes Automation</h2>
+
+            <div class="example-box">
+                <strong>ChatGPT Prompt:</strong>
+                "გადააქციე ეს meeting notes professional minutes-ებად:
+
+                [paste თქვენი rough notes ან bullet points]
+
+                ფორმატი:
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                MEETING MINUTES
+
+                Date: [auto-fill based on notes]
+                Attendees: [list from notes]
+                Topic: [extract main subject]
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                DISCUSSION SUMMARY
+                [3-5 key points discussed in clear paragraphs]
+
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                DECISIONS MADE
+                1. [decision] - Impact: [who/what]
+                2. [decision] - Impact: [who/what]
+
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                ACTION ITEMS
+                │ Task                  │ Owner    │ Due Date │ Priority │
+                ├───────────────────────┼──────────┼──────────┼──────────┤
+                │ [task 1]              │ [name]   │ [date]   │ [H/M/L]  │
+
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                NEXT STEPS
+                [clear next meeting or follow-up plan]
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            </div>
+
+            <div class="time-save-box">
+                <p><strong>დროის დაზოგვა:</strong> Manual minutes: 30-60 წუთი<br>
+                AI-ით: 5-10 წუთი (review და approve)<br>
+                = <strong>80% დაზოგვა თითო meeting-ზე!</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Performance Review -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Performance Review Automation</h2>
+
+            <div class="example-box">
+                <strong>ChatGPT Prompt:</strong>
+                "შექმენი employee performance review:
+
+                Employee: [სახელი]
+                Position: [როლი]
+                Review Period: [თარიღები]
+
+                Input data:
+                - KPIs: [მიღწეული vs target numbers]
+                - Strengths: [რა კარგად აკეთებს - 3-4 bullet points]
+                - Areas for improvement: [რა საჭიროებს განვითარებას - 2-3 points]
+                - Specific incidents: [პოზიტიური და negative examples]
+                - Goals last period: [შესრულდა თუ არა]
+
+                Generate:
+                1. Overall Performance Rating Section
+                   - Clear justification
+
+                2. Detailed Assessment by Category
+                   - Technical Skills (score + explanation)
+                   - Leadership & Initiative
+                   - Team Collaboration
+                   - Customer Focus
+
+                3. Key Achievements (3-5 highlights)
+
+                4. Development Areas (2-3 constructive points with examples)
+
+                5. SMART Goals for Next Period (5 goals)
+
+                6. Development Plan (training, mentorship, timeline)
+
+                Tone: professional, balanced, constructive, specific
+                Format: ready for official HR file
+                Length: 2-3 pages"
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 Best Practice:</strong>
+                <p>AI დაგეხმარება სტრუქტურასა და ფორმულირებაში, მაგრამ თქვენ უნდა დაამატოთ specific examples და personal touch!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: SOP Creation -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>SOP (Standard Operating Procedure) შექმნა</h2>
+            <h3>⚙️ საოპერაციო მენეჯერებისთვის</h3>
+
+            <div class="example-box">
+                <strong>ChatGPT Prompt:</strong>
+                "შექმენი detailed SOP document:
+
+                Process: [process name]
+                Department: Gastronome.ge [specify area]
+                Who performs: [role]
+                Frequency: [daily/weekly/as needed]
+                Critical for: [quality/safety/compliance/efficiency]
+
+                SOP Structure:
+                1. Purpose (2 sentences - why this process matters)
+
+                2. Scope (who, when, where this applies)
+
+                3. Step-by-Step Procedure
+                   - Numbered steps with clear actions
+                   - Sub-steps where needed
+                   - Estimated time for each major step
+
+                4. Quality Checkpoints
+                   - What to verify at key stages
+                   - Acceptance criteria
+
+                5. Common Mistakes to Avoid
+                   - 3-5 frequent errors and how to prevent
+
+                6. Troubleshooting
+                   - If X happens, do Y
+
+                7. Escalation Process
+                   - When to call manager/supervisor
+                   - Who to contact for specific issues
+
+                8. Related Documents & Tools
+                   - Links to forms, checklists, systems
+
+                Format:
+                - Max 2 pages
+                - Visual-friendly (leave space for photos/diagrams)
+                - Clear, action-oriented language
+                - Checkbox format where applicable"
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Automation Workflow -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>AI Automation-ის ეტაპები</h2>
+
+            <div class="key-points">
+                <strong>🔄 როგორ დავნერგოთ Automation:</strong>
+                <ul>
+                    <li><strong>1. Identify:</strong> რომელი ამოცანები მეორდება რეგულარულად?</li>
+                    <li><strong>2. Document:</strong> დააფიქსირე როგორ კეთდება ახლა</li>
+                    <li><strong>3. Prompt:</strong> შექმენი AI prompt automation-ისთვის</li>
+                    <li><strong>4. Test:</strong> გამოსცადე რეალურ მონაცემებზე</li>
+                    <li><strong>5. Refine:</strong> გააუმჯობესე prompt თუ საჭიროა</li>
+                    <li><strong>6. Implement:</strong> დანერგე რეგულარულ workflow-ში</li>
+                    <li><strong>7. Measure:</strong> გაზომე რამდენი დრო დაიზოგა</li>
+                </ul>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 რჩევები წარმატებისთვის:</strong>
+                <p>• დაიწყე პატარა - ერთი ამოცანით<br>
+                • შექმენი prompt library - reusable templates<br>
+                • გააზიარე გუნდს - ასწავლე სხვებსაც<br>
+                • იყავი consistent - გამოიყენე რეგულარულად<br>
+                • განაახლე prompts - რაც უკეთესი გახდები, მით მეტი დაზოგავ</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Summary -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>მოდული 3 - შეჯამება</h2>
+
+            <div class="key-points">
+                <strong>🎓 რა ვისწავლეთ:</strong>
+                <ul>
+                    <li>✅ რატომ არის Automation აუცილებელი მენეჯერებისთვის</li>
+                    <li>✅ Excel/Google Sheets ავტომატიზაცია AI-ით</li>
+                    <li>✅ Use Case 1: Inventory Reorder Calculator (საწყობი)</li>
+                    <li>✅ Use Case 2: Sales Dashboard (მაღაზია)</li>
+                    <li>✅ Use Case 3: Route Optimizer (დისტრიბუცია)</li>
+                    <li>✅ Meeting Minutes ავტომატიზაცია</li>
+                    <li>✅ Performance Reviews-ის გენერაცია</li>
+                    <li>✅ SOP-ების შექმნა AI-ით</li>
+                    <li>✅ Automation workflow და implementation</li>
+                </ul>
+            </div>
+
+            <div class="time-save-box">
+                <h3>⏰ სულ რამდენი დრო დაზოგავ?</h3>
+                <p style="font-size: 1.2em; margin: 15px 0;">
+                    📊 Excel/Sheets automation: <strong>2-4 საათი/კვირა</strong><br>
+                    📝 Document generation: <strong>2-3 საათი/კვირა</strong><br>
+                    📧 Email automation: <strong>1-2 საათი/კვირა</strong><br>
+                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br>
+                    <strong style="font-size: 1.4em;">= 5-9 საათი კვირაში!</strong><br>
+                    <em>(ეს არის 1+ სამუშაო დღე!)</em>
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                🎯 შემდეგი მოდული: Problem Solving და Decision Making AI-ით
+                <br><br>
+                ვისწავლით როგორ გამოვიყენოთ AI რთული პრობლემების გადასაჭრელად და data-driven გადაწყვეტილებების მისაღებად.
+            </div>
+
+            <p style="text-align: center; margin-top: 30px; font-size: 1.3em; color: #667eea;">
+                <strong>🚀 შესვენება - 30 წუთი!</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← წინა</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">შემდეგი →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            // If on last slide, change button text
+            if (currentSlide === totalSlides - 1) {
+                document.getElementById('nextBtn').textContent = 'შემდეგი მოდული →';
+                document.getElementById('nextBtn').onclick = function() {
+                    window.location.href = 'module4.html';
+                };
+            } else {
+                document.getElementById('nextBtn').textContent = 'შემდეგი →';
+                document.getElementById('nextBtn').onclick = function() {
+                    changeSlide(1);
+                };
+            }
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
