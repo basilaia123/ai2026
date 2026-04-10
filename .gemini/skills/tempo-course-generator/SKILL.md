@@ -16,9 +16,15 @@ Activate this workflow whenever the user requests:
 
 ## Workflows
 
+
+
 ### 1. Generating Presentation Slides
 
 The main delivery format for Tempo courses is the interactive HTML presentation (GIPA-style layout with sidebar).
+
+**CRITICAL DESIGN RULES FOR SLIDES:**
+1. **Consolidate Content:** NEVER create a slide that only has a prompt without context. ALWAYS combine the theoretical explanation (Why/How) and the practical prompt (Code Block) on the same single slide. This reduces slide bloat and improves readability.
+2. **Data Visualization:** Whenever presenting percentages, time savings, or comparative statistics, use **Chart.js** (Bar charts, Doughnut charts) instead of plain text bullets. (See `references/components.md` for examples).
 
 1. **Understand the Content:** Analyze the provided topic, agenda, or raw notes from the user. Break the content down into logical "Blocks" and individual "Topics" (Slides).
 2. **Apply the Template:** Read the template file located at \`assets/slide-template.html\`. This file contains the complete CSS (Tailwind + custom styles), JavaScript logic for navigation and copy buttons, and the base layout structure.

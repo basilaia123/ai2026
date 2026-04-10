@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სამსახურის ძიება AI-ით: სასწავლო გეგმა ტრენერისთვის</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .instructor-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .navigation {
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .nav-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .overview-section {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-card p {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .timeline-section {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+
+        .timeline-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+            transition: all 0.3s ease;
+        }
+
+        .time-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            height: fit-content;
+        }
+
+        .time-badge .duration {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: block;
+            margin-top: 0.3rem;
+        }
+
+        .activity-content h3 {
+            color: #667eea;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .activity-content h4 {
+            color: #764ba2;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .activity-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .tag.interactive {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .tag.demo {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .tag.discussion {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .tag.practice {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border-left: 5px solid #4caf50;
+        }
+
+        .key-points h3 {
+            color: #388e3c;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .key-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .key-points li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .key-points li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border-left: 5px solid #2196f3;
+        }
+
+        .highlight-box h3 {
+            color: #1976d2;
+            margin-bottom: 1rem;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border-left: 5px solid #ff9800;
+        }
+
+        .warning-box h4 {
+            color: #f57c00;
+            margin-bottom: 0.8rem;
+        }
+
+        .note-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid #2196f3;
+        }
+
+        .materials-section {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #ff9800;
+        }
+
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .material-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .material-card h3 {
+            color: #ff9800;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .material-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .material-card li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .material-card li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        .tips-section {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #f57c00;
+        }
+
+        .tips-section h2 {
+            color: #f57c00;
+            border-bottom-color: #f57c00;
+        }
+
+        .tip-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #ff9800;
+        }
+
+        .tip-item h4 {
+            color: #f57c00;
+            margin-bottom: 0.8rem;
+        }
+
+        .assessment-section {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #4caf50;
+        }
+
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .assessment-card {
+            background: #f1f8e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .assessment-card h3 {
+            color: #388e3c;
+            margin-bottom: 1rem;
+        }
+
+        .demo-box {
+            background: #fff3e0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid #ff9800;
+        }
+
+        .print-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .print-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .materials-grid,
+            .assessment-grid,
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .print-button {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+
+        @media print {
+            .navigation,
+            .print-button {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+
+            .timeline-item,
+            .overview-section,
+            .timeline-section,
+            .materials-section,
+            .tips-section,
+            .assessment-section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💼 სამსახურის ძიება AI-ით: სასწავლო გეგმა</h1>
+            <p>AI ინსტრუმენტების გამოყენება ეფექტური სამსახურის ძიებისთვის</p>
+            <div class="instructor-badge">👨‍🏫 ტრენერისთვის</div>
+        </header>
+
+        <nav class="navigation">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">🏠 მთავარი</a>
+                <a href="job-hunting-training-60min-exercises.html" class="nav-link">✏️ სავარჯიშოები</a>
+                <a href="job-hunting-training-60min-quick-ref.html" class="nav-link">⚡ მოკლე შეჯამება</a>
+            </div>
+        </nav>
+
+        <section class="overview-section">
+            <h2>📊 ტრენინგის მიმოხილვა</h2>
+            <div class="overview-grid">
+                <div class="info-card">
+                    <h3>⏱️ ხანგრძლივობა</h3>
+                    <p>60 წუთი</p>
+                </div>
+                <div class="info-card">
+                    <h3>👥 აუდიტორია</h3>
+                    <p>უნივერსიტეტის სტუდენტები</p>
+                </div>
+                <div class="info-card">
+                    <h3>🎯 მიზანი</h3>
+                    <p>AI-ის გამოყენება სამსახურის ძიებაში</p>
+                </div>
+                <div class="info-card">
+                    <h3>🌐 ფორმატი</h3>
+                    <p>პრაქტიკული ვორქშოფი</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h3>🎯 სწავლის მიზნები:</h3>
+                <ul>
+                    <li>სამსახურის ძიებისთვის AI ინსტრუმენტების (ChatGPT, Claude, Gemini) გაცნობა</li>
+                    <li>AI-ის დახმარებით კომპანიისა და ინდუსტრიის კვლევის უნარების განვითარება</li>
+                    <li>რეზიუმეს (CV) ოპტიმიზაცია ATS სისტემებისთვის და საკვანძო სიტყვების იდენტიფიცირება</li>
+                    <li>AI-ის გამოყენებით შედეგზე ორიენტირებული პუნქტების შექმნა</li>
+                    <li>სამოტივაციო წერილის შექმნა და LinkedIn-ის ძირითადი პერსონალიზაცია</li>
+                    <li>ინტერვიუსთვის მომზადება STAR მეთოდით და სატესტო ინტერვიუები AI-სთან</li>
+                    <li>სამსახურის ძიებისას AI-ს ეთიკური და პასუხისმგებლიანი გამოყენება</li>
+                    <li>სამოქმედო გეგმის შემუშავება</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💻 საჭირო რესურსები:</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                        <span style="position: absolute; left: 0; color: #2196f3; font-weight: bold;">•</span>
+                        <strong>ტექნიკა:</strong> პერსონალური კომპიუტერი/ლეპტოპი ყველა მონაწილისთვის, სტაბილური ინტერნეტი.
+                    </li>
+                    <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                        <span style="position: absolute; left: 0; color: #2196f3; font-weight: bold;">•</span>
+                        <strong>AI ინსტრუმენტები:</strong> წვდომა ChatGPT, Claude.ai, Gemini-ს უფასო ვერსიებზე.
+                    </li>
+                    <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                        <span style="position: absolute; left: 0; color: #2196f3; font-weight: bold;">•</span>
+                        <strong>სამუშაო მასალები:</strong> რეზიუმეს ნიმუშები, ვაკანსიის აღწერები, მონაწილეების რეზიუმეების სამუშაო ვერსიები.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="timeline-section">
+            <h2>⏰ დეტალური გეგმა</h2>
+
+            <div class="timeline-item">
+                <div class="time-badge">
+                    0-10'
+                    <span class="duration">10 წუთი</span>
+                </div>
+                <div class="activity-content">
+                    <h3>1. შესავალი და მოტივაცია</h3>
+                    <p><strong>მიზანი:</strong> მონაწილეების ჩართულობის გაზრდა და ტრენინგის მიზნების გაცნობა.</p>
+
+                    <h4>როგორ ჩავატაროთ:</h4>
+                    <ul>
+                        <li><strong>მისალმება (2 წთ):</strong> "მოგესალმებით! დღეს ვისწავლით, როგორ გავხადოთ სამსახურის ძიება უფრო ეფექტური AI-ის დახმარებით."</li>
+                        <li><strong>სწრაფი გამოკითხვა (3 წთ):</strong> "ხელის აწევით მანიშნეთ, ვინ ეძებს სამსახურს? ვის გაგიგზავნიათ რეზიუმე? ვის გამოგიყენებიათ AI სამსახურის საძიებლად?"</li>
+                        <li><strong>მოტივაცია (3 წთ):</strong> სტატისტიკა — "იცოდით, რომ Jobscan-ის 2025 წლის 14 ივლისის ანგარიშის მიხედვით Fortune 500 კომპანიების დაახლოებით 97.8% იყენებს ATS-ს, Jobscan-ის 2025 წლის 25 თებერვლის კვლევის მიხედვით რეკრუტერების 99.7% იყენებს ATS-ის ფილტრებს ან მსგავს სისტემებს, ხოლო 2026 წლის 14 იანვრის განახლება მიუთითებს, რომ ბაზარზე უკვე 300+-ზე მეტი ATS ვენდორია?"</li>
+                        <li><strong>დღის წესრიგი (2 წთ):</strong> მოკლედ მიმოვიხილავთ, რას ისწავლიან მონაწილეები.</li>
+                    </ul>
+                    
+                    <div class="warning-box">
+                        <h4>💡 ტრენერის შენიშვნები:</h4>
+                        <ul style="margin-left: 1.5rem;">
+                            <li>შექმენით მეგობრული ატმოსფერო; სამსახურის ძიება სტრესულია.</li>
+                            <li>გამოიყენეთ პირადი მაგალითები.</li>
+                            <li>ხაზი გაუსვით, რომ AI არის ინსტრუმენტი და არა — ჯადოსნური ჯოხი.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="time-badge">
+                    10-20'
+                    <span class="duration">10 წუთი</span>
+                </div>
+                <div class="activity-content">
+                    <h3>2. AI ინსტრუმენტების მიმოხილვა</h3>
+                    <p><strong>მიზანი:</strong> მონაწილეებისთვის სამსახურის ძიებისთვის განკუთვნილი AI ინსტრუმენტების გაცნობა.</p>
+                    
+                    <h4>როგორ ჩავატაროთ:</h4>
+                    <ul>
+                        <li><strong>ზოგადი AI ინსტრუმენტები (4 წთ):</strong> ChatGPT, Claude.ai, Google Gemini - drafting, tailoring, შეჯამება და mock interview.</li>
+                        <li><strong>სპეციალიზებული ინსტრუმენტები (3 წთ):</strong> Perplexity კვლევისთვის; Jobscan და Teal ATS/ტრეკინგისთვის; LinkedIn პროფილისა და ვაკანსიებისთვის.</li>
+                        <li><strong>დემო (3 წთ):</strong> ერთი workflow: ვაკანსიის აღწერა + AI drafting + ATS check.</li>
+                    </ul>
+
+                    <h4>ძირითადი გზავნილები:</h4>
+                    <ul>
+                        <li>უფასო ვერსიებიც საკმარისია პირველ ეტაპზე, მაგრამ თითოეულ ხელსაწყოს განსხვავებული დანიშნულება აქვს.</li>
+                        <li>საუკეთესო შედეგს იძლევა კომბინაცია: AI drafting + source-based research + ATS check.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="time-badge">
+                    20-30'
+                    <span class="duration">10 წუთი</span>
+                </div>
+                <div class="activity-content">
+                    <h3>3. რეზიუმეს ოპტიმიზაცია (ნაწილი 1: ATS და საკვანძო სიტყვები)</h3>
+                    <p><strong>მიზანი:</strong> ATS-ისთვის რეზიუმეს ოპტიმიზაციისა და საკვანძო სიტყვების იდენტიფიკაციის სწავლება.</p>
+
+                    <h4>როგორ ჩავატაროთ:</h4>
+                    <ul>
+                        <li><strong>ATS სისტემების ახსნა (3 წთ):</strong> რა არის ATS და როგორ მუშაობს ის.</li>
+                        <li><strong>საკვანძო სიტყვების ამოღების დემო (4 წთ):</strong> ვაკანსიის აღწერიდან საკვანძო სიტყვების ამოღება AI-ის გამოყენებით.</li>
+                        <li><strong>პრაქტიკული სავარჯიშო (3 წთ):</strong> მონაწილეები აანალიზებენ ვაკანსიის მაგალითს.</li>
+                    </ul>
+
+                    <h4>ძირითადი გზავნილები:</h4>
+                    <ul>
+                        <li>გამოიყენეთ იგივე ტერმინოლოგია, რაც ვაკანსიაშია.</li>
+                        <li>საკვანძო სიტყვების ზომიერად და კონტექსტში გამოყენება მნიშვნელოვანია.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="time-badge">
+                    30-40'
+                    <span class="duration">10 წუთი</span>
+                </div>
+                <div class="activity-content">
+                    <h3>4. რეზიუმეს ოპტიმიზაცია (ნაწილი 2: შედეგზე ორიენტირებული პუნქტები)</h3>
+                    <p><strong>მიზანი:</strong> შედეგზე ორიენტირებული, შთამბეჭდავი პუნქტების (Bullet Points) შექმნის სწავლება.</p>
+
+                    <h4>როგორ ჩავატაროთ:</h4>
+                    <ul>
+                        <li><strong>ფორმულის ახსნა (3 წთ):</strong> [მოქმედების ზმნა] + [შესრულებული ამოცანა] = [მიღწეული შედეგი + მონაცემი].</li>
+                        <li><strong>AI დემო (4 წთ):</strong> „სუსტი“ პუნქტების გადაკეთება ძლიერ, შედეგზე ორიენტირებულ პუნქტებად AI-ის დახმარებით.</li>
+                        <li><strong>ვორქშოფი (3 წუთი):</strong> მონაწილეები მუშაობენ საკუთარ რეზიუმეზე.</li>
+                    </ul>
+
+                    <h4>ძირითადი გზავნილები:</h4>
+                    <ul>
+                        <li>ფოკუსირდით შედეგებზე და არა — მხოლოდ მოვალეობებზე.</li>
+                        <li>რიცხვები და მონაცემები თქვენს მიღწევებს სანდოობას მატებს.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="time-badge">
+                    40-50'
+                    <span class="duration">10 წუთი</span>
+                </div>
+                <div class="activity-content">
+                    <h3>5. სამოტივაციო წერილი და LinkedIn-ის ინტეგრაცია</h3>
+                    <p><strong>მიზანი:</strong> პერსონალიზებული სამოტივაციო წერილის შექმნა და LinkedIn-ის ელემენტების გამოყენება განაცხადის გასაძლიერებლად.</p>
+
+                    <h4>როგორ ჩავატაროთ:</h4>
+                    <ul>
+                        <li><strong>სამოტივაციო წერილის სტრუქტურა (3 წთ):</strong> Hook (ყურადღების მიპყრობა), "რატომ ეს კომპანია?", "რატომ მე?", Call to Action (მოქმედებისკენ მოწოდება).</li>
+                        <li><strong>AI დემო (4 წთ):</strong> სამოტივაციო წერილის გენერირება კონკრეტული ვაკანსიისთვის LinkedIn-იდან აღებული პროფესიული შეჯამებისა და საკვანძო უნარების გამოყენებით.</li>
+                        <li><strong>LinkedIn-ის სწრაფი ინტეგრაცია (3 წთ):</strong> აჩვენეთ, როგორ გადავიტანოთ Headline და About-ის მთავარი იდეები წერილში, ცალკე სესიის გარეშე.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="time-badge">
+                    50-60'
+                    <span class="duration">10 წუთი</span>
+                </div>
+                <div class="activity-content">
+                    <h3>6. დასკვნა, კითხვა-პასუხი და სამოქმედო გეგმა</h3>
+                    <p><strong>მიზანი:</strong> ტრენინგის შეჯამება და მონაწილეებისთვის კონკრეტული შემდგომი ნაბიჯების მიცემა.</p>
+
+                    <h4>როგორ ჩავატაროთ:</h4>
+                    <ul>
+                        <li><strong>ძირითადი გზავნილები (3 წთ):</strong> განვლილი მასალის მოკლე შეჯამება.</li>
+                        <li><strong>სამოქმედო გეგმა (3 წთ):</strong> 7-დღიანი გეგმის გაცნობა (რეზიუმეს განახლება, LinkedIn-ის მოკლე დახვეწა, კომპანიების კვლევა).</li>
+                        <li><strong>კითხვა-პასუხი (4 წთ):</strong> მონაწილეების შეკითხვებზე პასუხის გაცემა.</li>
+                    </ul>
+                    
+                    <h4>დასკვნითი სიტყვა:</h4>
+                    <div style="background: #fff9c4; padding: 1rem; border-radius: 8px; margin-top: 0.5rem; font-style: italic;">
+                        "სამსახურის ძიება მარათონია და არა — სპრინტი. AI დაგეხმარებათ, იყოთ უფრო ეფექტურები, მაგრამ თქვენი პიროვნული ღირებულებები, უნარები და ავთენტურობა არის ის, რაც გამოგარჩევთ. გისურვებთ წარმატებას!"
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tips-section">
+            <h2>💡 რჩევები ტრენერისთვის</h2>
+            <div class="tip-item">
+                <h4>⏰ დროის მართვა</h4>
+                <p>გამოიყენეთ ტაიმერი თითოეული სექციისთვის. მოამზადეთ მასალის შემოკლებული ვერსია, თუ დროში ვერ ჩაეტევით. არ გადაუხვიოთ მთავარ თემას.</p>
+            </div>
+            <div class="tip-item">
+                <h4>🎤 ჩართულობის ტექნიკა</h4>
+                <p>სთხოვეთ მონაწილეებს რეალური მაგალითები. გამოიყენეთ სწრაფი გამოკითხვები. შექმენით უსაფრთხო გარემო, სადაც კითხვების დასმა არავის მოერიდება.</p>
+            </div>
+            <div class="tip-item">
+                <h4>🔧 ტექნიკური გამოწვევების მართვა</h4>
+                <p>თუ რომელიმე AI ინსტრუმენტი გაითიშება, გამოიყენეთ ალტერნატივა. მოამზადეთ წინასწარ შენახული მაგალითები (Screenshots) ინტერნეტის გათიშვის შემთხვევისთვის.</p>
+            </div>
+        </section>
+
+        <button class="print-button" onclick="window.print()">🖨️ დაბეჭდვა</button>
+    </div>
+</body>
+</html>

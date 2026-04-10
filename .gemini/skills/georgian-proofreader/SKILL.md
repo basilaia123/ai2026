@@ -9,27 +9,28 @@ This skill provides a standardized workflow for proofreading and correcting Geor
 
 ## Workflow
 
-1. **Read & Identify**:
-   - Identify Georgian text within HTML/MD files.
-   - Look for English technical terms (Prompt, Lead, etc.).
+1. **Full Content Audit**:
+   - Read the **entire** file carefully.
+   - Scan for English terms in: body text, placeholders, UI mocks (Email Subjects, CTAs), and button labels.
 
-2. **Check Grammar & Style**:
-   - Verify correct Georgian verb forms and declensions.
-   - Ensure proper punctuation and syntax.
-   - Maintain a professional tone consistent with **Tempo Holding**.
+2. **Terminology Sweep**:
+   - Refer to [terminology.md](references/terminology.md) for every identified technical term.
+   - Use Georgian primary terms but keep original English in parentheses if it's critical for technical understanding (e.g., მითითება (Prompt)).
 
-3. **Standardize Terminology**:
-   - Refer to [terminology.md](references/terminology.md) for approved translations.
-   - Replace unnecessary English terms with natural Georgian equivalents.
+3. **Grammar & Tone Check**:
+   - Apply **Tempo Holding** branding: elite, professional, responsible.
+   - Check for: "ბულეტები" -> "პუნქტები", "თავის მართლება" -> "პასუხისმგებლობის აღება".
+   - Ensure consistent punctuation and verb forms.
 
 4. **Surgical Replacement**:
-   - Use the `replace` tool to apply corrections precisely.
-   - Avoid modifying unrelated HTML structure or CSS styles.
+   - Apply changes using the `replace` tool.
+   - After each replacement, re-scan surrounding text for context consistency.
 
-## Key Terminology (Summary)
-- **Prompt** -> მითითება
-- **Lead** -> პოტენციური კლიენტი (ლიდი)
-- **Hook** -> ყურადღების მისაქცევი ელემენტი (კაუჭი)
-- **Follow-up** -> შემდგომი კომუნიკაცია (Follow-up)
+## Priority Terminology
+- **CTA** -> მოწოდება მოქმედებისკენ (CTA)
+- **Subject Line** -> წერილის თემა
+- **Action Items** -> სამოქმედო გეგმა / პუნქტები
+- **Bullet Points** -> პუნქტობრივი ჩამონათვალი
+- **Prompt** -> მითითება (პრომპტი)
 
 For full terminology and branding guidelines, see [references/terminology.md](references/terminology.md).

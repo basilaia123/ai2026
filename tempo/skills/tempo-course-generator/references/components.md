@@ -82,3 +82,34 @@ Use this structure for interactive activities like "Roast My Prompt" or "Golden 
     </div>
 </div>
 ```
+## 7. Chart.js Data Visualization
+When displaying statistics or percentage comparisons (e.g. time saved, adoption rates), use Chart.js to make it visually impactful. 
+Add a canvas element in the HTML where you want the chart:
+```html
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-6">
+    <canvas id="myUniqueChartId"></canvas>
+</div>
+```
+Then, in the `assets/slide-template.html` script block (or at the bottom of the generated HTML before `</body>`), initialize the chart:
+```javascript
+<script>
+    const ctx = document.getElementById('myUniqueChartId');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut', // or 'bar'
+            data: {
+                labels: ['Saved Time', 'Manual Time'],
+                datasets: [{
+                    data: [80, 20],
+                    backgroundColor: ['#C5A059', '#E8E8E8'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+</script>
+```
