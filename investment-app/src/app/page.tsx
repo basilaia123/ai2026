@@ -6,14 +6,14 @@ import { cookies } from "next/headers";
 import { Language, getTranslation } from "@/lib/i18n";
 
 const CATEGORY_TICKERS: Record<string, string[]> = {
-  "SPY": ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA"],
-  "XLK": ["MSFT", "AAPL", "NVDA", "AVGO", "ADBE", "CRM", "AMD"],
-  "BOTZ": ["NVDA", "ISRG", "ABB", "KEY", "CRWD", "PLTR"],
-  "XLF": ["BRK-B", "JPM", "V", "MA", "BAC", "WFC", "GS"],
-  "XLV": ["LLY", "UNH", "JNJ", "ABBV", "MRK", "TMO", "DHR"],
-  "SMH": ["NVDA", "TSM", "AVGO", "ASML", "AMD", "QCOM", "INTC"],
-  "GAMR": ["EA", "TTWO", "RBLX", "NTES", "SONY"],
-  "XLE": ["XOM", "CVX", "COP", "SLB", "EOG", "MPC"],
+  "SPY": ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "BRK-B", "LLY", "AVGO", "JPM", "UNH", "XOM", "V", "MA", "PG", "JNJ"],
+  "XLK": ["MSFT", "AAPL", "NVDA", "AVGO", "ADBE", "CRM", "AMD", "INTC", "CSCO", "QCOM", "TXN", "AMAT", "IBM", "NOW", "INTU", "MU"],
+  "BOTZ": ["NVDA", "ISRG", "ABB", "KEY", "CRWD", "PLTR", "U", "PATH", "SYK", "CGNX", "ROK", "IRBT", "SYM", "HON", "APP"],
+  "XLF": ["BRK-B", "JPM", "V", "MA", "BAC", "WFC", "GS", "MS", "C", "BLK", "AXP", "CB", "MMC", "SPGI", "PGR", "USB", "SCHW"],
+  "XLV": ["LLY", "UNH", "JNJ", "ABBV", "MRK", "TMO", "DHR", "PFE", "AMGN", "ISRG", "SYK", "MDT", "VRTX", "BSX", "ZTS", "GILD", "BDX"],
+  "SMH": ["NVDA", "TSM", "AVGO", "ASML", "AMD", "QCOM", "INTC", "TXN", "AMAT", "LRCX", "MU", "ADI", "KLAC", "NXPI", "MRVL", "SNPS", "CDNS"],
+  "GAMR": ["EA", "TTWO", "RBLX", "NTES", "SONY", "SE", "APP", "BILI", "PLTK", "CRSR", "LOGI", "U", "NCTY"],
+  "XLE": ["XOM", "CVX", "COP", "SLB", "EOG", "MPC", "OXY", "VLO", "WMB", "PSX", "KMI", "HES", "HAL", "BKR"],
 };
 
 const CATEGORY_NAMES: Record<string, string> = {
@@ -207,11 +207,11 @@ export default async function Home(props: { searchParams?: Promise<{ ticker?: st
                  
                  <div className="flex justify-between items-start mb-4">
                    <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 rounded-xl bg-background border border-white/10 flex items-center justify-center font-bold text-white shadow-inner">
+                     <div className="w-10 h-10 rounded-xl shrink-0 bg-background border border-white/10 flex items-center justify-center font-bold text-white shadow-inner">
                        {info.ticker[0]}
                      </div>
                      <div>
-                       <h3 className="text-white font-bold max-w-[150px] truncate group-hover:text-green-400 transition-colors">{info.name}</h3>
+                       <h3 className="text-white font-bold leading-tight group-hover:text-green-400 transition-colors line-clamp-2">{info.name}</h3>
                        <span className="text-xs font-semibold text-muted uppercase">#{idx + 1} {t("Featured")}</span>
                      </div>
                    </div>

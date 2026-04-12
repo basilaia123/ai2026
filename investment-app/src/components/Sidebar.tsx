@@ -7,14 +7,14 @@ import { Suspense } from "react";
 import { Language, getTranslation } from "@/lib/i18n";
 
 const RAW_CATEGORIES = [
-  { icon: <Grip className="w-4 h-4" />, labelKey: "Market Overview", ticker: "SPY", count: 7 },
-  { icon: <Code className="w-4 h-4" />, labelKey: "Technology", ticker: "XLK", count: 7 },
-  { icon: <Zap className="w-4 h-4" />, labelKey: "AI & Robotics", ticker: "BOTZ", count: 6 },
-  { icon: <Building2 className="w-4 h-4" />, labelKey: "Finance", ticker: "XLF", count: 7 },
-  { icon: <HeartPulse className="w-4 h-4" />, labelKey: "Healthcare", ticker: "XLV", count: 7 },
-  { icon: <Terminal className="w-4 h-4" />, labelKey: "Semiconductors", ticker: "SMH", count: 7 },
-  { icon: <Gamepad className="w-4 h-4" />, labelKey: "Gaming", ticker: "GAMR", count: 5 },
-  { icon: <Compass className="w-4 h-4" />, labelKey: "Energy", ticker: "XLE", count: 6 },
+  { icon: <Grip className="w-4 h-4" />, labelKey: "Market Overview", ticker: "SPY", count: 17 },
+  { icon: <Code className="w-4 h-4" />, labelKey: "Technology", ticker: "XLK", count: 16 },
+  { icon: <Zap className="w-4 h-4" />, labelKey: "AI & Robotics", ticker: "BOTZ", count: 15 },
+  { icon: <Building2 className="w-4 h-4" />, labelKey: "Finance", ticker: "XLF", count: 17 },
+  { icon: <HeartPulse className="w-4 h-4" />, labelKey: "Healthcare", ticker: "XLV", count: 17 },
+  { icon: <Terminal className="w-4 h-4" />, labelKey: "Semiconductors", ticker: "SMH", count: 17 },
+  { icon: <Gamepad className="w-4 h-4" />, labelKey: "Gaming", ticker: "GAMR", count: 13 },
+  { icon: <Compass className="w-4 h-4" />, labelKey: "Energy", ticker: "XLE", count: 14 },
 ] as const;
 
 function SidebarContent({ className, lang }: { className?: string; lang: Language }) {
