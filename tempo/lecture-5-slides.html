@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tempo Holding AI ტრენინგი - სესია 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tempo: { 900: '#1A1A1A', 800: '#2C2C2C', 700: '#333333', gold: '#C5A059', light: '#E6D5B3' }
+                    },
+                    fontFamily: {
+                        sans: ['FiraGO', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link.active { background: rgba(197,160,89,0.15); border-left: 3px solid #C5A059; color: #C5A059; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+
+        .prose p { margin-bottom: 1rem; line-height: 1.7; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose li { margin-bottom: 0.5rem; }
+        .prose h3 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #1A1A1A; }
+        .prose h4 { font-size: 1.25rem; font-weight: bold; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #2C2C2C; }
+
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+
+        .highlight-box, .warning-box, .key-points {
+            background: #F9F9F9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #C5A059;
+        }
+        .warning-box { border-left-color: #1A1A1A; }
+
+        .code-block {
+            position: relative;
+            font-family: 'Courier New', Courier, monospace;
+            background: #1A1A1A;
+            color: #F0F0F0;
+            padding: 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin: 1.5rem 0;
+            white-space: pre-wrap;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #A0A0A0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .copy-btn:hover { background: #C5A059; color: #1A1A1A; border-color: #C5A059; }
+
+        @media (max-width: 768px) {
+            .two-column, .three-column { grid-template-columns: 1fr; gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-tempo-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-tempo-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-tempo-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-xl font-serif font-bold text-tempo-gold">Tempo Holding</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 5: გაყიდვები & სკრიპტები</p>
+        <p class="text-gray-400 text-xs mt-1">150 წუთი | სრული გზამკვლევი</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-4 pb-2 text-[11px] uppercase tracking-wider text-tempo-gold font-bold">შინაარსი (15 სექცია)</div>
+
+        <a href="#topic-1" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">🎯 სესიის აჯენდა (150 წუთი)</span>
+        </a>
+        <a href="#topic-2" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">🧊 Icebreaker & ⏳ ადრე vs ახლა (გაყიდვები)</span>
+        </a>
+        <a href="#topic-3" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">🔍 Lead კვალიფიკაცია + CRM ჩანაწერი</span>
+        </a>
+        <a href="#topic-4" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">📞 ცივი ზარის სკრიპტი (Cold Call)</span>
+        </a>
+        <a href="#topic-5" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">💬 WhatsApp & ელ-ფოსტის შაბლონები</span>
+        </a>
+        <a href="#topic-6" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">🛡️ Objection Handling: ფასი, ლოკაცია, გრაფიკი</span>
+        </a>
+        <a href="#topic-7" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">⚡ ჯგუფური: Objection Challenge (8 წთ)</span>
+        </a>
+        <a href="#topic-8" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">🔁 24/72-საათიანი Follow-up სისტემა</span>
+        </a>
+        <a href="#topic-9" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">📄 კომერციული შეთავაზების სტრუქტურა</span>
+        </a>
+        <a href="#topic-10" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">👤 პერსონა-ბაზირებული შეთავაზება</span>
+        </a>
+        <a href="#topic-11" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">🌍 Serenade: შეთავაზება მრავალ ენაზე</span>
+        </a>
+        <a href="#topic-12" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">🎭 ჯგუფური: "რთული კლიენტი" სიმულაცია</span>
+        </a>
+        <a href="#topic-13" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">📒 Sales Playbook → Notion-ში</span>
+        </a>
+        <a href="#topic-14" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">✅ სესიის შეჯამება + სესია 6</span>
+        </a>
+
+        <div class="mt-8 px-5">
+            <a href="index.html" class="block text-center bg-white/10 hover:bg-white/20 text-white text-sm py-2 rounded transition-colors">← პროგრამაში დაბრუნება</a>
+        </div>
+    </nav>
+</aside>
+
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+    <header class="bg-tempo-900 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-tempo-gold rounded-full blur-[100px] opacity-10"></div>
+        <div class="max-w-7xl relative z-10">
+            <h1 class="text-2xl md:text-4xl font-serif font-bold leading-tight mb-4">სესია 5: გაყიდვები — სკრიპტები, <br><span class="text-tempo-light">შემდგომი კომუნიკაცია & კომერციული შეთავაზება</span></h1>
+            <p class="text-gray-300 text-lg max-w-4xl leading-relaxed mb-6">ლიდის კვალიფიკაციიდან დახურვამდე: AI-ით ზარის სკრიპტი, შესიტყვებების დაძლევა, პერსონალიზებული შეთავაზება და ავტომატიზებული Follow-up სისტემა.</p>
+            <div class="flex flex-wrap gap-4">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white"><svg class="w-4 h-4 text-tempo-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 150 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white"><svg class="w-4 h-4 text-tempo-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg> გიორგი ბასილაია</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white"><svg class="w-4 h-4 text-tempo-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg> ონლაინ (თეორია + პრაქტიკა)</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+
+        <!-- Slide 1: Agenda -->
+        <section id="topic-1" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>🎯 სესიის აჯენდა (150 წუთი)</h3>
+            <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-sm mt-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                    <div class="p-6 bg-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -z-0"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-2 text-tempo-gold font-bold text-sm mb-1 uppercase tracking-wider"><span>⏱ 00:00 – 01:15</span></div>
+                            <h3 class="text-xl font-bold text-tempo-900 mb-4 border-b border-gray-100 pb-2">ბლოკი 1: ლიდი & სკრიპტები</h3>
+                            <ul class="text-sm text-gray-700 space-y-3">
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>Lead კვალიფიკაცია:</strong> BANT ფრეიმვორქი + CRM ჩანაწერის ფორმატი.</li>
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>სკრიპტები:</strong> ცივი ზარი, WhatsApp, ელ-ფოსტა.</li>
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>Objection Handling:</strong> ფასი, ლოკაცია, გრაფიკი + ჯგუფური.</li>
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>Follow-up სისტემა:</strong> 24/72-საათიანი ჯაჭვი.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 flex flex-col relative overflow-hidden">
+                        <div class="bg-tempo-gold/10 border-b border-tempo-gold/20 px-6 py-3 flex items-center justify-between">
+                            <span class="font-bold text-tempo-900 text-sm">☕ 15-წუთიანი შესვენება</span>
+                            <span class="text-tempo-gold font-bold text-xs bg-white px-2 py-1 rounded shadow-sm">01:15 – 01:30</span>
+                        </div>
+                        <div class="p-6 flex-1 bg-white">
+                            <div class="flex items-center gap-2 text-tempo-gold font-bold text-sm mb-1 uppercase tracking-wider"><span>⏱ 01:30 – 02:30</span></div>
+                            <h3 class="text-xl font-bold text-tempo-900 mb-4 border-b border-gray-100 pb-2">ბლოკი 2: შეთავაზება & სიმულაცია</h3>
+                            <ul class="text-sm text-gray-700 space-y-3">
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>კომ. შეთავაზება:</strong> სტრუქტურა + პერსონა-ბაზირება.</li>
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>მულტი-ენა:</strong> Serenade-ის შეთავაზება 3 ენაზე.</li>
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>"რთული კლიენტი":</strong> ლაივ სიმულაცია.</li>
+                                <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold shrink-0">•</span> <strong>Sales Playbook:</strong> ყველაფრის Notion-ში შენახვა.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Icebreaker -->
+        <section id="topic-2" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>🧊 Icebreaker & ⏳ ადრე vs ახლა</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-tempo-900 border border-tempo-gold/30 rounded-xl overflow-hidden shadow-lg relative p-6 flex flex-col justify-center">
+                    <div class="absolute -right-6 -top-6 text-[8rem] opacity-5">🧊</div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-tempo-gold/20 flex items-center justify-center text-2xl mb-4 border border-tempo-gold/30">🧊</div>
+                        <h4 class="text-tempo-gold font-bold text-xl mb-2">ყველაზე გრძელი Follow-up</h4>
+                        <p class="text-sm text-gray-300 mb-4">Google Meet-ის ჩატში დაწერეთ: <strong>რამდენჯერ გაეგზავნეთ Follow-up ერთ კლიენტს?</strong> და რა მოხდა — უპასუხა, ან სამუდამოდ გაჩუმდა? <em>(მაგ: "6-ჯერ, 3 კვირაზე მეტი, გაჩუმდა")</em></p>
+                        <div class="bg-white/10 px-4 py-2 rounded-lg border border-white/20 inline-block text-white text-sm font-bold">⏱️ 2 წუთი</div>
+                    </div>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-tempo-900 mb-2 border-b border-gray-100 pb-2">გაყიდვების დრო: ხელნაკეთი vs AI</h4>
+                        <p class="text-sm text-gray-600 mb-4">გაყიდვების მენეჯერი კვირაში საშუალოდ <strong>8+ საათს</strong> ხარჯავს სკრიპტებზე, Follow-up-ებსა და შეთავაზებებზე. AI-ით ეს <strong>1.5 საათამდე</strong> მცირდება.</p>
+                    </div>
+                    <canvas id="salesTimeChart" style="max-height: 200px;"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Lead Qualification -->
+        <section id="topic-3" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>🔍 Lead კვალიფიკაცია + CRM ჩანაწერი</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-4">გაყიდვების გუნდის ყველაზე ძვირი რესურსი — <strong>დრო</strong>. BANT ფრეიმვორქი გვეხმარება, გავარჩიოთ "ცხელი ლიდი" "ოცნებისეული კლიენტისგან" — სანამ პირველ ზარს გადავცემთ.</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
+                    <div class="bg-white border-2 border-tempo-gold rounded-xl p-4 text-center shadow-sm">
+                        <div class="text-3xl font-serif font-black text-tempo-gold mb-1">B</div>
+                        <div class="font-bold text-tempo-900 text-sm mb-1">Budget</div>
+                        <p class="text-xs text-gray-500">აქვს თუ არა ბიუჯეტი? რა ფასის დიაპაზონი?</p>
+                    </div>
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-tempo-gold transition-colors">
+                        <div class="text-3xl font-serif font-black text-gray-400 mb-1">A</div>
+                        <div class="font-bold text-tempo-900 text-sm mb-1">Authority</div>
+                        <p class="text-xs text-gray-500">ის თვითონ იღებს გადაწყვეტილებას, თუ ჰყავს პარტნიორი?</p>
+                    </div>
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-tempo-gold transition-colors">
+                        <div class="text-3xl font-serif font-black text-gray-400 mb-1">N</div>
+                        <div class="font-bold text-tempo-900 text-sm mb-1">Need</div>
+                        <p class="text-xs text-gray-500">რა სჭირდება? საცხოვრებელი, ინვესტიცია, ორივე?</p>
+                    </div>
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-tempo-gold transition-colors">
+                        <div class="text-3xl font-serif font-black text-gray-400 mb-1">T</div>
+                        <div class="font-bold text-tempo-900 text-sm mb-1">Timeline</div>
+                        <p class="text-xs text-gray-500">როდის არის მზად გადაწყვეტილებისთვის?</p>
+                    </div>
+                </div>
+
+                <div class="relative bg-tempo-900 rounded-lg p-6 text-sm text-gray-300 shadow-md border-l-4 border-l-tempo-gold mt-6">
+                    <p class="text-tempo-gold font-bold text-xs uppercase tracking-wide mb-3">CRM ჩანაწერის გენერატორი</p>
+                    <pre class="code-block font-mono leading-relaxed text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0;">მე ვარ Tempo Holding-ის გაყიდვების მენეჯერი.
+კლიენტთან ზარის შემდეგ ჩავიწერე ეს ინფო (ხმოვანი ან ქაოტური ნოტები):
+[ჩასვი ნოტები]
+
+გარდაქმენი ეს CRM-ისთვის სტრუქტურირებულ ჩანაწერად:
+- სახელი / საკონტაქტო
+- BANT სტატუსი (Budget / Authority / Need / Timeline)
+- პრიორიტეტი: 🔴 ცხელი / 🟡 თბილი / 🔵 ცივი
+- შემდეგი ნაბიჯი (კონკრეტული ქმედება + თარიღი)
+- დამატებითი შენიშვნები</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Cold Call Script -->
+        <section id="topic-4" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>📞 ცივი ზარის სკრიპტი (Cold Call)</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">ცივი ზარი წარმატებულია, თუ პირველ <strong>8 წამში</strong> ვხსნით კლიენტს: <em>ვინ ვარ, რატომ ვრეკავ, რა სარგებელი აქვს ამ საუბარს მისთვის.</em> AI გვეხმარება სკრიპტის სტრუქტურირებაში.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-6">
+                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center shadow-sm">
+                        <div class="w-7 h-7 rounded-full bg-tempo-900 text-white text-xs font-bold flex items-center justify-center mx-auto mb-2">1</div>
+                        <div class="font-bold text-xs text-tempo-900">Hook</div>
+                        <p class="text-[10px] text-gray-500 mt-1">სახელი + კომპანია + 1 მიზეზი, რატომ ზარი</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center shadow-sm">
+                        <div class="w-7 h-7 rounded-full bg-tempo-900 text-white text-xs font-bold flex items-center justify-center mx-auto mb-2">2</div>
+                        <div class="font-bold text-xs text-tempo-900">Permission</div>
+                        <p class="text-[10px] text-gray-500 mt-1">"გაქვთ 2 წუთი?" — ნება ითხოვ</p>
+                    </div>
+                    <div class="bg-white border-2 border-tempo-gold rounded-lg p-3 text-center shadow-sm">
+                        <div class="w-7 h-7 rounded-full bg-tempo-gold text-tempo-900 text-xs font-bold flex items-center justify-center mx-auto mb-2">3</div>
+                        <div class="font-bold text-xs text-tempo-900">Value Prop</div>
+                        <p class="text-[10px] text-gray-500 mt-1">1 კონკრეტული სარგებელი კლიენტისთვის</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center shadow-sm">
+                        <div class="w-7 h-7 rounded-full bg-tempo-900 text-white text-xs font-bold flex items-center justify-center mx-auto mb-2">4</div>
+                        <div class="font-bold text-xs text-tempo-900">Question</div>
+                        <p class="text-[10px] text-gray-500 mt-1">ღია კითხვა, რომ კლიენტი ილაპარაკოს</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center shadow-sm">
+                        <div class="w-7 h-7 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center mx-auto mb-2">5</div>
+                        <div class="font-bold text-xs text-tempo-900">Next Step</div>
+                        <p class="text-[10px] text-gray-500 mt-1">კონკრეტული შეხვედრის შეთავაზება</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md">
+                        <h4 class="text-tempo-gold font-bold text-sm mb-3">📞 Cold Call სკრიპტის გენერატორი</h4>
+                        <pre class="code-block font-mono leading-relaxed text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0;">შექმენი ცივი ზარის სკრიპტი Tempo Holding-ის
+გაყიდვების მენეჯერისთვის.
+
+კლიენტის პროფილი: [მაგ: 40-50 წ., ბიზნეს-კლასის ბინის მფლობელი, ინვესტიციებით დაინტერესებული]
+პროდუქტი: Serenade Residence, ვაკე
+მიზანი: შეხვედრის (Site Visit) დათქმა
+
+სტრუქტურა: Hook → Permission → Value Prop → კითხვა → Next Step
+სიგრძე: 45-60 წამი (წაკითხვაზე)
+ტონი: პროფესიონალური, თბილი, ზეწოლის გარეშე</pre>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                        <h4 class="font-bold text-tempo-900 text-sm mb-3">🚫 ყველაზე გავრცელებული შეცდომები:</h4>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li class="flex items-start gap-2"><span class="text-red-500 font-bold">✗</span> "გამარჯობა, გინდოდათ ბინის ყიდვა?" — ძალიან პირდაპირი</li>
+                            <li class="flex items-start gap-2"><span class="text-red-500 font-bold">✗</span> პროდუქტის ტექნიკური დეტალების ჩამოთვლა ზარის დასაწყისში</li>
+                            <li class="flex items-start gap-2"><span class="text-red-500 font-bold">✗</span> "ამ პარასკევს გაქვთ დრო?" — ბოლო ეტაპამდე კონკრეტული დღე</li>
+                            <li class="flex items-start gap-2"><span class="text-red-500 font-bold">✗</span> 2 წუთზე გრძელი მონოლოგი კლიენტის მოსმენამდე</li>
+                        </ul>
+                        <div class="mt-3 bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-800">
+                            <strong>✓ ოქროს წესი:</strong> 40% ლაპარაკი (შენ) / 60% მოსმენა (კლიენტი) — AI-ს სკრიპტი ამ ბალანსს ინარჩუნებს.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: WhatsApp & Email Templates -->
+        <section id="topic-5" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>💬 WhatsApp & ელ-ფოსტის შაბლონები</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">2026 წელს კლიენტები ურჩევნიათ <strong>WhatsApp-ი ზარს</strong> — განსაკუთრებით უცხოელი ინვესტორები. AI გვეხმარება, გამოვიმუშაოთ 3 ძირითადი შაბლონი ყველა ეტაპისთვის.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-t-4 border-green-500">
+                        <h4 class="text-green-400 font-bold text-sm mb-2">💬 პირველი კონტაქტი (WhatsApp)</h4>
+                        <p class="text-xs text-gray-400 mb-3">ლიდი ახლახან მოვიდა — ვპასუხობთ 5 წუთში.</p>
+                        <pre class="code-block font-mono text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0; font-size: 0.75rem;">შექმენი WhatsApp-ის პირველი
+კონტაქტის შეტყობინება.
+
+კლიენტი: [სახელი, ინტერესი]
+პროექტი: Serenade Residence
+ტონი: თბილი, პროფესიონალური
+სიგრძე: 3-4 წინადადება
+დაბოლოოს ღია კითხვით</pre>
+                    </div>
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-t-4 border-blue-500">
+                        <h4 class="text-blue-400 font-bold text-sm mb-2">📅 შეხვედრის დადასტურება</h4>
+                        <p class="text-xs text-gray-400 mb-3">Site Visit-ის წინა დღეს — არ დაივიწყოს.</p>
+                        <pre class="code-block font-mono text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0; font-size: 0.75rem;">შექმენი შეხვედრის
+დადასტურების შეტყობინება.
+
+შეხვედრა: [თარიღი, საათი, მისამართი]
+შეიტანე: პარკინგის ინფო,
+ნავიგაციის ბმული,
+"დამირეკე თუ გაჭიანურდები"
+ტონი: მეგობრული, მოლოდინით</pre>
+                    </div>
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-t-4 border-tempo-gold">
+                        <h4 class="text-tempo-gold font-bold text-sm mb-2">✉️ შეხვედრის შემდგომი (Email)</h4>
+                        <p class="text-xs text-gray-400 mb-3">24 საათში — სანამ "გაცივდება".</p>
+                        <pre class="code-block font-mono text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0; font-size: 0.75rem;">შექმენი შეხვედრის შემდგომი
+ელ-ფოსტა კლიენტისთვის.
+
+კლიენტი: [სახელი]
+შეხვედრის ძირითადი თემები: [ჩასვი]
+ჩართე: მადლობა, 3 მთავარი
+takeaway, შეთავაზება, CTA
+(შემდეგი ნაბიჯი)</pre>
+                    </div>
+                </div>
+
+                <div class="highlight-box mt-6">
+                    <h4 class="font-bold text-tempo-900 mb-2">⚡ სისტემის ოქროს წესი:</h4>
+                    <div class="grid grid-cols-3 gap-4 text-center text-sm">
+                        <div><div class="text-2xl font-bold text-tempo-gold">5 წთ</div><div class="text-xs text-gray-500 mt-1">პირველი პასუხის ლიმიტი (ახალი ლიდი)</div></div>
+                        <div><div class="text-2xl font-bold text-tempo-gold">24 სთ</div><div class="text-xs text-gray-500 mt-1">Follow-up შეხვედრის შემდეგ</div></div>
+                        <div><div class="text-2xl font-bold text-tempo-gold">3×</div><div class="text-xs text-gray-500 mt-1">მაქს. Follow-up ჩუმობის შემდეგ</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: Objection Handling -->
+        <section id="topic-6" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>🛡️ Objection Handling: ფასი, ლოკაცია, გრაფიკი</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">შესიტყვება <strong>არ ნიშნავს "არა"-ს</strong> — ნიშნავს "მჭირდება მეტი ინფორმაცია ან დარწმუნება". AI გვეხმარება, მოვამზადოთ პრემიუმ პასუხები 3 ყველაზე გავრცელებულ შესიტყვებაზე.</p>
+
+                <div class="space-y-4">
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-red-50 border-b border-red-100 px-5 py-3 flex items-center gap-3">
+                            <span class="text-red-600 font-bold text-lg">💸</span>
+                            <span class="font-bold text-red-900">"ძალიან ძვირია" — ყველაზე გავრცელებული</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                            <div class="p-4">
+                                <p class="text-xs text-gray-400 font-bold uppercase mb-2">❌ სუსტი პასუხი</p>
+                                <p class="text-sm text-gray-600 italic">"კი, ფასი მაღალია, მაგრამ ხარისხი ასეთია..." — დამცავი პოზიცია.</p>
+                            </div>
+                            <div class="p-4 bg-green-50">
+                                <p class="text-xs text-green-700 font-bold uppercase mb-2">✓ პრემიუმ პასუხი</p>
+                                <p class="text-sm text-gray-700">"გესმის რატომ. კი, ეს ინვესტიცია. მოდი გვქონდეს 5 წლის პერსპექტივა — Queen's-ის სახლები გამოდის საბაზრო ფასის X%-ით ზემოთ. ეს ნახვა ღირს." → <em>ფასი → ღირებულებად გადათარგმნა</em></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-blue-50 border-b border-blue-100 px-5 py-3 flex items-center gap-3">
+                            <span class="text-blue-600 font-bold text-lg">📍</span>
+                            <span class="font-bold text-blue-900">"ლოკაცია არ მომწონს / შორია"</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                            <div class="p-4">
+                                <p class="text-xs text-gray-400 font-bold uppercase mb-2">❌ სუსტი პასუხი</p>
+                                <p class="text-sm text-gray-600 italic">"ვაკე ძალიან კარგი უბანია..." — ზოგადი დაცვა.</p>
+                            </div>
+                            <div class="p-4 bg-green-50">
+                                <p class="text-xs text-green-700 font-bold uppercase mb-2">✓ პრემიუმ პასუხი</p>
+                                <p class="text-sm text-gray-700">"გესმის. სად ცხოვრობ/მუშაობ ამჟამად? [ისმენს] → ვაკიდან X-მდე 12 წუთი მეტროთი. გარდა ამისა, ეს ზონა ბოლო 3 წელი ყველაზე სწრაფად ძვირდება." → <em>კონკრეტული მონაცემი</em></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-amber-50 border-b border-amber-100 px-5 py-3 flex items-center gap-3">
+                            <span class="text-amber-600 font-bold text-lg">🏗️</span>
+                            <span class="font-bold text-amber-900">"მშენებლობა შეიძლება დაგვიანდეს"</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                            <div class="p-4">
+                                <p class="text-xs text-gray-400 font-bold uppercase mb-2">❌ სუსტი პასუხი</p>
+                                <p class="text-sm text-gray-600 italic">"არ დაგვიანდება, გარანტია გვაქვს..." — ცარიელი დაპირება.</p>
+                            </div>
+                            <div class="p-4 bg-green-50">
+                                <p class="text-xs text-green-700 font-bold uppercase mb-2">✓ პრემიუმ პასუხი</p>
+                                <p class="text-sm text-gray-700">"ეს ლეგიტიმური შეშფოთებაა. Tempo-ს ბოლო 3 პროექტი ჩაბარდა X დღის ადრე. ხელშეკრულებაში პირობა — გვიანობის შემთხვევაში Y." → <em>ფაქტი + ხელშეკრულების ჰუკი</em></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-tempo-900 rounded-lg p-5 mt-6 text-sm text-gray-300 shadow-md border-l-4 border-l-tempo-gold">
+                    <h4 class="text-tempo-gold font-bold text-sm mb-3">Objection Handling სკრიპტის გენერატორი</h4>
+                    <pre class="code-block font-mono leading-relaxed text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0;">იმოქმედე როგორც უძრავი ქონების გაყიდვების ექსპერტმა.
+შეთავაზება: Serenade Residence, ვაკე, 180,000$-იდან.
+
+კლიენტი ამბობს: "[ჩასვი შესიტყვება]"
+
+დაწერე 3-4 წინადადების პასუხი, რომელიც:
+1. ემპათიით იწყება ("გესმის...", "ეს კარგი კითხვაა...")
+2. შესიტყვებას ღირებულებად გადათარგმნის
+3. კონკრეტულ ფაქტს ან მაგალითს იყენებს
+4. Next Step-ით მთავრდება (შეხვედრა, ვიზიტი, ინფო)</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Objection Challenge Activity -->
+        <section id="topic-7" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>⚡ ჯგუფური: Objection Challenge (8 წუთი)</h3>
+            <div class="bg-tempo-900 border border-tempo-gold/30 rounded-xl overflow-hidden shadow-lg relative p-8">
+                <div class="absolute -right-6 -top-6 text-[10rem] opacity-5">⚡</div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-full bg-tempo-gold/20 flex items-center justify-center text-4xl border border-tempo-gold/30 shrink-0">⚡</div>
+                        <div>
+                            <h4 class="text-tempo-gold font-bold text-2xl mb-1">Objection Challenge</h4>
+                            <p class="text-gray-400 text-sm">დრო: 8 წუთი | ინსტრუმენტი: Claude | ლოკაცია: Google Meet ჩატი</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                            <h5 class="font-bold text-white mb-3">📋 სცენარი (ინსტრუქტორი კითხულობს):</h5>
+                            <div class="bg-black/30 border-l-4 border-red-500 rounded p-4 text-sm text-gray-200 leading-relaxed italic">
+                                "კლიენტი — 48 წლის ბიზნესმენი, ინვესტიციის მიზნით. Site Visit-ის შემდეგ ამბობს: <strong class="text-white">'სხვა დეველოპერს ანალოგიური ბინა 20%-ით იაფად აქვს და ასევე ვაკეში. მე სად ვხედავ განსხვავებას?'"</strong>"
+                            </div>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                            <h5 class="font-bold text-white mb-3">🎯 დავალება (ინდივიდუალური):</h5>
+                            <ol class="text-sm text-gray-300 space-y-2">
+                                <li class="flex items-start gap-2"><span class="w-5 h-5 rounded-full bg-tempo-gold text-tempo-900 text-xs font-bold flex items-center justify-center shrink-0">1</span> Claude-ში დაწერეთ პრომპტი ამ შესიტყვებისთვის (slide 6-ის შაბლონით)</li>
+                                <li class="flex items-start gap-2"><span class="w-5 h-5 rounded-full bg-tempo-gold text-tempo-900 text-xs font-bold flex items-center justify-center shrink-0">2</span> Claude-ის პასუხი გამოიყენეთ, მაგრამ <strong class="text-white">3 სიტყვა შეცვალეთ</strong> — "გაათბეთ"</li>
+                                <li class="flex items-start gap-2"><span class="w-5 h-5 rounded-full bg-tempo-gold text-tempo-900 text-xs font-bold flex items-center justify-center shrink-0">3</span> საბოლოო პასუხი ჩატში გამოაგზავნეთ — ჯგუფი ხმას აძლევს 👍/👎</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="bg-tempo-gold/10 border border-tempo-gold/30 rounded-lg p-4 text-sm text-gray-200">
+                        <strong class="text-tempo-gold">🏆 მსაჯი:</strong> ჯგუფი ირჩევს 1 გამარჯვებულ პასუხს. ინსტრუქტორი ახსნის, <em>რატომ</em> — ეს სწავლება, არა კომპეტიცია.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Follow-up System -->
+        <section id="topic-8" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>🔁 24/72-საათიანი Follow-up სისტემა</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">გამოკვლევებით, ლიდების <strong>80% ყიდულობს მე-5–12 კონტაქტის შემდეგ</strong>, მაგრამ გაყიდვების 44% მენეჯერი <em>მხოლოდ ერთხელ</em> ეკონტაქტება. AI-ით ვაშენებთ ლოგიკურ ჯაჭვს — ისე, რომ კლიენტი ზეწოლას ვერ გრძნობდეს.</p>
+
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm mb-6">
+                    <div class="bg-tempo-900 px-5 py-3">
+                        <h4 class="text-tempo-gold font-bold text-sm">📅 Follow-up ჯაჭვი: Site Visit-ის შემდეგ</h4>
+                    </div>
+                    <div class="p-5">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 text-center shrink-0"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">+2 სთ</span></div>
+                                <div class="flex-1 bg-green-50 border border-green-200 rounded-lg p-3 text-sm"><strong>WhatsApp:</strong> "გამარჯობა [სახელი], სიამოვნება იყო შეხვედრა. ვაგზავნი [PDF/ბმული] — ეს Serenade-ის ფინანსური მიმოხილვაა." → <em>ფაქტი, არა ზეწოლა</em></div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 text-center shrink-0"><span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">+24 სთ</span></div>
+                                <div class="flex-1 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm"><strong>Email:</strong> სრული შეჯამება + 3 Takeaway + კომერციული შეთავაზება + CTA → <em>"გაქვთ კითხვები?"</em></div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 text-center shrink-0"><span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded">+72 სთ</span></div>
+                                <div class="flex-1 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm"><strong>ზარი ან WhatsApp:</strong> "გამარჯობა, [სახელი] — ვნახე, გაეგზავნა ინფო. გაქვთ 2 წუთი კითხვებზე?" → <em>მოკლე, ფოკუსირებული</em></div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 text-center shrink-0"><span class="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded">+7 დღე</span></div>
+                                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm"><strong>Value-add:</strong> "გამარჯობა, [სახელი] — ახლა გამოვიდა სტატია ვაკის ბაზრის ზრდაზე — [ბმული]. ეს პირდაპირ Serenade-ის ROI-ს ეხება." → <em>სასარგებლო, არა გამყიდველი</em></div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 text-center shrink-0"><span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded">+14 დღე</span></div>
+                                <div class="flex-1 bg-purple-50 border border-purple-200 rounded-lg p-3 text-sm"><strong>Soft Close:</strong> "გამარჯობა, [სახელი] — ბლოკი C-ში ბოლო 2 ბინა დარჩა. გინდოდათ ჯერ ოფიციალურად ??დავიჭიროთ?" → <em>Urgency, მაგრამ ჭეშმარიტი</em></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-l-4 border-l-tempo-gold">
+                    <h4 class="text-tempo-gold font-bold text-sm mb-3">Follow-up ჯაჭვის გენერატორი</h4>
+                    <pre class="code-block font-mono leading-relaxed text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0;">შექმენი 5-საფეხურიანი Follow-up სისტემა
+Tempo Holding-ის გაყიდვების გუნდისთვის.
+
+კლიენტის სიტუაცია: [მაგ: Site Visit გაიარა, კითხვები ჰქონდა ფასზე]
+საკომუნიკაციო არხები: WhatsApp + Email + ზარი
+პერიოდი: 14 დღე
+
+თითოეული შეტყობინებისთვის:
+1. არხი + დრო (+Xსთ/დღე)
+2. შეტყობინების ტექსტი (1-3 წინადადება)
+3. მიზანი (ინფო / ნდობა / Urgency)
+ტონი: პროფესიონალური, ზეწოლის გარეშე</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Commercial Proposal Structure -->
+        <section id="topic-9" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>📄 კომერციული შეთავაზების სტრუქტურა</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">კომერციული შეთავაზება (<strong>Commercial Proposal / CP</strong>) არ არის უბრალო ფასთა ნუსხა. ეს არის <em>ბოლო არგუმენტი</em> კლიენტის გადაწყვეტილებამდე. AI-ით ვქმნით CP-ს, რომელიც ყიდის — და არა ატყობინებს.</p>
+
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-sm border-collapse rounded-xl overflow-hidden shadow-sm">
+                        <thead>
+                            <tr class="bg-tempo-900 text-white">
+                                <th class="p-3 text-left font-bold">#</th>
+                                <th class="p-3 text-left font-bold">სექცია</th>
+                                <th class="p-3 text-left font-bold">მიზანი</th>
+                                <th class="p-3 text-left font-bold">Tempo-ს მაგალითი</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-200 bg-white"><td class="p-3 font-bold text-tempo-gold">1</td><td class="p-3 font-bold">Executive Summary</td><td class="p-3 text-xs text-gray-500">1 გვერდი, ყველაფრის არსი</td><td class="p-3 text-xs text-gray-500">"Serenade — ვაკის პრემიუმ ბინა, 7% ROI, 2026 ჩაბარება"</td></tr>
+                            <tr class="border-b border-gray-200 bg-gray-50"><td class="p-3 font-bold text-tempo-gold">2</td><td class="p-3 font-bold">კლიენტის საჭიროება</td><td class="p-3 text-xs text-gray-500">მირეკლავება — "გვესმის"</td><td class="p-3 text-xs text-gray-500">"თქვენ გსურთ X — ჩვენ გვაქვს პირდაპირ ამის გამოსავალი"</td></tr>
+                            <tr class="border-b border-gray-200 bg-white"><td class="p-3 font-bold text-tempo-gold">3</td><td class="p-3 font-bold">გამოსავალი</td><td class="p-3 text-xs text-gray-500">პროდუქტის პრეზენტაცია</td><td class="p-3 text-xs text-gray-500">ბინის დეტალები, სართული, ხედი, ფართობი</td></tr>
+                            <tr class="border-b border-gray-200 bg-gray-50"><td class="p-3 font-bold text-tempo-gold">4</td><td class="p-3 font-bold">ROI / ფინანსური მიმოხილვა</td><td class="p-3 text-xs text-gray-500">ციფრები, პროექციები</td><td class="p-3 text-xs text-gray-500">ქირის შემოსავალი, კაპიტალის ზრდა 5 წელში</td></tr>
+                            <tr class="border-b border-gray-200 bg-white"><td class="p-3 font-bold text-tempo-gold">5</td><td class="p-3 font-bold">კომპანიის Trust Signals</td><td class="p-3 text-xs text-gray-500">სანდოობა</td><td class="p-3 text-xs text-gray-500">Tempo-ს ისტორია, დასრულებული პროექტები, სერტიფიკატები</td></tr>
+                            <tr class="border-b border-gray-200 bg-gray-50"><td class="p-3 font-bold text-tempo-gold">6</td><td class="p-3 font-bold">ფასი + პირობები</td><td class="p-3 text-xs text-gray-500">გამჭვირვალობა</td><td class="p-3 text-xs text-gray-500">ფასი, გადახდის გრაფიკი, ბონუსები</td></tr>
+                            <tr class="bg-green-50"><td class="p-3 font-bold text-green-700">7</td><td class="p-3 font-bold">CTA + Urgency</td><td class="p-3 text-xs text-gray-500">მოქმედება</td><td class="p-3 text-xs text-gray-500">"ბლოკი C: 2 ბინა დარჩა — ჯავშანი მოქმედებს 72 სთ"</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-l-4 border-l-tempo-gold">
+                    <h4 class="text-tempo-gold font-bold text-sm mb-3">კომერციული შეთავაზების გენერატორი</h4>
+                    <pre class="code-block font-mono leading-relaxed text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0;">შექმენი კომერციული შეთავაზება (Commercial Proposal)
+კლიენტისთვის: [სახელი / ტიპი]
+პროექტი: Serenade Residence, ვაკე
+ბინა: [ფართობი, სართული, ხედი, ფასი]
+კლიენტის ძირითადი ინტერესი: [ინვესტიცია / საცხოვრებელი / ორივე]
+
+სტრუქტურა: Executive Summary → საჭიროება → გამოსავალი → ROI → Trust → ფასი → CTA
+ტონი: პრემიუმ, სოლიდური, პირადი
+სიგრძე: A4, 1.5-2 გვერდი</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 10: Persona-Based Proposal -->
+        <section id="topic-10" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>👤 პერსონა-ბაზირებული შეთავაზება</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">ერთი და იგივე ბინა სხვადასხვა კლიენტისთვის <strong>სხვადასხვა პრობლემას წყვეტს</strong>. AI გვეხმარება შეთავაზება ავტომატურად მოვარგოთ კლიენტის პროფილს — ისე, რომ ერთი ფრეიმვორქი 4 სხვადასხვა ვარიანტად გარდაიქმნება.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-t-4 border-t-blue-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="text-2xl">💼</div>
+                            <h4 class="font-bold text-tempo-900 text-sm">ინვესტორი (35–55 წ.)</h4>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2"><strong>ძირითადი მოტივი:</strong> ROI, კაპიტალის შენახვა, პასიური შემოსავალი</p>
+                        <p class="text-xs text-gray-600 italic border-l-2 border-blue-300 pl-2">"Serenade-ის ბინა 2021-2026 წლებში გაძვირდა 38%-ით. ქირის შემოსავალი — 7-9% წლიურად. დოლარიზებული ინვესტიცია ევროპის ბაზარზე."</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-t-4 border-t-green-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="text-2xl">👨‍👩‍👧</div>
+                            <h4 class="font-bold text-tempo-900 text-sm">ოჯახი (საცხოვრებლად)</h4>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2"><strong>ძირითადი მოტივი:</strong> კომფორტი, სკოლა, სიმშვიდე, სტატუსი</p>
+                        <p class="text-xs text-gray-600 italic border-l-2 border-green-300 pl-2">"ვაკის ყველაზე პრემიუმ მისამართი — 200 მ სკოლამდე, 24/7 კონსიერჟი, ბავშვების სათამაშო ეზოში. სახლი, სადაც ოჯახი ბედნიერია."</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-t-4 border-t-purple-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="text-2xl">🌍</div>
+                            <h4 class="font-bold text-tempo-900 text-sm">უცხოელი ინვესტორი</h4>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2"><strong>ძირითადი მოტივი:</strong> დივერსიფიკაცია, ვიზა, მარტივი შეძენა</p>
+                        <p class="text-xs text-gray-600 italic border-l-2 border-purple-300 pl-2">"Georgia: no property tax, full ownership rights for foreigners, Golden Visa via $100k+ investment. Serenade is the premium address in Tbilisi's fastest-growing district."</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-t-4 border-t-tempo-gold">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="text-2xl">🧑‍💻</div>
+                            <h4 class="font-bold text-tempo-900 text-sm">Young Professional (28–38 წ.)</h4>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2"><strong>ძირითადი მოტივი:</strong> სტატუსი, ლოკაცია, ცხოვრების სტილი</p>
+                        <p class="text-xs text-gray-600 italic border-l-2 border-tempo-gold pl-2">"Serenade — არ არის უბრალოდ ბინა, ეს არის address. ვაკეს ცენტრი, 5 წუთი მეტრომდე, Smart Home სისტემა, fitness center."</p>
+                    </div>
+                </div>
+
+                <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-l-4 border-l-tempo-gold">
+                    <h4 class="text-tempo-gold font-bold text-sm mb-3">პერსონა-ბაზირებული CP გენერატორი</h4>
+                    <pre class="code-block font-mono leading-relaxed text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0;">მოარგე Serenade Residence-ის კომერციული შეთავაზება
+შემდეგი კლიენტის პროფილისთვის:
+
+კლიენტი: [ასაკი, პროფესია, ქვეყანა]
+ძირითადი მოტივი: [ინვესტიცია / საცხოვრებელი / სტატუსი / ვიზა]
+ბიუჯეტი: [დიაპაზონი]
+ენა: [ქართული / ინგლისური / რუსული]
+
+შეასწორე ტონი, არგუმენტები და სტატისტიკა
+ამ კლიენტის პრიორიტეტებისთვის.
+CP სიგრძე: 1.5 გვერდი, პროფესიონალური.</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Multilingual Proposal -->
+        <section id="topic-11" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>🌍 Serenade: შეთავაზება მრავალ ენაზე</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">Tempo Holding-ის ერთ-ერთი კონკურენტული უპირატესობა — <strong>საერთაშორისო ინვესტორებთან</strong> მუშაობა. AI-ით 1 ქართული CP-დან 30 წამში ვიღებთ ინგლისურ, რუსულ ან არაბულ ვერსიას.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-t-4 border-blue-600">
+                        <div class="flex items-center gap-2 mb-3"><span class="text-2xl">🇬🇧</span><h4 class="text-blue-400 font-bold text-sm">ინგლისური (EN)</h4></div>
+                        <pre class="code-block font-mono text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0; font-size: 0.75rem;">Translate the following
+commercial proposal to
+professional English.
+
+Adapt the tone for a
+Western European or
+American investor.
+Keep all numbers, dates,
+and proper nouns exact.
+
+[CP ტექსტი ქართულად]</pre>
+                    </div>
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-t-4 border-red-600">
+                        <div class="flex items-center gap-2 mb-3"><span class="text-2xl">🇷🇺</span><h4 class="text-red-400 font-bold text-sm">რუსული (RU)</h4></div>
+                        <pre class="code-block font-mono text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0; font-size: 0.75rem;">Переведи следующее
+коммерческое предложение
+на профессиональный
+русский язык.
+
+Тон: премиум, доверительный.
+Адаптируй для инвестора
+из СНГ.
+Числа и названия — точно.
+
+[CP ტექსტი ქართულად]</pre>
+                    </div>
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md border-t-4 border-green-600">
+                        <div class="flex items-center gap-2 mb-3"><span class="text-2xl">🇮🇱</span><h4 class="text-green-400 font-bold text-sm">ებრაული (HE) / არაბული (AR)</h4></div>
+                        <pre class="code-block font-mono text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0; font-size: 0.75rem;">Translate to professional
+[Hebrew / Arabic].
+
+Cultural adaptation:
+emphasize security,
+family values, and
+long-term stability.
+Right-to-left layout
+notes included.
+
+[CP ტექსტი]</pre>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4 class="font-bold text-tempo-900 mb-2">⚠️ მნიშვნელოვანი: ადამიანური შემოწმება</h4>
+                    <p class="text-sm text-gray-600">AI-ის თარგმანი <strong>ყოველთვის</strong> უნდა გადაიხედოს native speaker-ის მიერ ოფიციალური გაგზავნის წინ. კონტრაქტების, ფინანსური პირობებისა და იურიდიული ტერმინების თარგმნა — მხოლოდ ცერტიფიცირებული მთარგმნელი.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: Difficult Client Simulation -->
+        <section id="topic-12" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>🎭 ჯგუფური: "რთული კლიენტი" სიმულაცია</h3>
+            <div class="bg-tempo-900 border border-tempo-gold/30 rounded-xl overflow-hidden shadow-lg relative p-8">
+                <div class="absolute -right-6 -top-6 text-[10rem] opacity-5">🎭</div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center text-4xl border border-red-500/30 shrink-0">🎭</div>
+                        <div>
+                            <h4 class="text-tempo-gold font-bold text-2xl mb-1">"რთული კლიენტი" — ლაივ სიმულაცია</h4>
+                            <p class="text-gray-400 text-sm">დრო: 10 წუთი | ინსტრუქტორი: "კლიენტი" | მონაწილე: "მენეჯერი" + Claude</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                            <h5 class="font-bold text-red-400 mb-3">🎭 კლიენტის როლი (ინსტრუქტორი):</h5>
+                            <div class="space-y-2 text-sm text-gray-300">
+                                <p class="border-b border-white/10 pb-2"><strong class="text-white">ეტაპი 1:</strong> "გამარჯობა. მე ვნახე ბინა, მომწონს, მაგრამ ფასი მაღალია."</p>
+                                <p class="border-b border-white/10 pb-2"><strong class="text-white">ეტაპი 2:</strong> (პასუხის მიღების შემდეგ) "კარგი, მაგრამ კონკურენტს იმავე ფართობი 15%-ით იაფია."</p>
+                                <p class="border-b border-white/10 pb-2"><strong class="text-white">ეტაპი 3:</strong> "ვფიქრობ, ჩემს ცოლთან მოვილაპარაკებ. ვნახოთ."</p>
+                                <p><strong class="text-white">ეტაპი 4:</strong> (3 დღე — ჩუმობა)</p>
+                            </div>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                            <h5 class="font-bold text-tempo-gold mb-3">💪 მენეჯერის ამოცანა:</h5>
+                            <ol class="text-sm text-gray-300 space-y-2">
+                                <li class="flex items-start gap-2"><span class="w-5 h-5 rounded-full bg-tempo-gold text-tempo-900 text-xs font-bold flex items-center justify-center shrink-0">1</span> Claude-ში სწრაფად ასწოროს/გააუმჯობესოს თავისი პასუხი ყოველ ეტაპზე</li>
+                                <li class="flex items-start gap-2"><span class="w-5 h-5 rounded-full bg-tempo-gold text-tempo-900 text-xs font-bold flex items-center justify-center shrink-0">2</span> ეტაპ 3-ის შემდეგ: 24-სთ Follow-up შეტყობინება ჩატში გამოაგზავნოს</li>
+                                <li class="flex items-start gap-2"><span class="w-5 h-5 rounded-full bg-tempo-gold text-tempo-900 text-xs font-bold flex items-center justify-center shrink-0">3</span> ეტაპ 4-ის (ჩუმობა) შემდეგ: 72-სთ Follow-up — ისე, რომ ზეწოლა არ იგრძნოს</li>
+                            </ol>
+                            <div class="mt-3 bg-tempo-gold/10 border border-tempo-gold/30 rounded p-3 text-xs text-gray-200">
+                                <strong class="text-tempo-gold">🎯 წარმატება:</strong> კლიენტი ეთანხმება შეხვედრის დათქმას (ან CP-ს მიღებას)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-lg p-4 text-sm text-gray-300">
+                        <strong class="text-white">📊 დებრიფი (3 წუთი):</strong> ინსტრუქტორი ხსნის — რა ეტაპი იყო კრიტიკული? სად დაეხმარა AI? სად ადამიანური ინტუიცია გადამწყვეტი იყო?
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: Sales Playbook in Notion -->
+        <section id="topic-13" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>📒 Sales Playbook → Notion-ში</h3>
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-6">ამ სესიაში შექმნილი ყველა სკრიპტი, შაბლონი და Objection Handling პასუხი უნდა იყოს <strong>ერთ ადგილას, ხელმისაწვდომი მთელი გუნდისთვის</strong> — Notion-ის Sales Playbook-ში.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-tempo-900 mb-4">Sales Playbook-ის სტრუქტურა Notion-ში:</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3 bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="w-8 h-8 rounded bg-tempo-900 text-white text-xs font-bold flex items-center justify-center shrink-0">📞</div>
+                                <div><strong class="text-sm text-tempo-900">Call Scripts</strong><p class="text-xs text-gray-500 mt-0.5">Cold call + Follow-up ზარი — ვარიანტები პერსონებით</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="w-8 h-8 rounded bg-tempo-900 text-white text-xs font-bold flex items-center justify-center shrink-0">💬</div>
+                                <div><strong class="text-sm text-tempo-900">Message Templates</strong><p class="text-xs text-gray-500 mt-0.5">WhatsApp + Email, ყველა ეტაპი, ყველა ენა</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="w-8 h-8 rounded bg-tempo-900 text-white text-xs font-bold flex items-center justify-center shrink-0">🛡️</div>
+                                <div><strong class="text-sm text-tempo-900">Objection Bank</strong><p class="text-xs text-gray-500 mt-0.5">30+ შესიტყვება + პასუხი — ფილტრი პრობლემის მიხედვით</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="w-8 h-8 rounded bg-tempo-900 text-white text-xs font-bold flex items-center justify-center shrink-0">📄</div>
+                                <div><strong class="text-sm text-tempo-900">CP Templates</strong><p class="text-xs text-gray-500 mt-0.5">კომ. შეთავაზება × 4 პერსონა × 3 ენა</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="w-8 h-8 rounded bg-tempo-900 text-white text-xs font-bold flex items-center justify-center shrink-0">🔁</div>
+                                <div><strong class="text-sm text-tempo-900">Follow-up Sequences</strong><p class="text-xs text-gray-500 mt-0.5">24/72-სთ ჯაჭვი — კოპი-პეისტი და გაგზავნა</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative bg-tempo-900 rounded-lg p-5 text-sm text-gray-300 shadow-md">
+                        <h4 class="text-tempo-gold font-bold text-sm mb-3">🤖 Playbook-ის სტრუქტურის გენერატორი</h4>
+                        <pre class="code-block font-mono leading-relaxed text-gray-300" style="background: transparent; padding: 0; border: none; box-shadow: none; margin: 0;">შექმენი Notion-ის Sales Playbook-ის
+სრული სტრუქტურა Tempo Holding-ისთვის.
+
+ყველა სექციისთვის:
+1. გვერდის სახელი
+2. რა ტიპის კონტენტი
+   (ტექსტი / ბაზა / შაბლონი)
+3. ვის გამოიყენებს
+   (მთელი გუნდი / HR / მენეჯერი)
+4. განახლების სიხშირე
+
+ბოლოს: 3 "Quick Win" —
+პირველი კვირა რა შევქმნათ
+Playbook-ში, რომ გუნდს
+დაუყოვნებლივ გამოადგეს.</pre>
+                        <div class="mt-4 bg-white/5 border border-white/10 rounded p-3 text-xs text-gray-300">
+                            <strong class="text-tempo-gold block mb-1">💡 Notion Pro Tip:</strong>
+                            გამოიყენეთ <strong>Linked Database</strong> — Objection Bank ერთ ბაზაში, ფილტრი "პრობლემის ტიპი"-ს მიხედვით. მენეჯერი 5 წამში ანახლებს სწორ პასუხს.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 14: Summary -->
+        <section id="topic-14" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>✅ სესიის შეჯამება + სესია 6</h3>
+            <div class="prose max-w-none text-gray-700">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
+                        <h4 class="font-bold text-tempo-900 mb-4 text-lg">მთავარი გაკვეთილები:</h4>
+                        <ul class="space-y-4 text-sm text-gray-600">
+                            <li class="flex items-start gap-3"><span class="text-green-500 font-bold text-lg shrink-0">✓</span><div><strong>Lead კვალიფიკაცია:</strong> BANT + AI CRM ჩანაწერი = გუნდი ხარჯავს დროს მხოლოდ "ცხელ" ლიდებზე.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 font-bold text-lg shrink-0">✓</span><div><strong>სკრიპტები:</strong> Cold Call + WhatsApp + Email — AI ჩარჩო, ადამიანური სითბო.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 font-bold text-lg shrink-0">✓</span><div><strong>Objection Handling:</strong> "არა" = "მჭირდება მეტი" — AI გვეხმარება ემპათიური, ფაქტ-ბაზირებული პასუხის გამომუშავებაში.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 font-bold text-lg shrink-0">✓</span><div><strong>Follow-up სისტემა:</strong> 24/72-სთ ჯაჭვი — მონაცემები ამბობს: კლიენტი ყიდულობს 5–12 კონტაქტის შემდეგ.</div></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 font-bold text-lg shrink-0">✓</span><div><strong>CP + პერსონა:</strong> ერთი ბინა, 4 სხვადასხვა არგუმენტი — პერსონის მიხედვით.</div></li>
+                        </ul>
+                    </div>
+                    <div class="flex flex-col justify-center bg-tempo-900 p-8 border border-tempo-gold/30 rounded-xl shadow-lg text-center relative overflow-hidden">
+                        <div class="absolute -right-6 -bottom-6 text-9xl opacity-10">🤖</div>
+                        <div class="text-5xl mb-4 relative z-10">🤖</div>
+                        <h4 class="font-bold text-tempo-gold mb-2 text-2xl relative z-10" style="color: #C5A059 !important;">შემდეგი: სესია 6 — Capstone</h4>
+                        <p class="text-gray-300 text-base relative z-10 leading-relaxed" style="color: #D1D5DB !important;">AI ასისტენტები & ავტომატიზაცია — Make.com, Zapier, n8n. სრული ROI შეფასება. კურსის დასკვნა და სერტიფიცირება.</p>
+                        <div class="mt-4 bg-white/10 rounded-lg p-3 text-sm text-gray-300 relative z-10">
+                            <strong class="text-tempo-gold">⏱ 3 საათი</strong> — ყველაზე დიდი სესია, ყველაზე მეტი პრაქტიკა.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="bg-tempo-900 text-center py-8 px-4 border-t border-white/10">
+        <p class="text-tempo-gold text-sm font-bold tracking-widest uppercase mb-2">Tempo Holding</p>
+        <p class="text-gray-400 text-xs">AI ტრენინგის მასალები | 2026</p>
+    </footer>
+</main>
+
+<script>
+    // Copy buttons
+    document.querySelectorAll('.code-block').forEach(block => {
+        if (!block.parentElement.querySelector('.copy-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.innerText = 'კოპირება';
+            btn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(block.innerText.trim());
+                    const old = btn.innerText;
+                    btn.innerText = 'დაკოპირდა!';
+                    btn.style.background = '#C5A059';
+                    btn.style.color = '#1A1A1A';
+                    setTimeout(() => { btn.innerText = old; btn.style.background = ''; btn.style.color = ''; }, 2000);
+                } catch(e) {}
+            });
+            block.parentElement.style.position = 'relative';
+            block.parentElement.appendChild(btn);
+        }
+    });
+
+    // Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.getElementById('mainContent');
+    const menuBtn = document.getElementById('menuBtn');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    let sidebarOpen = false;
+
+    function setSidebarState(open) {
+        sidebarOpen = open;
+        if (open) {
+            sidebar.classList.remove('-translate-x-full');
+            menuIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            if (window.innerWidth >= 768) {
+                mainContent.style.marginLeft = '18rem';
+                menuBtn.style.left = '18.75rem';
+            } else {
+                overlay.classList.remove('hidden');
+            }
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            menuIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+            mainContent.style.marginLeft = '0';
+            menuBtn.style.left = '1rem';
+            overlay.classList.add('hidden');
+        }
+    }
+
+    function toggleSidebar() { setSidebarState(!sidebarOpen); }
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => { if (window.innerWidth < 768) setSidebarState(false); });
+    });
+
+    window.addEventListener('resize', () => {
+        if (sidebarOpen && window.innerWidth >= 768) {
+            overlay.classList.add('hidden');
+            mainContent.style.marginLeft = '18rem';
+            menuBtn.style.left = '18.75rem';
+        } else if (sidebarOpen && window.innerWidth < 768) {
+            overlay.classList.remove('hidden');
+            mainContent.style.marginLeft = '0';
+            menuBtn.style.left = '1rem';
+        }
+    });
+
+    if (window.innerWidth >= 768) setSidebarState(true);
+
+    // IntersectionObserver for nav highlighting
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + entry.target.id) {
+                        link.classList.add('active');
+                        const nav = document.querySelector('aside nav');
+                        const lRect = link.getBoundingClientRect();
+                        const nRect = nav.getBoundingClientRect();
+                        if (lRect.top < nRect.top || lRect.bottom > nRect.bottom) {
+                            link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    }
+                });
+            }
+        });
+    }, { rootMargin: '0px', threshold: 0.2 });
+
+    document.querySelectorAll('section[id^="topic-"]').forEach(s => observer.observe(s));
+
+    // Chart: Sales Time Comparison
+    const salesCtx = document.getElementById('salesTimeChart');
+    if (salesCtx) {
+        new Chart(salesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['სკრიპტები', 'Follow-up', 'CP მომზადება'],
+                datasets: [
+                    {
+                        label: 'ხელნაკეთი (სთ/კვ)',
+                        data: [3, 2.5, 2.5],
+                        backgroundColor: 'rgba(100,100,100,0.5)',
+                        borderColor: 'rgba(100,100,100,0.8)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'AI-ით (სთ/კვ)',
+                        data: [0.3, 0.5, 0.7],
+                        backgroundColor: 'rgba(197,160,89,0.6)',
+                        borderColor: '#C5A059',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'საათი/კვირა' } }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
