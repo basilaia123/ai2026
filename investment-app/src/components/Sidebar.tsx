@@ -60,9 +60,24 @@ function SidebarContent({ className, lang }: { className?: string; lang: Languag
                 {t("Time Period Context")}
             </h2>
             <div className="flex flex-wrap gap-2 px-2">
-                <button className="px-3 py-1 rounded-full text-xs font-medium bg-green-500 text-black">{t("1 Month")}</button>
-                <button className="px-3 py-1 rounded-full text-xs font-medium text-muted hover:text-white border border-card hover:bg-card transition-colors">{t("3 Months")}</button>
-                <button className="px-3 py-1 rounded-full text-xs font-medium text-muted hover:text-white border border-card hover:bg-card transition-colors">{t("1 Year")}</button>
+                <Link href={`/?${new URLSearchParams({...Object.fromEntries(searchParams.entries()), range: "1d"}).toString()}`} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${searchParams.get("range") === "1d" ? "bg-green-500 text-black" : "text-muted hover:text-white border border-card hover:bg-card"}`}>
+                  {t("1 Day" as any)}
+                </Link>
+                <Link href={`/?${new URLSearchParams({...Object.fromEntries(searchParams.entries()), range: "1wk"}).toString()}`} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${searchParams.get("range") === "1wk" ? "bg-green-500 text-black" : "text-muted hover:text-white border border-card hover:bg-card"}`}>
+                  {t("1 Week" as any)}
+                </Link>
+                <Link href={`/?${new URLSearchParams({...Object.fromEntries(searchParams.entries()), range: "2wk"}).toString()}`} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${searchParams.get("range") === "2wk" ? "bg-green-500 text-black" : "text-muted hover:text-white border border-card hover:bg-card"}`}>
+                  {t("2 Weeks" as any)}
+                </Link>
+                <Link href={`/?${new URLSearchParams({...Object.fromEntries(searchParams.entries()), range: "1mo"}).toString()}`} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${searchParams.get("range") === "1mo" ? "bg-green-500 text-black" : "text-muted hover:text-white border border-card hover:bg-card"}`}>
+                  {t("1 Month")}
+                </Link>
+                <Link href={`/?${new URLSearchParams({...Object.fromEntries(searchParams.entries()), range: "3mo"}).toString()}`} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${(searchParams.get("range") || "3mo") === "3mo" ? "bg-green-500 text-black" : "text-muted hover:text-white border border-card hover:bg-card"}`}>
+                  {t("3 Months")}
+                </Link>
+                <Link href={`/?${new URLSearchParams({...Object.fromEntries(searchParams.entries()), range: "1y"}).toString()}`} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${searchParams.get("range") === "1y" ? "bg-green-500 text-black" : "text-muted hover:text-white border border-card hover:bg-card"}`}>
+                  {t("1 Year")}
+                </Link>
             </div>
         </div>
       </div>

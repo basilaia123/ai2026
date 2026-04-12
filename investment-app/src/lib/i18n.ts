@@ -20,6 +20,9 @@ export const dict = {
     // Sidebar
     "Market Sectors": "ბაზრის სექტორები",
     "Time Period Context": "დროის პერიოდი",
+    "1 Day": "1 დღე",
+    "1 Week": "1 კვირა",
+    "2 Weeks": "2 კვირა",
     "1 Month": "1 თვე",
     "3 Months": "3 თვე",
     "1 Year": "1 წელი",
@@ -58,6 +61,9 @@ export const dict = {
     // Sidebar
     "Market Sectors": "Market Sectors",
     "Time Period Context": "Time Period Context",
+    "1 Day": "1 Day",
+    "1 Week": "1 Week",
+    "2 Weeks": "2 Weeks",
     "1 Month": "1 Month",
     "3 Months": "3 Months",
     "1 Year": "1 Year",

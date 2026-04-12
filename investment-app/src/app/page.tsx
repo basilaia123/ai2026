@@ -27,9 +27,17 @@ const CATEGORY_NAMES: Record<string, string> = {
   "XLE": "Energy Sector"
 }
 
-async function fetchStockData(ticker: string) {
+async function fetchStockData(ticker: string, range: string = "3mo") {
   try {
-    const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=3mo`, { cache: 'no-store' });
+    let interval = "1d";
+    if (range === "1d") interval = "5m";
+    if (range === "1wk") interval = "15m";
+    if (range === "2wk") interval = "30m";
+    if (range === "1mo") interval = "1d";
+    if (range === "3mo") interval = "1d";
+    if (range === "1y") interval = "1wk";
+
+    const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=${interval}&range=${range}`, { cache: 'no-store' });
     const data = await res.json();
     
     if (!data.chart.result) return null;
@@ -99,10 +107,11 @@ async function fetchNewsData(ticker: string) {
   }
 }
 
-export default async function Home(props: { searchParams?: Promise<{ ticker?: string, category?: string }> }) {
+export default async function Home(props: { searchParams?: Promise<{ ticker?: string, category?: string, range?: string }> }) {
   const searchParams = await props.searchParams;
   const ticker = searchParams?.ticker?.toUpperCase();
   const category = searchParams?.category?.toUpperCase();
+  const range = searchParams?.range || "3mo";
   
   const cookieStore = await cookies();
   const lang = (cookieStore.get("lang")?.value || "ge") as Language;
@@ -110,7 +119,7 @@ export default async function Home(props: { searchParams?: Promise<{ ticker?: st
 
   // SINGLE STOCK VIEW
   if (ticker) {
-    const stockResult = await fetchStockData(ticker);
+    const stockResult = await fetchStockData(ticker, range);
     const newsList = await fetchNewsData(ticker);
 
     if (!stockResult) {
@@ -188,7 +197,7 @@ export default async function Home(props: { searchParams?: Promise<{ ticker?: st
   
   // Fetch quotes for all tickers in category simultaneously
   const categoryStocks = (await Promise.all(
-    tickersToFetch.map(t => fetchStockData(t))
+    tickersToFetch.map(t => fetchStockData(t, range))
   )).filter(Boolean);
 
   return (
