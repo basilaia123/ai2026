@@ -6,10 +6,10 @@ import { cookies } from "next/headers";
 import { Language, getTranslation } from "@/lib/i18n";
 
 const CATEGORY_TICKERS: Record<string, string[]> = {
-  "SPY": ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "BRK-B", "LLY", "AVGO", "JPM", "UNH", "XOM", "V", "MA", "PG", "JNJ"],
+  "SPY": ["AAPL", "KSPI", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "BRK-B", "LLY", "AVGO", "JPM", "UNH", "XOM", "V", "MA", "PG", "JNJ"],
   "XLK": ["MSFT", "AAPL", "NVDA", "AVGO", "ADBE", "CRM", "AMD", "INTC", "CSCO", "QCOM", "TXN", "AMAT", "IBM", "NOW", "INTU", "MU"],
   "BOTZ": ["NVDA", "ISRG", "ABB", "KEY", "CRWD", "PLTR", "U", "PATH", "SYK", "CGNX", "ROK", "IRBT", "SYM", "HON", "APP"],
-  "XLF": ["BRK-B", "JPM", "V", "MA", "BAC", "WFC", "GS", "MS", "C", "BLK", "AXP", "CB", "MMC", "SPGI", "PGR", "USB", "SCHW"],
+  "XLF": ["BRK-B", "KSPI", "JPM", "V", "MA", "BAC", "WFC", "GS", "MS", "C", "BLK", "AXP", "CB", "MMC", "SPGI", "PGR", "USB", "SCHW"],
   "XLV": ["LLY", "UNH", "JNJ", "ABBV", "MRK", "TMO", "DHR", "PFE", "AMGN", "ISRG", "SYK", "MDT", "VRTX", "BSX", "ZTS", "GILD", "BDX"],
   "SMH": ["NVDA", "TSM", "AVGO", "ASML", "AMD", "QCOM", "INTC", "TXN", "AMAT", "LRCX", "MU", "ADI", "KLAC", "NXPI", "MRVL", "SNPS", "CDNS"],
   "GAMR": ["EA", "TTWO", "RBLX", "NTES", "SONY", "SE", "APP", "BILI", "PLTK", "CRSR", "LOGI", "U", "NCTY"],
