@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TETCOLOR - 1991 by Sergey Sotnikov</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #fff;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .game-wrapper {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+  }
+
+  .side-panel {
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .panel-box {
+    background: rgba(255,255,255,0.03);
+    border: 2px solid #333;
+    padding: 12px;
+  }
+
+  .panel-box h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #666;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 4px;
+  }
+
+  .panel-box .value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+  }
+
+  #next-canvas {
+    display: block;
+    margin: 0 auto;
+    border: 1px solid #333;
+    background: #111;
+  }
+
+  .center-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .title-bar {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .title-bar h1 {
+    font-size: 42px;
+    letter-spacing: 10px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.4);
+  }
+
+  .title-bar .subtitle {
+    font-size: 10px;
+    color: #666;
+    letter-spacing: 2px;
+  }
+
+  .board-container {
+    position: relative;
+    border: 3px solid #555;
+    box-shadow: 0 0 20px rgba(255,255,255,0.08), inset 0 0 30px rgba(0,0,0,0.5);
+    background: #0a0a0a;
+  }
+
+  #game-canvas {
+    display: block;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .overlay.hidden { display: none; }
+
+  .overlay h1 {
+    font-size: 48px;
+    letter-spacing: 12px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .overlay h2 {
+    font-size: 24px;
+    color: #f00;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+  }
+
+  .overlay .dos-text {
+    font-size: 12px;
+    color: #0f0;
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.6;
+    white-space: pre;
+  }
+
+  .btn {
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid #0f0;
+    background: transparent;
+    color: #0f0;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    transition: all 0.15s;
+  }
+
+  .btn:hover {
+    background: #0f0;
+    color: #000;
+  }
+
+  .controls-info {
+    margin-top: 16px;
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    line-height: 2;
+  }
+
+  .controls-info kbd {
+    background: #333;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #555;
+    color: #aaa;
+  }
+
+  .match-flash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+  }
+
+  .match-flash.active {
+    animation: dos-flash 0.4s ease-out;
+  }
+
+  @keyframes dos-flash {
+    0% { opacity: 0.7; background: rgba(255,255,255,0.9); }
+    100% { opacity: 0; }
+  }
+
+  .how-to-play {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.7;
+  }
+
+  .how-to-play strong {
+    color: #aaa;
+  }
+
+  .color-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .color-dots span {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 2px;
+  }
+
+  .author-line {
+    font-size: 10px;
+    color: #444;
+    margin-top: 12px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="game-wrapper">
+  <!-- Left Panel -->
+  <div class="side-panel">
+    <div class="panel-box">
+      <h3>Score</h3>
+      <div class="value" id="score">0</div>
+    </div>
+    <div class="panel-box">
+      <h3>Level</h3>
+      <div class="value" id="level">1</div>
+    </div>
+    <div class="panel-box">
+      <h3>Lines</h3>
+      <div class="value" id="lines">0</div>
+    </div>
+    <div class="panel-box">
+      <h3>High Score</h3>
+      <div class="value" id="highscore">0</div>
+    </div>
+    <div class="panel-box">
+      <h3>Combo</h3>
+      <div class="value" id="combo">-</div>
+    </div>
+  </div>
+
+  <!-- Center: Title + Board -->
+  <div class="center-col">
+    <div class="title-bar">
+      <h1>TETCOLOR</h1>
+      <div class="subtitle">© 1991 SERGEY SOTNIKOV</div>
+    </div>
+    <div class="board-container">
+      <canvas id="game-canvas" width="210" height="450"></canvas>
+      <div class="match-flash" id="match-flash"></div>
+
+      <!-- Start Overlay -->
+      <div class="overlay" id="start-overlay">
+        <h1>TETCOLOR</h1>
+        <div class="dos-text">Match 3+ same-colored blocks in a line!
+Horizontal, vertical, or diagonal.
+Cycle colors with UP to create matches.</div>
+        <button class="btn" id="start-btn">START GAME</button>
+        <div class="controls-info">
+          <kbd>←</kbd> <kbd>→</kbd> Move &nbsp;|&nbsp; <kbd>↓</kbd> Soft Drop<br>
+          <kbd>↑</kbd> / <kbd>Space</kbd> Cycle Colors<br>
+          <kbd>P</kbd> Pause &nbsp;|&nbsp; <kbd>Q</kbd> Quit
+        </div>
+      </div>
+
+      <!-- Game Over Overlay -->
+      <div class="overlay hidden" id="gameover-overlay">
+        <h2>GAME OVER</h2>
+        <p style="color:#0f0;margin-bottom:6px">Score: <strong id="final-score">0</strong></p>
+        <p style="color:#888;font-size:12px;margin-bottom:16px">Lines cleared: <strong id="final-lines">0</strong></p>
+        <button class="btn" id="restart-btn">PLAY AGAIN</button>
+      </div>
+
+      <!-- Pause Overlay -->
+      <div class="overlay hidden" id="pause-overlay">
+        <h2>PAUSED</h2>
+        <button class="btn" id="resume-btn">RESUME</button>
+      </div>
+    </div>
+    <div class="author-line">TETCOLOR 1991 &mdash; Sergey Sotnikov &mdash; Russia</div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="side-panel">
+    <div class="panel-box">
+      <h3>Next Piece</h3>
+      <canvas id="next-canvas" width="100" height="130"></canvas>
+    </div>
+    <div class="panel-box">
+      <h3>How to Play</h3>
+      <div class="how-to-play">
+        • Each piece is a <strong>column of 3 blocks</strong><br>
+        • Each block has a <strong>different color</strong><br>
+        • Press <strong>UP</strong> to cycle colors in the piece<br>
+        • Match <strong>3+ same color</strong> in a line (→, ↓, or diagonal)<br>
+        • Cleared blocks let above blocks <strong>fall down</strong><br>
+        • <strong>Chain reactions</strong> score combo bonuses!
+      </div>
+    </div>
+    <div class="panel-box">
+      <h3>Colors</h3>
+      <div class="color-dots">
+        <span style="background:#ff0000"></span>
+        <span style="background:#00cc00"></span>
+        <span style="background:#0044ff"></span>
+        <span style="background:#cccc00"></span>
+        <span style="background:#cc00cc"></span>
+        <span style="background:#00cccc"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// TETCOLOR - 1991 Russian Classic by Sergey Sotnikov
+// A color-matching puzzle game distinct from Tetris.
+//
+// Grid: 7 columns x 15 rows
+// Pieces: vertical columns of 3 blocks, each a different color
+// Match: 3+ same color in a straight line (horizontal, vertical, diagonal)
+// ============================================================
+
+const COLS = 7;
+const ROWS = 15;
+const BLOCK = 30;
+const GAP = 1;
+
+// 6 classic DOS-era colors
+const COLORS = {
+  red:    { fill: '#ff0000', border: '#800000', light: '#ff6666', dark: '#990000' },
+  green:  { fill: '#00cc00', border: '#006600', light: '#66ff66', dark: '#007700' },
+  blue:   { fill: '#0044ff', border: '#000080', light: '#6688ff', dark: '#002299' },
+  yellow: { fill: '#cccc00', border: '#666600', light: '#ffff66', dark: '#888800' },
+  magenta:{ fill: '#cc00cc', border: '#660066', light: '#ff66ff', dark: '#880088' },
+  cyan:   { fill: '#00cccc', border: '#006666', light: '#66ffff', dark: '#008888' }
+};
+const COLOR_NAMES = Object.keys(COLORS);
+
+// Board state: board[row][col] = { color: string } or null
+let board = [];
+let currentPiece = null;  // { colors: [top, mid, bottom], x, y }
+let nextPiece = null;
+let score = 0;
+let level = 1;
+let lineCount = 0;
+let comboChain = 0;
+let highScore = parseInt(localStorage.getItem('tetcolor_highscore') || '0');
+let gameOver = false;
+let paused = false;
+let dropInterval = 700;
+let lastDrop = 0;
+let animationId = null;
+
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const nextCanvas = document.getElementById('next-canvas');
+const nextCtx = nextCanvas.getContext('2d');
+
+// ---- Board helpers ----
+
+function initBoard() {
+  board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+}
+
+function randomColor() {
+  return COLOR_NAMES[Math.floor(Math.random() * COLOR_NAMES.length)];
+}
+
+// Generate a piece: 3 blocks, each a random color (can repeat for challenge)
+function makePiece() {
+  return {
+    colors: [randomColor(), randomColor(), randomColor()], // [top, middle, bottom]
+    x: Math.floor(COLS / 2),
+    y: 0
+  };
+}
+
+// Cycle colors: bottom moves to top [a,b,c] -> [c,a,b]
+function cycleColors(piece) {
+  const [top, mid, bot] = piece.colors;
+  piece.colors = [bot, top, mid];
+}
+
+// ---- Collision detection ----
+
+/**
+ * Check if the piece at its current x,y position with the given colors array
+ * is valid (within bounds and not overlapping placed blocks).
+ */
+function isValid(piece, offsetX, offsetY) {
+  for (let i = 0; i < 3; i++) {
+    const nx = piece.x + offsetX;
+    const ny = piece.y + i + offsetY;
+    if (nx < 0 || nx >= COLS || ny >= ROWS) return false;
+    if (ny >= 0 && board[ny][nx]) return false;
+  }
+  return true;
+}
+
+// ---- Lock piece onto the board ----
+
+function lockPiece() {
+  for (let i = 0; i < 3; i++) {
+    const x = currentPiece.x;
+    const y = currentPiece.y + i;
+    if (y >= 0 && y < ROWS && x >= 0 && x < COLS) {
+      board[y][x] = { color: currentPiece.colors[i] };
+    }
+  }
+
+  currentPiece = null;
+
+  // Check for matches after a tiny delay so the piece visually locks first
+  setTimeout(() => processMatches(), 30);
+}
+
+// ---- Match finding: scan all lines (horizontal, vertical, diagonal) ----
+
+/**
+ * Find all groups of 3+ same-colored blocks connected in a straight line.
+ * Returns an array of [row, col] positions that are part of matches.
+ */
+function findMatches() {
+  const matched = new Set(); // "row,col" strings
+
+  // Directions to check: horizontal, vertical, 2 diagonals
+  const directions = [
+    [0, 1],  // horizontal (row doesn't change, col increments)
+    [1, 0],  // vertical (col doesn't change, row increments)
+    [1, 1],  // diagonal down-right
+    [1, -1]  // diagonal down-left
+  ];
+
+  for (const [dr, dc] of directions) {
+    // For each starting position, trace a line in this direction
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (!board[r][c]) continue;
+
+        const color = board[r][c].color;
+        const line = [[r, c]];
+
+        // Extend in the positive direction
+        let nr = r + dr, nc = c + dc;
+        while (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS &&
+               board[nr][nc] && board[nr][nc].color === color) {
+          line.push([nr, nc]);
+          nr += dr;
+          nc += dc;
+        }
+
+        if (line.length >= 3) {
+          for (const [lr, lc] of line) {
+            matched.add(`${lr},${lc}`);
+          }
+        }
+      }
+    }
+  }
+
+  // Convert set back to array of [row, col]
+  return Array.from(matched).map(s => s.split(',').map(Number));
+}
+
+// ---- Process matches, clear blocks, apply gravity, check chains ----
+
+function processMatches() {
+  const matches = findMatches();
+
+  if (matches.length === 0) {
+    comboChain = 0;
+    updateUI();
+    // No matches - check if game is over (blocks at the top)
+    if (board[0].some(cell => cell !== null)) {
+      endGame();
+    } else {
+      spawnPiece();
+    }
+    return;
+  }
+
+  comboChain++;
+
+  // Score: more blocks = more points, combo multiplier
+  const basePoints = matches.length * 10;
+  const comboMultiplier = comboChain > 1 ? comboChain : 1;
+  const points = basePoints * level * comboMultiplier;
+  score += points;
+  lineCount += matches.length;
+
+  // Level up every 10 blocks cleared
+  level = Math.floor(lineCount / 30) + 1;
+  dropInterval = Math.max(150, 700 - (level - 1) * 50);
+
+  triggerFlash();
+  updateUI();
+
+  // Remove matched blocks
+  for (const [r, c] of matches) {
+    board[r][c] = null;
+  }
+
+  // Apply gravity: blocks fall down to fill gaps
+  setTimeout(() => {
+    applyGravity();
+    drawBoard();
+
+    // After gravity settles, check for chain reactions
+    setTimeout(() => {
+      const chainMatches = findMatches();
+      if (chainMatches.length > 0) {
+        processMatches(); // Chain reaction!
+      } else {
+        comboChain = 0;
+        updateUI();
+        if (board[0].some(cell => cell !== null)) {
+          endGame();
+        } else {
+          spawnPiece();
+        }
+      }
+    }, 150);
+  }, 200);
+}
+
+// ---- Gravity: make blocks fall down column by column ----
+
+function applyGravity() {
+  for (let c = 0; c < COLS; c++) {
+    let writePos = ROWS - 1;
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (board[r][c]) {
+        if (writePos !== r) {
+          board[writePos][c] = board[r][c];
+          board[r][c] = null;
+        }
+        writePos--;
+      }
+    }
+  }
+}
+
+// ---- Game over ----
+
+function endGame() {
+  gameOver = true;
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('tetcolor_highscore', highScore.toString());
+  }
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('final-lines').textContent = lineCount;
+  document.getElementById('gameover-overlay').classList.remove('hidden');
+  updateUI();
+}
+
+// ---- Spawn a new piece ----
+
+function spawnPiece() {
+  currentPiece = nextPiece || makePiece();
+  nextPiece = makePiece();
+
+  // Check game over: can't place the new piece
+  if (!isValid(currentPiece, 0, 0)) {
+    endGame();
+    return;
+  }
+
+  drawNextPiece();
+}
+
+// ---- UI updates ----
+
+function updateUI() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('level').textContent = level;
+  document.getElementById('lines').textContent = lineCount;
+  document.getElementById('highscore').textContent = highScore;
+  document.getElementById('combo').textContent = comboChain > 1 ? `x${comboChain}` : '-';
+}
+
+function triggerFlash() {
+  const flash = document.getElementById('match-flash');
+  flash.classList.add('active');
+  setTimeout(() => flash.classList.remove('active'), 400);
+}
+
+// ---- Drawing ----
+
+/**
+ * Draw a single block with a flat minimalist design.
+ */
+function drawBlock(context, x, y, color, size = BLOCK, alpha = 1) {
+  const c = COLORS[color];
+  if (!c) return;
+
+  const px = x * size + GAP;
+  const py = y * size + GAP;
+  const s = size - GAP * 2;
+
+  context.globalAlpha = alpha;
+
+  // Flat fill
+  context.fillStyle = c.fill;
+  context.fillRect(px, py, s, s);
+
+  // Thin border
+  context.strokeStyle = c.border;
+  context.lineWidth = 1;
+  context.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
+
+  context.globalAlpha = 1;
+}
+
+function drawBoard() {
+  // Clear
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let r = 0; r <= ROWS; r++) {
+    ctx.beginPath();
+    ctx.moveTo(0, r * BLOCK);
+    ctx.lineTo(COLS * BLOCK, r * BLOCK);
+    ctx.stroke();
+  }
+  for (let c = 0; c <= COLS; c++) {
+    ctx.beginPath();
+    ctx.moveTo(c * BLOCK, 0);
+    ctx.lineTo(c * BLOCK, ROWS * BLOCK);
+    ctx.stroke();
+  }
+
+  // Draw placed blocks
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (board[r][c]) {
+        drawBlock(ctx, c, r, board[r][c].color);
+      }
+    }
+  }
+
+  // Draw falling piece
+  if (currentPiece && !gameOver) {
+    for (let i = 0; i < 3; i++) {
+      const x = currentPiece.x;
+      const y = currentPiece.y + i;
+      if (y >= 0) {
+        drawBlock(ctx, x, y, currentPiece.colors[i]);
+      }
+    }
+
+    drawGhostPiece();
+  }
+
+  // Outer border
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+}
+
+function drawGhostPiece() {
+  // Find how far the piece can drop
+  let ghostY = 0;
+  while (isValid(currentPiece, 0, ghostY + 1)) {
+    ghostY++;
+  }
+  if (ghostY === 0) return;
+
+  for (let i = 0; i < 3; i++) {
+    const x = currentPiece.x;
+    const y = currentPiece.y + i + ghostY;
+    if (y >= 0) {
+      drawBlock(ctx, x, y, currentPiece.colors[i], BLOCK, 0.18);
+    }
+  }
+}
+
+function drawNextPiece() {
+  nextCtx.fillStyle = '#111';
+  nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+
+  if (!nextPiece) return;
+
+  const size = 24;
+  const offsetX = (nextCanvas.width - size) / 2 / size;
+  const totalH = 3 * size;
+  const offsetY = (nextCanvas.height - totalH) / 2 / size;
+
+  for (let i = 0; i < 3; i++) {
+    const px = offsetX * size + GAP;
+    const py = (i + offsetY) * size + GAP;
+    const s = size - GAP * 2;
+    const color = nextPiece.colors[i];
+    const c = COLORS[color];
+
+    // Flat fill
+    nextCtx.fillStyle = c.fill;
+    nextCtx.fillRect(px, py, s, s);
+
+    // Thin border
+    nextCtx.strokeStyle = c.border;
+    nextCtx.lineWidth = 1;
+    nextCtx.strokeRect(px + 0.5, py + 0.5, s - 1, s - 1);
+  }
+
+  // Panel border
+  nextCtx.strokeStyle = '#333';
+  nextCtx.lineWidth = 1;
+  nextCtx.strokeRect(0, 0, nextCanvas.width, nextCanvas.height);
+}
+
+// ---- Input handling ----
+
+document.addEventListener('keydown', (e) => {
+  if (gameOver && !currentPiece) return;
+
+  if (e.key === 'q' || e.key === 'Q') {
+    if (confirm('Quit TETCOLOR?')) {
+      gameOver = true;
+      document.getElementById('gameover-overlay').classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (e.key === 'p' || e.key === 'P') {
+    togglePause();
+    return;
+  }
+
+  if (paused || !currentPiece) return;
+
+  switch (e.key) {
+    case 'ArrowLeft':
+      if (isValid(currentPiece, -1, 0)) currentPiece.x--;
+      e.preventDefault();
+      break;
+    case 'ArrowRight':
+      if (isValid(currentPiece, 1, 0)) currentPiece.x++;
+      e.preventDefault();
+      break;
+    case 'ArrowDown':
+      if (isValid(currentPiece, 0, 1)) currentPiece.y++;
+      e.preventDefault();
+      break;
+    case 'ArrowUp':
+    case ' ':
+      cycleColors(currentPiece);
+      // Validate after cycling (should always be valid since shape doesn't change)
+      e.preventDefault();
+      break;
+  }
+
+  drawBoard();
+});
+
+function togglePause() {
+  if (gameOver) return;
+  paused = !paused;
+  if (paused) {
+    document.getElementById('pause-overlay').classList.remove('hidden');
+  } else {
+    document.getElementById('pause-overlay').classList.add('hidden');
+    lastDrop = performance.now();
+    requestAnimationFrame(gameLoop);
+  }
+}
+
+// ---- Main game loop ----
+
+function gameLoop(timestamp) {
+  if (gameOver || paused) return;
+
+  if (timestamp - lastDrop > dropInterval) {
+    if (currentPiece) {
+      if (isValid(currentPiece, 0, 1)) {
+        currentPiece.y++;
+      } else {
+        lockPiece();
+      }
+    }
+    lastDrop = timestamp;
+  }
+
+  drawBoard();
+  animationId = requestAnimationFrame(gameLoop);
+}
+
+// ---- Start / Restart ----
+
+function startGame() {
+  initBoard();
+  score = 0;
+  level = 1;
+  lineCount = 0;
+  comboChain = 0;
+  gameOver = false;
+  paused = false;
+  dropInterval = 700;
+  currentPiece = null;
+  nextPiece = null;
+  if (animationId) cancelAnimationFrame(animationId);
+  updateUI();
+
+  document.getElementById('start-overlay').classList.add('hidden');
+  document.getElementById('gameover-overlay').classList.add('hidden');
+  document.getElementById('pause-overlay').classList.add('hidden');
+
+  spawnPiece();
+  lastDrop = performance.now();
+  requestAnimationFrame(gameLoop);
+}
+
+document.getElementById('start-btn').addEventListener('click', startGame);
+document.getElementById('restart-btn').addEventListener('click', startGame);
+document.getElementById('resume-btn').addEventListener('click', togglePause);
+
+// Initialize high score display
+document.getElementById('highscore').textContent = highScore;
+</script>
+</body>
+</html>
