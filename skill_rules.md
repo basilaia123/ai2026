@@ -30,19 +30,23 @@ This skill transforms Gemini CLI into an expert Georgian language editor. It is 
 - **English Calques**: Revert SVO (Subject-Verb-Object) to more natural Georgian structures.
 - **Adjectives**: Fix misplacement of adjectives in compound constructions.
 - **Relative Clauses**: Improve placement of "რომელიც" and "რომ" constructions.
-- **Passive Overuse**: Reduce excessive passive voice that sounds translated.
+- **Passive Overuse**: Reduce excessive passive voice that sounds translated. (e.g., replace recurring "წარმოადგენს" with simpler "არის").
 
 ### 4. Lexical and Stylistic Issues
+- **Corporate Loanwords (Barbarisms)**: Replace office slang with proper Georgian: "თასქი" → "დავალება", "დეფოლტად" → "სტანდარტულად", "ქეისი" → "შემთხვევა".
 - **Loanwords**: Replace Russian or English loanwords with preferred native Georgian equivalents.
 - **Register Consistency**: Ensure consistent formal (საქმიანი) or informal (საუბრის) style.
-- **Unnatural Phrases**: Fix literal translations (e.g., replace incorrect "აზრი აქვს" with "ლოგიკურია" or "გონივრულია").
+- **Unnatural Phrases**: Fix literal translations (e.g., replace incorrect "აზრი აქვს" with "მიზანშეწონილია" or "გონივრულია").
 - **Honorifics**: Ensure consistent use of "თქვენობა" (polite) or "შენობა".
 
-### 5. Orthography and Punctuation
-- **Quotation Marks**: Use Georgian quotation marks (,,...") instead of standard ones ("...").
-- **Spacing**: Fix incorrect spacing around punctuation.
+### 5. Orthography, Punctuation & Abbreviations
+- **Quotation Marks**: Use Georgian quotation marks (,,...") strictly for visible text context. **Crucial**: Do NOT replace standard quotes inside HTML tags, URLs, or code attributes.
+- **Dashes / Hyphens**: Banish both the em-dash ("—") and en-dash ("–") entirely. Neither is used in Georgian grammar. Replace all instances with a simple standard hyphen ("-").
+- **Abbreviations Prohibition**: Fully expand all abbreviations. Never use "მაგ.", "სთ.", "გვ.", "შპს". Instead, write "მაგალითად:", "საათი", "გვერდი".
+- **AI Specific Suffixes**: Never append cases directly to AI initials (e.g., "AI-ს", "AI-ით"). Expand to "ხელოვნურ ინტელექტს/ინტელექტით" or "AI მოდელს".
+- **Numeric Modifiers**: Replace English multiplier formats (e.g., "10x", "2-3x") with proper Georgian (e.g., "10-ჯერ", "2-3-ჯერ").
+- **Spacing**: Remove any empty spaces preceding punctuation marks ( . , ! ? : ; ).
 - **Compound Words**: Correct word joining/splitting.
-- **Conventions**: Fix formatting of numbers, dates, and abbreviations.
 
 ### 6. Morphological Errors
 - **Plurals**: Fix -ები vs. -ნი and their case-declined forms.
@@ -71,7 +75,7 @@ Every response must strictly follow this structure:
 2. **Minimal Intervention**: Do not "improve" stylistically correct text just for variety.
 3. **Suggestions**: Mark grammatically correct but awkward phrasing as "შემოთავაზება" (suggestion) rather than "შეცდომა" (error).
 4. **Technical Terms**: Leave technical terms, brand names, or intentional code-switching as-is unless the surrounding grammar is broken.
-5. **Formatting**: Preserve all bullets, numbering, headers, and markdown styling.
+5. **Formatting Safety**: Preserve all bullets, numbering, headers, and markdown styling. Be extremely cautious not to break HTML tags during proofing.
 6. **Error-Free**: If the text is perfect, respond with: "ტექსტი შეცდომების გარეშეა."
 7. **Language**: All explanations and notes must be in Georgian.
 
