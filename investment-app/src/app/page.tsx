@@ -47,7 +47,7 @@ async function fetchStockData(ticker: string, range: string = "3mo") {
     const quotes = result.indicators.quote[0];
     const timestamps = result.timestamp;
     
-    const chartData = [];
+    const chartData: { date: string; price: number; sma20?: number }[] = [];
     if (timestamps && quotes) {
       for (let i = 0; i < timestamps.length; i++) {
         if (quotes.close[i] !== null) {
@@ -57,6 +57,19 @@ async function fetchStockData(ticker: string, range: string = "3mo") {
             price: Number(quotes.close[i].toFixed(2))
           });
         }
+      }
+    }
+
+    // Calculate SMA20
+    for (let i = 0; i < chartData.length; i++) {
+      if (i >= 19) {
+        let sum = 0;
+        for (let j = 0; j < 20; j++) sum += chartData[i - j].price;
+        chartData[i].sma20 = Number((sum / 20).toFixed(2));
+      } else {
+        let sum = 0;
+        for (let j = 0; j <= i; j++) sum += chartData[i - j].price;
+        chartData[i].sma20 = Number((sum / (i + 1)).toFixed(2));
       }
     }
 
@@ -75,7 +88,13 @@ async function fetchStockData(ticker: string, range: string = "3mo") {
         price: currentPrice,
         change: change,
         changePercent: changePercent,
-        isPositive: change >= 0
+        isPositive: change >= 0,
+        fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh || null,
+        fiftyTwoWeekLow: meta.fiftyTwoWeekLow || null,
+        regularMarketVolume: meta.regularMarketVolume || null,
+        regularMarketDayHigh: meta.regularMarketDayHigh || null,
+        regularMarketDayLow: meta.regularMarketDayLow || null,
+        previousClose: previousClose
       },
       chartData
     };
@@ -136,12 +155,45 @@ export default async function Home(props: { searchParams?: Promise<{ ticker?: st
         <StockHeader stockInfo={stockResult.stockInfo} lang={lang} />
         <div className="mb-8">
            <PriceChart data={stockResult.chartData} />
+           
+           {/* KEY STATISTICS GRID */}
+           <div className="mt-6 mb-10">
+             <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">{t("Key Statistics")}</h2>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-card rounded-xl p-4 border border-white/5">
+                  <span className="block text-xs font-medium text-muted mb-1">{t("Volume" as any)}</span>
+                  <span className="block text-lg font-semibold text-white tracking-tight">
+                    {stockResult.stockInfo.regularMarketVolume ? stockResult.stockInfo.regularMarketVolume.toLocaleString() : "N/A"}
+                  </span>
+                </div>
+                <div className="bg-card rounded-xl p-4 border border-white/5">
+                  <span className="block text-xs font-medium text-muted mb-1">{t("52-Week High" as any)}</span>
+                  <span className="block text-lg font-semibold text-white tracking-tight">
+                    {stockResult.stockInfo.fiftyTwoWeekHigh ? `$${stockResult.stockInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"}
+                  </span>
+                </div>
+                <div className="bg-card rounded-xl p-4 border border-white/5">
+                  <span className="block text-xs font-medium text-muted mb-1">{t("52-Week Low" as any)}</span>
+                  <span className="block text-lg font-semibold text-white tracking-tight">
+                    {stockResult.stockInfo.fiftyTwoWeekLow ? `$${stockResult.stockInfo.fiftyTwoWeekLow.toFixed(2)}` : "N/A"}
+                  </span>
+                </div>
+                <div className="bg-card rounded-xl p-4 border border-white/5">
+                  <span className="block text-xs font-medium text-muted mb-1">{t("Day's Range" as any)}</span>
+                  <span className="block text-lg font-semibold text-white tracking-tight">
+                    {stockResult.stockInfo.regularMarketDayLow && stockResult.stockInfo.regularMarketDayHigh 
+                      ? `$${stockResult.stockInfo.regularMarketDayLow.toFixed(2)} - $${stockResult.stockInfo.regularMarketDayHigh.toFixed(2)}` 
+                      : "N/A"}
+                  </span>
+                </div>
+             </div>
+           </div>
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white tracking-tight">{t("Latest News")} ({ticker})</h2>
-          </div>
+           <div className="flex items-center justify-between mb-6">
+             <h2 className="text-xl font-bold text-white tracking-tight">{t("Latest News")} ({ticker})</h2>
+           </div>
 
           <div className="space-y-4">
              {newsList.map((news: any) => (

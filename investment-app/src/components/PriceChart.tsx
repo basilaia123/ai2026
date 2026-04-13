@@ -1,9 +1,9 @@
 "use client";
 
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 interface PriceChartProps {
-  data: { date: string; price: number }[];
+  data: { date: string; price: number; sma20?: number }[];
 }
 
 export default function PriceChart({ data }: PriceChartProps) {
@@ -12,7 +12,7 @@ export default function PriceChart({ data }: PriceChartProps) {
         {/* Subtle background glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+        <ComposedChart data={data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
@@ -46,12 +46,22 @@ export default function PriceChart({ data }: PriceChartProps) {
           <Area 
             type="monotone" 
             dataKey="price" 
+            name="Price"
             stroke="#22c55e" 
             strokeWidth={2}
             fillOpacity={1} 
             fill="url(#colorPrice)" 
           />
-        </AreaChart>
+          <Line
+            type="monotone"
+            dataKey="sma20"
+            name="SMA (20)"
+            stroke="#f59e0b"
+            strokeWidth={1.5}
+            dot={false}
+            strokeDasharray="4 4"
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );

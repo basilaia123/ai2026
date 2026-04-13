@@ -40,7 +40,15 @@ export const dict = {
     "Latest News": "ბოლო სიახლეები",
     "No recent news found for": "ბოლო სიახლეები ვერ მოიძებნა ამ Ticker-სთვის:",
     "Failed to load data for": "მონაცემების ჩატვირთვა ვერ მოხერხდა Ticker-ისთვის:",
-    "Please check the ticker symbol and try again.": "გთხოვთ, შეამოწმოთ Ticker და სცადოთ ხელახლა."
+    "Please check the ticker symbol and try again.": "გთხოვთ, შეამოწმოთ Ticker და სცადოთ ხელახლა.",
+    
+    // Key Statistics
+    "Key Statistics": "ძირითადი სტატისტიკა",
+    "Volume": "მოცულობა",
+    "52-Week High": "52-კვირის მაქსიმუმი",
+    "52-Week Low": "52-კვირის მინიმუმი",
+    "Day's Range": "დღის დიაპაზონი",
+    "Moving Average (SMA20)": "მცოცავი საშუალო (SMA20)"
   },
   en: {
     // General
@@ -81,7 +89,15 @@ export const dict = {
     "Latest News": "Latest News",
     "No recent news found for": "No recent news found for",
     "Failed to load data for": "Failed to load data for",
-    "Please check the ticker symbol and try again.": "Please check the ticker symbol and try again."
+    "Please check the ticker symbol and try again.": "Please check the ticker symbol and try again.",
+
+    // Key Statistics
+    "Key Statistics": "Key Statistics",
+    "Volume": "Volume",
+    "52-Week High": "52-Week High",
+    "52-Week Low": "52-Week Low",
+    "Day's Range": "Day's Range",
+    "Moving Average (SMA20)": "Moving Average (SMA20)"
   }
 };
 
