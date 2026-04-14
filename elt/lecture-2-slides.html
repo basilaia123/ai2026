@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELT GROUP AI ტრენინგი — სესია 2: იდეების გენერაცია და ბრეინშტორმინგი</title>
+  <meta name="description" content="სესია 2: AI-ით ბრეინშტორმინგი, SCAMPER, Six Hats, კამპანიების იდეაცია, Impact/Effort მატრიცა და ELT GROUP-ის პრაქტიკული სავარჯიშოები.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            elt: { 900: '#0c1221', 800: '#1a2332', 700: '#253044', gold: '#b49b65', light: '#d4c49a' }
+          },
+          fontFamily: {
+            sans: ['FiraGO', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { color: #1a1a1a; }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .nav-link.active { background: rgba(180,155,101,0.15); border-left: 3px solid #b49b65; color: #b49b65; }
+    .nav-link:hover { background: rgba(255,255,255,0.05); }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    .prose { font-size: 1.05rem; }
+    .prose p { margin-bottom: 1rem; line-height: 1.8; color: #1a1a1a; }
+    .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+    .prose li { margin-bottom: 0.5rem; color: #1a1a1a; line-height: 1.7; }
+    .prose h3 { font-size: 1.5rem; font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    .prose h3:not([class*="text-"]) { color: #0c1221; }
+    .prose h4 { font-size: 1.25rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    .prose h4:not([class*="text-"]) { color: #0c1221; }
+    .prose strong { color: #0c1221; }
+    .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+    .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+    .highlight-box, .warning-box, .key-points {
+      background: #FBF8F1; border: none; border-radius: 8px;
+      padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #b49b65;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .highlight-box p, .warning-box p, .key-points p,
+    .highlight-box li, .warning-box li, .key-points li { color: #1a1a1a; }
+    .warning-box { border-left-color: #0c1221; background: #F5F3EE; }
+    .code-block {
+      position: relative; font-family: 'Courier New', Courier, monospace;
+      background: #0c1221; color: #F0F0F0; padding: 1.5rem;
+      border-radius: 6px; font-size: 0.95rem; margin: 1.5rem 0; white-space: pre-wrap;
+      box-shadow: 0 2px 8px rgba(12,18,33,0.15);
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      color: #A0A0A0; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+      font-size: 0.75rem; font-weight: 600; transition: all 0.2s; text-transform: uppercase;
+    }
+    .copy-btn:hover { background: #b49b65; color: #0c1221; border-color: #b49b65; }
+    section[id^="topic-"]:nth-child(even) { background: #FAFAF7; border-radius: 8px; margin-left: -1rem; margin-right: -1rem; padding-left: 1rem; padding-right: 1rem; }
+    @media (max-width: 768px) {
+      .two-column, .three-column { grid-template-columns: 1fr; gap: 1.5rem; }
+      section[id^="topic-"]:nth-child(even) { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-elt-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-elt-800 transition-colors">
+  <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-elt-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+  <div class="px-5 py-6 border-b border-white/10">
+    <h1 class="text-xl font-serif font-bold text-elt-gold">ELT GROUP</h1>
+    <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 2: იდეაცია & ბრეინშტორმინგი</p>
+    <p class="text-gray-400 text-xs mt-1">150 წუთი | 35 სექცია</p>
+  </div>
+  <nav class="py-3">
+    <div class="px-5 pt-4 pb-2 text-[11px] uppercase tracking-wider text-elt-gold font-bold">ბლოკი 1: ფრეიმვორკები</div>
+    <a href="#topic-1" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🎯 აჯენდა</span></a>
+    <a href="#topic-2" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🧠 რატომ ბრეინშტორმინგი AI-ით?</span></a>
+    <a href="#topic-3" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>⏳ ადრე vs ახლა</span></a>
+    <a href="#topic-4" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📐 SCAMPER Framework</span></a>
+    <a href="#topic-5" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>S — Substitute</span></a>
+    <a href="#topic-6" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>C — Combine</span></a>
+    <a href="#topic-7" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>A — Adapt</span></a>
+    <a href="#topic-8" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>M — Modify</span></a>
+    <a href="#topic-9" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>P — Put to Other Use</span></a>
+    <a href="#topic-10" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>E — Eliminate</span></a>
+    <a href="#topic-11" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>R — Reverse/Rearrange</span></a>
+    <a href="#topic-12" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔥 SCAMPER სავარჯიშო</span></a>
+    <a href="#topic-13" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🎩 Six Thinking Hats</span></a>
+    <a href="#topic-14" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🤖 AI + Six Hats პრომპტი</span></a>
+    <a href="#topic-15" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>💡 What-If თამაში</span></a>
+    <a href="#topic-16" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔄 Reverse Brainstorming</span></a>
+    <a href="#topic-17" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🏗 Screen Takeover</span></a>
+
+    <div class="px-5 pt-5 pb-2 text-[11px] uppercase tracking-wider text-elt-gold font-bold">ბლოკი 2: იდეაცია პრაქტიკა</div>
+    <a href="#topic-18" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🚀 მასობრივი იდეაცია (20→5)</span></a>
+    <a href="#topic-19" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📊 Impact/Effort მატრიცა</span></a>
+    <a href="#topic-20" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🎯 Value Proposition Canvas</span></a>
+    <a href="#topic-21" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📝 Buyer Persona Generator</span></a>
+    <a href="#topic-22" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🏠 ესპანური კვარტალი: ქეისი</span></a>
+    <a href="#topic-23" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🏖 Marina Club: ქეისი</span></a>
+    <a href="#topic-24" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🏢 Status House: ქეისი</span></a>
+    <a href="#topic-25" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📣 კამპანიის კონცეფცია</span></a>
+    <a href="#topic-26" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>✍️ Tagline Generator</span></a>
+    <a href="#topic-27" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🎨 Naming & Branding Ideas</span></a>
+    <a href="#topic-28" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📋 Action Brief Template</span></a>
+    <a href="#topic-29" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔁 იტერაციული დახვეწა</span></a>
+    <a href="#topic-30" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🏆 კონკურენტების ანალიზი</span></a>
+    <a href="#topic-31" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📈 ტრენდების გენერაცია</span></a>
+    <a href="#topic-32" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🤝 გუნდური Brainstorm</span></a>
+    <a href="#topic-33" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📝 საშინაო დავალება</span></a>
+    <a href="#topic-34" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>✅ შეჯამება</span></a>
+    <a href="#topic-35" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔜 შემდეგი ნაბიჯები</span></a>
+
+    <div class="mt-8 px-5">
+      <a href="index.html" class="block text-center bg-white/10 hover:bg-white/20 text-white text-sm py-2 rounded transition-colors">← პროგრამაში დაბრუნება</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+  <header class="bg-elt-900 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-elt-gold rounded-full blur-[100px] opacity-10"></div>
+    <div class="max-w-7xl relative z-10">
+      <h1 class="text-2xl md:text-4xl font-serif font-bold leading-tight mb-4">სესია 2: იდეების გენერაცია <span class="text-elt-light">& ბრეინშტორმინგი</span></h1>
+      <p class="text-gray-300 text-lg max-w-4xl leading-relaxed mb-6">ისწავლეთ როგორ გამოიყენოთ AI ახალი იდეების, კამპანიების, შეთავაზებების და კონტენტ-კონცეფციების სწრაფი გენერაციისთვის — SCAMPER, Six Hats და სხვა ფრეიმვორკების დახმარებით.</p>
+      <div class="flex flex-wrap gap-4">
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">⏱ 150 წუთი</span>
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">👤 გიორგი ბასილაია</span>
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">📹 ონლაინ (თეორია + პრაქტიკა)</span>
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">📊 35 სექცია</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+
+    <!-- TOPIC 1: AGENDA -->
+    <section id="topic-1" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🎯 დღევანდელი სესიის აჯენდა</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+              <div class="p-6 bg-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-amber-50 rounded-bl-full -z-0"></div>
+                <div class="relative z-10">
+                  <div class="flex items-center gap-2 text-elt-gold font-bold text-sm mb-1 uppercase tracking-wider">⏱ 00:00 – 01:05</div>
+                  <h3 class="text-xl font-bold text-elt-900 mb-4 border-b border-gray-100 pb-2">ბლოკი 1: ფრეიმვორკები</h3>
+                  <ul class="text-sm text-gray-800 space-y-2">
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>SCAMPER:</strong> 7-ელემენტიანი იდეაციის ჩარჩო.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>Six Hats:</strong> 6 პერსპექტივის ანალიზი.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>What-If / Reverse:</strong> კრეატიული ტექნიკები.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="bg-gray-50 flex flex-col relative overflow-hidden">
+                <div class="bg-elt-gold/10 border-b border-elt-gold/20 px-6 py-3 flex items-center justify-between">
+                  <span class="font-bold text-elt-900 text-sm">☕ 10-წუთიანი შესვენება</span>
+                  <span class="text-elt-gold font-bold text-xs bg-white px-2 py-1 rounded shadow-sm">01:05 – 01:15</span>
+                </div>
+                <div class="p-6 flex-1 bg-white">
+                  <div class="relative z-10">
+                    <div class="flex items-center gap-2 text-elt-gold font-bold text-sm mb-1 uppercase tracking-wider">⏱ 01:15 – 02:30</div>
+                    <h3 class="text-xl font-bold text-elt-900 mb-4 border-b border-gray-100 pb-2">ბლოკი 2: პრაქტიკული იდეაცია</h3>
+                    <ul class="text-sm text-gray-800 space-y-2">
+                      <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>მასობრივი გენერაცია:</strong> 20 იდეიდან Top-5.</li>
+                      <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>ELT ქეისები:</strong> ესპანური კვარტალი, Marina Club, Status House.</li>
+                      <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>Action Brief:</strong> შერჩეული იდეებიდან მოქმედების გეგმა.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="p-6 bg-white relative overflow-hidden">
+                <div class="relative z-10">
+                  <div class="flex items-center gap-2 text-elt-gold font-bold text-sm mb-1 uppercase tracking-wider">🎯 სესიის შედეგი</div>
+                  <h3 class="text-xl font-bold text-elt-900 mb-4 border-b border-gray-100 pb-2">რას გავიტანთ</h3>
+                  <ul class="text-sm text-gray-800 space-y-2">
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>4 ფრეიმვორკი:</strong> SCAMPER, Six Hats, What-If, Reverse.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>15+ იდეა:</strong> ELT პროექტებისთვის.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>Action Brief:</strong> მომდევნო კვირის გეგმა.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 bg-elt-900 border border-elt-gold/30 rounded-xl overflow-hidden shadow-lg relative">
+            <div class="absolute -right-6 -top-6 text-[8rem] opacity-5">💡</div>
+            <div class="p-6 relative z-10 flex flex-col md:flex-row gap-6 items-center">
+              <div class="w-16 h-16 rounded-full bg-elt-gold/20 flex items-center justify-center text-3xl shrink-0">💡</div>
+              <div class="text-white">
+                <h4 class="text-elt-gold font-bold text-xl mb-2" style="color:#b49b65!important"><span>Icebreaker:</span> „ყველაზე ჩიხიანი მომენტი"</h4>
+                <p class="text-sm text-gray-300 mb-3" style="color:#D1D5DB!important">გახსოვთ მომენტი, როცა გუნდთან ერთად ახალი იდეა გჭირდებოდათ, მაგრამ ვერაფერი მოგივიდათ თავში? <strong style="color:#fff!important">ჩატში (💬)</strong> დაწერეთ ერთი სიტუვით, სად იყავით „ჩიხში" (მაგალითად: <em style="color:#D1D5DB!important">„კამპანია", „სლოგანი", „შეთავაზება"</em>).</p>
+                <p class="text-xs text-gray-400 italic" style="color:#9CA3AF!important">დღეს ისწავლით, როგორ გამოიყენოთ AI ამ ჩიხების დაძლევისთვის — წამებში.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 2 -->
+    <section id="topic-2" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🧠 რატომ ბრეინშტორმინგი AI-ით?</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p><strong>ტრადიციული ბრეინშტორმინგი</strong> — 5 ადამიანი, 2 საათი, 3 იდეა. ყველაზე ხმამაღალი იგებს, ინტროვერტები ჩუმობენ, და იდეების 80% არასოდეს ხორციელდება. <strong>AI-თან ბრეინშტორმინგი</strong> სრულიად ცვლის ამ დინამიკას.</p>
+          <div class="three-column">
+            <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm text-center">
+              <div class="text-3xl mb-3">⚡</div>
+              <h4 class="text-lg font-bold text-elt-900 mb-2">სისწრაფე</h4>
+              <p class="text-sm">1 წუთში 20+ იდეა ნებისმიერი კუთხიდან. არ უნდა ელოდოთ შემდეგ შეხვედრას.</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm text-center">
+              <div class="text-3xl mb-3">🌍</div>
+              <h4 class="text-lg font-bold text-elt-900 mb-2">მრავალფეროვნება</h4>
+              <p class="text-sm">AI გიგენერირებს იდეებს სხვადასხვა ინდუსტრიიდან, კულტურიდან, პერსპექტივიდან.</p>
+            </div>
+            <div class="bg-elt-900 text-white border border-elt-gold/30 rounded-lg p-5 shadow-sm text-center">
+              <div class="text-3xl mb-3">🎯</div>
+              <h4 class="text-lg font-bold text-elt-gold mb-2" style="color:#b49b65!important">ობიექტურობა</h4>
+              <p class="text-sm text-gray-300" style="color:#D1D5DB!important">AI არ აქცევს ყურადღებას ოფისის პოლიტიკურ იერარქიას — ყველა იდეა თანასწორია.</p>
+            </div>
+          </div>
+          <div class="highlight-box mt-6">
+            <h3>ELT GROUP Use-Case</h3>
+            <p>თქვენ გუნდს ხშირად სჭირდება ახალი კამპანიების, სეზონური შეთავაზებების, ივენთ-კონცეფციების და მარკეტინგული კაუჭების იდეები. AI ხდება თქვენი „იდეაციის პარტნიორი", რომელიც <strong>ყოველთვის ხელმისაწვდომია</strong> — დილის 3 საათზეც კი.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 3 -->
+    <section id="topic-3" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>⏳ ადრე vs ახლა: იდეაციის დროის შედარება</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="flex flex-col md:flex-row gap-6 items-stretch">
+            <div class="flex-1 bg-red-50 border border-red-200 rounded-xl p-6 shadow-sm">
+              <h4 class="font-bold text-red-900 mb-4 border-b border-red-200 pb-2">❌ ტრადიციული პროცესი</h4>
+              <ul class="space-y-3 text-sm text-red-800">
+                <li class="flex justify-between"><span>გუნდის შეკრება:</span> <strong>30 წთ</strong></li>
+                <li class="flex justify-between"><span>ბრეინშტორმინგი:</span> <strong>60 წთ</strong></li>
+                <li class="flex justify-between"><span>იდეების ფილტრაცია:</span> <strong>45 წთ</strong></li>
+                <li class="flex justify-between"><span>Brief-ების შედგენა:</span> <strong>60 წთ</strong></li>
+                <li class="pt-3 mt-3 border-t border-red-200 flex justify-between font-bold text-base"><span>ჯამი:</span> <span>195 წუთი (3+ სთ)</span></li>
+              </ul>
+            </div>
+            <div class="flex items-center justify-center shrink-0"><span class="text-3xl text-gray-300">➔</span></div>
+            <div class="flex-1 bg-green-50 border border-green-200 rounded-xl p-6 shadow-sm relative overflow-hidden">
+              <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">⚡</div>
+              <h4 class="font-bold text-green-900 mb-4 border-b border-green-200 pb-2">✅ AI-ით ბრეინშტორმინგი</h4>
+              <ul class="space-y-3 text-sm text-green-800">
+                <li class="flex justify-between"><span>კონტექსტის მომზადება:</span> <strong>5 წთ</strong></li>
+                <li class="flex justify-between"><span>AI-ით იდეების გენერაცია:</span> <strong>3 წთ</strong></li>
+                <li class="flex justify-between"><span>AI-ით პრიორიტიზაცია:</span> <strong>5 წთ</strong></li>
+                <li class="flex justify-between"><span>Action Brief:</span> <strong>7 წთ</strong></li>
+                <li class="pt-3 mt-3 border-t border-green-200 flex justify-between font-bold text-base"><span>ჯამი:</span> <span>20 წუთი</span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="bg-elt-900 text-white rounded-xl p-6 mt-6 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 text-[6rem] opacity-5">📊</div>
+            <h4 class="text-elt-gold font-bold mb-2" style="color:#b49b65!important">📊 შედეგი</h4>
+            <p class="text-gray-300" style="color:#D1D5DB!important"><strong style="color:#fff">90%-იანი დროის დაზოგვა</strong> + უფრო მრავალფეროვანი იდეები. თვეში 4 ასეთ სესიაზე ELT GROUP ზოგავს <strong style="color:#b49b65">~10 ადამიან-საათს</strong> მხოლოდ იდეაციაზე.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 4: SCAMPER OVERVIEW -->
+    <section id="topic-4" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📐 SCAMPER Framework — 7 ლინზა იდეაციისთვის</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>SCAMPER არის ერთ-ერთი ყველაზე ეფექტური სტრუქტურირებული ბრეინშტორმინგის მეთოდი. ის 7 პროვოკაციულ კითხვას სვამს ნებისმიერი პროდუქტის, სერვისის ან კამპანიის შესახებ და AI-ს შეუძლია ყველა 7 მიმართულებით პარალელურად იფიქროს.</p>
+          <div class="highlight-box">
+            <ul style="list-style:none; padding:0;">
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">S</span> — Substitute:</strong> რა ჩავანაცვლოთ? (მასალა, სერვისი, მიდგომა)</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">C</span> — Combine:</strong> რა გავაერთიანოთ? (პროდუქტები, სერვისები, აუდიტორიები)</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">A</span> — Adapt:</strong> რა მოვარგოთ სხვა ინდუსტრიიდან?</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">M</span> — Modify:</strong> რა გავზარდოთ ან შევცვალოთ?</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">P</span> — Put to Other Use:</strong> რა სხვა მიზნით გამოვიყენოთ?</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">E</span> — Eliminate:</strong> რა ამოვიღოთ/გავამარტივოთ?</li>
+              <li><strong><span style="color:#b49b65;">R</span> — Reverse/Rearrange:</strong> რა გადავაწყოთ თავიდან?</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <h3>რატომ SCAMPER + AI?</h3>
+            <p>ტრადიციულად SCAMPER-ს 7 ადამიანი იყენებს, თითო ბარათით. AI-სთან ერთად, თქვენ <strong>ერთ პრომპტში იღებთ ყველა 7 მიმართულების პასუხს</strong> — 30 წამში.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICS 5-11: SCAMPER Deep Dives -->
+    <section id="topic-5" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>S — Substitute (ჩანაცვლება)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>კითხვა: <strong>„რა შეიძლება ჩავანაცვლოთ ჩვენს სერვისში, მარკეტინგში ან კლიენტურ გამოცდილებაში?"</strong></p>
+        <div class="two-column">
+          <div>
+            <h3>ELT GROUP მაგალითები:</h3>
+            <ul>
+              <li>ტრადიციული ბროშურა → <strong>ინტერაქტიული 3D ტური</strong></li>
+              <li>ტელეფონით კონსულტაცია → <strong>WhatsApp AI ჩატბოტი</strong> პირველადი კითხვებისთვის</li>
+              <li>ფიზიკური შოურუმი → <strong>VR გამოცდილება</strong> უცხოელი ინვესტორებისთვის</li>
+            </ul>
+          </div>
+          <div>
+            <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+იმოქმედე როგორც ინოვაციურმა ბიზნეს-სტრატეგმა.
+ELT GROUP-ს აქვს ესპანური კვარტალის გაყიდვების პროცესი.
+გამოიყენე SCAMPER-ის "Substitute" (ჩანაცვლება) მეთოდი.
+მომეცი 5 იდეა: რა ტრადიციულ ელემენტს ჩავანაცვლებ
+ციფრული ან AI-ბაზირებული ალტერნატივით?
+ფოკუსი: კლიენტის გამოცდილების გაუმჯობესება.</div>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-6" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>C — Combine (გაერთიანება)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>კითხვა: <strong>„რა ორი ან მეტი ელემენტი გავაერთიანოთ ახალი, უნიკალური ღირებულების შესაქმნელად?"</strong></p>
+        <div class="highlight-box">
+          <h3>ELT GROUP Combo-იდეები:</h3>
+          <ul>
+            <li><strong>Barceló სერვისი + Airbnb მოდელი</strong> = მოკლევადიანი პრემიუმ ქირავნობა ტურისტებისთვის</li>
+            <li><strong>უძრავი ქონება + Wellness</strong> = SPA-რეზიდენცია (Status House Concept)</li>
+            <li><strong>ინვესტიცია + საოჯახო გამოცდილება</strong> = „ოჯახის დასასვენებელი + აქტივი ერთ პაკეტში"</li>
+          </ul>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-7" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>A — Adapt (ადაპტაცია)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>კითხვა: <strong>„რა მუშაობს სხვა ინდუსტრიაში ან ქვეყანაში, რისი ადაპტაციაც შეგვიძლია?"</strong></p>
+        <div class="three-column">
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div class="text-2xl mb-2">🏨</div>
+            <h4 class="font-bold text-elt-900 mb-2">Hospitality → Real Estate</h4>
+            <p class="text-sm">Marriott Bonvoy-ს ლოიალობის პროგრამა → <strong>ELT Investor Club</strong>: ინვესტორებს ექსკლუზიური Early Access.</p>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div class="text-2xl mb-2">✈️</div>
+            <h4 class="font-bold text-elt-900 mb-2">Airlines → Sales</h4>
+            <p class="text-sm">Emirates-ის პერსონალიზებული კონსიერჟი → <strong>ELT პერსონალური მენეჯერი</strong> ყველა $100K+ ინვესტორისთვის.</p>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div class="text-2xl mb-2">🎮</div>
+            <h4 class="font-bold text-elt-900 mb-2">Gaming → Marketing</h4>
+            <p class="text-sm">Fortnite-ს ივენთები → <strong>ექსკლუზიური ვირტუალური გახსნა</strong> მხოლოდ მოწვეულებისთვის.</p>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-8" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>M — Modify (გადიდება/შეცვლა)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>კითხვა: <strong>„რა გავადიდოთ, რა შევამციროთ, რა ფორმით მოდიფიცირებით მივიღოთ ახალი ღირებულება?"</strong></p>
+        <div class="highlight-box">
+          <ul>
+            <li><strong>გავადიდოთ:</strong> მცირე აპარტამენტი → Micro-Living ბრენდი (სტუდენტებისთვის, ნომად-მუშაკებისთვის)</li>
+            <li><strong>შევამციროთ:</strong> 5-ვარსკვლავიანი სერვისი → „Barceló Essentials" — ეკონომიური ვერსია</li>
+            <li><strong>ფორმა:</strong> ცხრილის ფორმატიდან → ინტერაქტიული ROI კალკულატორი ინვესტორებისთვის</li>
+          </ul>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-9" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>P — Put to Other Use (სხვა მიზანი)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>კითხვა: <strong>„ჩვენი არსებული აქტივები სხვა რა მიზნით შეგვიძლია გამოვიყენოთ?"</strong></p>
+        <div class="two-column">
+          <div class="warning-box">
+            <h3>არსებული აქტივების გადახედვა:</h3>
+            <ul>
+              <li>მშენებარე პროექტის 3D მოდელი → <strong>სოციალური მედიის კონტენტი</strong></li>
+              <li>კლიენტების FAQ → <strong>AI ჩატბოტის ცოდნის ბაზა</strong></li>
+              <li>გაყიდვის შემდგომი მომსახურების პროცესი → <strong>Case Study მარკეტინგისთვის</strong></li>
+            </ul>
+          </div>
+          <div class="highlight-box">
+            <h3>ELT GROUP-ის ფარული აქტივები:</h3>
+            <ul>
+              <li>თქვენი <strong>Wyndham/Barceló პარტნიორობა</strong> — ის თავისთავად არის მარკეტინგული აქტივი</li>
+              <li>თქვენი <strong>კმაყოფილი ინვესტორების ისტორიები</strong> — Testimonial Campaign</li>
+              <li>თქვენი <strong>მშენებლობის მიმდინარეობის ფოტოები</strong> — Progress Content Series</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-10" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>E — Eliminate (გამარტივება)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>კითხვა: <strong>„რა პროცესი ან ფუნქცია ზედმეტია და მის გარეშე გამოცდილება არ გაუარესდება?"</strong></p>
+        <div class="highlight-box">
+          <ul>
+            <li>ქაღალდის ხელშეკრულებები → <strong>e-Signature სისტემა</strong></li>
+            <li>ინვესტორის 7-ნაბიჯიანი ვერიფიკაცია → <strong>3-ნაბიჯიანი ციფრული პროცესი</strong></li>
+            <li>ყოველკვირეული ოფისში მისვლა კონსულტაციისთვის → <strong>Zoom + AI-გენერირებული რეპორტი</strong></li>
+          </ul>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-11" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>R — Reverse/Rearrange (გადაწყობა)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>კითხვა: <strong>„რა მოხდება, თუ პროცესს ან მიდგომას თავიდან გადავაწყობთ?"</strong></p>
+        <div class="two-column">
+          <div>
+            <h3>Reverse-იდეები ELT-სთვის:</h3>
+            <ul>
+              <li><strong>ჩვეულებრივი:</strong> კლიენტი მოდის ჩვენთან → <strong>Reverse:</strong> ჩვენ მივდივართ კლიენტთან (Mobile Sales Team)</li>
+              <li><strong>ჩვეულებრივი:</strong> ფასი ხელმისაწვდომია ყველასთვის → <strong>Reverse:</strong> „შეზღუდული წვდომის" Presale მხოლოდ VIP-ებისთვის</li>
+              <li><strong>ჩვეულებრივი:</strong> ბროშურა აღწერს პროექტს → <strong>Reverse:</strong> ინვესტორი კითხულობს სხვა ინვესტორის ისტორიას (Social Proof First)</li>
+            </ul>
+          </div>
+          <div class="bg-elt-900 text-white rounded-xl p-6">
+            <h4 class="text-elt-gold font-bold mb-3" style="color:#b49b65!important">💡 ოქროს იდეა</h4>
+            <p class="text-sm text-gray-300" style="color:#D1D5DB!important"><strong style="color:#fff">"Reverse Open House"</strong> — ნაცვლად იმისა, რომ ინვესტორები მოიწვიოთ, <strong style="color:#b49b65">აჩვენეთ მშენებლობა LIVE</strong> საიტიდან ვიდეოგამოძახებით. ექსკლუზიურობის განცდა + დროის ეკონომია.</p>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 12: SCAMPER EXERCISE -->
+    <section id="topic-12" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔥 SCAMPER სავარჯიშო: სრული ანალიზი ერთ პრომპტში</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>ახლა გავაერთიანოთ ყველა 7 ელემენტი ერთ მძლავრ პრომპტში:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+იმოქმედე როგორ სტრატეგიულ ინოვაციის კონსულტანტმა.
+ჩვენ ვართ ELT GROUP — პრემიუმ კლასის უძრავი ქონების დეველოპერი საქართველოში.
+ჩვენი პროექტი: ესპანური კვარტალი — პრემიუმ საცხოვრებელი Barceló Hotel Group-ის მენეჯმენტით.
+
+გამოიყენე SCAMPER framework და ყოველი ელემენტისთვის მოგვეცი 2 კონკრეტული, პრაქტიკული იდეა:
+
+S (Substitute) — რა ჩავანაცვლოთ გაყიდვების პროცესში?
+C (Combine) — რა გავაერთიანოთ ახალი ღირებულებისთვის?
+A (Adapt) — რა ინოვაცია მოვიტანოთ სხვა ინდუსტრიიდან?
+M (Modify) — რა გავადიდოთ ან შევამციროთ?
+P (Put to Other Use) — ჩვენი აქტივების ახალი გამოყენება?
+E (Eliminate) — რა ზედმეტი პროცესი მოვაშოროთ?
+R (Reverse) — რა გადავაწყოთ თავიდან?
+
+ფორმატი: ცხრილი | სვეტები: SCAMPER ელემენტი | იდეა | სავარაუდო Impact (High/Medium/Low)</div>
+        <div class="bg-elt-900 border border-elt-gold/30 rounded-xl p-6 mt-4">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">⏱️</span>
+            <p class="text-elt-gold font-bold" style="color:#b49b65!important">გახსენით ChatGPT ან Claude, დააკოპირეთ პრომპტი და სცადეთ! (3 წუთი)</p>
+          </div>
+          <p class="text-gray-400 text-sm" style="color:#9CA3AF!important">შედეგებს ვუზიარებთ ჩატში. რომელი იდეა მოგეწონათ ყველაზე მეტად?</p>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 13: SIX THINKING HATS -->
+    <section id="topic-13" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🎩 Six Thinking Hats — ყველა პერსპექტივა ერთდროულად</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>Edward de Bono-ს <strong>Six Thinking Hats</strong> მეთოდი ყოველ იდეას 6 განსხვავებული პერსპექტივით აანალიზებს. AI-ს შეუძლია ყველა 6 „ქუდი" ერთდროულად მოირგოს.</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+          <div class="bg-white border-2 border-blue-200 rounded-xl p-4 text-center shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mx-auto mb-2">🔵</div>
+            <h4 class="font-bold text-blue-800 text-sm">ლურჯი — პროცესი</h4>
+            <p class="text-xs text-gray-600 mt-1">რა არის მიზანი? რა დისკუსია გვჭირდება?</p>
+          </div>
+          <div class="bg-white border-2 border-gray-300 rounded-xl p-4 text-center shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-2xl mx-auto mb-2">⚪</div>
+            <h4 class="font-bold text-gray-800 text-sm">თეთრი — ფაქტები</h4>
+            <p class="text-xs text-gray-600 mt-1">რა ვიცით? რა არ ვიცით? რიცხვები.</p>
+          </div>
+          <div class="bg-white border-2 border-red-200 rounded-xl p-4 text-center shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-2xl mx-auto mb-2">🔴</div>
+            <h4 class="font-bold text-red-800 text-sm">წითელი — ემოციები</h4>
+            <p class="text-xs text-gray-600 mt-1">რას იგრძნობს კლიენტი? ინტუიცია.</p>
+          </div>
+          <div class="bg-white border-2 border-yellow-300 rounded-xl p-4 text-center shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center text-2xl mx-auto mb-2">🟡</div>
+            <h4 class="font-bold text-yellow-800 text-sm">ყვითელი — ოპტიმიზმი</h4>
+            <p class="text-xs text-gray-600 mt-1">ყველაზე კარგ შემთხვევაში რა მოხდება?</p>
+          </div>
+          <div class="bg-white border-2 border-gray-800 rounded-xl p-4 text-center shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-gray-800 text-white flex items-center justify-center text-2xl mx-auto mb-2">⚫</div>
+            <h4 class="font-bold text-gray-800 text-sm">შავი — კრიტიკა</h4>
+            <p class="text-xs text-gray-600 mt-1">რა შეიძლება არ გამოვიდეს? რისკები.</p>
+          </div>
+          <div class="bg-white border-2 border-green-200 rounded-xl p-4 text-center shadow-sm">
+            <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-2xl mx-auto mb-2">🟢</div>
+            <h4 class="font-bold text-green-800 text-sm">მწვანე — კრეატივი</h4>
+            <p class="text-xs text-gray-600 mt-1">ალტერნატიული გზები? გიჟური იდეები.</p>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 14: SIX HATS PROMPT -->
+    <section id="topic-14" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🤖 AI + Six Thinking Hats: მზა პრომპტი</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+ჩვენ ვართ ELT GROUP. ვფიქრობთ იდეაზე:
+„[ჩასვით იდეა, მაგალითად: Marina Club-ის ბინების 'Work from Paradise' კამპანია დისტანციურად მომუშავეთათვის]"
+
+გააანალიზე ეს იდეა de Bono-ს Six Thinking Hats მეთოდით:
+🔵 ლურჯი ქუდი — რა არის მთავარი მიზანი და პროცესი?
+⚪ თეთრი ქუდი — რა ფაქტები და მონაცემები გვჭირდება?
+🔴 წითელი ქუდი — როგორ იგრძნობს ეს კლიენტს? ემოციური რეაქცია?
+🟡 ყვითელი ქუდი — რა უპირატესობები აქვს? ოპტიმისტური სცენარი?
+⚫ შავი ქუდი — რა რისკებია? რა შეიძლება არ იმუშაოს?
+🟢 მწვანე ქუდი — 3 ალტერნატიული იდეა ან გაუმჯობესება?
+
+ფორმატი: ყოველი ქუდისთვის ცალკე სექცია 3-4 წინადადებით.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 15: WHAT-IF -->
+    <section id="topic-15" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>💡 What-If თამაში — შეზღუდვების მოხსნა</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p><strong>What-If</strong> ტექნიკა ამოშორებს ჩარჩოებს. თქვენ სვამთ პროვოკაციულ კითხვებს, რომლებზეც AI პასუხობს ყოველგვარი ცენზურისა და „ეს შეუძლებელია" ფილტრის გარეშე.</p>
+        <div class="three-column">
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div class="text-2xl mb-2">🤔</div>
+            <h4 class="font-bold text-elt-900">რა მოხდება, თუ...</h4>
+            <p class="text-sm mt-2">...ELT GROUP-ს ბიუჯეტის ლიმიტი <strong>არ ჰქონდა?</strong> რას ვაკეთებდით სხვანაირად?</p>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div class="text-2xl mb-2">🌍</div>
+            <h4 class="font-bold text-elt-900">რა მოხდება, თუ...</h4>
+            <p class="text-sm mt-2">...ჩვენი კონკურენტი <strong>Apple-ი იყო?</strong> როგორ გაყიდიდა ბინებს?</p>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div class="text-2xl mb-2">🔮</div>
+            <h4 class="font-bold text-elt-900">რა მოხდება, თუ...</h4>
+            <p class="text-sm mt-2">...2030 წელია და ტურიზმი ბათუმში <strong>3-ჯერ გაიზარდა?</strong></p>
+          </div>
+        </div>
+        <div class="code-block mt-6"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+მოისაუბრე როგორც Vision Strategist-მა.
+ELT GROUP ყიდის პრემიუმ ბინებს ბათუმში.
+ვთამაშოთ "What-If" თამაში:
+
+1. რა მოხდება, თუ Marina Club-ის ბინების 50% საზღვარგარეთის მომხმარებლებმა იყიდეს?
+2. რა მოხდება, თუ Airbnb ბათუმში აკრძალეს?
+3. რა მოხდება, თუ ELT GROUP-მ NFT-ბაზირებული საკუთრების სერტიფიკატი გამოუშვა?
+
+ყოველ სცენარზე: 3 შესაძლებლობა + 2 რისკი + 1 სამოქმედო ნაბიჯი.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 16: REVERSE BRAINSTORMING -->
+    <section id="topic-16" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔄 Reverse Brainstorming — პრობლემის შექცევა</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>ნაცვლად კითხვისა „როგორ გავაუმჯობესოთ?", ვკითხავთ: <strong>„როგორ გავაუარესოთ?"</strong> — და შემდეგ პასუხებს თავიდან ვაბრუნებთ.</p>
+        <div class="two-column">
+          <div class="bg-red-50 border border-red-200 rounded-lg p-5">
+            <h3 class="text-red-800">❌ „როგორ დავკარგოთ კლიენტი?"</h3>
+            <ul class="text-sm text-red-700 mt-3 space-y-2">
+              <li>ნუ ვუპასუხებთ 3 დღე</li>
+              <li>ვაგზავნოთ ზოგადი ტექსტი</li>
+              <li>ვითხოვოთ ფული, არ ვაჩვენოთ ღირებულება</li>
+              <li>ვიგნორირებთ follow-up-ს</li>
+            </ul>
+          </div>
+          <div class="bg-green-50 border border-green-200 rounded-lg p-5">
+            <h3 class="text-green-800">✅ Reverse = გადაწყვეტა</h3>
+            <ul class="text-sm text-green-700 mt-3 space-y-2">
+              <li>→ <strong>2-საათიანი SLA</strong> (პასუხის სტანდარტი)</li>
+              <li>→ <strong>პერსონალიზებული შეთავაზება</strong> ყველა კლიენტს</li>
+              <li>→ <strong>ROI კალკულატორი</strong> ღირებულების ჩვენებისთვის</li>
+              <li>→ <strong>ავტომატური follow-up</strong> AI-გენერირებული</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 17: SCREEN TAKEOVER -->
+    <section id="topic-17" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🏗 „Screen Takeover" — ლაივ-პრაქტიკა</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="bg-elt-900 border border-elt-gold/30 rounded-xl p-8 relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 text-[12rem] opacity-5">🖥️</div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-16 h-16 rounded-full bg-elt-gold/20 flex items-center justify-center text-4xl shadow-inner border border-elt-gold/30">🖥️</div>
+              <div>
+                <h4 class="text-elt-gold font-bold text-2xl mb-1" style="color:#b49b65!important">აქტივობა: „Screen Takeover"</h4>
+                <p class="text-gray-400 text-sm" style="color:#9CA3AF!important">დრო: 10 წუთი | მოხალისე ეკრანს უზიარებს</p>
+              </div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-lg p-6 mb-6">
+              <h5 class="font-bold text-white mb-3 text-lg" style="color:#fff!important">წესები:</h5>
+              <ul class="text-sm text-gray-300 space-y-2" style="color:#D1D5DB!important">
+                <li>1️⃣ მოხალისე ხსნის ChatGPT-ს ან Claude-ს და უზიარებს ეკრანს</li>
+                <li>2️⃣ ტრენერი აძლევს ამოცანას: <strong style="color:#fff">"SCAMPER ანალიზი Marina Club-ისთვის"</strong></li>
+                <li>3️⃣ გუნდი ეხმარება პრომპტის დახვეწაში real-time-ში</li>
+                <li>4️⃣ ვარჩევთ 3 საუკეთესო იდეას შემდგომი სამუშაოსთვის</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 18: MASS IDEATION -->
+    <section id="topic-18" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🚀 მასობრივი იდეაცია: 20 იდეიდან Top-5</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>ეს არის სესიის ყველაზე ძლიერი ტექნიკა. AI-ს ვთხოვთ <strong>20+ იდეას ერთდროულად</strong>, შემდეგ ვფილტრავთ Impact/Effort მატრიცით.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+იმოქმედე როგორც გლობალურმა მარკეტინგის სტრატეგმა.
+კომპანია: ELT GROUP — პრემიუმ უძრავი ქონების დეველოპერი.
+პროექტი: ესპანური კვარტალი — 5-ვარსკვლავიანი ცხოვრება Barceló-ს მენეჯმენტით.
+სამიზნე აუდიტორია: საერთაშორისო ინვესტორები (GCC, ევროპა), ქართველი ბიზნესმენები.
+
+დაგენერირე 20 სხვადასხვა მარკეტინგული/გაყიდვების იდეა,
+რომლებიც ELT GROUP-მა შეიძლება მომდევნო 3 თვეში განახორციელოს.
+
+კატეგორიები:
+— დიგიტალური კამპანიები (5 იდეა)
+— ივენთები და აქტივაციები (5 იდეა)
+— პარტნიორული ინიციატივები (5 იდეა)
+— კონტენტ-სტრატეგიები (5 იდეა)
+
+ფორმატი: ნომრიანი სია | თითოეულზე: სახელი + 1 წინადადება აღწერა + სავარაუდო ბიუჯეტი (Low/Medium/High).</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 19: IMPACT/EFFORT MATRIX -->
+    <section id="topic-19" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📊 Impact/Effort მატრიცა — იდეებიდან პრიორიტეტებამდე</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>20 იდეა კარგია, მაგრამ რომელი 5 უნდა გავაკეთოთ <strong>პირველ კვირაში</strong>? Impact/Effort მატრიცა გიჩვენებთ.</p>
+        <div class="grid grid-cols-2 gap-3 mt-6">
+          <div class="bg-green-50 border-2 border-green-300 rounded-xl p-5">
+            <h4 class="font-bold text-green-900 mb-2">⭐ Quick Win</h4>
+            <p class="text-xs text-green-700 mb-2">მაღალი Impact | დაბალი Effort</p>
+            <ul class="text-sm text-green-800 space-y-1">
+              <li>• AI-გენერირებული FAQ section</li>
+              <li>• „Before/After" პოსტების სერია</li>
+              <li>• WhatsApp auto-reply შაბლონი</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-5">
+            <h4 class="font-bold text-amber-900 mb-2">🏗 Big Project</h4>
+            <p class="text-xs text-amber-700 mb-2">მაღალი Impact | მაღალი Effort</p>
+            <ul class="text-sm text-amber-800 space-y-1">
+              <li>• Custom GPT ინვესტორებისთვის</li>
+              <li>• VR ტური ესპანურ კვარტალში</li>
+              <li>• ინვესტორების Community Platform</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-5">
+            <h4 class="font-bold text-blue-900 mb-2">📋 Fill-In</h4>
+            <p class="text-xs text-blue-700 mb-2">დაბალი Impact | დაბალი Effort</p>
+            <ul class="text-sm text-blue-800 space-y-1">
+              <li>• ოფისის ფოტოების განახლება</li>
+              <li>• ელფოსტის ხელმოწერის დიზაინი</li>
+              <li>• Quarterly newsletter</li>
+            </ul>
+          </div>
+          <div class="bg-gray-100 border-2 border-gray-300 rounded-xl p-5">
+            <h4 class="font-bold text-gray-700 mb-2">🚫 Avoid</h4>
+            <p class="text-xs text-gray-500 mb-2">დაბალი Impact | მაღალი Effort</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• ნაჩქარევი ტელერეკლამა</li>
+              <li>• ზოგადი სოციალური მედია</li>
+              <li>• არასტრუქტურირებული ბლოგი</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 20: VALUE PROPOSITION -->
+    <section id="topic-20" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🎯 Value Proposition Canvas — AI-ით</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>ყველა ELT GROUP-ის პროექტს სჭირდება მკაფიო <strong>Value Proposition</strong> — რატომ უნდა აირჩიოს ინვესტორმა ზუსტად ეს პროექტი. AI-ს შეუძლია მრავალვერსიული VP-ს გენერაცია:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+იმოქმედე როგორც brand positioning ექსპერტმა.
+ELT GROUP-ის პროექტი: [ესპანური კვარტალი / Marina Club / Status House]
+სამიზნე: [GCC ინვესტორები / ქართველი ოჯახები / ევროპელი ციფრული ნომადები]
+
+შექმენი 5 სხვადასხვა Value Proposition:
+1. ემოციური (ცხოვრების ხარისხზე ფოკუსი)
+2. ფინანსური (ROI, passive income)
+3. სტატუსური (პრესტიჟი, ექსკლუზიურობა)
+4. პრაქტიკული (ლოკაცია, ინფრასტრუქტურა)
+5. სამომავლო (ბაზრის ზრდა, ქალაქის განვითარება)
+
+ფორმატი: ყველა VP — 2 წინადადება მაქს. + სლოგანი.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 21: BUYER PERSONA -->
+    <section id="topic-21" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📝 Buyer Persona Generator</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>იდეაციის საფუძველი სწორ აუდიტორიაზეა — <strong>ვისთვის ვმუშაობთ?</strong> AI გიგენერირებს დეტალურ persona-ს წამებში.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+შემიქმენი 3 Buyer Persona ELT GROUP-ის ესპანური კვარტალისთვის.
+ყოველი persona: 
+— სახელი და ასაკი
+— პროფესია და შემოსავალი
+— მთავარი მოტივაცია (რატომ ყიდულობს?)
+— მთავარი შიში (რამ შეიძლება შეაჩეროს?)
+— საყვარელი კომუნიკაციის არხი
+— რა ტიპის კონტენტი ააქტიურებს?
+
+ფორმატი: ბარათის სტილით, თითო persona-ზე 5-6 ბულეტი.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPICS 22-24: ELT CASES -->
+    <section id="topic-22" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🏠 ქეის-სტადი: ესპანური კვარტალი</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="bg-elt-900 text-white rounded-xl p-6 mb-6 relative overflow-hidden">
+          <div class="absolute -right-8 -top-8 text-[10rem] opacity-5">🏠</div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative z-10">
+            <div class="text-center p-3"><div class="text-2xl mb-1">🏗</div><div class="text-elt-gold font-bold text-lg" style="color:#b49b65!important">პრემიუმ ცხოვრება</div><div class="text-xs text-gray-400">Barceló Hotel Group</div></div>
+            <div class="text-center p-3"><div class="text-2xl mb-1">📍</div><div class="text-elt-gold font-bold text-lg" style="color:#b49b65!important">თბილისის ცენტრი</div><div class="text-xs text-gray-400">A-კლასი ლოკაცია</div></div>
+            <div class="text-center p-3"><div class="text-2xl mb-1">⭐</div><div class="text-elt-gold font-bold text-lg" style="color:#b49b65!important">5-ვარსკვლავიანი</div><div class="text-xs text-gray-400">სერვისის სტანდარტი</div></div>
+            <div class="text-center p-3"><div class="text-2xl mb-1">💰</div><div class="text-elt-gold font-bold text-lg" style="color:#b49b65!important">საინვესტიციო</div><div class="text-xs text-gray-400">Passive Income Model</div></div>
+          </div>
+        </div>
+        <div class="key-points">
+          <h3>სავარჯიშო (5 წუთი):</h3>
+          <p>გახსენით ChatGPT ან Claude და დააკოპირეთ:</p>
+          <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+დამიგენერირე 10 მარკეტინგული იდეა ELT GROUP-ის 
+"ესპანური კვარტალის" პრომოციისთვის.
+
+კონტექსტი: პრემიუმ საცხოვრებელი თბილისში, 
+Barceló Hotel Group-ის მენეჯმენტით.
+სამიზნე: საერთაშორისო ინვესტორები + ადგილობრივი 
+high-net-worth ოჯახები.
+
+პირობა: იდეები უნდა იყოს რეალისტური, 
+განხორციელებადი 30 დღეში, Medium ბიუჯეტით.
+
+ფორმატი: ნომრიანი სია, თითო იდეაზე სახელი + 
+1-წინადადების აღწერა + რომელი გუნდი ასრულებს.</div>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-23" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🏖 ქეის-სტადი: Marina Club</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p><strong>Marina Club</strong> — ბათუმის ზღვისპირა პრემიუმ კომპლექსი. <strong>სეზონურობა</strong> არის მთავარი გამოწვევა: ზაფხულში მაღალი მოთხოვნა, ზამთარში — ჩავარდნა.</p>
+        <div class="highlight-box">
+          <h3>AI-ით კამპანიის იდეების გენერაცია:</h3>
+          <ul>
+            <li><strong>ზაფხული:</strong> „Summer at Marina" — ინტერნაციონალური digital campaign GCC ბაზრისთვის</li>
+            <li><strong>შემოდგომა:</strong> „Off-Season Luxury" — ფასდაკლებული ზამთრის пакет ადგილობრივებისთვის</li>
+            <li><strong>ზამთარი:</strong> „New Year's at the Sea" — ექსკლუზიური საახალწლო ივენთი ინვესტორებისთვის</li>
+            <li><strong>გაზაფხული:</strong> „Spring Investment Summit" — ახალი ბლოკის Presale</li>
+          </ul>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="topic-24" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🏢 ქეის-სტადი: Status House</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p><strong>Status House</strong> — ურბანული ბიზნეს-რეზიდენცია. მთავარი გამოწვევა: <strong>კონკურენციაში გამორჩევა</strong>.</p>
+        <div class="warning-box">
+          <h3>Unique Selling Points (USP) ბრეინშტორმინგი:</h3>
+          <ul>
+            <li>რატომ Status House და არა კონკურენტი? — AI გენერირებს <strong>5 Differentiator</strong></li>
+            <li>რა არის „მხოლოდ ჩვენთან" განცდა? — AI იძლევა <strong>3 Exclusivity Concept</strong></li>
+            <li>რომელ ლაიფსტაილს მიემართება? — AI ქმნის <strong>Lifestyle Vision Board-ს</strong> ტექსტურ ფორმატში</li>
+          </ul>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 25: CAMPAIGN CONCEPT -->
+    <section id="topic-25" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📣 კამპანიის Full Concept — ერთი პრომპტით</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+იმოქმედე როგორც Creative Director-მა.
+ELT GROUP ემზადება ესპანური კვარტალის 
+სოციალური მედია კამპანიისთვის.
+
+შემიქმენი სრული კამპანიის ჩარჩო:
+1. კამპანიის სახელი (3 ვარიანტი)
+2. მთავარი მესიჯი (1 წინადადება)
+3. სლოგანი (ქართულად და ინგლისურად)
+4. სოციალური მედიის 5-პოსტიანი სერია 
+   (თითო პოსტის ტიპი + caption იდეა)
+5. კამპანიის ვიზუალური კონცეფცია (3 bullet)
+6. KPI-ები (რა გავზომოთ?)
+7. ბიუჯეტის რეკომენდაცია (Low/Mid/High)
+
+ტონი: პრემიუმ, ხარისხზე ფოკუსირებული,
+არა "იაფი" ან "შემოთავაზების" ტიპის.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 26: TAGLINE GENERATOR -->
+    <section id="topic-26" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>✍️ Tagline & Slogan Generator</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>AI-ს შეუძლია სლოგანების <strong>მრავალვერსიული გენერაცია</strong> სხვადასხვა ტონით:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+შემიქმენი 10 სლოგანი ELT GROUP-ისთვის.
+5 ქართულად, 5 ინგლისურად.
+
+სტილის ვარიანტები:
+— 2 ემოციური (ცხოვრების ხარისხი)
+— 2 ფინანსური (ROI, ინვესტიცია)
+— 2 სტატუსური (ექსკლუზივი, პრესტიჟი)
+— 2 მომავლისკენ მიმართული (ხედვა, ზრდა)
+— 2 პროვოკაციული (გამოწვევა, surprize element)
+
+მაქს. 6 სიტყვა თითოეული.
+არ გამოიყენო ბანალური ფრაზები ("ოცნების", "საუკეთესო").</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 27: NAMING IDEAS -->
+    <section id="topic-27" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🎨 Naming & Branding Ideas</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>ახალი პროექტის, სერვისის ან კამპანიის <strong>სახელის გამოგონება</strong> ერთ-ერთი ყველაზე რთული კრეატიული ამოცანაა. AI-ს შეუძლია 50 ვარიანტის გენერაცია სტილის შეზღუდვებით:</p>
+        <div class="highlight-box">
+          <h3>მაგალითი: ახალ ფლოტს რომ ვარქვათ?</h3>
+          <p>თუ ELT GROUP გეგმავს ახალ საცხოვრებელს, AI-ს შეუძლია:</p>
+          <ul>
+            <li><strong>კლასიკური სახელები:</strong> The Residence, Belvedere, Grand Quarter</li>
+            <li><strong>ლოკალური:</strong> ქართული სახელები ინტერნაციონალური ხასიათით: „Kolkheti", „Arili"</li>
+            <li><strong>Lifestyle:</strong> „Amara Living", „Vista Heights", „Elara Suites"</li>
+          </ul>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 28: ACTION BRIEF -->
+    <section id="topic-28" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📋 Action Brief Template — იდეიდან მოქმედებამდე</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>საუკეთესო იდეა უსარგებლოა, თუ არ გადავიდა <strong>Action Brief-ში</strong>. AI-ს შეუძლია ავტომატურად გადააქციოს ნებისმიერი იდეა სამოქმედო გეგმად:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+ჩვენი გადაწყვეტილი იდეა: [ჩასვით შერჩეული იდეა]
+კომპანია: ELT GROUP
+
+გადააქციე ეს იდეა Action Brief-ად:
+1. მიზანი (რას ვღწევთ?)
+2. სამიზნე აუდიტორია
+3. ძირითადი მესიჯი
+4. აუცილებელი რესურსები (დრო, ხალხი, ბიუჯეტი)
+5. მომდევნო 5 კონკრეტული ნაბიჯი (deadline-ებით)
+6. წარმატების მეტრიკები (KPI)
+7. რისკები და მათი პრევენცია
+
+ფორმატი: სტრუქტურირებული ცხრილი.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 29: ITERATIVE REFINEMENT -->
+    <section id="topic-29" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔁 იტერაციული დახვეწა — 3-ნაბიჯიანი ციკლი</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>სესია 1-ში ვისწავლეთ, რომ AI-სთან მუშაობა იტერაციულია. იდეაციაში ეს <strong>კრიტიკულად მნიშვნელოვანია</strong>:</p>
+        <div class="three-column">
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm text-center">
+            <div class="w-12 h-12 rounded-full bg-elt-gold/20 flex items-center justify-center text-xl font-bold text-elt-gold mx-auto mb-3">1</div>
+            <h4 class="font-bold text-elt-900">გენერაცია</h4>
+            <p class="text-sm mt-2">„მომეცი 20 იდეა"</p>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm text-center">
+            <div class="w-12 h-12 rounded-full bg-elt-gold/20 flex items-center justify-center text-xl font-bold text-elt-gold mx-auto mb-3">2</div>
+            <h4 class="font-bold text-elt-900">კრიტიკა</h4>
+            <p class="text-sm mt-2">„შეაფასე ამ 5 იდეას — რა სუსტი წერტილი აქვს?"</p>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm text-center">
+            <div class="w-12 h-12 rounded-full bg-elt-gold/20 flex items-center justify-center text-xl font-bold text-elt-gold mx-auto mb-3">3</div>
+            <h4 class="font-bold text-elt-900">ევოლუცია</h4>
+            <p class="text-sm mt-2">„გააუმჯობესე #3 იდეა, კრიტიკის გათვალისწინებით"</p>
+          </div>
+        </div>
+        <div class="highlight-box mt-6">
+          <p><strong>პრო-ტიპი:</strong> სთხოვეთ AI-ს, მოირგოს კრიტიკოსის როლი: <em>„ახლა იმოქმედე როგორც სკეპტიკმა ინვესტორმა და მითხარი, რატომ არ ჩადებდი ფულს ამ კამპანიაში."</em></p>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 30: COMPETITOR ANALYSIS -->
+    <section id="topic-30" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🏆 კონკურენტების ანალიზი — Perplexity-ით</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p><strong>Perplexity AI</strong> არის იდეალური კონკურენტული ანალიზისთვის, რადგან ის რეალურ-დროში მოიძიებს ინტერნეტს.</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+მოიძიე ინტერნეტიდან: 
+რა მარკეტინგულ კამპანიებს აწარმოებენ ბათუმში 
+პრემიუმ უძრავი ქონების კომპანიები 2026 წელს?
+
+კონკრეტულად მაინტერესებს:
+1. ტოპ-5 პრემიუმ პროექტი ბათუმში (სახელი + დეველოპერი)
+2. მათი მთავარი მარკეტინგული არხი (სოც. მედია? ოფლაინ?)
+3. რა ტიპის კონტენტს იყენებენ?
+4. ექსკლუზიური შეთავაზებები ან loyalty programs?
+
+მომაწოდე შედარებითი ცხრილის სახით წყაროებით.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 31: TREND GENERATION -->
+    <section id="topic-31" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📈 ტრენდების გენერაცია — „მომავლის სცენარები"</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <p>AI-ს შეუძლია ტრენდების ანალიზი და სცენარების მოდელირება — ELT GROUP-ის სტრატეგიული გადაწყვეტილებებისთვის:</p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+იმოქმედე როგორც Real Estate ინდუსტრიის ანალიტიკოსმა.
+
+2026-2028 წლებში საქართველოს უძრავი ქონების ბაზარზე 
+რა ტრენდებია მოსალოდნელი?
+
+კატეგორიები:
+1. ტექნოლოგიური ტრენდები (PropTech, AI, VR)
+2. მყიდველის ქცევის ცვლილებები
+3. საერთაშორისო ინვესტიციის ტრენდები (GCC, ევროპა)
+4. მარკეტინგის ტრენდები
+
+თითო კატეგორიაში: 3 ტრენდი + როგორ გამოიყენებს ELT GROUP.</div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 32: GROUP BRAINSTORM -->
+    <section id="topic-32" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🤝 გუნდური Live Brainstorm</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="bg-elt-900 border border-elt-gold/30 rounded-xl p-8 relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 text-[12rem] opacity-5">🤝</div>
+          <div class="relative z-10">
+            <h4 class="text-elt-gold font-bold text-2xl mb-4" style="color:#b49b65!important">ფინალური აქტივობა (15 წუთი)</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                <h5 class="font-bold text-white mb-2" style="color:#fff!important">ნაბიჯი 1: (3 წთ)</h5>
+                <p class="text-sm text-gray-300" style="color:#D1D5DB!important">ყველა ინდივიდუალურად გენერირებს 5 იდეას AI-ით ELT GROUP-ის ნებისმიერი პროექტისთვის.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                <h5 class="font-bold text-white mb-2" style="color:#fff!important">ნაბიჯი 2: (5 წთ)</h5>
+                <p class="text-sm text-gray-300" style="color:#D1D5DB!important">ყველა უზიარებს თავის Top-1 იდეას ჩატში. გუნდი ხმას აძლევს 👍 ემოჯით.</p>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                <h5 class="font-bold text-white mb-2" style="color:#fff!important">ნაბიჯი 3: (7 წთ)</h5>
+                <p class="text-sm text-gray-300" style="color:#D1D5DB!important">Top-3 იდეა გადაიქცევა Action Brief-ად AI-ის დახმარებით.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 33: HOMEWORK -->
+    <section id="topic-33" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📝 საშინაო დავალება</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="key-points">
+          <h3>დავალება სესიებს შორის:</h3>
+          <ol>
+            <li><strong>SCAMPER ანალიზი:</strong> აირჩიეთ 1 ELT GROUP-ის პროექტი/სერვისი და შეავსეთ SCAMPER ცხრილი AI-ის დახმარებით. გამოარჩიეთ Top-3 იდეა.</li>
+            <li><strong>Buyer Persona:</strong> შექმენით 2 Buyer Persona თქვენი პროექტისთვის AI-ით.</li>
+            <li><strong>Action Brief:</strong> თქვენი Top-1 იდეისთვის შექმენით სრული Action Brief AI-ით.</li>
+          </ol>
+          <p class="mt-4"><strong>დროის ხარჯი:</strong> 30-40 წუთი | <strong>შედეგი:</strong> მზა სამოქმედო გეგმა მომდევნო კვირისთვის.</p>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 34: SUMMARY -->
+    <section id="topic-34" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>✅ სესია 2: შეჯამება</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h4 class="text-elt-gold font-bold mb-4" style="color:#b49b65!important">📚 რა ვისწავლეთ</h4>
+            <ul class="space-y-2 text-sm">
+              <li>✓ SCAMPER Framework — 7 ლინზა იდეაციისთვის</li>
+              <li>✓ Six Thinking Hats — მრავალპერსპექტივიანი ანალიზი</li>
+              <li>✓ What-If + Reverse Brainstorming</li>
+              <li>✓ მასობრივი იდეაცია (20→5 მეთოდი)</li>
+              <li>✓ Impact/Effort მატრიცა</li>
+              <li>✓ Value Proposition + Buyer Persona Generator</li>
+              <li>✓ Campaign Concept + Tagline Generator</li>
+              <li>✓ Action Brief Template</li>
+            </ul>
+          </div>
+          <div class="bg-elt-900 text-white rounded-xl p-6 shadow-sm">
+            <h4 class="text-elt-gold font-bold mb-4" style="color:#b49b65!important">📊 სტატისტიკა</h4>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center border-b border-white/10 pb-2"><span class="text-gray-300">ფრეიმვორკები:</span><span class="font-bold text-elt-gold" style="color:#b49b65!important">4</span></div>
+              <div class="flex justify-between items-center border-b border-white/10 pb-2"><span class="text-gray-300">Copy-Paste პრომპტები:</span><span class="font-bold text-elt-gold" style="color:#b49b65!important">12+</span></div>
+              <div class="flex justify-between items-center border-b border-white/10 pb-2"><span class="text-gray-300">ELT ქეისები:</span><span class="font-bold text-elt-gold" style="color:#b49b65!important">3</span></div>
+              <div class="flex justify-between items-center border-b border-white/10 pb-2"><span class="text-gray-300">ინტერაქტიული აქტივობები:</span><span class="font-bold text-elt-gold" style="color:#b49b65!important">4</span></div>
+              <div class="flex justify-between items-center"><span class="text-gray-300">დროის ეკონომია (იდეაცია):</span><span class="font-bold text-elt-gold text-xl" style="color:#b49b65!important">~90%</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- TOPIC 35: NEXT STEPS -->
+    <section id="topic-35" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔜 შემდეგი ნაბიჯები</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <div class="highlight-box">
+              <h3>სესია 3 Preview:</h3>
+              <h4 style="color:#b49b65;">გაყიდვები და კლიენტური კომუნიკაცია</h4>
+              <ul>
+                <li>ლიდის კვალიფიკაცია და CRM note-ის ფორმატი</li>
+                <li>შეხვედრის, ზარის და follow-up message შაბლონები</li>
+                <li>Objection Handling Playbook</li>
+                <li>შეთავაზების ტექსტები buyer persona-ების მიხედვით</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex flex-col gap-3">
+            <a href="index.html" class="block bg-elt-900 text-white text-center py-4 rounded-lg hover:bg-elt-800 transition-colors font-bold">← პროგრამაში დაბრუნება</a>
+            <a href="lecture-1-slides.html" class="block bg-white border border-gray-200 text-elt-900 text-center py-4 rounded-lg hover:bg-gray-50 transition-colors font-bold">📖 სესია 1: AI საფუძვლები</a>
+            <a href="lecture-3-slides.html" class="block bg-elt-gold text-elt-900 text-center py-4 rounded-lg hover:bg-elt-light transition-colors font-bold">სესია 3: გაყიდვები →</a>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('overlay');
+    const mc = document.getElementById('menuIcon');
+    const cc = document.getElementById('closeIcon');
+    const mn = document.getElementById('mainContent');
+    const isOpen = !sb.classList.contains('-translate-x-full');
+    if (isOpen) {
+      sb.classList.add('-translate-x-full');
+      ov.classList.add('hidden');
+      mc.classList.remove('hidden'); cc.classList.add('hidden');
+      if (window.innerWidth >= 1024) mn.style.marginLeft = '0';
+    } else {
+      sb.classList.remove('-translate-x-full');
+      if (window.innerWidth < 1024) { ov.classList.remove('hidden'); }
+      else { mn.style.marginLeft = '18rem'; }
+      mc.classList.add('hidden'); cc.classList.remove('hidden');
+    }
+  }
+  if (window.innerWidth >= 1024) { toggleSidebar(); }
+
+  function copyCode(btn) {
+    const block = btn.parentElement;
+    const text = block.innerText.replace('📋 Copy', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+    });
+  }
+
+  // Active sidebar nav tracking
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  document.querySelectorAll('section[id^="topic-"]').forEach(section => {
+    observer.observe(section);
+  });
+</script>
+</body>
+</html>

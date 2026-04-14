@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELT GROUP AI ტრენინგი — სესია 1: AI საფუძვლები და უსაფრთხო გამოყენება</title>
+  <meta name="description" content="სესია 1: Generative AI-ის საფუძვლები, ჰალუცინაციები, მონაცემთა უსაფრთხოება, ეკოსისტემა, პრომპტ-ინჟინერია, CREATE ფორმულა და ELT GROUP-ის 10-პრომპტიანი ბიბლიოთეკა.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            elt: { 900: '#0c1221', 800: '#1a2332', 700: '#253044', gold: '#b49b65', light: '#d4c49a' }
+          },
+          fontFamily: {
+            sans: ['FiraGO', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { color: #1a1a1a; }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .nav-link.active { background: rgba(180,155,101,0.15); border-left: 3px solid #b49b65; color: #b49b65; }
+    .nav-link:hover { background: rgba(255,255,255,0.05); }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    .prompt-container code { font-family: 'Courier New', monospace; }
+    .prose { font-size: 1.05rem; }
+    .prose p { margin-bottom: 1rem; line-height: 1.8; color: #1a1a1a; }
+    .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+    .prose li { margin-bottom: 0.5rem; color: #1a1a1a; line-height: 1.7; }
+    .prose h3 { font-size: 1.5rem; font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    .prose h3:not([class*="text-"]) { color: #0c1221; }
+    .prose h4 { font-size: 1.25rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    .prose h4:not([class*="text-"]) { color: #0c1221; }
+    .prose strong { color: #0c1221; }
+    .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+    .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+    .highlight-box, .warning-box, .key-points {
+      background: #FBF8F1; border: none; border-radius: 8px;
+      padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #b49b65;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .highlight-box p, .warning-box p, .key-points p,
+    .highlight-box li, .warning-box li, .key-points li { color: #1a1a1a; }
+    .warning-box { border-left-color: #0c1221; background: #F5F3EE; }
+    .code-block {
+      position: relative; font-family: 'Courier New', Courier, monospace;
+      background: #0c1221; color: #F0F0F0; padding: 1.5rem;
+      border-radius: 6px; font-size: 0.95rem; margin: 1.5rem 0; white-space: pre-wrap;
+      box-shadow: 0 2px 8px rgba(12,18,33,0.15);
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      color: #A0A0A0; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+      font-size: 0.75rem; font-weight: 600; transition: all 0.2s; text-transform: uppercase;
+    }
+    .copy-btn:hover { background: #b49b65; color: #0c1221; border-color: #b49b65; }
+    /* Alternating section tints for visual separation */
+    section[id^="topic-"]:nth-child(even) { background: #FAFAF7; border-radius: 8px; margin-left: -1rem; margin-right: -1rem; padding-left: 1rem; padding-right: 1rem; }
+    @media (max-width: 768px) {
+      .two-column, .three-column { grid-template-columns: 1fr; gap: 1.5rem; }
+      section[id^="topic-"]:nth-child(even) { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-elt-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-elt-800 transition-colors">
+  <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-elt-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+  <div class="px-5 py-6 border-b border-white/10">
+    <h1 class="text-xl font-serif font-bold text-elt-gold">ELT GROUP</h1>
+    <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 1: AI საფუძვლები</p>
+    <p class="text-gray-400 text-xs mt-1">150 წუთი | 40 სექცია</p>
+  </div>
+  <nav class="py-3">
+    <div class="px-5 pt-4 pb-2 text-[11px] uppercase tracking-wider text-elt-gold font-bold">ბლოკი 1: თეორია</div>
+    <a href="#topic-1" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🎯 აჯენდა</span></a>
+    <a href="#topic-2" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🤔 რა არის Generative AI?</span></a>
+    <a href="#topic-3" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🕰 AI-ის ევოლუცია</span></a>
+    <a href="#topic-4" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>⚙️ როგორ მუშაობს LLM?</span></a>
+    <a href="#topic-5" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🧠 ალბათობა და კონტექსტი</span></a>
+    <a href="#topic-6" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>⚠️ ჰალუცინაციები</span></a>
+    <a href="#topic-7" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔒 მონაცემთა უსაფრთხოება</span></a>
+    <a href="#topic-8" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🛠 ChatGPT (GPT-5.4)</span></a>
+    <a href="#topic-9" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🛠 Claude 4.6</span></a>
+    <a href="#topic-10" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🛠 Gemini 3.1</span></a>
+    <a href="#topic-11" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🛠 Perplexity AI</span></a>
+    <a href="#topic-12" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📊 შედარებითი ცხრილი</span></a>
+
+    <div class="px-5 pt-5 pb-2 text-[11px] uppercase tracking-wider text-elt-gold font-bold">ბლოკი 2: პრომპტ-ინჟინერია</div>
+    <a href="#topic-13" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>💬 რა არის პრომპტი?</span></a>
+    <a href="#topic-14" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>❌ ცუდი vs ✅ კარგი</span></a>
+    <a href="#topic-15" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔥 Roast My Prompt</span></a>
+    <a href="#topic-16" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📝 CREATE ფორმულა</span></a>
+    <a href="#topic-17" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>C — Context</span></a>
+    <a href="#topic-18" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>R — Role</span></a>
+    <a href="#topic-19" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>E — Exact Task</span></a>
+    <a href="#topic-20" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>A — Audience & Tone</span></a>
+    <a href="#topic-21" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>T — Template/Format</span></a>
+    <a href="#topic-22" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>E — Examples</span></a>
+    <a href="#topic-23" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🚀 Chain of Thought</span></a>
+    <a href="#topic-24" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔄 იტერაციული პრომპტირება</span></a>
+    <a href="#topic-25" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📄 Grounded პრომპტირება</span></a>
+    <a href="#topic-26" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>💡 AI ბრეინშტორმინგი</span></a>
+    <a href="#topic-27" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🏋️ სავარჯიშო: კაუჭები</span></a>
+
+    <div class="px-5 pt-5 pb-2 text-[11px] uppercase tracking-wider text-elt-gold font-bold">10 პრომპტის ბიბლიოთეკა</div>
+    <a href="#topic-28" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🏗 ბიბლიოთეკის შესავალი</span></a>
+    <a href="#topic-29" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#1 კლიენტის პასუხი</span></a>
+    <a href="#topic-30" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#2 შეხვედრის ჩანიშვნა</span></a>
+    <a href="#topic-31" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#3 საჩივრის მართვა</span></a>
+    <a href="#topic-32" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#4 სოც. მედიის პოსტი</span></a>
+    <a href="#topic-33" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#5 დოკუმენტის რეზიუმე</span></a>
+    <a href="#topic-34" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#6 Meeting Minutes</span></a>
+    <a href="#topic-35" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#7 ტექსტის გაპრემიუმება</span></a>
+    <a href="#topic-36" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#8 თარგმანი</span></a>
+    <a href="#topic-37" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#9 პრიორიტიზაცია</span></a>
+    <a href="#topic-38" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>#10 კონკურენტების ანალიზი</span></a>
+    <a href="#topic-39" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>📋 Library მართვა</span></a>
+    <a href="#topic-40" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>✅ შეჯამება</span></a>
+    <a href="#topic-41" class="nav-link flex items-center px-5 py-2 text-sm text-gray-300 transition-all border-l-[3px] border-transparent"><span>🔜 შემდეგი ნაბიჯები</span></a>
+
+    <div class="mt-8 px-5">
+      <a href="index.html" class="block text-center bg-white/10 hover:bg-white/20 text-white text-sm py-2 rounded transition-colors">← პროგრამაში დაბრუნება</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+  <header class="bg-elt-900 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-elt-gold rounded-full blur-[100px] opacity-10"></div>
+    <div class="max-w-7xl relative z-10">
+      <h1 class="text-2xl md:text-4xl font-serif font-bold leading-tight mb-4">სესია 1: AI საფუძვლები <span class="text-elt-light">& პრომპტ-ინჟინერია</span></h1>
+      <p class="text-gray-300 text-lg max-w-4xl leading-relaxed mb-6">ხელოვნური ინტელექტის მუშაობის ლოგიკის გააზრება, მონაცემთა უსაფრთხოების სტანდარტების დადგენა და ეფექტური კომუნიკაციის (პრომპტების) შექმნა.</p>
+      <div class="flex flex-wrap gap-4">
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">⏱ 150 წუთი</span>
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">👤 გიორგი ბასილაია</span>
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">📹 ონლაინ (თეორია + პრაქტიკა)</span>
+        <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-white">📊 40 სექცია</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TOPIC 1: AGENDA -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section id="topic-1" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🎯 დღევანდელი სესიის აჯენდა</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+              <div class="p-6 bg-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-amber-50 rounded-bl-full -z-0"></div>
+                <div class="relative z-10">
+                  <div class="flex items-center gap-2 text-elt-gold font-bold text-sm mb-1 uppercase tracking-wider">⏱ 00:00 – 01:05</div>
+                  <h3 class="text-xl font-bold text-elt-900 mb-4 border-b border-gray-100 pb-2">ბლოკი 1: თეორია და საფუძვლები</h3>
+                  <ul class="text-sm text-gray-800 space-y-2">
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>რა არის AI:</strong> ლოგიკა, ალბათობები, ჰალუცინაციები.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>უსაფრთხოება:</strong> ELT GROUP-ის მონაცემების დაცვა.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>ეკოსისტემა:</strong> ChatGPT, Claude, Gemini, Perplexity.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="bg-gray-50 flex flex-col relative overflow-hidden">
+                <div class="bg-elt-gold/10 border-b border-elt-gold/20 px-6 py-3 flex items-center justify-between">
+                  <span class="font-bold text-elt-900 text-sm">☕ 10-წუთიანი შესვენება</span>
+                  <span class="text-elt-gold font-bold text-xs bg-white px-2 py-1 rounded shadow-sm">01:05 – 01:15</span>
+                </div>
+                <div class="p-6 flex-1 bg-white">
+                  <div class="relative z-10">
+                    <div class="flex items-center gap-2 text-elt-gold font-bold text-sm mb-1 uppercase tracking-wider">⏱ 01:15 – 02:30</div>
+                    <h3 class="text-xl font-bold text-elt-900 mb-4 border-b border-gray-100 pb-2">ბლოკი 2: პრომპტ-ინჟინერია</h3>
+                    <ul class="text-sm text-gray-800 space-y-2">
+                      <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>CREATE ფორმულა:</strong> კონტექსტი, როლი, ფორმატი.</li>
+                      <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>Advanced ტექნიკები:</strong> Chain of Thought, Grounding, იტერაცია.</li>
+                      <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>ELT ბიბლიოთეკა:</strong> 10 საბაზისო პრომპტი + პრაქტიკა.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="p-6 bg-white relative overflow-hidden">
+                <div class="relative z-10">
+                  <div class="flex items-center gap-2 text-elt-gold font-bold text-sm mb-1 uppercase tracking-wider">🎯 სესიის შედეგი</div>
+                  <h3 class="text-xl font-bold text-elt-900 mb-4 border-b border-gray-100 pb-2">რას გავიტანთ</h3>
+                  <ul class="text-sm text-gray-800 space-y-2">
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>10 პრომპტი:</strong> ELT GROUP-ის Prompt Library.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>უსაფრთხოების checklist:</strong> რა აიტვირთოს, რა არა.</li>
+                    <li class="flex items-start gap-2"><span class="text-elt-gold font-bold shrink-0">•</span> <strong>შეჯამება:</strong> ხელსაწყოების არჩევის ლოგიკა.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 bg-elt-900 border border-elt-gold/30 rounded-xl overflow-hidden shadow-lg relative">
+            <div class="absolute -right-6 -top-6 text-[8rem] opacity-5">🧊</div>
+            <div class="p-6 relative z-10 flex flex-col md:flex-row gap-6 items-center">
+              <div class="w-16 h-16 rounded-full bg-elt-gold/20 flex items-center justify-center text-3xl shrink-0">🧊</div>
+              <div class="text-white">
+                <h4 class="text-elt-gold font-bold text-xl mb-2" style="color:#b49b65!important">Icebreaker: „ყველაზე მოსაწყენი რუტინა"</h4>
+                <p class="text-sm text-gray-300 mb-3" style="color:#D1D5DB!important">სესიის დაწყებამდე მოვემზადოთ! გთხოვთ, <strong style="color:#fff!important">ჩატში (💬)</strong> დაწეროთ ერთი რამ, რაც თქვენს ყოველდღიურ საქმეში ყველაზე მეტ დროს ან ენერგიას გართმევთ (მაგალითად: <em style="color:#D1D5DB!important">„ინვესტორებისთვის შეთავაზებების მომზადება", „სოციალური მედიის პოსტების წერა", „კლიენტის კითხვებზე პასუხი"</em>).</p>
+                <p class="text-xs text-gray-400 italic" style="color:#9CA3AF!important">ჩვენ შევეცდებით დღევანდელ სესიაზე ზუსტად ამ პრობლემების გადაჭრაზე გავაკეთოთ აქცენტი.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 2 -->
+    <section id="topic-2" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🤔 რა არის Generative AI?</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p><strong>გენერაციული ხელოვნური ინტელექტი (Generative AI)</strong> არ არის უბრალოდ მორიგი ტექნოლოგიური ტრენდი — ის არის ფუნდამენტური ცვლილება იმაში, თუ როგორ ვასრულებთ კოგნიტურ (გონებრივ) სამუშაოს. განსხვავებით ტრადიციული პროგრამებისგან, Generative AI არის სისტემა, რომელსაც შეუძლია დამოუკიდებლად შექმნას ახალი, ორიგინალური კონტენტი — ტექსტი, სურათი, აუდიო, ვიდეო ან კოდი — ადამიანის მიერ მიწოდებული ბუნებრივი ენის ინსტრუქციის (Prompt) საფუძველზე.</p>
+          <p class="mt-4">უძრავი ქონების სექტორში ეს ნიშნავს, რომ თქვენ გყავთ დაუღალავი ასისტენტი, რომელსაც შეუძლია წამებში შეადგინოს საინვესტიციო შეთავაზება ესპანური კვარტალისთვის, გააანალიზოს ბათუმის ბაზრის ტენდენციები ან მოამზადოს პასუხი კრიტიკულ ელფოსტაზე Wyndham-ის პარტნიორისთვის.</p>
+          <div class="highlight-box">
+            <h3>რით განსხვავდება ის Google-ისგან?</h3>
+            <ul>
+              <li><strong>Google:</strong> ეძებს და გაჩვენებთ იმას, რაც <em>უკვე არსებობს</em> ინტერნეტში. შედეგი: 10 ბმული, რომლებიც თქვენ თავად უნდა წაიკითხოთ.</li>
+              <li><strong>Generative AI:</strong> აანალიზებს არსებულ ცოდნას და <em>ქმნის სრულიად ახალ პასუხს</em> ზუსტად თქვენი საჭიროების მიხედვით. შედეგი: მზა ტექსტი, ცხრილი ან ანალიზი.</li>
+            </ul>
+          </div>
+          <div class="warning-box">
+            <h3>გავიგოთ სწორად:</h3>
+            <p>AI არ არის „ყოვლისშემძლე". ის საუკეთესო ინსტრუმენტია <strong>კოგნიტური ამოცანებისთვის</strong> — ტექსტის წერა, ანალიზი, ბრეინშტორმინგი, თარგმანი. ის <strong>არ ცვლის</strong> ადამიანის გამოცდილებას, გადაწყვეტილების მიღებას და კრეატიულ ხედვას. AI არის თქვენი თანაშემწე, არა თქვენი ჩანაცვლება.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 3 -->
+    <section id="topic-3" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🕰 AI-ის განვითარების მოკლე ისტორია</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="three-column">
+            <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+              <div class="text-2xl mb-2">🤖</div>
+              <h3 style="font-size:1.2rem;">1. Rule-Based AI<br><span class="text-sm font-normal text-gray-500">1990–2010</span></h3>
+              <p class="text-sm">სისტემები მუშაობდნენ „If-Then" ლოგიკით. პროგრამისტს ხელით უწევდა ყველა შესაძლო სცენარის გაწერა. მაგალითი: ბანკის ავტომატური ტელეფონის მენიუ.</p>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+              <div class="text-2xl mb-2">📊</div>
+              <h3 style="font-size:1.2rem;">2. Machine Learning<br><span class="text-sm font-normal text-gray-500">2010–2020</span></h3>
+              <p class="text-sm">ალგორითმებმა ისწავლეს მონაცემებში Patterns-ის დანახვა. Netflix რეკომენდაციები, სპამის ფილტრები, სახის ამოცნობა — ყველა ML-ის შედეგია.</p>
+            </div>
+            <div class="bg-elt-900 text-white border border-elt-gold/30 rounded-lg p-5 shadow-sm">
+              <div class="text-2xl mb-2">🧠</div>
+              <h3 style="font-size:1.2rem; color:#b49b65;">3. Generative AI<br><span class="text-sm font-normal text-gray-400">2020–დღემდე</span></h3>
+              <p class="text-sm text-gray-300">Transformer არქიტექტურამ განაპირობა მოდელების გაჩენა (GPT, Claude), რომლებსაც ესმით ადამიანური ენა და თავად <strong>ქმნიან</strong> კონტენტს. ეს არის ფუნდამენტური ნახტომი.</p>
+            </div>
+          </div>
+          <div class="highlight-box mt-6">
+            <h3>რატომ არის 2024-2026 გარდამტეხი?</h3>
+            <p>2024 წელს AI მოდელებმა გადააჭარბეს ადამიანის შესრულებას ბევრ ბენჩმარკზე. 2026 წელს GPT-5.4, Claude 4.6, Gemini 3.1 უკვე შეძლებენ რთული, მრავალეტაპიანი ამოცანების დამოუკიდებლად შესრულებას. ეს არის ის მომენტი, როდესაც AI-ს <strong>არ-გამოყენება</strong> ხდება კონკურენტული ნაკლი.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 4 -->
+    <section id="topic-4" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>⚙️ როგორ მუშაობს AI (LLMs)?</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>მთავარი საიდუმლო: <strong>AI-ს არ ესმის სიტყვები ისე, როგორც ჩვენ, მას ესმის რიცხვები და მათემატიკური ალბათობები (Probabilities).</strong></p>
+          <p class="mt-4">წარმოიდგინეთ, რომ AI არის ულტრა-ჭკვიანი პროგნოზირების მანქანა. როდესაც თქვენ აწვდით მას ტექსტს, ის ტექსტს გარდაქმნის ვექტორებად მრავალგანზომილებიან სივრცეში. სიტყვები, რომლებსაც მსგავსი მნიშვნელობა აქვთ (მაგალითად „ბინა" და „აპარტამენტი"), ამ სივრცეში ერთმანეთთან ახლოს არიან.</p>
+          <div class="my-8">
+            <h4 class="font-bold text-elt-900 mb-4 text-center">როგორ ამუშავებს AI ტექსტს</h4>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+              <div class="bg-white border border-gray-200 shadow-sm p-4 rounded-lg w-full md:w-48">
+                <div class="text-2xl mb-2">📝</div>
+                <div class="font-bold text-sm">1. ტექსტის შეყვანა</div>
+                <div class="text-xs text-gray-500 mt-1">„ბინა ბათუმში..."</div>
+              </div>
+              <div class="text-elt-gold rotate-90 md:rotate-0">➔</div>
+              <div class="bg-white border border-gray-200 shadow-sm p-4 rounded-lg w-full md:w-48">
+                <div class="text-2xl mb-2">🧩</div>
+                <div class="font-bold text-sm">2. ტოკენიზაცია</div>
+                <div class="text-xs text-gray-500 mt-1">სიტყვების დაშლა ნაწილებად</div>
+              </div>
+              <div class="text-elt-gold rotate-90 md:rotate-0">➔</div>
+              <div class="bg-elt-900 text-white shadow-sm p-4 rounded-lg w-full md:w-48">
+                <div class="text-2xl mb-2">🧮</div>
+                <div class="font-bold text-sm text-elt-gold">3. ვექტორიზაცია</div>
+                <div class="text-xs text-gray-300 mt-1">გარდაქმნა რიცხვებად</div>
+              </div>
+              <div class="text-elt-gold rotate-90 md:rotate-0">➔</div>
+              <div class="bg-elt-gold text-elt-900 shadow-sm p-4 rounded-lg w-full md:w-48">
+                <div class="text-2xl mb-2">🎯</div>
+                <div class="font-bold text-sm">4. პროგნოზი</div>
+                <div class="text-xs text-elt-900/70 mt-1">ალბათური შემდეგი სიტყვა</div>
+              </div>
+            </div>
+          </div>
+          <div class="highlight-box">
+            <h3>რა არის ტოკენი (Token)?</h3>
+            <p>AI ტექსტს შლის მცირე ნაწილებად — ტოკენებად. 1 ტოკენი ≈ 4 ასო ინგლისურად. <strong>ქართული ენა უფრო მეტ ტოკენად იშლება</strong> (ხშირად 1 ქართული სიტყვა = 3-5 ტოკენი), ამიტომ ქართული ტექსტის დამუშავება უფრო „ძვირია".</p>
+            <ul>
+              <li><strong>პრაქტიკული დასკვნა:</strong> მისცეთ AI-ს საკმარისი კონტექსტი, რათა ზუსტი პასუხი გამოთვალოს. მინიმუმ 3-4 წინადადება კონტექსტისთვის.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 5 -->
+    <section id="topic-5" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🧠 ალბათობის თამაში: კონტექსტის ძალა</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>AI ყოველთვის ირჩევს <strong>ყველაზე სავარაუდო შემდეგ სიტყვას</strong>. კონტექსტი არის ის, რაც ალბათობებს „სწორი" მიმართულებით წყობს.</p>
+          <div class="two-column">
+            <div>
+              <h3>❌ კონტექსტის გარეშე</h3>
+              <div class="warning-box">
+                <p><em>„ბათუმში შენდება..."</em></p>
+                <p class="mt-2">ალბათობები:<br>
+                  - სასტუმრო (40%)<br>
+                  - სახლი (30%)<br>
+                  - გზა (10%)<br>
+                  - ... ნებისმიერი</p>
+                <p class="text-xs text-red-600 mt-2 italic">შედეგი: ზოგადი, გამოუსადეგარი ტექსტი</p>
+              </div>
+            </div>
+            <div>
+              <h3>✅ ELT GROUP-ის კონტექსტით</h3>
+              <div class="highlight-box">
+                <p><em>„ELT GROUP ბათუმში აშენებს ახალ..."</em></p>
+                <p class="mt-2">ალბათობები:<br>
+                  - საცხოვრებელ კომპლექსს (65%)<br>
+                  - აპარტოტელს (25%)<br>
+                  - სასტუმროს (8%)</p>
+                <p class="text-xs text-green-600 mt-2 italic">შედეგი: ზუსტი, რელევანტური პასუხი</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-elt-900 text-white rounded-xl p-6 mt-6 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 text-[6rem] opacity-5">💡</div>
+            <h4 class="text-elt-gold font-bold mb-2" style="color:#b49b65!important">📌 მთავარი წესი</h4>
+            <p class="text-gray-300" style="color:#D1D5DB!important">რაც მეტ კონტექსტს მიაწვდით AI-ს (თქვენი კომპანია, პროექტი, მიზანი, აუდიტორია), მით უფრო ზუსტ და გამოსადეგ პასუხს მიიღებთ. <strong style="color:#fff">Garbage In = Garbage Out.</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 6 -->
+    <section id="topic-6" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>⚠️ რა არის „ჰალუცინაცია"?</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>AI ტექსტს ალბათობით აგენერირებს. ზოგჯერ მისი მათემატიკური პროგნოზი სცდება რეალობას — ქმნის ტექსტს, რომელიც <strong>დამაჯერებლად ჟღერს, მაგრამ ფაქტობრივად მცდარია</strong>. ამ ფენომენს „ჰალუცინაცია" (Hallucination) ეწოდება.</p>
+          <p class="mt-4">მაგალითად, თუ AI-ს სთხოვთ გააანალიზოს Marina Club-ის 2025 წლის დახურული ფინანსური რეპორტი (რომელიც მას არ მიუწოდეთ), ის დიდი ალბათობით <strong>შეთხზავს</strong> რეალისტური ჟღერადობის რიცხვებს.</p>
+          <div class="bg-white border border-gray-200 rounded-lg overflow-hidden my-6 shadow-sm">
+            <div class="bg-elt-900 px-4 py-3 border-b border-elt-gold/30">
+              <h4 class="font-bold text-white m-0">ჰალუცინაციების მართვის მატრიცა</h4>
+            </div>
+            <table class="w-full text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left border-b font-bold text-gray-700">როდის ხდება</th>
+                  <th class="px-4 py-3 text-left border-b font-bold text-gray-700">მაგალითი ELT GROUP-ში</th>
+                  <th class="px-4 py-3 text-left border-b font-bold text-gray-700">პრევენცია</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr>
+                  <td class="px-4 py-3 text-red-600 bg-red-50/50 font-medium">კონტექსტის ნაკლებობა</td>
+                  <td class="px-4 py-3">„დაწერე ტექსტი Status House-ზე" (არც ერთი დეტალი)</td>
+                  <td class="px-4 py-3 text-green-700 bg-green-50/50"><strong>CREATE ფორმულის</strong> გამოყენება</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-red-600 bg-red-50/50 font-medium">შიდა მონაცემების მოთხოვნა</td>
+                  <td class="px-4 py-3">„რამდენი ბინა გაიყიდა Marina Club-ში?"</td>
+                  <td class="px-4 py-3 text-green-700 bg-green-50/50">მონაცემთა <strong>ფაილის ატვირთვა</strong></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-red-600 bg-red-50/50 font-medium">უახლესი ფაქტების ძიება</td>
+                  <td class="px-4 py-3">„რა არის ბათუმის ბაზრის ბოლო ტრენდი?"</td>
+                  <td class="px-4 py-3 text-green-700 bg-green-50/50"><strong>Perplexity AI</strong> რეალური ძიებისთვის</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-red-600 bg-red-50/50 font-medium">რიცხვითი გათვლები</td>
+                  <td class="px-4 py-3">„გამოთვალე ROI 7%-იანი სარგებლით 5 წლის პერიოდზე"</td>
+                  <td class="px-4 py-3 text-green-700 bg-green-50/50"><strong>ადამიანური გადამოწმება</strong> ყოველთვის!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-5 mt-4">
+            <p class="font-bold text-red-900">🔴 წესი #1:</p>
+            <p class="text-red-800 text-sm">უძრავი ქონების ფასები, იურიდიული დეტალები და ფინანსური გათვლები <strong>ყოველთვის</strong> უნდა გადამოწმდეს ადამიანის მიერ! AI-ს არასოდეს ენდოთ ფაქტებში დამოუკიდებლად.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 7 -->
+    <section id="topic-7" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔒 მონაცემთა უსაფრთხოება: ELT GROUP-ის წესები</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>ღია AI სისტემები (უფასო ChatGPT, Claude) შეიძლება იყენებდნენ თქვენს შეყვანილ ინფორმაციას მოდელის გასაუმჯობესებლად. <strong>Plus/Pro გეგმებზე</strong> ტრენინგისთვის მონაცემების გამოყენება ნაგულისხმევად გამორთულია, მაგრამ ფრთხილად ყოფნა მაინც აუცილებელია.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-5 flex gap-4 items-start shadow-sm">
+              <div class="text-3xl mt-1">🪪</div>
+              <div>
+                <h4 class="font-bold text-red-900 text-sm uppercase tracking-wider mb-1">🚫 პერსონალური მონაცემები</h4>
+                <p class="text-xs text-red-700 leading-relaxed">კლიენტების/ინვესტორების სახელები, პირადი ნომრები, ტელეფონი, მისამართი. GDPR-ის დარღვევის რისკი!</p>
+              </div>
+            </div>
+            <div class="bg-red-50 border border-red-200 rounded-lg p-5 flex gap-4 items-start shadow-sm">
+              <div class="text-3xl mt-1">💰</div>
+              <div>
+                <h4 class="font-bold text-red-900 text-sm uppercase tracking-wider mb-1">🚫 კომპანიის ფინანსები</h4>
+                <p class="text-xs text-red-700 leading-relaxed">ხელშეკრულების ზუსტი ფასები, მარჟები, საბანკო ამონაწერები, საიდუმლო ტრანზაქციები.</p>
+              </div>
+            </div>
+            <div class="bg-red-50 border border-red-200 rounded-lg p-5 flex gap-4 items-start shadow-sm">
+              <div class="text-3xl mt-1">📁</div>
+              <div>
+                <h4 class="font-bold text-red-900 text-sm uppercase tracking-wider mb-1">🚫 სტრატეგიული გეგმები (NDA)</h4>
+                <p class="text-xs text-red-700 leading-relaxed">გამოუცხადებელი პროექტების დეტალები, Barceló/Wyndham კონტრაქტების დეტალები, პარტნიორული შეთანხმებები.</p>
+              </div>
+            </div>
+            <div class="bg-red-50 border border-red-200 rounded-lg p-5 flex gap-4 items-start shadow-sm">
+              <div class="text-3xl mt-1">🔑</div>
+              <div>
+                <h4 class="font-bold text-red-900 text-sm uppercase tracking-wider mb-1">🚫 პაროლები და წვდომები</h4>
+                <p class="text-xs text-red-700 leading-relaxed">სერვერის კოდები, API გასაღებები, CRM პაროლები, შიდა სისტემების წვდომის მონაცემები.</p>
+              </div>
+            </div>
+          </div>
+          <div class="two-column mt-8">
+            <div>
+              <h3>✅ ანონიმიზაცია (Data Masking)</h3>
+              <p>რეალური მონაცემები ჩაანაცვლეთ ცვლადებით:</p>
+              <ul>
+                <li>„ინვესტორი John Smith, ტელ: 599-XX-XX-XX" → <strong>„ინვესტორი X, სტატუსი: დაინტერესებულია"</strong></li>
+                <li>„ბინის ფასია 85,000$" → <strong>„ბინის ფასია [Price]"</strong></li>
+              </ul>
+            </div>
+            <div>
+              <h3>✅ პროპორციები და პრინციპები</h3>
+              <p>ზუსტი ფინანსების ნაცვლად გამოიყენეთ პროცენტები:</p>
+              <ul>
+                <li>„მოგება გაიზარდა 250,000 ლარით" → <strong>„მოგება გაიზარდა 15%-ით"</strong></li>
+                <li>„პროექტის ბიუჯეტი 12M$" → <strong>„საშუალო ზომის პროექტი"</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 8: ChatGPT -->
+    <section id="topic-8" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🛠 ეკოსისტემა: ChatGPT (GPT-5.4)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="two-column">
+            <div>
+              <h3>ChatGPT (OpenAI) — 2026 წლის სტანდარტი</h3>
+              <p><strong>GPT-5.4</strong> (2026 წლის მარტის რელიზი) — ინდუსტრიის ლიდერი აგენტურ და ანალიტიკურ ამოცანებში.</p>
+              <ul class="mt-4">
+                <li><strong>საუკეთესოა:</strong> ლოგიკური ამოცანები, Data Analysis, სტრატეგიული ბრეინშტორმინგი, კოდი.</li>
+                <li><strong>უპირატესობები:</strong> მულტიმოდალურობა (სურათები, კოდი, ფაილები), Custom GPT-ები.</li>
+                <li><strong>ფასი:</strong> უფასო (ლიმიტით) / Plus $20/თვე / Pro $200/თვე.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="highlight-box">
+                <h4 style="color:#b49b65;">ELT GROUP Use Case:</h4>
+                <p>საინვესტიციო შეთავაზებების ანალიტიკა. Excel-ის ფინანსური მოდელების (ROI, IRR) გენერაცია. <strong>Custom GPT</strong>, რომელიც იცის ELT GROUP-ის სტანდარტები, პროექტების სპეციფიკა და brand voice.</p>
+              </div>
+              <div class="warning-box mt-4">
+                <h4>როდის არ ვიყენებთ:</h4>
+                <p class="text-sm">კითხვებზე, რომლებიც რეალური ფაქტების დადასტურებას საჭიროებს (ბაზრის ფასები, კანონმდებლობა). ამისთვის Perplexity AI.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 9: Claude -->
+    <section id="topic-9" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🛠 ეკოსისტემა: Claude 4.6</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="two-column">
+            <div>
+              <h3>Claude (Anthropic) — უსაფრთხოება და სიღრმე</h3>
+              <p>Claude 4.6 — ბაზარზე ყველაზე სანდო მოდელი. <strong>2 მილიონზე მეტი ტოკენის</strong> ერთდროული ანალიზი — 20+ იურიდიული დოკუმენტი წამებში.</p>
+              <ul class="mt-4">
+                <li><strong>საუკეთესოა:</strong> Copywriting, გრძელი ტექსტების რედაქტირება, იურიდიული ანალიზი, ბრენდის ტონი.</li>
+                <li><strong>უპირატესობები:</strong> ყველაზე „ადამიანური" ტექსტი, Claude Projects, ვრცელი კონტექსტის ზომა.</li>
+                <li><strong>ფასი:</strong> უფასო (ლიმიტით) / Pro $20/თვე.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="highlight-box">
+                <h4 style="color:#b49b65;">ELT GROUP Use Case:</h4>
+                <p>პრემიუმ გაყიდვების ელფოსტების გენერაცია. ესპანური კვარტალის ბროშურების სტილისტური დახვეწა. იურიდიული ხელშეკრულებებიდან Red Flags-ის ამოღება. <strong>Claude Projects</strong> — ELT-ის სრული FAQ ცოდნის ბაზით.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 10: Gemini -->
+    <section id="topic-10" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🛠 ეკოსისტემა: Gemini 3.1</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="two-column">
+            <div>
+              <h3>Gemini (Google) — ეკოსისტემის ლიდერი</h3>
+              <p>Gemini 3.1 გამოირჩევა სისწრაფით და Google-ის ეკოსისტემასთან ინტეგრაციით. Gemini Gems — პერსონალიზებული ასისტენტები Google Workspace-ში.</p>
+              <ul class="mt-4">
+                <li><strong>საუკეთესოა:</strong> Google Workspace (Docs, Sheets, Drive), სწრაფი ინტერნეტ ძიება.</li>
+                <li><strong>უპირატესობები:</strong> Flash-Lite ვერსია — იდეალური უამრავი მცირე ამოცანისთვის, უფასო და სწრაფი.</li>
+                <li><strong>ფასი:</strong> უფასო / Google One AI Premium $20/თვე.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="highlight-box">
+                <h4 style="color:#b49b65;">ELT GROUP Use Case:</h4>
+                <p>სწრაფი დრაფტები პირდაპირ Google Docs-ში. კონკურენტების შეთავაზებების ანალიზი Google Sheets-ში. Drive-ზე არსებული დოკუმენტების ავტომატური სტრუქტურირება. <strong>Gemini Gems</strong> — ELT-ის შიდა ასისტენტი.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 11: Perplexity -->
+    <section id="topic-11" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🛠 ეკოსისტემა: Perplexity AI</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="two-column">
+            <div>
+              <h3>Perplexity — კვლევის ოქროს სტანდარტი</h3>
+              <p>2026 წელს Perplexity AI არის „აღსრულების ძრავი". ის ერთადერთი სისტემაა, რომელსაც შეგიძლიათ ენდოთ ფაქტების მოძიებაში — <strong>ყველა პასუხს თან ახლავს რეალური, დაწკაპუნებადი წყარო</strong>.</p>
+              <ul class="mt-4">
+                <li><strong>საუკეთესოა:</strong> ღრმა კვლევა, ფაქტ-ჩექინგი, აკადემიური და ფინანსური ძიება.</li>
+                <li><strong>უპირატესობები:</strong> რეალურ დროში ინტერნეტ ძიება + AI ანალიზი ერთ პასუხში.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="highlight-box">
+                <h4 style="color:#b49b65;">ELT GROUP Use Case:</h4>
+                <p>ბათუმის უძრავი ქონების ბაზრის უახლესი ტენდენციების მოძიება. 2026 წლის ეკონომიკური რეგულაციებისა და ფასების ინდექსის კვლევა — ყველა პასუხი ბმულით. კონკურენტების ახალი პროექტების მონიტორინგი.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 12: COMPARISON TABLE -->
+    <section id="topic-12" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📊 ხელსაწყოების შედარებითი ცხრილი</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+            <table class="w-full text-sm">
+              <thead class="bg-elt-900 text-white">
+                <tr>
+                  <th class="px-4 py-3 text-left">ამოცანა</th>
+                  <th class="px-4 py-3 text-center">ChatGPT</th>
+                  <th class="px-4 py-3 text-center">Claude</th>
+                  <th class="px-4 py-3 text-center">Gemini</th>
+                  <th class="px-4 py-3 text-center">Perplexity</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr><td class="px-4 py-2.5">ანალიტიკა / Data</td><td class="px-4 py-2.5 text-center">⭐⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐</td></tr>
+                <tr><td class="px-4 py-2.5">Copywriting</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐</td></tr>
+                <tr><td class="px-4 py-2.5">იურიდიული ანალიზი</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐⭐</td><td class="px-4 py-2.5 text-center">⭐</td><td class="px-4 py-2.5 text-center">⭐</td></tr>
+                <tr><td class="px-4 py-2.5">Google Workspace</td><td class="px-4 py-2.5 text-center">⭐</td><td class="px-4 py-2.5 text-center">⭐</td><td class="px-4 py-2.5 text-center">⭐⭐⭐</td><td class="px-4 py-2.5 text-center">⭐</td></tr>
+                <tr><td class="px-4 py-2.5">ფაქტ-ჩექინგი / კვლევა</td><td class="px-4 py-2.5 text-center">⭐</td><td class="px-4 py-2.5 text-center">⭐</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐⭐</td></tr>
+                <tr><td class="px-4 py-2.5">Custom ასისტენტი</td><td class="px-4 py-2.5 text-center">⭐⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐⭐</td><td class="px-4 py-2.5 text-center">⭐</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-sm text-gray-500 mt-3 italic">⭐⭐⭐ = ლიდერი | ⭐⭐ = კარგი | ⭐ = არ არის ძირითადი ძალა</p>
+          <div class="highlight-box mt-4">
+            <p><strong>ELT GROUP-ის რეკომენდაცია:</strong> ChatGPT Plus — ყოველდღიურად. Claude Pro — დიდი ტექსტებისთვის. Perplexity — ბაზრის კვლევისთვის. Gemini — Google Workspace-ის მომხმარებლებისთვის.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- BLOCK 2: PROMPT ENGINEERING -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- TOPIC 13 -->
+    <section id="topic-13" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>💬 რა არის პრომპტი (Prompt)?</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p><strong>პრომპტი (Prompt)</strong> არ არის უბრალოდ „ძებნა". ის არის დეტალური, სტრუქტურირებული ბრიფი, რომელსაც ვაძლევთ AI-ს რთული ამოცანის შესასრულებლად. თქვენი მიზანი არ არის მხოლოდ „კითხვის დასმა", თქვენი მიზანია <strong>„მოდელის დაპროგრამება" სიტყვებით</strong> (Natural Language Programming).</p>
+          <p class="mt-4">პრომპტ-ინჟინერია არის მომავლის ერთ-ერთი ყველაზე მოთხოვნადი უნარი. რაც უფრო ზუსტი და მდიდარია თქვენი ბრიფი, მით ნაკლებია ჰალუცინაციის რისკი და მით მეტ დროს ზოგავთ. დაიმახსოვრეთ, რომ AI არის ექსპერტი, რომელსაც დაავიწყდა, თუ ვის ესაუბრება — სანამ თქვენ არ ეტყვით, მან არ იცის, რომ ის ELT GROUP-ის ინტერესებს იცავს.</p>
+          <div class="highlight-box">
+            <h3>ბრიფინგის ოქროს წესი:</h3>
+            <p><strong>Garbage In = Garbage Out</strong><br><span style="font-size:1rem;">(რასაც ჩადებ, იმას მიიღებ)</span></p>
+          </div>
+          <p>თუ AI-მ მოგცათ ცუდი, ბანალური ან გამოუსადეგარი პასუხი — 99% შემთხვევაში დამნაშავე არის <strong>არასრული პრომპტი</strong> და არა თავად მოდელი.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 14 -->
+    <section id="topic-14" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>❌ ცუდი პრომპტი vs ✅ კარგი პრომპტი</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="flex flex-col md:flex-row gap-6 items-stretch my-6">
+            <div class="flex-1 bg-red-50 border border-red-200 rounded-xl overflow-hidden shadow-sm flex flex-col">
+              <div class="bg-red-100 text-red-800 font-bold px-4 py-3 flex items-center gap-2"><span class="text-xl">❌</span> Zero-Shot (ცუდი პრაქტიკა)</div>
+              <div class="p-5 flex-1">
+                <div class="bg-white rounded border border-gray-200 p-3 text-sm text-gray-600 mb-4 shadow-inner italic">„დაწერე პოსტი ბინაზე ბათუმში."</div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">რატომ არ ვარგა:</div>
+                <ul class="text-sm text-red-700 space-y-2">
+                  <li class="flex items-start gap-2"><span>🚫</span> არ იცის, ვინ არის აუდიტორია.</li>
+                  <li class="flex items-start gap-2"><span>🚫</span> არ იცის ტონი (პრემიუმ, იაფი).</li>
+                  <li class="flex items-start gap-2"><span>🚫</span> არ იცის პროექტის (Marina Club) სახელი.</li>
+                  <li class="flex items-start gap-2"><span>🚫</span> არ იცის ფორმატი (რამდენი სიტყვა? რა პლატფორმა?).</li>
+                </ul>
+              </div>
+            </div>
+            <div class="flex items-center justify-center shrink-0">
+              <div class="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-gray-400 font-bold text-sm border border-gray-100">VS</div>
+            </div>
+            <div class="flex-1 bg-green-50 border border-green-200 rounded-xl overflow-hidden shadow-sm flex flex-col">
+              <div class="bg-green-100 text-green-800 font-bold px-4 py-3 flex items-center gap-2"><span class="text-xl">✅</span> Few-Shot / Context-Rich</div>
+              <div class="p-5 flex-1">
+                <div class="bg-white rounded border border-gray-200 p-3 text-sm text-gray-600 mb-4 shadow-inner italic">„შენ ხარ უძრავი ქონების პრემიუმ ბროკერი. დაწერე 100 სიტყვიანი Facebook პოსტი 70კვ.მ აპარტამენტზე Marina Club-ში. აუდიტორია: ინვესტორები. ტონი: სოლიდური."</div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">რატომ არის ძლიერი:</div>
+                <ul class="text-sm text-green-700 space-y-2">
+                  <li class="flex items-start gap-2"><span>🎯</span> განსაზღვრულია ზუსტი როლი (ბროკერი).</li>
+                  <li class="flex items-start gap-2"><span>🎯</span> მითითებულია სამიზნე სეგმენტი.</li>
+                  <li class="flex items-start gap-2"><span>🎯</span> მითითებულია სიგრძის ლიმიტი (100 სიტყვა).</li>
+                  <li class="flex items-start gap-2"><span>🎯</span> მითითებულია ტონი და პლატფორმა.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 15: ROAST MY PROMPT -->
+    <section id="topic-15" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔥 „Roast My Prompt" — პრაქტიკა</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="bg-elt-900 border border-elt-gold/30 rounded-xl overflow-hidden shadow-lg relative p-8">
+            <div class="absolute -right-10 -bottom-10 text-[12rem] opacity-5">🔥</div>
+            <div class="relative z-10">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center text-4xl shadow-inner border border-red-500/30">🔥</div>
+                <div>
+                  <h4 class="text-elt-gold font-bold text-2xl mb-1" style="color:#b49b65!important"><span>აქტივობა:</span> „Roast My Prompt" (ლაივ-გარჩევა)</h4>
+                  <p class="text-gray-400 text-sm" style="color:#9CA3AF!important">დრო: 5 წუთი | ლოკაცია: Google Meet-ის ჩატი</p>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-lg p-6 mb-6 backdrop-blur-sm">
+                <h5 class="font-bold text-white mb-3 text-lg" style="color:#fff!important">ამოცანა (დავალება ჯგუფს):</h5>
+                <p class="text-gray-300 mb-4 text-lg italic" style="color:#D1D5DB!important">„როგორ ვთხოვოთ AI-ს, რომ თავაზიანად, მაგრამ მტკიცედ უთხრას უარი კლიენტს ფასდაკლებაზე?"</p>
+                <div class="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-200 px-4 py-3 rounded-md text-sm font-semibold">
+                  <span class="text-xl">⏱️</span> გაქვთ 30 წამი! დაწერეთ თქვენი პრომპტის ვერსია Meet-ის ჩატში (💬).
+                </div>
+              </div>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/5 border border-white/10 rounded-lg p-5">
+                  <h5 class="font-bold text-elt-gold mb-3 flex items-center gap-2" style="color:#b49b65!important">🔍 გარჩევის კრიტერიუმები:</h5>
+                  <ul class="text-sm text-gray-300 space-y-3" style="color:#D1D5DB!important">
+                    <li class="flex items-start gap-2"><span class="text-red-400 font-bold">❌</span> <span><strong style="color:#fff">C (კონტექსტი):</strong> იცის AI-მ, რომ პრემიუმ სეგმენტს ველაპარაკებით?</span></li>
+                    <li class="flex items-start gap-2"><span class="text-red-400 font-bold">❌</span> <span><strong style="color:#fff">R (როლი):</strong> იცის AI-მ, რომ გაყიდვების მენეჯერია?</span></li>
+                    <li class="flex items-start gap-2"><span class="text-red-400 font-bold">❌</span> <span><strong style="color:#fff">T (ტონი):</strong> ხომ არ გამოვა ძალიან უხეში ან ბანალური?</span></li>
+                  </ul>
+                </div>
+                <div class="flex items-center justify-center bg-elt-gold/10 border border-elt-gold/30 rounded-lg p-5">
+                  <p class="text-center text-elt-gold font-bold text-lg" style="color:#b49b65!important">მოდი, ერთად გავაუმჯობესოთ ეკრანზე!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 16: CREATE FORMULA -->
+    <section id="topic-16" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📝 პრომპტის სტრუქტურა: CREATE ფორმულა</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>იმისთვის, რომ პრომპტი ყოველთვის ეფექტიანი გამოვიდეს, გამოიყენეთ <strong>CREATE</strong> ჩარჩო:</p>
+          <div class="highlight-box">
+            <ul style="list-style:none; padding:0;">
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">C</span> — Context (კონტექსტი):</strong> ფონური ინფორმაცია კომპანიის, სიტუაციის შესახებ.</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">R</span> — Role (როლი):</strong> AI-ის პერსონა / ექსპერტიზის მიმართულება.</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">E</span> — Exact Task (ამოცანა):</strong> კონკრეტულად რა უნდა გააკეთოს.</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">A</span> — Audience & Tone (აუდიტორია/ტონი):</strong> ვის ველაპარაკებით და როგორ.</li>
+              <li style="margin-bottom:0.8rem;"><strong><span style="color:#b49b65;">T</span> — Template/Format (ფორმატი):</strong> პასუხის ვიზუალური ფორმატი.</li>
+              <li><strong><span style="color:#b49b65;">E</span> — Examples (მაგალითები):</strong> ნიმუშები ან შეზღუდვები.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 17: C = Context -->
+    <section id="topic-17" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>C — Context (კონტექსტი)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>კონტექსტი აძლევს AI-ს ათვლის წერტილს. თუ არ ეტყვით, ვინ ხართ, ის მოირგებს საშუალოსტატისტიკურ, ზოგად როლს ინტერნეტიდან და მიიღებთ ულტრა-ბანალურ პასუხს.</p>
+          <p class="mt-4"><strong>კონტექსტის კომპონენტები:</strong><br>
+          1. <strong>თქვენი იდენტობა:</strong> „ჩვენ ვართ ELT GROUP, 8+ წლიანი გამოცდილების დეველოპერი."<br>
+          2. <strong>სიტუაცია/გარემო:</strong> „ვემზადებით ესპანური კვარტალის Barceló-თან პარტნიორობით შექმნილი პროექტის პრომოციისთვის."<br>
+          3. <strong>წარსული გამოცდილება:</strong> „წინა კამპანიაზე ძირითადად ბათუმის ბაზარი გვფარავდა, ახლა გვინდა GCC ინვესტორებიც."</p>
+          <div class="two-column mt-4">
+            <div>
+              <h3>ნაკლები კონტექსტი ❌</h3>
+              <p class="code-block">„გვინდა კამპანია ახალ საცხოვრებელზე."</p>
+            </div>
+            <div>
+              <h3>კარგი კონტექსტი ✅</h3>
+              <p class="code-block">„ჩვენ ვართ ELT GROUP, პრემიუმ კლასის დეველოპერი. ჩვენი ახალი პროექტი 'ესპანური კვარტალი' მდებარეობს თბილისის ცენტრში Barceló Hotel Group-თან პარტნიორობით. ჩვენი მთავარი უპირატესობა არის 5-ვარსკვლავიანი სასტუმრო სერვისი და საერთაშორისო მენეჯმენტი."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 18: R = Role -->
+    <section id="topic-18" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>R — Role (როლი)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>როლის მინიჭება (ე.წ. „Persona Adoption" ან „Act as a...") არის ყველაზე მარტივი და ეფექტური ტექნიკა. ის მყისიერად ცვლის AI-ის ლექსიკონს, ტერმინოლოგიას და პრობლემისადმი მიდგომის პერსპექტივას.</p>
+          <p class="mt-4">როდესაც AI ირგებს როლს, ის ავტომატურად ბლოკავს არარელევანტურ მონაცემებს და ააქტიურებს მხოლოდ იმ კლასტერებს, რომლებიც ამ პროფესიას შეესაბამება.</p>
+          <div class="three-column">
+            <div>
+              <h3>მარკეტერი</h3>
+              <p class="code-block">„იმოქმედე როგორც უძრავი ქონების სენიორ მარკეტერმა..."<br><br><em>(გამოიყენებს: ROI, Leads, Conversion, Funnel)</em></p>
+            </div>
+            <div>
+              <h3>იურისტი</h3>
+              <p class="code-block">„იმოქმედე როგორც კორპორატიულმა იურისტმა..."<br><br><em>(პასუხი იქნება მკაცრი, რისკებზე ორიენტ.)</em></p>
+            </div>
+            <div>
+              <h3>კონსიერჟი</h3>
+              <p class="code-block">„იმოქმედე როგორც 5-ვარსკვლავიანი სასტუმროს კონსიერჟმა..."<br><br><em>(პასუხი იქნება ულტრა-ზრდილობიანი)</em></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 19: E = Exact Task -->
+    <section id="topic-19" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>E — Exact Task (ზუსტი ამოცანა)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>ამოცანა უნდა იყოს მოქმედებაზე ორიენტირებული და გაზომვადი. რაც უფრო ზუსტია Task, მით ნაკლები გადამუშავება დასჭირდება.</p>
+          <div class="two-column">
+            <div>
+              <h3>ბუნდოვანი ამოცანა ❌</h3>
+              <div class="warning-box"><p><em>„მომიმზადე რამე პრეზენტაციისთვის ესპანურ კვარტალზე."</em></p></div>
+              <ul class="text-sm text-red-700 mt-2 space-y-1">
+                <li>🚫 რა ტიპის მასალა (სლაიდი? ტექსტი?)</li>
+                <li>🚫 რამდენი გვერდი?</li>
+                <li>🚫 ვისთვის (ინვესტორი? საბოლოო მყიდველი?)</li>
+              </ul>
+              <p class="text-xs text-red-600 mt-3 italic">შედეგი: ზოგადი, გამოუსადეგარი ტექსტი</p>
+            </div>
+            <div>
+              <h3>ზუსტი ამოცანა ✅</h3>
+              <div class="highlight-box"><p><em>„შეადგინე 5-პუნქტიანი ლისტი ესპანური კვარტალის მთავარი საინვესტიციო უპირატესობებისა, ინვესტორებისთვის გამოსაყენებლად. ფოკუსი: ROI, ლოკაცია, Barceló სერვისი."</em></p></div>
+              <ul class="text-sm text-green-700 mt-2 space-y-1">
+                <li>✓ ფორმატი: 5-პუნქტიანი ლისტი</li>
+                <li>✓ აუდიტორია: ინვესტორები</li>
+                <li>✓ ფოკუსის სფეროები: ROI, ლოკაცია, Barceló</li>
+              </ul>
+              <p class="text-xs text-green-600 mt-3 italic">შედეგი: მზა, გამოსაყენებელი კონტენტი</p>
+            </div>
+          </div>
+          <div class="mt-5 highlight-box">
+            <p class="text-sm"><strong>წესი:</strong> ამოცანა ყოველთვის შეიცავდეს <strong>ზმნას + ობიექტს + შეზღუდვას</strong>. მაგ: „შეადგინე (ზმნა) 5 კაუჭი (ობიექტი) Facebook-ისთვის, მაქსიმუმ 15 სიტყვა თითოში (შეზღუდვა)."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 20: A = Audience -->
+    <section id="topic-20" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>A — Audience & Tone (აუდიტორია და ტონი)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>ტექსტის სტილი უნდა მოერგოს იმას, თუ ვინ კითხულობს მას. ერთი და იგივე ინფორმაცია სხვადასხვა ტონით სრულიად განსხვავებულ შთაბეჭდილებას ტოვებს.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <div class="bg-white border border-gray-200 shadow-sm p-5 rounded-lg text-center hover:shadow-md transition-shadow">
+              <div class="text-3xl mb-3">👔</div>
+              <h4 class="font-bold text-elt-900 mb-2">სოლიდური & პრემიალური</h4>
+              <p class="text-sm text-gray-500">საუკეთესოა: B2B შეთავაზებებისთვის, ინვესტორებთან მიმოწერისთვის, Wyndham/Barceló პარტნიორებთან.</p>
+            </div>
+            <div class="bg-white border border-gray-200 shadow-sm p-5 rounded-lg text-center hover:shadow-md transition-shadow">
+              <div class="text-3xl mb-3">🤝</div>
+              <h4 class="font-bold text-elt-900 mb-2">ემპათიური & მზრუნველი</h4>
+              <p class="text-sm text-gray-500">საუკეთესოა: კლიენტების საჩივრებზე რეაგირებისას, პრობლემების მოგვარების და ბოდიშის მოხდის დროს.</p>
+            </div>
+            <div class="bg-white border border-gray-200 shadow-sm p-5 rounded-lg text-center hover:shadow-md transition-shadow">
+              <div class="text-3xl mb-3">📊</div>
+              <h4 class="font-bold text-elt-900 mb-2">ლაკონური & აკადემიური</h4>
+              <p class="text-sm text-gray-500">საუკეთესოა: შიდა ოპერაციული დოკუმენტების, ინსტრუქციების, შეხვედრის ოქმების შესადგენად.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 21: T = Template -->
+    <section id="topic-21" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>T — Template/Format (ფორმატი)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>უთხარით AI-ს, ვიზუალურად როგორ მოგაწოდოთ პასუხი, რათა დაზოგოთ ფორმატირების დრო.</p>
+          <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-6">
+            <h3 class="font-bold text-elt-900 mb-4">პოპულარული ფორმატები</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-white border border-gray-200 rounded shadow-sm p-4 text-center"><div class="text-2xl mb-2">📊</div><div class="font-bold text-sm">ცხრილი</div><div class="text-xs text-gray-400 mt-1">შედარებებისთვის</div></div>
+              <div class="bg-white border border-gray-200 rounded shadow-sm p-4 text-center"><div class="text-2xl mb-2">📝</div><div class="font-bold text-sm">ბულეტები</div><div class="text-xs text-gray-400 mt-1">მოკლე შეჯამებისთვის</div></div>
+              <div class="bg-white border border-gray-200 rounded shadow-sm p-4 text-center"><div class="text-2xl mb-2">💻</div><div class="font-bold text-sm">Markdown</div><div class="text-xs text-gray-400 mt-1">ტექნიკური დოკუმენტაციისთვის</div></div>
+              <div class="bg-white border border-gray-200 rounded shadow-sm p-4 text-center"><div class="text-2xl mb-2">💬</div><div class="font-bold text-sm">Q&A სტილი</div><div class="text-xs text-gray-400 mt-1">ხშირად დასმული კითხვებისთვის</div></div>
+            </div>
+          </div>
+          <div class="highlight-box mt-4"><p><em>„მონაცემები მომაწოდე ცხრილის სახით. სვეტები: 1. პროექტი 2. ფასი/კვ.მ 3. ROI 4. დასრულების ვადა."</em></p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 22: E = Examples -->
+    <section id="topic-22" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>E — Examples / Constraints (მაგალითები / შეზღუდვები)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>მაგალითები AI-ს აჩვენებს <strong>ზუსტად რა სტილის</strong> პასუხი გინდათ. შეზღუდვები კი იცავს მას არასასურველი კონტენტის გენერირებისგან.</p>
+          <div class="two-column">
+            <div>
+              <h3>მაგალითით (Few-Shot)</h3>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+დაწერე კაუჭი ELT GROUP-ის პროექტისთვის.
+
+მაგალითი 1: „იცხოვრე 5-ვარსკვლავიან გარემოში — ყოველდღე."
+მაგალითი 2: „შენი ინვესტიცია, შენი ოკეანის ხედი."
+
+ახლა დაწერე 5 ახალი კაუჭი ამ სტილში.</div>
+            </div>
+            <div>
+              <h3>შეზღუდვებით</h3>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+შეზღუდვები:
+- მაქსიმუმ 200 სიტყვა.
+- არ ახსენო კონკურენტები სახელით.
+- არ გამოიყენო ზედმეტად ემოციური ენა.
+- ფოკუსი: ფაქტები, ციფრები, ROI.
+- ენა: ქართული, ტექნიკური ტერმინები ინგლისურად.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 23: CHAIN OF THOUGHT -->
+    <section id="topic-23" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🚀 Advanced: Chain of Thought</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p><strong>Chain of Thought (აზროვნების ჯაჭვი)</strong> — ეს ტექნიკა AI-ს ეუბნება: „ნაბიჯ-ნაბიჯ იფიქრე პასუხზე, ნუ გამოტოვებ ეტაპებს." რთულ ამოცანებში ეს რადიკალურად ზრდის ხარისხს.</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+გააანალიზე ესპანური კვარტალის პროექტის საინვესტიციო მიმზიდველობა.
+
+იფიქრე ნაბიჯ-ნაბიჯ:
+1. ჯერ განიხილე მდებარეობის უპირატესობები (თბილისის ცენტრი).
+2. შემდეგ შეაფასე Barceló-ს ბრენდის გავლენა ფასზე.
+3. მერე გამოთვალე სავარაუდო ROI 5-წლიან პერსპექტივაში.
+4. ბოლოს შეადარე მსგავს პროექტებს რეგიონში.
+
+დაასკვნე: ღირს თუ არა ინვესტიცია და რატომ.</div>
+          <div class="highlight-box">
+            <h3 style="border-bottom:none; margin-bottom:0;">ჯადოსნური ფრაზა: <span style="color:#b49b65;">„იფიქრე ეტაპობრივად (Think step-by-step)"</span></h3>
+          </div>
+          <p>ამის დაწერის შემდეგ, მოდელი ჯერ ჩამოწერს მსჯელობის ლოგიკას და მხოლოდ ამის შემდეგ მოგვცემს საბოლოო პასუხს. ეს რადიკალურად ამცირებს შეცდომებს!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 24: ITERATIVE PROMPTING -->
+    <section id="topic-24" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔄 იტერაციული პრომპტირება (Refining)</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>დამწყები მომხმარებლების ყველაზე დიდი შეცდომაა იმის მოლოდინი, რომ პირველივე ცდაზე მიიღებენ 100%-ით იდეალურ შედეგს. რეალურად, AI-სთან მუშაობა არის <strong>იტერაციული პროცესი (Refining)</strong> — დიალოგი, სადაც თქვენ ხართ შემოქმედებითი დირექტორი, ის კი შემსრულებელი.</p>
+          <p class="mt-4">თუ პასუხი არ მოგეწონათ, <strong>არასოდეს წაშალოთ ჩატი!</strong> ამის ნაცვლად, მიეცით მოდელს კონსტრუქციული უკუკავშირი.</p>
+          <div class="my-8 bg-white border border-gray-200 rounded-xl p-6 shadow-sm relative z-10 overflow-hidden">
+            <h4 class="font-bold text-elt-900 text-center mb-6">იტერაციული სამუშაო ციკლი</h4>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 relative">
+              <div class="hidden md:block absolute top-6 left-16 right-16 h-28 border-b-2 border-l-2 border-r-2 border-dashed border-gray-300 rounded-b-3xl -z-0"></div>
+              <div class="hidden md:flex absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 text-gray-500 bg-white px-3 text-xs font-bold items-center gap-1 border border-gray-200 rounded-full shadow-sm"><span class="text-elt-gold text-lg">⟲</span> გაუმჯობესების ციკლი</div>
+              <div class="w-full md:w-36 flex flex-col items-center text-center z-10 bg-white p-2">
+                <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-2 border border-blue-100 shadow-sm font-bold">1</div>
+                <div class="font-bold text-sm">პირველი პრომპტი</div>
+                <div class="text-xs text-gray-500 mt-1">საწყისი ბრიფის მიცემა</div>
+              </div>
+              <div class="text-gray-300 md:rotate-0 rotate-90 hidden md:block text-xl">➔</div>
+              <div class="w-full md:w-36 flex flex-col items-center text-center z-10 bg-white p-2">
+                <div class="w-12 h-12 rounded-full bg-gray-50 text-gray-600 flex items-center justify-center text-xl mb-2 border border-gray-200 shadow-sm font-bold">2</div>
+                <div class="font-bold text-sm">შედეგის ანალიზი</div>
+                <div class="text-xs text-gray-500 mt-1">პასუხის კრიტიკული შეფასება</div>
+              </div>
+              <div class="text-gray-300 md:rotate-0 rotate-90 hidden md:block text-xl">➔</div>
+              <div class="w-full md:w-36 flex flex-col items-center text-center z-10 bg-white p-2">
+                <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-xl mb-2 border border-orange-200 shadow-sm font-bold">3</div>
+                <div class="font-bold text-sm">მიზნობრივი ფიდბექი</div>
+                <div class="text-xs text-gray-500 mt-1">„ტონი შეცვალე", „შეამოკლე"</div>
+              </div>
+              <div class="text-gray-300 md:rotate-0 rotate-90 hidden md:block text-xl">➔</div>
+              <div class="w-full md:w-36 flex flex-col items-center text-center z-10 bg-white p-2">
+                <div class="w-12 h-12 rounded-full bg-elt-gold/20 text-elt-900 flex items-center justify-center text-xl mb-2 border border-elt-gold/40 shadow-sm font-bold">4</div>
+                <div class="font-bold text-sm text-elt-900">საბოლოო შედეგი</div>
+                <div class="text-xs text-gray-600 mt-1">მზა, იდეალური ტექსტი</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 25: GROUNDED PROMPTING -->
+    <section id="topic-25" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📄 Advanced: დოკუმენტზე დამაგრებული (Grounded) პრომპტირება</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>ეს არის ტექნიკა, რომელიც იცავს მოდელს ჰალუცინაციისგან, როცა ატვირთულ კონტრაქტებს, ბროშურებს ან PDF ფაილებს ვაანალიზებთ. ELT-ის იურისტები და სეილსები ხშირად მუშაობენ დიდ დოკუმენტებთან და მათთვის კრიტიკულია ფაქტების სიზუსტე.</p>
+          <p class="mt-4">თუ მოდელს არ მივცემთ მკაცრ საზღვრებს, მან შეიძლება დაამატოს თავისი ზოგადი ცოდნა ინტერნეტიდან, რაც კონტრაქტის ანალიზისას <strong>დაუშვებელია</strong>.</p>
+          <div class="warning-box">
+            <h4 class="font-bold text-elt-900 mb-2 border-b-0">დაცვის შაბლონი (Copy/Paste):</h4>
+            <div class="code-block mt-3">
+              <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+გაანალიზე ატვირთული დოკუმენტი. 
+ჩემს კითხვებს მიპასუხე მკაცრად მხოლოდ და მხოლოდ ამ დოკუმენტში არსებულ ინფორმაციაზე დაყრდნობით. 
+არ გამოიყენო შენი გარე ცოდნა და არ დაამატო ფაქტები.
+თუ ჩემს კითხვაზე პასუხი დოკუმენტში არ იძებნება, პირდაპირ მითხარი „ეს ინფორმაცია დოკუმენტში არ არის", არაფერი არ მოიგონო!
+კითხვა: [თქვენი შეკითხვა აქ]</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 26: AI BRAINSTORMING -->
+    <section id="topic-26" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>💡 პრაქტიკა: AI როგორც ბრეინშტორმინგის პარტნიორი</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>AI საუკეთესოა შემოქმედებითი ბლოკის (Writer's Block) დასაძლევად. ის გიგენერირებს 10 სხვადასხვა კუთხიდან მიდგომას წამებში — ის, რაც ადამიანს საათი დასჭირდება.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+            <div>
+              <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">ბრეინშტორმინგის პრომპტის შაბლონი</p>
+              <div class="code-block border-l-4 border-l-elt-gold" style="border-left-width:4px; border-left-color:#b49b65;">
+                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+„მე ვმუშაობ პროექტზე: [პროექტის მოკლე აღწერა].
+ჩემი მიზანია: [მიზანი, მაგ. ახალი კამპანიის მოფიქრება].
+მომეცი 10 რადიკალურად განსხვავებული და კრეატიული იდეა.
+არ შეიზღუდო თავი სტანდარტული ინდუსტრიული მიდგომებით.
+იფიქრე 'Out of the box'."</div>
+              <div class="mt-4 highlight-box">
+                <p class="text-sm"><strong>ELT-ის მაგალითი:</strong> „ვმუშაობ ესპანური კვარტალის კამპანიაზე. მიზანი: 3 ახალი კონცეფცია, რომელიც ინვესტორებს კი არ ელაპარაკება, არამედ მათ ემოციებს. ფოკუსი: ოჯახის მემკვიდრეობა, თბილისის მომავალი."</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">AI ბრეინშტორმინგის 3 ძლიერი ტექნიკა</p>
+              <div class="space-y-3">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                  <div class="flex items-center gap-2 mb-1"><span class="text-lg">🔄</span><p class="font-bold text-sm text-elt-900">„რა-თუ" ტექნიკა</p></div>
+                  <p class="text-xs text-gray-500">„რა თუ Marina Club-ის სამიზნე კლიენტი ახალგაზრდა ოჯახია, არა ინვესტორი?" — AI მყისიერ პერსპექტივის ცვლილებას გვთავაზობს.</p>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                  <div class="flex items-center gap-2 mb-1"><span class="text-lg">🌍</span><p class="font-bold text-sm text-elt-900">კონკურენტების სტილი</p></div>
+                  <p class="text-xs text-gray-500">„როგორ გაყიდის Armani Residences ბათუმის პრემიუმ ბინებს? მიბაძე მის სტილს Marina Club-ისთვის."</p>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                  <div class="flex items-center gap-2 mb-1"><span class="text-lg">🎭</span><p class="font-bold text-sm text-elt-900">პერსპექტივის შეცვლა</p></div>
+                  <p class="text-xs text-gray-500">„იფიქრე 10 წლის შემდეგ — კლიენტი ვისაც ყიდულობს, მომავალ თაობას გადასცემს. როგორ ვყიდოთ ეს?"</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 27: EXERCISE -->
+    <section id="topic-27" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🏋️ სავარჯიშო: ესპანური კვარტალის მარკეტინგული კაუჭები</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>გახსენით ChatGPT ან Claude და სცადეთ რეალური ამოცანა.</p>
+          <div class="key-points">
+            <p><strong>დააკოპირეთ ეს პრომპტი:</strong></p>
+            <div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #b49b65; color:#0c1221;">
+              <button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221; border-color:#b49b65;">📋 Copy</button>
+„ჩვენ ვართ ELT GROUP, პრემიუმ დეველოპერი საქართველოში. ვაშენებთ პრემიუმ კომპლექსს 'ესპანური კვარტალი' თბილისის ცენტრში Barceló Hotel Group-თან პარტნიორობით. 
+ჩვენი მთავარი სელ-ფოინთი არის '5-ვარსკვლავიანი სასტუმრო გარემო ყოველდღიურ ცხოვრებაში' და მაღალი საინვესტიციო პოტენციალი. 
+მომეცი 5 ძლიერი მარკეტინგული კაუჭი (Hook / სათაური) Facebook რეკლამისთვის, რომელიც დააინტერესებს 35-50 წლის ინვესტორებს. თითოეულ კაუჭს დაურთე 1 წინადადებიანი ახსნა, რატომ იმუშავებს ის."</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- PROMPT LIBRARY (10 prompts) -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <!-- TOPIC 28: LIBRARY INTRO -->
+    <section id="topic-28" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🏗 ELT GROUP-ის 10 საბაზისო პრომპტის ბიბლიოთეკა</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>ტრენინგის მთავარი მიზანი არ არის მხოლოდ თეორიის შესწავლა, არამედ ELT GROUP-ში <strong>ერთიანი შიდა AI სტანდარტის (Prompt Library)</strong> შექმნა. ახლა ჩვენ ერთად განვიხილავთ და გავაანალიზებთ 10 „ოქროს პრომპტს", რომლებიც სპეციალურად დეველოპერული და საინვესტიციო ბიზნესისთვისაა მორგებული.</p>
+          <p class="mt-4">ამ ბიბლიოთეკის არსებობა ნიშნავს, რომ თქვენს გუნდში ახალბედა თანამშრომელიც კი შეძლებს ისეთივე მაღალი ხარისხის, პრემიუმ ტექსტების გენერირებას, როგორსაც გამოცდილი მენეჯერი. მთავარი წესი: <em>არ ვწერთ პრომპტს ყოველ ჯერზე თავიდან — ვაკოპირებთ შაბლონს და ვცვლით მხოლოდ დეტალებს.</em></p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div class="bg-elt-900 text-white rounded-xl p-6 shadow-md border-t-4 border-elt-gold relative overflow-hidden">
+              <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">🎙️</div>
+              <div class="text-3xl mb-3">🎙️</div>
+              <h4 class="font-bold text-elt-gold mb-2" style="color:#b49b65!important">კომპანიის ხმა</h4>
+              <p class="text-sm text-gray-300" style="color:#D1D5DB!important">ყველა თანამშრომელი წერს ერთი პრემიუმ სტილით (Tone of Voice).</p>
+            </div>
+            <div class="bg-elt-900 text-white rounded-xl p-6 shadow-md border-t-4 border-elt-gold relative overflow-hidden">
+              <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">⏱️</div>
+              <div class="text-3xl mb-3">⏱️</div>
+              <h4 class="font-bold text-elt-gold mb-2" style="color:#b49b65!important">დროის დაზოგვა</h4>
+              <p class="text-sm text-gray-300" style="color:#D1D5DB!important">არ გვიწევს კონტექსტის ყოველ ჯერზე ნულიდან აკრეფა.</p>
+            </div>
+            <div class="bg-elt-900 text-white rounded-xl p-6 shadow-md border-t-4 border-elt-gold relative overflow-hidden">
+              <div class="absolute -right-4 -bottom-4 text-6xl opacity-10">🚀</div>
+              <div class="text-3xl mb-3">🚀</div>
+              <h4 class="font-bold text-elt-gold mb-2" style="color:#b49b65!important">სწრაფი ადაპტაცია</h4>
+              <p class="text-sm text-gray-300" style="color:#D1D5DB!important">ახალი თანამშრომელი Onboarding-ზე მაშინვე იწყებს პრემიუმ ტექსტების გენერაციას.</p>
+            </div>
+          </div>
+
+          <div class="mt-10 bg-white border border-elt-gold/40 shadow-md rounded-xl p-6 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 text-[10rem] opacity-5">🧑‍✈️</div>
+            <div class="flex items-start gap-4">
+              <div class="w-14 h-14 rounded-full bg-elt-gold/10 text-elt-gold border border-elt-gold/30 flex items-center justify-center text-3xl shrink-0">🧑‍✈️</div>
+              <div>
+                <h4 class="text-elt-900 font-bold text-xl mb-1">აქტივობა: „შტურმანი" (Screen Takeover)</h4>
+                <p class="text-gray-500 text-sm mb-3">დრო: მთელი ბლოკის განმავლობაში | ლოკაცია: Meet-ის Screen Share</p>
+                <p class="text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded border border-gray-100">
+                  <strong>წესი:</strong> ამ 10 პრომპტს მე არ გავუშვებ ჩემს ეკრანზე. მოხალისემ უნდა <strong>გააზიაროს ეკრანი</strong> და გახსნას თავისი ChatGPT/Claude. მე და დანარჩენი ჯგუფი ვიქნებით „შტურმანები" და ვუკარნახებთ, რა დააკოპიროს.
+                  <br><br><em>მიზანი: 100%-იანი ყურადღება, რადგან ნებისმიერ წამს შეიძლება ეკრანის გაზიარება თქვენ მოგიწიოთ!</em>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROMPT #1 -->
+    <section id="topic-29" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #1: კლიენტის კითხვაზე პასუხი</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: სწრაფი, პრემიუმ პასუხი ინვესტორებს.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„შენ ხარ ELT GROUP-ის გაყიდვების მენეჯერი.
+მომხმარებელმა მოგვწერა: '[ჩასვით კლიენტის მესიჯი აქ]'
+დაუწერე საპასუხო მესიჯი გასაგზავნად WhatsApp/Viber-ში.
+ტონი: პრემიუმ, პატივისცემით სავსე, მაგრამ მეგობრული.
+მიაწოდე ზოგადი ინფორმაცია, მაგრამ დაუტოვე 'ინტრიგა' და შესთავაზე სატელეფონო ზარი ან ოფისში შეხვედრა დეტალების განსახილველად. მაქსიმუმ 4 მოკლე წინადადება."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #2 -->
+    <section id="topic-30" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #2: პარტნიორთან შეხვედრის ჩანიშვნა</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: B2B კომუნიკაცია Wyndham/Barceló პარტნიორებთან.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„შენ ხარ ELT GROUP-ის ბიზნეს-განვითარების მენეჯერი.
+დაწერე ოფიციალური ელფოსტა [პარტნიორი კომპანიის სახელი]-ს წარმომადგენლისთვის.
+მიზანი: პოტენციური თანამშრომლობის (B2B) განხილვის მიზნით შეხვედრის ჩანიშვნა.
+ტონი: მკაცრად კორპორატიული, საქმიანი, საერთაშორისო სტანდარტით.
+შესთავაზე 2 ალტერნატიული დრო მიმდინარე კვირაში.
+ფორმატი: სრული მეილი, Subject line-ით."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #3 -->
+    <section id="topic-31" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #3: საჩივრის/უკმაყოფილების მართვა</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: კრიზისული კომუნიკაცია 5-ვარსკვლავიანი სტანდარტით.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„შენ ხარ ELT GROUP-ის კლიენტებთან ურთიერთობის მენეჯერი.
+მივიღეთ საჩივარი: '[ჩასვით საჩივრის ტექსტი]'.
+დაწერე საპასუხო წერილი.
+ტონი: ემპათიური, პროფესიონალური, პასუხისმგებლობის ამღები.
+სტრუქტურა:
+1. მადლობა უკუკავშირისთვის და ემპათია.
+2. პრობლემის გადაჭრის კონკრეტული გეგმა.
+3. შემდგომი საკონტაქტო პირის მითითება.
+4. დაჰპირდი, რომ ეს სიტუაცია არ განმეორდება."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #4 -->
+    <section id="topic-32" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #4: სოც. მედიის პოსტის გენერატორი</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: ენგეიჯმენტი და ლისტინგი მარკეტინგში.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„იმოქმედე როგორც უძრავი ქონების სოციალური მედიის მენეჯერმა.
+დაწერე Instagram და Facebook პოსტი '[პროექტის სახელი]'-ის შესახებ.
+აუდიტორია: [მაგ. ახალგაზრდა ოჯახები / უცხოელი ინვესტორები].
+ტონი: მიმზიდველი, ესთეტიკური, ELT GROUP-ის პრემიუმ სტანდარტით.
+სტრუქტურა:
+- ძლიერი Hook (პირველი წინადადება).
+- 3 მთავარი უპირატესობა ბულეტებით.
+- Call to Action (ზარი ან ბმულზე გადასვლა).
+დაურთე 4-5 რელევანტური ემოჯი."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #5 -->
+    <section id="topic-33" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #5: გრძელი დოკუმენტის რეზიუმე (Claude-სთვის)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: დროის დაზოგვა კონტრაქტების/რეპორტების კითხვისას.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„გთხოვ, წაიკითხო მიმაგრებული დოკუმენტი. 
+შექმენი მისი Executive Summary მენეჯმენტისთვის.
+ფორმატი:
+1. მთავარი არსი 2 წინადადებით.
+2. 5 ყველაზე კრიტიკული პუნქტი (ბულეტებით).
+3. პოტენციური რისკები ან 'წითელი ალმები' (Red flags), თუ არსებობს.
+იფიქრე ეტაპობრივად და გამოიტანე მხოლოდ ყველაზე ღირებული ინფორმაცია."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #6 -->
+    <section id="topic-34" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #6: Meeting Minutes (შეხვედრის ოქმი)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: ოპერაციული მართვა — ქაოსიდან სტრუქტურამდე.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„აქ არის შეხვედრის ჩანაწერი / უსისტემო შენიშვნები:
+[ჩასვით ტექსტი]
+გთხოვ, დაასტრუქტურირო პროფესიონალურ Meeting Minutes ფორმატად:
+- განხილული მთავარი თემები.
+- მიღებული გადაწყვეტილებები.
+- Action Items (სამოქმედო გეგმა): რა უნდა გაკეთდეს, ვის მიერ და როდის (ცხრილის სახით)."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #7 -->
+    <section id="topic-35" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #7: ტექსტის „გაპრემიუმება" (Proofreading)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: ELT GROUP-ის ბრენდის იმიჯის შენარჩუნება.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„აქ არის ჩემი დაწერილი შავი ვერსია (Draft):
+[ჩასვით ტექსტი]
+გთხოვ, გაასწორო გრამატიკულად და სტილისტურად. ტექსტი გახადე უფრო დახვეწილი, ბიზნეს-ორიენტირებული და ELT GROUP-ის პრემიუმ სტატუსის შესაბამისი. არ დაკარგო ძირითადი აზრი."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #8 -->
+    <section id="topic-36" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #8: თარგმანი ტერმინოლოგიის დაცვით</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: ხარისხიანი უცხოენოვანი მასალა GCC / ევროპელი ინვესტორებისთვის.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„გთხოვ, თარგმნო ეს ტექსტი ქართულიდან ინგლისურად.
+კონტექსტი: ტექსტი განკუთვნილია პრემიუმ უძრავი ქონების ინვესტორებისთვის.
+შეზღუდვები: 
+- არ გამოიყენო პირდაპირი/მანქანური (Google Translate) თარგმანი.
+- გამოიყენე უძრავი ქონების ინდუსტრიის პროფესიონალური ინგლისური ტერმინოლოგია (მაგ. 'შავი კარკასი' = 'Core and Shell').
+[ჩასვით ტექსტი]"</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #9 -->
+    <section id="topic-37" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #9: ამოცანების პრიორიტიზაცია</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: პირადი პროდუქტიულობა მენეჯერებისთვის.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„აქ არის ჩემი დღევანდელი ამოცანების ქაოტური სია:
+[ჩამოწერეთ ამოცანები]
+იმოქმედე როგორც ჩემმა ეფექტურობის ქოუჩმა.
+დაალაგე ეს ამოცანები ეიზენჰაუერის მატრიცის მიხედვით (მნიშვნელოვანი/სასწრაფო).
+შემომთავაზე იდეალური გრაფიკი დღის განმავლობაში მათ შესასრულებლად."</div></div></div></div>
+    </section>
+
+    <!-- PROMPT #10 -->
+    <section id="topic-38" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📚 ELT Prompt #10: კონკურენტების ანალიზი (Perplexity)</h3>
+      <div class="prose max-w-none text-gray-900"><div class="mt-2"><div class="key-points"><h3 style="margin-bottom:1rem; border:none;">მიზანი: ბაზრის კვლევა (Market Research) რეალურ დროში.</h3><div class="code-block" style="background:var(--surface,#F9F9F8); border:1px solid #0c1221; color:#0c1221;"><button class="copy-btn" onclick="copyCode(this)" style="color:#0c1221;">📋 Copy</button>
+„მოიძიე ინფორმაცია ინტერნეტიდან: რა არის ბათუმში პრემიუმ კლასის აპარტამენტების საშუალო კვადრატულის ფასი დღევანდელი მონაცემებით? 
+მოიყვანე 3 ძირითადი კონკურენტი პროექტის მაგალითი, მათი ფასები და მთავარი შეთავაზებები.
+მონაცემები მომაწოდე შედარებითი ცხრილის სახით. 
+აუცილებლად დაურთე წყაროების ბმულები (Links)."</div></div></div></div>
+    </section>
+
+    <!-- TOPIC 39: LIBRARY MANAGEMENT -->
+    <section id="topic-39" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>📋 საუკეთესო პრაქტიკა: Prompt Library-ს მართვა</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <p>პრომპტების ბიბლიოთეკა არ არის სტატიკური დოკუმენტი. ის არის ცოცხალი ორგანიზმი, რომელიც თქვენს გუნდთან ერთად უნდა განვითარდეს.</p>
+          <p class="mt-4"><strong>დანერგვის სტრატეგია:</strong></p>
+          <div class="two-column">
+            <div>
+              <div class="highlight-box">
+                <h4 style="color:#b49b65; margin-bottom:0.75rem;">ნაბიჯი 1: ინფრასტრუქტურა</h4>
+                <ul class="space-y-2 text-sm">
+                  <li>შექმენით საერთო Google Doc ან Notion გვერდი სახელად <strong>„ELT AI Guidelines"</strong>.</li>
+                  <li>ჩააკოპირეთ ეს 10 პრომპტი კატეგორიებით: 🗣️ კომუნიკაცია / 📊 ანალიზი / ✍️ კონტენტი.</li>
+                  <li>მიეცით წვდომა გუნდის ყველა შესაბამის წევრს.</li>
+                </ul>
+              </div>
+              <div class="highlight-box mt-4">
+                <h4 style="color:#b49b65; margin-bottom:0.75rem;">ნაბიჯი 2: გუნდური სტანდარტი</h4>
+                <ul class="space-y-2 text-sm">
+                  <li>ყოველ კვარტალში გუნდი <strong>ახლებს</strong> პრომპტებს.</li>
+                  <li>ყველა „ოქროს პრომპტი", რომელიც კარგ შედეგს იძლევა — <strong>ემატება</strong> ბიბლიოთეკას.</li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <div class="highlight-box">
+                <h4 style="color:#b49b65; margin-bottom:0.75rem;">ნაბიჯი 3: სწავლების ციკლი</h4>
+                <ul class="space-y-2 text-sm">
+                  <li>ახალი თანამშრომელი Onboarding-ის პირველ დღეს იღებს წვდომას ბიბლიოთეკაზე.</li>
+                  <li>Onboarding-ის ნაწილია: „გაუშვი ეს 3 პრომპტი და ნახე შედეგები" — პრაქტიკული დავალება.</li>
+                </ul>
+              </div>
+              <div class="bg-elt-900 rounded-xl p-5 mt-4 text-white">
+                <p class="text-elt-gold font-bold text-sm mb-3" style="color:#b49b65!important">📌 ROI გათვლა</p>
+                <div class="space-y-2 text-xs text-gray-300" style="color:#D1D5DB!important">
+                  <div class="flex justify-between"><span>კლიენტის წერილი (ხელით)</span><span class="font-bold text-white">~20 წუთი</span></div>
+                  <div class="flex justify-between"><span>კლიენტის წერილი (AI + Prompt)</span><span class="font-bold text-elt-gold" style="color:#b49b65!important">~2 წუთი</span></div>
+                  <div class="border-t border-white/10 pt-2 flex justify-between"><span>დაზოგილი დრო/დღეში (10 წერილი)</span><span class="font-bold text-green-400">~3 საათი</span></div>
+                  <div class="flex justify-between"><span>დაზოგილი დრო/წელიწადში</span><span class="font-bold text-green-400">~720 საათი</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 40: SUMMARY -->
+    <section id="topic-40" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>✅ სესია 1: შეჯამება</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+              <h4 class="font-bold text-elt-900 mb-4 text-lg">მთავარი გაკვეთილები</h4>
+              <ul class="space-y-3 text-sm text-gray-700">
+                <li class="flex items-start gap-2"><span class="text-green-500 font-bold shrink-0">✓</span><span><strong>AI ინსტრუმენტია:</strong> შედეგი პროპორციულია პრომპტის ხარისხისა — Garbage In = Garbage Out.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-500 font-bold shrink-0">✓</span><span><strong>კონტექსტი მეფეა:</strong> ყოველთვის მიაწოდეთ ELT GROUP-ის პრემიუმ იდენტობა.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-500 font-bold shrink-0">✓</span><span><strong>უსაფრთხოება:</strong> ანონიმიზაცია სავალდებულოა — არ გადაეცეს PII, ფინანსები, NDA.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-500 font-bold shrink-0">✓</span><span><strong>სწორი ხელსაწყო:</strong> ChatGPT (ანალიტიკა) • Claude (წერა) • Perplexity (კვლევა).</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-500 font-bold shrink-0">✓</span><span><strong>CREATE ფორმულა:</strong> კონტექსტი → როლი → ამოცანა → აუდიტორია → ფორმატი.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-500 font-bold shrink-0">✓</span><span><strong>Prompt Library:</strong> 10 შაბლონი — გუნდის საერთო სტანდარტი.</span></li>
+              </ul>
+            </div>
+            <div class="flex flex-col gap-4">
+              <div class="bg-elt-900 rounded-xl p-6 text-white relative overflow-hidden flex-1">
+                <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">🚀</div>
+                <div class="text-4xl mb-3 relative z-10">🚀</div>
+                <h4 class="font-bold text-elt-gold mb-2 text-lg relative z-10" style="color:#b49b65!important">სახლის დავალება</h4>
+                <p class="text-gray-300 text-sm relative z-10" style="color:#D1D5DB!important">ამ კვირაში გამოიყენეთ <strong>ELT Prompt #1</strong> — „კლიენტის კითხვაზე პასუხი" — მინიმუმ 3-ჯერ რეალური WhatsApp/Email-ით. შეინახეთ შედეგები. მომდევნო სესიაზე გავაზიარებთ გამოცდილებებს.</p>
+              </div>
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <p class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">📊 სესიის სტატისტიკა</p>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                  <div><p class="text-2xl font-bold text-elt-900">41</p><p class="text-xs text-gray-500">სექცია</p></div>
+                  <div><p class="text-2xl font-bold text-elt-900">10</p><p class="text-xs text-gray-500">პრომპტი</p></div>
+                  <div><p class="text-2xl font-bold text-elt-900">3h</p><p class="text-xs text-gray-500">დაზოგვა/დღეში</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPIC 41: NEXT STEPS -->
+    <section id="topic-41" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 py-10">
+      <h3 class="text-3xl font-serif font-bold text-elt-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-elt-gold rounded-full inline-block"></span>🔜 შემდეგი ნაბიჯები</h3>
+      <div class="prose max-w-none text-gray-900">
+        <div class="mt-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">სესია 2: იდეების გენერაცია და ბრეინშტორმინგი</p>
+              <div class="space-y-3">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-lg shrink-0">💡</div>
+                  <div><p class="font-bold text-sm text-elt-900">SCAMPER & 6 Hats</p><p class="text-xs text-gray-500">იდეაციის framework-ები AI-ის გამოყენებით.</p></div>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-lg shrink-0">🎯</div>
+                  <div><p class="font-bold text-sm text-elt-900">კამპანიების გენერაცია</p><p class="text-xs text-gray-500">ესპანური კვარტალის, Marina Club-ის რეალურ ქეისებზე.</p></div>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-lg shrink-0">📊</div>
+                  <div><p class="font-bold text-sm text-elt-900">Impact/Effort მატრიცა</p><p class="text-xs text-gray-500">იდეების პრიორიტიზაცია და action brief.</p></div>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-4">
+              <div class="bg-elt-900 border border-elt-gold/30 rounded-xl p-6 text-white text-center relative overflow-hidden flex-1">
+                <div class="absolute -right-8 -bottom-8 text-[8rem] opacity-5">❓</div>
+                <div class="text-4xl mb-4">❓</div>
+                <h4 class="font-bold text-elt-gold text-2xl mb-3" style="color:#b49b65!important">კითხვები?</h4>
+                <p class="text-gray-300 text-sm" style="color:#D1D5DB!important">გმადლობთ ყურადღებისთვის.<br>გვნახეთ სესია 2-ზე!</p>
+              </div>
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                <p class="text-sm font-bold text-amber-900">📅 სესია 2</p>
+                <p class="text-xs text-amber-700 mt-1">იდეების გენერაცია და ბრეინშტორმინგი</p>
+              </div>
+              <div class="flex gap-3">
+                <a href="lecture-1-exercises.html" class="flex-1 inline-block bg-elt-gold text-white px-4 py-2 rounded text-sm font-bold hover:bg-elt-gold/90 transition-colors text-center no-underline">📝 სავარჯიშოები →</a>
+                <a href="lecture-1-summary.html" class="flex-1 inline-block bg-gray-100 text-elt-900 px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 transition-colors border border-gray-200 text-center no-underline">📋 შეჯამება →</a>
+                <a href="index.html" class="flex-1 inline-block bg-gray-100 text-elt-900 px-4 py-2 rounded text-sm font-bold hover:bg-gray-200 transition-colors border border-gray-200 text-center no-underline">← პროგრამა</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="bg-elt-900 text-center py-8 px-4 border-t border-white/10">
+    <p class="text-elt-gold text-sm font-bold tracking-widest uppercase mb-2">ELT GROUP</p>
+    <p class="text-gray-400 text-xs">AI ტრენინგის მასალები | 2026</p>
+  </footer>
+
+</main>
+
+<script>
+  // Copy code
+  document.querySelectorAll('.code-block').forEach(block => {
+    if(!block.querySelector('.copy-btn')) {
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.innerText = 'კოპირება';
+      btn.addEventListener('click', async () => {
+        const textToCopy = Array.from(block.childNodes)
+          .filter(node => node !== btn)
+          .map(node => node.textContent)
+          .join('')
+          .trim();
+        try {
+          await navigator.clipboard.writeText(textToCopy);
+          btn.innerText = 'დაკოპირდა!';
+          btn.style.color = '#0c1221';
+          btn.style.background = '#b49b65';
+          setTimeout(() => {
+            btn.innerText = 'კოპირება';
+            btn.style.color = '';
+            btn.style.background = '';
+          }, 2000);
+        } catch (err) { console.error('Failed to copy: ', err); }
+      });
+      block.appendChild(btn);
+    }
+  });
+
+  // Sidebar logic
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const mainContent = document.getElementById('mainContent');
+  const menuBtn = document.getElementById('menuBtn');
+  const menuIcon = document.getElementById('menuIcon');
+  const closeIcon = document.getElementById('closeIcon');
+  let sidebarOpen = false;
+
+  function setSidebarState(open) {
+    sidebarOpen = open;
+    if (open) {
+      sidebar.classList.remove('-translate-x-full');
+      menuIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+      if (window.innerWidth >= 768) {
+        mainContent.style.marginLeft = '18rem';
+        menuBtn.style.left = '18.75rem';
+      } else {
+        overlay.classList.remove('hidden');
+      }
+    } else {
+      sidebar.classList.add('-translate-x-full');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+      mainContent.style.marginLeft = '0';
+      menuBtn.style.left = '1rem';
+      overlay.classList.add('hidden');
+    }
+  }
+
+  function toggleSidebar() { setSidebarState(!sidebarOpen); }
+
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth < 768) setSidebarState(false);
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    if (sidebarOpen && window.innerWidth >= 768) {
+      overlay.classList.add('hidden');
+      mainContent.style.marginLeft = '18rem';
+      menuBtn.style.left = '18.75rem';
+    } else if (sidebarOpen && window.innerWidth < 768) {
+      overlay.classList.remove('hidden');
+      mainContent.style.marginLeft = '0';
+      menuBtn.style.left = '1rem';
+    }
+  });
+
+  if (window.innerWidth >= 768) { setSidebarState(true); }
+
+  // Active Link Highlighting (IntersectionObserver)
+  const observerOptions = { root: null, rootMargin: '0px', threshold: 0.2 };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.nav-link').forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + entry.target.id) {
+            link.classList.add('active');
+            const navContainer = document.querySelector('aside nav');
+            const linkRect = link.getBoundingClientRect();
+            const navRect = navContainer.getBoundingClientRect();
+            if (linkRect.top < navRect.top || linkRect.bottom > navRect.bottom) {
+              link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }
+        });
+      }
+    });
+  }, observerOptions);
+  document.querySelectorAll('section[id^="topic-"]').forEach(section => { observer.observe(section); });
+</script>
+</body>
+</html>
