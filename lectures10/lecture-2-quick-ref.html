@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ლექცია 2: Prompt Engineering - სწრაფი სცენარი</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .nav-menu a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .highlight-box {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            margin: 1rem 0;
+        }
+
+        .key-points {
+            background: #f1f8e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 1rem 0;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 1rem 0;
+        }
+
+        .example-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #9e9e9e;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: #667eea;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #dee2e6;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .two-column, .three-column {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+            }
+
+            .nav-menu a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 ლექცია 2: Prompt Engineering</h1>
+            <p>სწრაფი სცენარი - ყველაფერი რაც გჭირდებათ ერთ გვერდზე</p>
+        </div>
+
+        <div class="nav-menu">
+            <a href="index.html">🏠 მთავარი</a>
+            <a href="lecture-2-slides.html">📊 სლაიდები</a>
+            <a href="lecture-2-summary.html">📝 შეჯამება</a>
+            <a href="lecture-2-exercises.html">✍️ სავარჯიშოები</a>
+        </div>
+
+        <!-- რა არის Prompt Engineering -->
+        <div class="section">
+            <h2 class="section-title">🚀 სწრაფი წვდომა</h2>
+
+            <div class="highlight-box">
+                <h4>🎯 რა არის Prompt Engineering?</h4>
+                <p><strong>Prompt Engineering</strong> = ინსტრუქციების შექმნა AI-სთვის, რომ მივიღოთ მაქსიმალურად ზუსტი და სასურველი შედეგი</p>
+
+                <p><strong>რატომ მნიშვნელოვანია?</strong></p>
+                <ul>
+                    <li>AI-ს სჭირდება მკაფიო ინსტრუქციები</li>
+                    <li>სხვადასხვა ფორმულირება = სხვადასხვა შედეგი</li>
+                    <li>კარგი prompt დროსა და რესურსებს გიზოგავს</li>
+                    <li>პროდუქტიულობის 10-ჯერ ზრდა შესაძლებელია</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <h4>🔗 სასარგებლო ბმულები:</h4>
+                <ul>
+                    <li><strong>OpenAI Playground:</strong> https://platform.openai.com/playground</li>
+                    <li><strong>Anthropic Console:</strong> https://console.anthropic.com</li>
+                    <li><strong>PromptBase:</strong> https://promptbase.com</li>
+                    <li><strong>Learn Prompting:</strong> https://learnprompting.org</li>
+                    <li><strong>Prompt Engineering Guide:</strong> https://www.promptingguide.ai</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 6 ელემენტი -->
+        <div class="section">
+            <h2 class="section-title">🏗️ ეფექტური Prompt-ის 6 ელემენტი</h2>
+
+            <div class="example-box">
+<pre>1. ამოცანა (Task)        → "დაწერე", "გაანალიზე", "ახსენი"
+2. კონტექსტი (Context)   → "საქართველოში", "IT ინდუსტრიაში"
+3. როლი (Role)           → "შენ ხარ გამოცდილი [პროფესია]..."
+4. ფორმატი (Format)      → "ცხრილი", "bullet points", "ნაბიჯ-ნაბიჯ"
+5. ტონი (Tone)           → "ფორმალური", "მეგობრული", "ტექნიკური"
+6. აუდიტორია (Audience) → "დამწყებებისთვის", "CEO-ებისთვის"</pre>
+            </div>
+
+            <div class="two-column">
+                <div class="warning-box">
+                    <h4>❌ ცუდი Prompt-ები:</h4>
+                    <ul>
+                        <li>"დაწერე რამე ბიზნესზე"</li>
+                        <li>"დამეხმარე პროექტში"</li>
+                        <li>"რჩევა მარკეტინგისთვის"</li>
+                    </ul>
+                    <p><strong>პრობლემა:</strong> ზოგადი, კონტექსტის გარეშე, ფორმატი გაუგებარია</p>
+                </div>
+
+                <div class="key-points">
+                    <h4>✅ კარგი Prompt:</h4>
+                    <p style="font-size: 0.95rem;">დაწერე 500 სიტყვიანი სტატია მცირე ბიზნესის დაწყების შესახებ საქართველოში, IT სფეროზე, 25-35 წლის ახალგაზრდებისთვის.</p>
+                    <p><strong>ჩართე:</strong> ფინანსები, რეგისტრაცია, ტექნოლოგია, კლიენტები</p>
+                    <p><strong>ტონი:</strong> მეგობრული, ინფორმატიული</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- სპეციფიკურობა -->
+        <div class="section">
+            <h2 class="section-title">🎯 სპეციფიკურობის ლეველები</h2>
+
+            <table>
+                <tr>
+                    <th>ლეველი</th>
+                    <th>მაგალითი</th>
+                    <th>შეფასება</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>"დაწერე სტატია"</td>
+                    <td>❌ ძალიან ზოგადი</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>"დაწერე 500 სიტყვიანი სტატია AI-ზე"</td>
+                    <td>🟠 კვლავ ზოგადი</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>"დაწერე AI-ის გამოყენებაზე განათლებაში"</td>
+                    <td>🟡 საშუალო</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>"დაწერე AI chatbots-ზე უნივერსიტეტებში"</td>
+                    <td>🟢 კარგი</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>+ მაგალითები + სარგებელი + გამოწვევები + აუდიტორია + ტონი + სტრუქტურა</td>
+                    <td>✅ შესანიშნავი!</td>
+                </tr>
+            </table>
+
+            <div class="highlight-box">
+                <strong>წესი:</strong> რაც უფრო სპეციფიკური, მით უკეთესი შედეგი!
+            </div>
+        </div>
+
+        <!-- Role-Based Prompting -->
+        <div class="section">
+            <h2 class="section-title">🎭 როლზე დაფუძნებული Prompting</h2>
+
+            <div class="three-column">
+                <div class="highlight-box">
+                    <h4>👨‍🏫 მასწავლებელი</h4>
+                    <p style="font-size: 0.9rem;">შენ ხარ გამოცდილი მასწავლებელი. ახსენი [თემა] [ასაკი] წლის მოსწავლისთვის მარტივი მეტაფორებით.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>💼 ბიზნეს კონსულტანტი</h4>
+                    <p style="font-size: 0.9rem;">შენ ხარ კონსულტანტი 15 წლიანი გამოცდილებით. გაანალიზე [ბიზნესი] და მომეცი რეკომენდაციები.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>💻 ტექნიკური ექსპერტი</h4>
+                    <p style="font-size: 0.9rem;">შენ ხარ senior developer. ახსენი [ტექნოლოგია] best practices-ით და მაგალითებით.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Few-Shot Learning -->
+        <div class="section">
+            <h2 class="section-title">🎓 Few-Shot Learning</h2>
+
+            <div class="highlight-box">
+                <h4>რა არის?</h4>
+                <p>AI-ს აძლევ 2-5 მაგალითს, რათა ისწავლოს პატერნი და შექმნას მსგავსი შედეგი</p>
+            </div>
+
+            <div class="example-box">
+                <h4>სტრუქტურა:</h4>
+<pre>1. ახსენი რა გჭირდება
+2. მოიყვანე 2-3 მაგალითი
+3. მიაწოდე ახალი input
+4. AI შექმნის output პატერნის მიხედვით</pre>
+            </div>
+
+            <div class="example-box">
+                <h4>მაგალითი:</h4>
+<pre>შექმენი პროდუქტის აღწერა:
+
+მაგალითი 1:
+პროდუქტი: ლეპტოპი Dell XPS 13
+აღწერა: ულტრამსუბუქე ლეპტოპი. 13.3" 4K, Intel i7, 16GB RAM.
+ფასი: 2500 ლარი ⭐⭐⭐⭐⭐
+
+მაგალითი 2:
+პროდუქტი: ყურსასმენი Sony WH-1000XM4
+აღწერა: პრემიუმ noise-cancelling. 30 საათი ბატარეია.
+ფასი: 650 ლარი ⭐⭐⭐⭐⭐
+
+ახლა შექმენი:
+პროდუქტი: [თქვენი პროდუქტი]</pre>
+            </div>
+        </div>
+
+        <!-- Chain of Thought -->
+        <div class="section">
+            <h2 class="section-title">🔗 Chain of Thought (აზროვნების ჯაჭვი)</h2>
+
+            <div class="highlight-box">
+                <h4>რა არის?</h4>
+                <p>AI-ს აიძულებ ნაბიჯ-ნაბიჯ იფიქროს და ახსნას აზროვნების პროცესი</p>
+
+                <p><strong>როდის გამოვიყენოთ?</strong></p>
+                <ul>
+                    <li>✅ რთული მათემატიკური ამოცანები</li>
+                    <li>✅ ლოგიკური თავსატეხები</li>
+                    <li>✅ გადაწყვეტილების მიღება</li>
+                    <li>✅ მრავალეტაპიანი დავალებები</li>
+                    <li>✅ სტრატეგიული დაგეგმვა</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>სტრუქტურა:</h4>
+<pre>გადაწყვიტე ეს ამოცანა ნაბიჯ-ნაბიჯ:
+1. განიხილე რა არის მოცემული
+2. განსაზღვრე რა უნდა ვიპოვო
+3. აირჩიე შესაბამისი მეთოდი
+4. შეასრულე გამოთვლები ეტაპობრივად
+5. შეამოწმე პასუხის ლოგიკურობა
+
+პრობლემა: [კონკრეტული ამოცანა]</pre>
+            </div>
+        </div>
+
+        <!-- ფორმატის კონტროლი -->
+        <div class="section">
+            <h2 class="section-title">📋 გამომავალი ფორმატის კონტროლი</h2>
+
+            <table>
+                <tr>
+                    <th>ფორმატი</th>
+                    <th>როდის გამოიყენოთ</th>
+                    <th>მაგალითი</th>
+                </tr>
+                <tr>
+                    <td>📋 Bullet Points</td>
+                    <td>სწრაფი სიები, ძირითადი პუნქტები</td>
+                    <td>"მოამზადე 5 პუნქტიანი სია..."</td>
+                </tr>
+                <tr>
+                    <td>🔢 ნუმერირებული</td>
+                    <td>ნაბიჯ-ნაბიჯ ინსტრუქციები</td>
+                    <td>"შექმენი 10-ნაბიჯიანი გეგმა..."</td>
+                </tr>
+                <tr>
+                    <td>📊 ცხრილი</td>
+                    <td>შედარება, სტრუქტურირებული მონაცემები</td>
+                    <td>"შექმენი შედარებითი ცხრილი..."</td>
+                </tr>
+                <tr>
+                    <td>📧 Email</td>
+                    <td>პროფესიონალური კორესპონდენცია</td>
+                    <td>"დაწერე email [თემა]-ზე..."</td>
+                </tr>
+                <tr>
+                    <td>📝 პარაგრაფები</td>
+                    <td>სტატიები, ესეები, ანგარიშები</td>
+                    <td>"დაწერე 3 პარაგრაფად..."</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ტონის მართვა -->
+        <div class="section">
+            <h2 class="section-title">🎭 ტონისა და სტილის მართვა</h2>
+
+            <table>
+                <tr>
+                    <th>ტიპი</th>
+                    <th>გამოყენება</th>
+                    <th>მაგალითი</th>
+                </tr>
+                <tr>
+                    <td><strong>ფორმალური</strong></td>
+                    <td>ბიზნესი, აკადემია</td>
+                    <td>"გთხოვთ წარმოადგინოთ დეტალური ანალიზი..."</td>
+                </tr>
+                <tr>
+                    <td><strong>მეგობრული</strong></td>
+                    <td>ბლოგები, social media</td>
+                    <td>"ჰეი! იტყვი რას ფიქრობ ამ ფიჩაზე?"</td>
+                </tr>
+                <tr>
+                    <td><strong>ტექნიკური</strong></td>
+                    <td>დოკუმენტაცია</td>
+                    <td>"განხილეთ API endpoints-ის კონფიგურაცია..."</td>
+                </tr>
+                <tr>
+                    <td><strong>მოტივაციური</strong></td>
+                    <td>პრეზენტაციები</td>
+                    <td>"დღეს შანსია შექმნათ რამე უნიკალური!"</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ხშირი შეცდომები -->
+        <div class="section">
+            <h2 class="section-title">❌ ყველაზე ხშირი შეცდომები</h2>
+
+            <table>
+                <tr>
+                    <th>შეცდომა</th>
+                    <th>პრობლემა</th>
+                    <th>გადაწყვეტა</th>
+                </tr>
+                <tr>
+                    <td>ძალიან ზოგადი</td>
+                    <td>"დამეხმარე ბიზნესში"</td>
+                    <td>კონკრეტული: ტიპი, კონტექსტი, მიზანი</td>
+                </tr>
+                <tr>
+                    <td>კონტექსტის გარეშე</td>
+                    <td>"დაწერე კოდი"</td>
+                    <td>მიუთითე: ენა, ამოცანა, environment</td>
+                </tr>
+                <tr>
+                    <td>მრავალი ამოცანა</td>
+                    <td>"დაწერე CV, cover letter და LinkedIn"</td>
+                    <td>გაყავი 3 ცალკე prompt-ად</td>
+                </tr>
+                <tr>
+                    <td>ბუნდოვანი ფორმატი</td>
+                    <td>"მოამზადე ინფორმაცია"</td>
+                    <td>მკაფიოდ: სია/ცხრილი/პარაგრაფები</td>
+                </tr>
+                <tr>
+                    <td>აუდიტორიის უგულებელყოფა</td>
+                    <td>"ახსენი კვანტური ფიზიკა"</td>
+                    <td>მიუთითე: ვისთვის, რა დონეზე</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 15 ოქროს წესი -->
+        <div class="section">
+            <h2 class="section-title">⭐ 15 ოქროს წესი</h2>
+
+            <div class="two-column">
+                <div class="key-points">
+                    <ul>
+                        <li>1️⃣ დაიწყე მარტივიდან, გართულდი</li>
+                        <li>2️⃣ იყავი სპეციფიკური და ზუსტი</li>
+                        <li>3️⃣ მიაწოდე კონტექსტი</li>
+                        <li>4️⃣ განსაზღვრე როლი</li>
+                        <li>5️⃣ მიუთითე ფორმატი</li>
+                        <li>6️⃣ გამოიყენე მაგალითები</li>
+                        <li>7️⃣ Chain of Thought რთულ ამოცანებში</li>
+                        <li>8️⃣ მიუთითე შეზღუდვები</li>
+                    </ul>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>9️⃣ განსაზღვრე სიგრძე</li>
+                        <li>🔟 განსაზღვრე აუდიტორია და ტონი</li>
+                        <li>1️⃣1️⃣ იტერაციულად დახვეწე</li>
+                        <li>1️⃣2️⃣ შეინახე რაც მუშაობს</li>
+                        <li>1️⃣3️⃣ გამოიყენე თემპლეითები</li>
+                        <li>1️⃣4️⃣ ტესტირება და შედარება</li>
+                        <li>1️⃣5️⃣ ისწავლე სხვებისგან</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- უნივერსალური თემპლეიტი -->
+        <div class="section">
+            <h2 class="section-title">📋 უნივერსალური Prompt თემპლეიტი</h2>
+
+            <div class="example-box">
+<pre>[როლი] შენ ხარ [პროფესია/ექსპერტი].
+
+[ამოცანა] [დაწერე/გაანალიზე/ახსენი] [კონკრეტული დავალება].
+
+[კონტექსტი] [დამატებითი ინფორმაცია პროექტის/სიტუაციის შესახებ].
+
+[აუდიტორია] მიზნობრივი აუდიტორია: [ვინ არიან?].
+
+[ტონი] გამოიყენე [ფორმალური/მეგობრული/ტექნიკური] ტონი.
+
+[სიგრძე] [რაოდენობა] სიტყვა/პარაგრაფი/პუნქტი.
+
+[შინაარსი] ჩართე:
+1) [პუნქტი 1]
+2) [პუნქტი 2]
+3) [პუნქტი 3]
+
+[შეზღუდვები] თავიდან აიცილე: [რა არ უნდა იყოს].
+
+[ფორმატი] სტრუქტურა: [როგორ უნდა გამოიყურებოდეს].</pre>
+            </div>
+        </div>
+
+        <!-- მოწინავე ტექნიკები -->
+        <div class="section">
+            <h2 class="section-title">🚀 მოწინავე ტექნიკები</h2>
+
+            <div class="three-column">
+                <div class="highlight-box">
+                    <h4>1. Prompt Chaining</h4>
+                    <p style="font-size: 0.85rem;">რთული ამოცანის დაყოფა მარტივ ნაბიჯებად, სადაც თითოეული შედეგი შემდეგის input-ია</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>2. Meta Prompting</h4>
+                    <p style="font-size: 0.85rem;">AI-ს სთხოვე დაგეხმაროს prompt-ის შექმნაში: "რა prompt უნდა დავწერო რომ მივიღო X?"</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>3. Prompt Optimization</h4>
+                    <p style="font-size: 0.85rem;">ძველი prompt-ის გაუმჯობესება: "როგორ გავაუმჯობესო ეს prompt?"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="section">
+            <h2 class="section-title">✅ სწრაფი Checklist</h2>
+
+            <div class="warning-box">
+                <h4>ყოველი prompt-ის წინ შეამოწმე:</h4>
+                <ul class="checklist">
+                    <li>სპეციფიკურია თუ ზოგადი?</li>
+                    <li>კონტექსტი მოცემულია?</li>
+                    <li>როლი მინიჭებულია?</li>
+                    <li>ფორმატი მითითებულია?</li>
+                    <li>ტონი განსაზღვრულია?</li>
+                    <li>აუდიტორია ნათელია?</li>
+                    <li>სიგრძე მითითებულია?</li>
+                    <li>შეზღუდვები ჩამოთვლილია?</li>
+                </ul>
+                <p style="text-align: center; margin-top: 1rem;"><strong>თუ ყველაზე ✅ - კარგი prompt გაქვთ! 🎉</strong></p>
+            </div>
+        </div>
+
+        <!-- პრაქტიკა -->
+        <div class="section">
+            <h2 class="section-title">🎯 დღიური პრაქტიკა</h2>
+
+            <div class="key-points">
+                <h4>📅 7-დღიანი Challenge:</h4>
+                <ul>
+                    <li><strong>Day 1:</strong> შექმენი 5 განსხვავებული role-based prompt</li>
+                    <li><strong>Day 2:</strong> few-shot learning 3 სხვადასხვა ამოცანისთვის</li>
+                    <li><strong>Day 3:</strong> Chain of Thought რთული პრობლემის გადასაწყვეტად</li>
+                    <li><strong>Day 4:</strong> prompt-ების A/B testing - რომელი მუშაობს უკეთ?</li>
+                    <li><strong>Day 5:</strong> თარგმნე არსებული ინსტრუქციები prompt-ებად</li>
+                    <li><strong>Day 6:</strong> debug და გააუმჯობესე 5 "broken" prompt</li>
+                    <li><strong>Day 7:</strong> შექმენი prompt template library შენი სამუშაოსთვის</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- რესურსები -->
+        <div class="section">
+            <h2 class="section-title">📚 რესურსები შემდგომი სწავლისთვის</h2>
+
+            <div class="three-column">
+                <div class="highlight-box">
+                    <h4>📖 სასწავლო</h4>
+                    <ul style="font-size: 0.85rem;">
+                        <li>OpenAI Guide</li>
+                        <li>Learn Prompting</li>
+                        <li>Anthropic Library</li>
+                        <li>OpenAI Cookbook</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🛠️ ხელსაწყოები</h4>
+                    <ul style="font-size: 0.85rem;">
+                        <li>PromptPerfect</li>
+                        <li>ChatGPT Prompt Gen</li>
+                        <li>AIPRM Extension</li>
+                        <li>PromptBase</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>👥 კომუნიტეტები</h4>
+                    <ul style="font-size: 0.85rem;">
+                        <li>r/PromptEngineering</li>
+                        <li>OpenAI Discord</li>
+                        <li>LinkedIn Groups</li>
+                        <li>#PromptEngineering</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>ეს სწრაფი სცენარი არის თქვენი დღიური companion Prompt Engineering-ის დაუფლებისთვის.</p>
+            <p>დაბეჭდეთ, შეინახეთ და ხშირად დაუბრუნდით!</p>
+            <p><strong>Version 1.0</strong> | Smart Academy - AI Practical Course | 2025-10</p>
+        </div>
+    </div>
+</body>
+</html>

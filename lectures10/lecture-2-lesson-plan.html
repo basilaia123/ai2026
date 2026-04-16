@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Plan - ლექცია 2: Prompt Engineering | AI პრაქტიკაში</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header .meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .header .meta-item {
+            background: #e3f2fd;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            border-left: 4px solid #2196f3;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .content-section h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            font-weight: 700;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .content-section h3 {
+            color: #764ba2;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .objectives-list li {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            margin: 0.8rem 0;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+            transition: all 0.3s ease;
+        }
+
+        .objectives-list li:hover {
+            transform: translateX(5px);
+            background: #e8f5e9;
+        }
+
+        .timeline {
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            background: #ffffff;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            transform: translateX(5px);
+        }
+
+        .timeline-item h4 {
+            color: #667eea;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timeline-item .duration {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .timeline-item ul {
+            padding-left: 2rem;
+            margin-top: 1rem;
+        }
+
+        .timeline-item li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h4 {
+            color: #1976d2;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box h4 {
+            color: #f57c00;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .key-points {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 1.5rem 0;
+        }
+
+        .key-points h4 {
+            color: #388e3c;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .material-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .material-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .material-card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            margin: 0.5rem;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            .header .meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .timeline-item h4 {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .timeline-item .duration {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Lesson Plan - ლექცია 2</h1>
+            <h2 style="color: #764ba2; font-size: 2rem; margin-top: 1rem;">Prompt Engineering: ეფექტური მოთხოვნების ხელოვნება</h2>
+            <div class="meta">
+                <div class="meta-item">⏰ ხანგრძლივობა: 120 წუთი</div>
+                <div class="meta-item">👥 დონე: დამწყები-საშუალო</div>
+                <div class="meta-item">🎯 ფორმატი: თეორია + პრაქტიკა</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>🎯 ლექციის მიზნები</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+                ამ ლექციის დასასრულს, მსმენელებს შეეძლებათ:
+            </p>
+            <ul class="objectives-list">
+                <li><strong>🔧 გაიაზრონ Prompt Engineering-ის ძირითადი პრინციპები</strong> და როგორ გავლენას ახდენს prompt-ის ხარისხი AI-ის პასუხებზე</li>
+                <li><strong>📝 დაეუფლონ სხვადასხვა prompting ტექნიკას:</strong> Zero-shot, Few-shot, Chain-of-thought, Role-based</li>
+                <li><strong>💡 შექმნან ეფექტური და ოპტიმიზირებული prompts</strong> თავიანთი პროფესიული საჭიროებისთვის</li>
+                <li><strong>🎭 გამოიყენონ როლური prompting</strong> უფრო ზუსტი და კონტექსტური პასუხების მისაღებად</li>
+                <li><strong>🔗 გაიგონ Chain-of-thought reasoning</strong> და როგორ გამოიყენონ იგი რთული პრობლემების გადაჭრისთვის</li>
+                <li><strong>⚙️ ოპტიმიზაცია გაუკეთონ არსებულ prompts-ებს</strong> და გააუმჯობესონ მათი ეფექტურობა</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>📋 ლექციის სტრუქტურა და ქრონოლოგია</h2>
+
+            <div class="timeline">
+                <!-- ნაწილი 1 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>1️⃣ შესავალი და გამეორება</span>
+                        <span class="duration">10 წუთი</span>
+                    </h4>
+                    <p><strong>აქტივობა:</strong> ლექცია 1-ის მასალის სწრაფი გამეორება და Q&A</p>
+                    <ul>
+                        <li>რა არის AI და გენერატიული ინტელექტი?</li>
+                        <li>ChatGPT-ის ძირითადი შესაძლებლობები და შეზღუდვები</li>
+                        <li>Prompt-ის განმარტება და მნიშვნელობა</li>
+                        <li>საშინაო დავალება #1-ის მოკლე დისკუსია (რა ისწავლეს სტუდენტებმა)</li>
+                    </ul>
+                    <div class="highlight-box" style="margin-top: 1rem;">
+                        <strong>💡 მასწავლებლის შენიშვნა:</strong> მოკლე ინტერაქტიური Q&A - სთხოვეთ მსმენელებს გაუზიარონ თავიანთი გამოცდილება კვირის განმავლობაში.
+                    </div>
+                </div>
+
+                <!-- ნაწილი 2 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>2️⃣ Prompt Engineering საფუძვლები</span>
+                        <span class="duration">20 წუთი</span>
+                    </h4>
+                    <p><strong>თემები:</strong></p>
+                    <ul>
+                        <li><strong>რა არის Prompt Engineering?</strong> - განმარტება და მნიშვნელობა</li>
+                        <li><strong>Prompt-ის ანატომია:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>ინსტრუქცია (Instruction)</li>
+                                <li>კონტექსტი (Context)</li>
+                                <li>Input მონაცემები</li>
+                                <li>Output ფორმატი</li>
+                            </ul>
+                        </li>
+                        <li><strong>CLEAR Framework:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li><strong>C</strong>oncise - მოკლე და კონკრეტული</li>
+                                <li><strong>L</strong>ogical - ლოგიკური სტრუქტურა</li>
+                                <li><strong>E</strong>xplicit - ზუსტი ინსტრუქციები</li>
+                                <li><strong>A</strong>daptive - ადაპტირებული მიზნისთვის</li>
+                                <li><strong>R</strong>efinable - გასაუმჯობესებელი</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="key-points" style="margin-top: 1rem;">
+                        <strong>🎯 ძირითადი იდეა:</strong> Prompt Engineering არის უნარი, რომელიც სჭირდება ყველას ვისაც AI-ს იყენებს - ეს არის AI-თან კომუნიკაციის ენა.
+                    </div>
+                </div>
+
+                <!-- ნაწილი 3 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>3️⃣ Zero-shot vs Few-shot Prompting</span>
+                        <span class="duration">25 წუთი</span>
+                    </h4>
+                    <p><strong>თეორია და პრაქტიკა:</strong></p>
+                    <ul>
+                        <li><strong>Zero-shot Prompting:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>განმარტება: ინსტრუქცია მაგალითების გარეშე</li>
+                                <li>როდის გამოიყენება</li>
+                                <li>უპირატესობები და შეზღუდვები</li>
+                                <li>პრაქტიკული მაგალითები</li>
+                            </ul>
+                        </li>
+                        <li><strong>Few-shot Prompting:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>განმარტება: ინსტრუქცია მაგალითებით</li>
+                                <li>როგორ შევქმნათ ეფექტური მაგალითები</li>
+                                <li>One-shot, Two-shot, Few-shot განსხვავება</li>
+                                <li>მაგალითების ხარისხის მნიშვნელობა</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="warning-box" style="margin-top: 1rem;">
+                        <strong>⚠️ პრაქტიკული დავალება (10 წუთი):</strong> მსმენელები ქმნიან Zero-shot და Few-shot prompts-ებს იმავე ამოცანისთვის და ადარებენ შედეგებს.
+                    </div>
+                </div>
+
+                <!-- ნაწილი 4 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>4️⃣ Chain-of-Thought (CoT) Prompting</span>
+                        <span class="duration">20 წუთი</span>
+                    </h4>
+                    <p><strong>რთული პრობლემების გადაწყვეტა:</strong></p>
+                    <ul>
+                        <li><strong>რა არის Chain-of-Thought?</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>ნაბიჯ-ნაბიჯ reasoning-ის მნიშვნელობა</li>
+                                <li>როგორ აფიქრებს AI პრობლემას CoT-ით</li>
+                            </ul>
+                        </li>
+                        <li><strong>CoT ტექნიკები:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>"Let's think step by step" - მარტივი CoT</li>
+                                <li>Manual CoT - დეტალური ინსტრუქციები</li>
+                                <li>Auto CoT - AI-ს თავად უქმნის reasoning path</li>
+                            </ul>
+                        </li>
+                        <li><strong>გამოყენების სფეროები:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>მათემატიკური ამოცანები</li>
+                                <li>ლოგიკური პრობლემები</li>
+                                <li>რთული გადაწყვეტილებების მიღება</li>
+                                <li>ანალიტიკური დავალებები</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- შესვენება -->
+                <div class="timeline-item" style="background: #fff3e0; border-left-color: #ff9800;">
+                    <h4>
+                        <span>☕ შესვენება</span>
+                        <span class="duration" style="background: #ff9800;">10 წუთი</span>
+                    </h4>
+                    <p>მოკლე შესვენება და ნეთვორქინგი</p>
+                </div>
+
+                <!-- ნაწილი 5 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>5️⃣ Role-based Prompting</span>
+                        <span class="duration">20 წუთი</span>
+                    </h4>
+                    <p><strong>როლების გამოყენება ეფექტური პასუხებისთვის:</strong></p>
+                    <ul>
+                        <li><strong>რა არის Role-based Prompting?</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>AI-სთვის როლის მინიჭება</li>
+                                <li>რატომ მუშაობს ეს მეთოდი</li>
+                            </ul>
+                        </li>
+                        <li><strong>როლების ტიპები:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>პროფესიული როლები (ექსპერტი, კონსულტანტი, ანალიტიკოსი)</li>
+                                <li>სასწავლო როლები (მასწავლებელი, მენტორი, კოუჩი)</li>
+                                <li>კრეატიული როლები (მწერალი, დიზაინერი, იდეა generator)</li>
+                                <li>ტექნიკური როლები (პროგრამისტი, ინჟინერი, architect)</li>
+                            </ul>
+                        </li>
+                        <li><strong>როლის ეფექტური განსაზღვრა:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>როლის დეტალური აღწერა</li>
+                                <li>ექსპერტიზის დონის მითითება</li>
+                                <li>სტილისა და ტონის განსაზღვრა</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="highlight-box" style="margin-top: 1rem;">
+                        <strong>💡 მაგალითი:</strong> "შენ ხარ გამოცდილი მარკეტინგის კონსულტანტი 15 წლიანი გამოცდილებით მცირე ბიზნესის სეგმენტში..."
+                    </div>
+                </div>
+
+                <!-- ნაწილი 6 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>6️⃣ Prompt ოპტიმიზაციის სტრატეგიები</span>
+                        <span class="duration">15 წუთი</span>
+                    </h4>
+                    <p><strong>როგორ გავაუმჯობესოთ არსებული prompts:</strong></p>
+                    <ul>
+                        <li><strong>ოპტიმიზაციის ტექნიკები:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>დაამატეთ კონტექსტი და დეტალები</li>
+                                <li>განსაზღვრეთ output-ის ფორმატი</li>
+                                <li>დააყენეთ შეზღუდვები (constraints)</li>
+                                <li>მიუთითეთ აუდიტორია და tone</li>
+                                <li>გამოიყენეთ delimiters სტრუქტურისთვის</li>
+                            </ul>
+                        </li>
+                        <li><strong>Iterative Refinement:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>პირველი prompt - baseline</li>
+                                <li>შედეგის შეფასება</li>
+                                <li>prompt-ის დახვეწა</li>
+                                <li>A/B testing სხვადასხვა ვერსიებს შორის</li>
+                            </ul>
+                        </li>
+                        <li><strong>Common Mistakes და როგორ ავირიდოთ:</strong>
+                            <ul style="margin-top: 0.5rem;">
+                                <li>ძალიან ზოგადი prompts</li>
+                                <li>ბუნდოვანი ინსტრუქციები</li>
+                                <li>კონფლიქტური მოთხოვნები</li>
+                                <li>არასაკმარისი კონტექსტი</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ნაწილი 7 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>7️⃣ პრაქტიკული სემინარი</span>
+                        <span class="duration">15 წუთი</span>
+                    </h4>
+                    <p><strong>ჯგუფური პრაქტიკული დავალება:</strong></p>
+                    <ul>
+                        <li>მსმენელები იყოფიან 3-4 კაციან ჯგუფებად</li>
+                        <li>თითოეულ ჯგუფს ეძლევა სცენარი/ამოცანა</li>
+                        <li>უნდა შექმნან 3 სხვადასხვა prompt:
+                            <ul style="margin-top: 0.5rem;">
+                                <li>Zero-shot prompt</li>
+                                <li>Few-shot prompt</li>
+                                <li>Role-based + CoT prompt</li>
+                            </ul>
+                        </li>
+                        <li>ჯგუფები ტესტავენ prompts-ებს და აფასებენ შედეგებს</li>
+                        <li>ერთი ჯგუფი წარმოადგენს თავის საუკეთესო prompt-ს</li>
+                    </ul>
+                    <div class="key-points" style="margin-top: 1rem;">
+                        <strong>🎯 მიზანი:</strong> პრაქტიკული გამოცდილება და პირდაპირი შედარება სხვადასხვა ტექნიკების ეფექტურობაში.
+                    </div>
+                </div>
+
+                <!-- ნაწილი 8 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>8️⃣ რეალური სამყაროს Use Cases</span>
+                        <span class="duration">10 წუთი</span>
+                    </h4>
+                    <p><strong>Prompt Engineering პროფესიულ გარემოში:</strong></p>
+                    <ul>
+                        <li><strong>მარკეტინგი:</strong> კონტენტის შექმნა, SEO, სოციალური მედია</li>
+                        <li><strong>პროგრამირება:</strong> კოდის გენერაცია, debugging, documentation</li>
+                        <li><strong>ბიზნეს ანალიტიკა:</strong> მონაცემთა ანალიზი, რეპორტები</li>
+                        <li><strong>მომხმარებელთა მომსახურება:</strong> სწრაფი პასუხები, FAQ-ების შექმნა</li>
+                        <li><strong>განათლება:</strong> სასწავლო მასალები, ქვიზები, განმარტებები</li>
+                        <li><strong>კვლევა:</strong> ლიტერატურის მიმოხილვა, ჰიპოთეზის გენერაცია</li>
+                    </ul>
+                </div>
+
+                <!-- ნაწილი 9 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>9️⃣ საშინაო დავალება #2 - ახსნა</span>
+                        <span class="duration">5 წუთი</span>
+                    </h4>
+                    <p><strong>დავალების გაცნობა:</strong></p>
+                    <ul>
+                        <li>დავალების სტრუქტურა და მოთხოვნები</li>
+                        <li>შეფასების კრიტერიუმები</li>
+                        <li>ჩაბარების ვადა და ფორმატი</li>
+                        <li>მოსალოდნელი გამოწვევები და რჩევები</li>
+                    </ul>
+                </div>
+
+                <!-- ნაწილი 10 -->
+                <div class="timeline-item">
+                    <h4>
+                        <span>🔟 შეჯამება და Q&A</span>
+                        <span class="duration">10 წუთი</span>
+                    </h4>
+                    <p><strong>ლექციის დასკვნები:</strong></p>
+                    <ul>
+                        <li>ძირითადი takeaways გამეორება</li>
+                        <li>მსმენელთა კითხვები და პასუხები</li>
+                        <li>შემდეგი ლექციის გაცნობა (ლექცია 3: ტექსტის გენერაცია და სტილი)</li>
+                        <li>დამატებითი რესურსების გაზიარება</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>📚 საჭირო მასალები</h2>
+            <div class="materials-grid">
+                <div class="material-card">
+                    <h4>💻 ტექნიკური</h4>
+                    <ul>
+                        <li>ChatGPT / Claude / Gemini წვდომა</li>
+                        <li>პროექტორი / ეკრანი demo-სთვის</li>
+                        <li>ინტერნეტ კავშირი</li>
+                    </ul>
+                </div>
+
+                <div class="material-card">
+                    <h4>📄 დოკუმენტები</h4>
+                    <ul>
+                        <li>სლაიდები (lecture-2-slides.html)</li>
+                        <li>Prompt მაგალითების კოლექცია</li>
+                        <li>საშინაო დავალების ფორმა</li>
+                    </ul>
+                </div>
+
+                <div class="material-card">
+                    <h4>👥 მსმენელებისთვის</h4>
+                    <ul>
+                        <li>ლეპტოპი/ტაბლეტი (პრაქტიკისთვის)</li>
+                        <li>AI ინსტრუმენტებზე წვდომა</li>
+                        <li>Notebook შენიშვნებისთვის</li>
+                    </ul>
+                </div>
+
+                <div class="material-card">
+                    <h4>📖 დამხმარე რესურსები</h4>
+                    <ul>
+                        <li>OpenAI Prompting Guide</li>
+                        <li>Prompt Engineering Best Practices</li>
+                        <li>Real-world examples კოლექცია</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>💡 მასწავლებლის მითითებები</h2>
+
+            <div class="highlight-box">
+                <h4>🎯 ლექციის წარმართვის რჩევები:</h4>
+                <ul style="padding-left: 2rem; margin-top: 1rem;">
+                    <li><strong>ინტერაქტიული მიდგომა:</strong> ხშირად სთხოვეთ მსმენელებს მაგალითების გაზიარება მათი სამუშაო გამოცდილებიდან</li>
+                    <li><strong>Live Demos:</strong> აჩვენეთ თითოეული ტექნიკა ცოცხალ რეჟიმში ChatGPT-ში - არა სლაიდებზე!</li>
+                    <li><strong>Before/After შედარება:</strong> ყოველთვის აჩვენეთ ცუდი prompt → კარგი prompt ტრანსფორმაცია</li>
+                    <li><strong>პრაქტიკული დავალებები:</strong> ნება დართეთ მსმენელებს ექსპერიმენტირება დროის განმავლობაში</li>
+                    <li><strong>შეცდომებიდან სწავლება:</strong> გაუზიარეთ common mistakes და როგორ გამოსწორება</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ პოტენციური გამოწვევები:</h4>
+                <ul style="padding-left: 2rem; margin-top: 1rem;">
+                    <li><strong>დროის მენეჯმენტი:</strong> პრაქტიკული სემინარი შეიძლება გაგრძელდეს - მკაცრად დაიცავით დრო</li>
+                    <li><strong>ტექნიკური პრობლემები:</strong> გქონდეთ backup plan თუ ინტერნეტი ან AI სერვისი არ მუშაობს</li>
+                    <li><strong>დონეების განსხვავება:</strong> ზოგიერთი მსმენელი უკვე მოწინავე, ზოგი დამწყები - ბალანსი აუცილებელია</li>
+                    <li><strong>AI Variability:</strong> ხანდახან AI არ იძლევა იდეალურ პასუხებს - გამოიყენეთ ეს როგორც სასწავლო მომენტი</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <h4>✅ შეფასების კრიტერიუმები (მონაწილეობა):</h4>
+                <ul style="padding-left: 2rem; margin-top: 1rem;">
+                    <li>აქტიური მონაწილეობა პრაქტიკულ დავალებებში</li>
+                    <li>კითხვების დასმა და დისკუსიაში ჩართვა</li>
+                    <li>ჯგუფურ სემინარში კონტრიბუცია</li>
+                    <li>Prompt-ების ექსპერიმენტირება ლექციის განმავლობაში</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>🔗 დამატებითი რესურსები</h2>
+            <ul style="padding-left: 2rem; font-size: 1.05rem; line-height: 2;">
+                <li>📖 <strong>OpenAI Prompt Engineering Guide:</strong> https://platform.openai.com/docs/guides/prompt-engineering</li>
+                <li>📚 <strong>Anthropic Prompt Library:</strong> https://docs.anthropic.com/claude/prompt-library</li>
+                <li>🎓 <strong>Learn Prompting:</strong> https://learnprompting.org/</li>
+                <li>💼 <strong>PromptBase:</strong> https://promptbase.com/ (prompt marketplace)</li>
+                <li>🔧 <strong>ChatGPT Prompt Generator:</strong> სხვადასხვა online tools</li>
+            </ul>
+        </div>
+
+        <div class="navigation">
+            <a href="lecture-1-lesson-plan.html" class="back-button">← ლექცია 1 Lesson Plan</a>
+            <a href="lecture-2-slides.html" class="back-button">📊 ლექცია 2 სლაიდები</a>
+            <a href="homework-2.html" class="back-button">📝 საშინაო #2</a>
+            <a href="index.html" class="back-button">🏠 მთავარი გვერდი</a>
+        </div>
+    </div>
+</body>
+</html>

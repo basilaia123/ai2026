@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ლექცია 2: მითითებების ინჟინერია (Prompt Engineering)</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .slide {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+            min-height: 80vh;
+            position: relative;
+        }
+
+        .slide h1 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+        }
+
+        .slide h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .slide h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .slide-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .slide ul {
+            padding-left: 2rem;
+            margin: 1rem 0;
+        }
+
+        .slide li {
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .highlight-box {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 1.5rem 0;
+        }
+
+        .key-points {
+            background: #f1f8e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 1.5rem 0;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .additional-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .additional-info h4 {
+            background: #e9ecef;
+            padding: 1rem;
+            margin: 0;
+            border-radius: 8px 8px 0 0;
+            color: #495057;
+            font-size: 1rem;
+        }
+
+        .additional-info .content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .additional-info.active .content {
+            display: block;
+        }
+
+        .additional-info:hover {
+            border-color: #667eea;
+        }
+
+        .demo-box {
+            background: #fff9c4;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #ffc107;
+            margin: 1.5rem 0;
+        }
+
+        .exercise-box {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+            margin: 1.5rem 0;
+        }
+
+        .example-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #9e9e9e;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .slide h1 {
+                font-size: 2rem;
+            }
+
+            .slide h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .navigation {
+            background: #2c3e50;
+            padding: 20px 0;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-info {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Top Navigation Menu */
+        .top-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+        }
+
+        .top-nav-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .top-nav-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .top-nav-link.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav-container {
+                gap: 0.5rem;
+            }
+
+            .top-nav-link {
+                padding: 0.25rem 0.4rem;
+                font-size: 0.45rem;
+            }
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #f8f8f2;
+        }
+
+        /* ===== DARK MODE ===== */
+        .theme-toggle {
+            position: fixed;
+            top: 3.5rem;
+            right: 1rem;
+            z-index: 9999;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+            transition: all 0.3s ease;
+            font-family: 'FiraGO', sans-serif;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+        }
+
+        body.dark .slide {
+            background: #1e293b;
+            color: #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-left-color: #818cf8;
+        }
+
+        body.dark .slide h1 {
+            color: #f1f5f9;
+            border-bottom-color: #818cf8;
+        }
+
+        body.dark .slide h2 { color: #f1f5f9; }
+        body.dark .slide h3 { color: #cbd5e1; }
+        body.dark .slide-content { color: #e2e8f0; }
+        body.dark .slide li { color: #e2e8f0; }
+        body.dark .slide p { color: #e2e8f0; }
+
+        body.dark .highlight-box {
+            background: #1e3a5f;
+            color: #bfdbfe;
+            border-left-color: #3b82f6;
+        }
+
+        body.dark .warning-box {
+            background: #431407;
+            color: #fed7aa;
+            border-left-color: #f97316;
+        }
+
+        body.dark .key-points {
+            background: #14281b;
+            color: #bbf7d0;
+            border-left-color: #22c55e;
+        }
+
+        body.dark .demo-box {
+            background: #312e00;
+            color: #fef08a;
+            border-left-color: #eab308;
+        }
+
+        body.dark .exercise-box {
+            background: #14281b;
+            color: #bbf7d0;
+            border-left-color: #22c55e;
+        }
+
+        body.dark .additional-info {
+            background: #263347;
+            border-color: #475569;
+        }
+
+        body.dark .additional-info h4 {
+            background: #334155;
+            color: #cbd5e1;
+        }
+
+        body.dark .additional-info .content { color: #e2e8f0; }
+
+        body.dark .quiz-question {
+            background: #1e293b;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        body.dark .quiz-question h4 { color: #93c5fd; }
+
+        body.dark .quiz-options li {
+            background: #263347;
+            color: #e2e8f0;
+        }
+
+        body.dark .quiz-options li:hover { background: #334155; }
+
+        body.dark .quiz-answer {
+            background: #1e3a5f;
+            color: #bfdbfe;
+            border-left-color: #3b82f6;
+        }
+
+        body.dark .history-event { background: rgba(129,140,248,0.05); }
+        body.dark .history-event:hover { background: rgba(129,140,248,0.15); }
+        body.dark .history-event strong { color: #93c5fd; }
+
+        body.dark .history-description {
+            background: #263347;
+            color: #e2e8f0;
+            border-left-color: #818cf8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .navigation { background: #1e293b; }
+        body.dark .nav-info { color: #e2e8f0; }
+        body.dark .nav-btn:disabled { background: #4b5563; }
+        body.dark .slide-number { background: #818cf8; }
+
+        body.dark .top-nav {
+            background: linear-gradient(135deg, #4338ca 0%, #5b21b6 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="თემა / Theme">🌙</button>
+
+    <!-- Top Navigation Menu -->
+    <nav class="top-nav">
+        <div class="top-nav-container">
+            <a href="index.html" class="top-nav-link">🏠 მთავარი</a>
+            <a href="lecture-2-slides.html" class="top-nav-link active">📊 სლაიდები</a>
+            <a href="lecture-2-exercises.html" class="top-nav-link">✏️ სავარჯიშოები</a>
+            <a href="lecture-2-study-guide.html" class="top-nav-link">📚 სასწავლო გზამკვლევი</a>
+            <a href="lecture-2-summary.html" class="top-nav-link">📝 რეზიუმე</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Slide 1: Title -->
+        <div class="slide">
+            <span class="slide-number">1/28</span>
+            <h1>ლექცია 2: მითითებების ინჟინერია (Prompt Engineering)</h1>
+            <div class="slide-content" style="text-align: center; padding-top: 3rem;">
+                <h2 style="color: #667eea; margin-bottom: 2rem;">ხელოვნურ ინტელექტთან ეფექტიანი კომუნიკაციის ხელოვნება</h2>
+                <p style="font-size: 1.3rem; color: #555; margin-bottom: 1rem;">ხელოვნური ინტელექტი (AI) პრაქტიკაში</p>
+                <p style="font-size: 1.1rem; color: #777;">ლექტორი: გიორგი ბასილაია</p>
+                <p style="font-size: 1rem; color: #999; margin-top: 2rem;">Smart Academy</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Learning Objectives -->
+        <div class="slide">
+            <span class="slide-number">2/28</span>
+            <h2>ლექციის მიზნები</h2>
+            <div class="slide-content">
+                <div class="key-points">
+                    <h3>ამ ლექციის დასრულების შემდეგ შეძლებთ:</h3>
+                    <ul>
+                        <li>გაიგოთ, რა არის მითითებების ინჟინერია (Prompt Engineering) და რატომ არის ის მნიშვნელოვანი;</li>
+                        <li>შექმნათ ეფექტიანი და სპეციფიკური მითითებები (პრომპტები);</li>
+                        <li>გამოიყენოთ მითითებების შედგენის (პრომპტინგის) სხვადასხვა ტექნიკა (როლზე დაფუძნებული, „few-shot“, აზროვნების ჯაჭვი);</li>
+                        <li>მართოთ AI-ის შედეგის ფორმატი და სტილი;</li>
+                        <li>თავიდან აიცილოთ ყველაზე ხშირი შეცდომები;</li>
+                        <li>გამოიყენოთ საუკეთესო პრაქტიკები რეალურ ამოცანებში.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: What is Prompt Engineering -->
+        <div class="slide">
+            <span class="slide-number">3/28</span>
+            <h2>რა არის Prompt Engineering?</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>განმარტება</h3>
+                    <p><strong>მითითებების ინჟინერია (Prompt Engineering)</strong> არის პროცესი, რომლის დროსაც ვქმნით და ვაოპტიმიზებთ ინსტრუქციებს (პრომპტებს) AI მოდელისთვის, რათა მივიღოთ სასურველი და ხარისხიანი შედეგები.</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>რატომ არის მნიშვნელოვანი?</h3>
+                        <ul>
+                            <li>AI-ს „გონება“ არ აქვს - მას ესაჭიროება მკაფიო ინსტრუქციები;</li>
+                            <li>ერთი და იმავე კითხვის სხვადასხვა ფორმულირება სრულიად განსხვავებულ შედეგებს იძლევა;</li>
+                            <li>კარგი მითითება (პრომპტი) დროსა და ენერგიას გიზოგავთ;</li>
+                            <li>ეფექტიანი მითითებები (პრომპტები) პროდუქტიულობას 10-ჯერ ზრდის.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>მითითების (პრომპტის) როლი</h3>
+                        <ul>
+                            <li>ხიდი თქვენსა და AI-ს შორის;</li>
+                            <li>აზროვნების მიმართულების განსაზღვრა;</li>
+                            <li>კონტექსტის და მიზნის დაზუსტება;</li>
+                            <li>ხარისხის და რელევანტურობის გარანტია.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Bad vs Good Prompts -->
+        <div class="slide">
+            <span class="slide-number">4/28</span>
+            <h2>ცუდი vs კარგი მითითებები (პრომპტები)</h2>
+            <div class="slide-content">
+                <div class="two-column">
+                    <div>
+                        <div class="warning-box">
+                            <h3>❌ ცუდი მითითება (პრომპტი)</h3>
+                            <pre><code>"დაწერე რამე ბიზნესზე"</code></pre>
+                            <p><strong>რატომ არის ცუდი?</strong></p>
+                            <ul>
+                                <li>ძალიან ზოგადი;</li>
+                                <li>კონტექსტის გარეშე;</li>
+                                <li>ფორმატი მითითებული არ არის;</li>
+                                <li>აუდიტორია უცნობია.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="key-points">
+                            <h3>✅ კარგი მითითება (პრომპტი)</h3>
+                            <pre><code>"დაწერე 500-სიტყვიანი სტატია
+მცირე ბიზნესის დაწყების შესახებ
+საქართველოში, ფოკუსირებული
+IT სფეროზე, გამიზნული
+25-35 წლის ახალგაზრდებისთვის.
+ჩართე: 1) საწყისი ინვესტიცია,
+2) იურიდიული ასპექტები,
+3) ფინანსური დაგეგმვა"</code></pre>
+                            <p><strong>რატომ არის კარგი?</strong></p>
+                            <ul>
+                                <li>სპეციფიკური (500 სიტყვა);</li>
+                                <li>მკაფიო კონტექსტი (IT, საქართველო);</li>
+                                <li>აუდიტორია განსაზღვრული;</li>
+                                <li>შინაარსი დეტალიზებული.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Elements of Effective Prompts -->
+        <div class="slide">
+            <span class="slide-number">5/28</span>
+            <h2>ეფექტიანი მითითების (პრომპტის) ელემენტები</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>6 ძირითადი კომპონენტი</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div class="example-box">
+                        <h4>1️⃣ ამოცანა (Task)</h4>
+                        <p>რა უნდა გააკეთოს AI-მ?</p>
+                        <code>„დაწერე“, „გაანალიზე“, „ახსენი“</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>2️⃣ კონტექსტი (Context)</h4>
+                        <p>რა ინფორმაცია სჭირდება?</p>
+                        <code>„საქართველოში, IT ინდუსტრიაში“</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>3️⃣ როლი (Role)</h4>
+                        <p>რა როლი უნდა შეასრულოს AI-მ?</p>
+                        <code>„შენ ხარ გამოცდილი მარკეტინგული ექსპერტი“</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>4️⃣ ფორმატი (Format)</h4>
+                        <p>როგორ უნდა გამოიყურებოდეს პასუხი?</p>
+                        <code>„ჩამონათვალის სახით“, „ცხრილი“, „ნაბიჯ-ნაბიჯ“</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>5️⃣ ტონი (Tone)</h4>
+                        <p>რა სტილით უნდა იყოს დაწერილი?</p>
+                        <code>„ფორმალური“, „მეგობრული“, „ტექნიკური“</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>6️⃣ აუდიტორია (Audience)</h4>
+                        <p>ვისთვის არის განკუთვნილი?</p>
+                        <code>„დამწყებებისთვის“, „პროფესიონალებისთვის“</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 2025 AI Models Comparison -->
+        <div class="slide">
+            <span class="slide-number">6/28</span>
+            <h2>2025 წლის უახლესი AI მოდელები</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>🚀 ახალი თაობის AI: GPT-5, Claude 4.5, Gemini 3 Pro</h3>
+                    <p>2025 წელმა მოიტანა რევოლუციური განახლებები - თითოეული მოდელი უნიკალური შესაძლებლობებით და მითითებების ინჟინერიის (Prompt Engineering) მიდგომებით.</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem;">
+                    <div class="demo-box">
+                        <h4>GPT-5 / GPT-5.2 (OpenAI)</h4>
+                        <p><strong>ძირითადი ინოვაციები:</strong></p>
+                        <ul>
+                            <li><strong>94.6%</strong> AIME 2025 მათემატიკაში;</li>
+                            <li><strong>74.9%</strong> SWE-bench კოდირებაში;</li>
+                            <li>3 ვარიანტი: Instant, Thinking, Pro;</li>
+                            <li>45-80% ნაკლები ჰალუცინაციები (hallucinations);</li>
+                            <li><code>reasoning_effort</code> პარამეტრი.</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;"><strong>მითითებების შედგენის (Prompting) რჩევა:</strong> მინიმალისტური მითითებები (40% ნაკლები ტოკენი (tokens)), GPT-5-Codex-ისთვის უფრო მოკლე ინსტრუქციები.</p>
+                    </div>
+
+                    <div class="demo-box">
+                        <h4>Claude 4.5 Sonnet/Haiku (Anthropic)</h4>
+                        <p><strong>გაუმჯობესებული შესაძლებლობები:</strong></p>
+                        <ul>
+                            <li>გაძლიერებული ინსტრუქციების დაცვა;</li>
+                            <li>Long-horizon reasoning;</li>
+                            <li>მოკლე და ბუნებრივი კომუნიკაცია;</li>
+                            <li>Native subagent orchestration;</li>
+                            <li>Exceptional state tracking.</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;"><strong>მითითებების შედგენის (Prompting) რჩევა:</strong> ნათელი და აშკარა (explicit) ინსტრუქციები, კონტექსტი და მოტივაცია მნიშვნელოვანია, მაგალითები დეტალურად.</p>
+                    </div>
+
+                    <div class="demo-box">
+                        <h4>Gemini 3 Pro (Google)</h4>
+                        <p><strong>State-of-the-art შესაძლებლობები:</strong></p>
+                        <ul>
+                            <li><strong>1M ტოკენი (token)</strong> context window;</li>
+                            <li>64k ტოკენი (tokens) output;</li>
+                            <li>Dynamic thinking (thinking_level);</li>
+                            <li>Agentic coding capabilities;</li>
+                            <li>მულტიმოდალური (multimodal) მასტერინგი (video, PDF, code).</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;"><strong>მითითებების შედგენის (Prompting) რჩევა:</strong> გამარტივებული მითითებები (prompts), Temperature=1.0 (default), კონკრეტული და პირდაპირი ინსტრუქციები.</p>
+                    </div>
+                </div>
+
+                <div class="key-points" style="margin-top: 2rem;">
+                    <h4>💡 მთავარი განსხვავებები 2025 წელს</h4>
+                    <ul>
+                        <li><strong>GPT-5:</strong> საუკეთესო კოდირებისა და მათემატიკისთვის, reasoning_effort კონტროლით;</li>
+                        <li><strong>Claude 4.5:</strong> საუკეთესო გრძელვადიანი reasoning-ისთვის და subagent orchestration-ისთვის;</li>
+                        <li><strong>Gemini 3 Pro:</strong> საუკეთესო მულტიმოდალური (multimodal) ამოცანებისთვის და უზარმაზარი context window-ით.</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box" style="margin-top: 1.5rem;">
+                    <h4>⚠️ კრიტიკული რჩევა</h4>
+                    <p>ძველი მითითებების ინჟინერიის (Prompt Engineering) ტექნიკები (Chain-of-thought) შეიძლება აღარ იყოს საჭირო - ახალი მოდელები უკეთესად „იაზროვნებენ“ გამარტივებული ინსტრუქციებით!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Prompt Engineering Frameworks -->
+        <div class="slide">
+            <span class="slide-number">7/28</span>
+            <h2>Prompt Engineering Frameworks (2025)</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>სტრუქტურირებული მიდგომები ეფექტიანი მითითებებისთვის (პრომპტებისთვის)</h3>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <div class="demo-box">
+                        <h4>🎯 CRISPE Framework</h4>
+                        <p><strong>C</strong>apacity & <strong>R</strong>ole - როლის განსაზღვრა;<br>
+                        <strong>I</strong>nsight - კონტექსტი და ბექგრაუნდი;<br>
+                        <strong>S</strong>tatement - ძირითადი ამოცანა;<br>
+                        <strong>P</strong>ersonality - ტონი და სტილი;<br>
+                        <strong>E</strong>xample - მაგალითები.</p>
+
+                        <pre style="margin-top: 1rem;"><code>როლი: შენ ხარ გამოცდილი მარკეტინგის მენეჯერი.
+კონტექსტი: ვმუშაობ მცირე სტარტაპში (startup) თბილისში.
+ამოცანა: შექმენი სოციალური მედიის კამპანიის გეგმა.
+სტილი: პრაქტიკული და კონკრეტული.
+მაგალითი: მსგავსი იყოს X კომპანიის კამპანიის.</code></pre>
+                    </div>
+
+                    <div class="demo-box" style="margin-top: 1.5rem;">
+                        <h4>⭐ CO-STAR Framework</h4>
+                        <p><strong>CO</strong>ntext - კონტექსტი;<br>
+                        <strong>O</strong>bjective - მიზანი;<br>
+                        <strong>S</strong>tyle - სტილი;<br>
+                        <strong>T</strong>one - ტონი;<br>
+                        <strong>A</strong>udience - აუდიტორია;<br>
+                        <strong>R</strong>esponse - პასუხის ფორმატი.</p>
+
+                        <pre style="margin-top: 1rem;"><code>კონტექსტი: ახალი AI SaaS პროდუქტის გაშვება საქართველოში.
+მიზანი: landing page-ის ტექსტის დაწერა.
+სტილი: თანამედროვე, ტექნოლოგიური.
+ტონი: პროფესიონალური მაგრამ მიმზიდველი.
+აუდიტორია: B2B კლიენტები, ტექ-სავვი მენეჯერები.
+ფორმატი: სექციებად დაყოფილი (Hero, Features, CTA).</code></pre>
+                    </div>
+
+                    <div class="key-points" style="margin-top: 1.5rem;">
+                        <h4>💡 რომელი Framework-ი როდის?</h4>
+                        <ul>
+                            <li><strong>CRISPE:</strong> შეზღუდული, კონკრეტული ამოცანებისთვის;</li>
+                            <li><strong>CO-STAR:</strong> კომპლექსური, მულტიფაქტორიანი პროექტებისთვის;</li>
+                            <li><strong>CLEAR:</strong> სწრაფი, მარტივი დავალებებისთვის.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Specificity -->
+        <div class="slide">
+            <span class="slide-number">8/28</span>
+            <h2>სპეციფიკურობა - წარმატების გასაღები</h2>
+            <div class="slide-content">
+                <div class="key-points">
+                    <h3>რაც უფრო სპეციფიკურია, მით უკეთესია შედეგი</h3>
+                </div>
+
+                <div class="demo-box">
+                    <h3>მაგალითი 1: თბილისში ბიზნესის მარკეტინგი</h3>
+
+                    <div style="margin-top: 1rem;">
+                        <p><strong>❌ ზოგადი:</strong></p>
+                        <pre><code>"რჩევა მარკეტინგის შესახებ"</code></pre>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <p><strong>✅ სპეციფიკური (ქართული კონტექსტი):</strong></p>
+                        <pre><code>"შექმენი სოციალური მედიის მარკეტინგული კამპანიის გეგმა
+ახალი ვეგანური რესტორნისთვის თბილისში, სოლოლაკის რაიონში,
+მიზნობრივი აუდიტორია: 25-40 წლის ჯანსაღი ცხოვრების
+წესის მიმდევრები, რომლებიც აქტიურები არიან Instagram-ზე
+და Facebook-ზე, ბიუჯეტი: 2000 ლარი/თვე.
+ჩართე: 1) Facebook/Instagram/TikTok პლატფორმების არჩევანი,
+2) ქართულ-ინგლისური კონტენტის სტრატეგია,
+3) კოლაბორაცია ადგილობრივ ინფლუენსერებთან (influencers),
+4) გასაზომი KPI-ები (engagement, footfall, orders)"</code></pre>
+                    </div>
+                </div>
+
+                <div class="warning-box" style="margin-top: 1.5rem;">
+                    <h4>💡 რჩევა</h4>
+                    <p>თუ მითითება (პრომპტი) ძალიან გრძელი გამოვიდა, გაყავით რამდენიმე ნაწილად და ისაუბრეთ ხელოვნურ ინტელექტთან ეტაპობრივად.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Context Provision -->
+        <div class="slide">
+            <span class="slide-number">9/28</span>
+            <h2>კონტექსტის მიწოდება</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>კონტექსტი = სიტუაციური ინფორმაცია</h3>
+                    <p>AI-ს სჭირდება ინფორმაცია თქვენი სიტუაციის შესახებ, რათა მოგცეთ შესაბამისი პასუხი.</p>
+                </div>
+
+                <div class="two-column" style="margin-top: 2rem;">
+                    <div>
+                        <h3>რა ტიპის კონტექსტი?</h3>
+                        <ul>
+                            <li><strong>ვინ ხართ:</strong> სტუდენტი, მენეჯერი, დეველოპერი;</li>
+                            <li><strong>რა არის მიზანი:</strong> სწავლა, პროდუქტიულობა, შემოქმედება;</li>
+                            <li><strong>რა პირობებში:</strong> დროის ლიმიტი, რესურსები, კონკრეტული საჭიროებები;</li>
+                            <li><strong>წინარე გამოცდილება:</strong> დამწყები, საშუალო, ექსპერტი.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="example-box">
+                            <h4>მაგალითი - ქართული სტარტაპის (Startup) კონტექსტი</h4>
+                            <pre><code>"ვარ უმცროსი (junior) Python დეველოპერი
+თბილისის IT კომპანიაში 6-თვიანი გამოცდილებით.
+ვმუშაობ პირველ Flask პროექტზე - ადგილობრივი
+delivery სტარტაპისთვის (startup), და მჭირდება დახმარება
+user ავთენტიფიკაციის დანერგვაში (ტელეფონის
+ნომრით OTP verification-ით).
+პროექტი უნდა დავასრულო 2 კვირაში დემოსთვის.
+გთხოვ ახსენი ყველაზე მარტივი და უსაფრთხო მიდგომა
+ქართული მობილური ნომრებისთვის (+995)."</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Role-Based Prompting -->
+        <div class="slide">
+            <span class="slide-number">10/28</span>
+            <h2>როლზე დაფუძნებული მითითებები (პრომპტები)</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>როლის მინიჭება AI-ს</h3>
+                    <p>როდესაც AI-ს აძლევთ კონკრეტულ როლს, ის უფრო ფოკუსირებულ და შესაბამის პასუხებს იძლევა.</p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3>პოპულარული როლები:</h3>
+                    <div class="two-column">
+                        <div>
+                            <div class="demo-box">
+                                <h4>👨‍🏫 მასწავლებელი</h4>
+                                <pre><code>"შენ ხარ გამოცდილი
+მასწავლებელი ქიმიაში.
+ახსენი ფოტოსინთეზის პროცესი
+12 წლის მოსწავლისთვის,
+გამოიყენეთ მარტივი მეტაფორები
+და ვიზუალური მაგალითები."</code></pre>
+                            </div>
+
+                            <div class="demo-box">
+                                <h4>💼 ბიზნეს-კონსულტანტი</h4>
+                                <pre><code>"შენ ხარ ბიზნეს-კონსულტანტი
+15-წლიანი გამოცდილებით.
+გააანალიზე ჩემი სტარტაპის
+ბიზნეს-მოდელი და მომეცი
+რეკომენდაციები მასშტაბირებისთვის."</code></pre>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="demo-box">
+                                <h4>💻 ტექნიკური ექსპერტი</h4>
+                                <pre><code>"შენ ხარ senior software
+engineer გამოცდილებით React-ში.
+ახსენი React Hooks-ის მუშაობის
+პრინციპი და მოიყვანე საუკეთესო
+პრაქტიკის (best practices) მაგალითები."</code></pre>
+                            </div>
+
+                            <div class="demo-box">
+                                <h4>🎨 კრეატიული დირექტორი</h4>
+                                <pre><code>"შენ ხარ კრეატიული დირექტორი
+მარკეტინგულ სააგენტოში.
+შემოგთავაზე 10 საინტერესო
+იდეა ახალი კაფეს ბრენდინგისთვის."</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Few-Shot Learning -->
+        <div class="slide">
+            <span class="slide-number">11/28</span>
+            <h2>Few-Shot სწავლება</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>რა არის Few-Shot სწავლება?</h3>
+                    <p>ტექნიკა, როდესაც AI-ს აძლევთ რამდენიმე მაგალითს იმისა, რაც გსურთ, რათა მან ისწავლოს პატერნი და გააგრძელოს.</p>
+                </div>
+
+                <div class="demo-box" style="margin-top: 2rem;">
+                    <h3>მაგალითი: პროდუქტის აღწერების შექმნა</h3>
+                    <pre><code>მითითება (პრომპტი): "შექმენი პროდუქტის აღწერა შემდეგი ფორმატით:
+
+მაგალითი 1:
+პროდუქტი: ლეპტოპი Dell XPS 13
+აღწერა: ულტრამსუბუქი ლეპტოპი პროფესიონალებისთვის.
+13.3" 4K ეკრანი, Intel i7 პროცესორი, 16GB RAM.
+იდეალურია პროგრამირებისა და დიზაინისთვის.
+ფასი: 2500 ლარი
+
+მაგალითი 2:
+პროდუქტი: უკაბელო ყურსასმენი Sony WH-1000XM4
+აღწერა: პრემიუმ ხმაურის დამხშობი (noise-cancelling) ყურსასმენი შესანიშნავი
+ხმის ხარისხით. 30 საათი ბატარეის ხანგრძლივობა,
+Bluetooth 5.0. საუკეთესო არჩევანი მუსიკის მოყვარულებისთვის.
+ფასი: 650 ლარი
+
+ახლა შექმენი აღწერა:
+პროდუქტი: სმარტ საათი Apple Watch Series 8"</code></pre>
+                </div>
+
+                <div class="key-points" style="margin-top: 1.5rem;">
+                    <h4>💡 როდის გამოიყენოთ?</h4>
+                    <ul>
+                        <li>როდესაც გჭირდებათ კონკრეტული ფორმატი ან სტილი;</li>
+                        <li>როდესაც პასუხი უნდა იყოს თანმიმდევრული რამდენიმე ელემენტისთვის;</li>
+                        <li>როდესაც მარტივი ინსტრუქცია არ არის საკმარისი.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Chain of Thought -->
+        <div class="slide">
+            <span class="slide-number">12/28</span>
+            <h2>აზროვნების ჯაჭვი (Chain of Thought)</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>რა არის აზროვნების ჯაჭვი?</h3>
+                    <p>ტექნიკა, რომელიც AI-ს აიძულებს ნაბიჯ-ნაბიჯ იფიქროს პრობლემაზე და ახსნას თავისი აზროვნების პროცესი.</p>
+                </div>
+
+                <div class="two-column" style="margin-top: 2rem;">
+                    <div>
+                        <h3>რატომ არის ეფექტური?</h3>
+                        <ul>
+                            <li>ამცირებს შეცდომებს რთულ ამოცანებში;</li>
+                            <li>უზრუნველყოფს პასუხის გამჭვირვალობას;</li>
+                            <li>ეხმარება ლოგიკურ გადაწყვეტილებებში;</li>
+                            <li>იდეალურია მათემატიკისა და ანალიზისთვის.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>როდის გამოიყენოთ?</h3>
+                        <ul>
+                            <li>რთული მათემატიკური ამოცანები;</li>
+                            <li>ლოგიკური თავსატეხები;</li>
+                            <li>გადაწყვეტილების მიღება;</li>
+                            <li>მრავალეტაპიანი დავალებები.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="demo-box" style="margin-top: 2rem;">
+                    <h3>მაგალითი</h3>
+                    <pre><code>"გადაწყვიტე ეს ამოცანა ნაბიჯ-ნაბიჯ:
+
+კომპანიამ პირველ თვეში მიიღო 10,000 ლარი შემოსავალი.
+მეორე თვეში 20% ზრდა იყო, მესამე თვეში კი მეორე თვის
+შემოსავალზე დამატებით 15% ზრდა. რა იყო მესამე თვის
+საერთო შემოსავალი?
+
+გადაჭერი ნაბიჯ-ნაბიჯ:
+1. პირველ რიგში განსაზღვრე მოცემული მონაცემები
+2. გამოთვალე მეორე თვის შემოსავალი
+3. გამოთვალე მესამე თვის შემოსავალი
+4. შეამოწმე პასუხის ლოგიკურობა"</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Output Format Control -->
+        <div class="slide">
+            <span class="slide-number">13/28</span>
+            <h2>გამომავალი ფორმატის კონტროლი</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>მიუთითეთ ზუსტად როგორ უნდა გამოიყურებოდეს პასუხი</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem;">
+                    <div class="demo-box">
+                        <h4>📋 პუნქტების სახით (Bullet Points)</h4>
+                        <pre><code>"მოამზადე 5-პუნქტიანი
+ჩამონათვალი AI-ის უპირატესობების
+შესახებ ბიზნესისთვის:
+• [პუნქტი 1]
+• [პუნქტი 2]
+..."</code></pre>
+                    </div>
+
+                    <div class="demo-box">
+                        <h4>📊 ცხრილი</h4>
+                        <pre><code>"შექმენი შედარებითი ცხრილი:
+
+| ხელსაწყო | ფუნქციები | ფასი |
+|----------|-----------|------|
+| Tool 1   | ...       | ... |"</code></pre>
+                    </div>
+
+                    <div class="demo-box">
+                        <h4>🔢 ნუმერაცია</h4>
+                        <pre><code>"ნაბიჯ-ნაბიჯ ინსტრუქცია:
+1. [პირველი ნაბიჯი]
+2. [მეორე ნაბიჯი]
+3. [მესამე ნაბიჯი]"</code></pre>
+                    </div>
+
+                    <div class="demo-box">
+                        <h4>💬 დიალოგი</h4>
+                        <pre><code>"შექმენი დიალოგი:
+კლიენტი: [რეპლიკა]
+მყიდველი: [რეპლიკა]"</code></pre>
+                    </div>
+
+                    <div class="demo-box">
+                        <h4>📝 პარაგრაფები</h4>
+                        <pre><code>"დაწერე 3 პარაგრაფი:
+პარაგრაფი 1: შესავალი
+პარაგრაფი 2: ძირითადი ნაწილი
+პარაგრაფი 3: დასკვნა"</code></pre>
+                    </div>
+
+                    <div class="demo-box">
+                        <h4>📧 ელ-წერილი</h4>
+                        <pre><code>"დაწერე ელ-წერილი ფორმატით:
+გამარჯობა [სახელი],
+[წერილის ტექსტი]
+პატივისცემით,
+[ხელმოწერა]"</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Tone and Style -->
+        <div class="slide">
+            <span class="slide-number">14/28</span>
+            <h2>ტონისა და სტილის მართვა</h2>
+            <div class="slide-content">
+                <div class="two-column">
+                    <div>
+                        <div class="highlight-box">
+                            <h3>ტონის ვარიაციები</h3>
+                            <ul>
+                                <li><strong>ფორმალური</strong> - ოფიციალური დოკუმენტებისთვის;</li>
+                                <li><strong>მეგობრული</strong> - social media, ბლოგები;</li>
+                                <li><strong>ტექნიკური</strong> - დოკუმენტაცია, სახელმძღვანელოები;</li>
+                                <li><strong>მოტივაციური</strong> - speeches, პრეზენტაციები;</li>
+                                <li><strong>ჰუმორისტული</strong> - გასართობი კონტენტი;</li>
+                                <li><strong>აკადემიური</strong> - სამეცნიერო ნაშრომები.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="example-box">
+                            <h4>მაგალითი: ერთი თემა, სხვადასხვა ტონი</h4>
+                            <p><strong>ფორმალური:</strong></p>
+                            <pre><code>"გთხოვთ წარმოადგინოთ
+დეტალური ანალიზი..."</code></pre>
+
+                            <p style="margin-top: 1rem;"><strong>მეგობრული:</strong></p>
+                            <pre><code>"ჰეი! იტყვი რას ფიქრობ
+ამ თემაზე?"</code></pre>
+
+                            <p style="margin-top: 1rem;"><strong>ტექნიკური:</strong></p>
+                            <pre><code>"განხილეთ API endpoints-ის
+კონფიგურაცია..."</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-points" style="margin-top: 2rem;">
+                    <h4>💡 რჩევა</h4>
+                    <p>ყოველთვის მიუთითეთ აუდიტორია და ტონი. მაგალითად: „დაწერე ფორმალურ ტონში, განკუთვნილი CEO-ებისთვის, ფოკუსი მთავარ თემაზე“ ან „დაწერე მეგობრულ სტილში, სტუდენტებისთვის“.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Length Control -->
+        <div class="slide">
+            <span class="slide-number">15/28</span>
+            <h2>სიგრძის კონტროლი</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>მიუთითეთ სასურველი სიგრძე</h3>
+                    <p>AI-მ უნდა იცოდეს რამდენად დეტალური პასუხი გჭირდებათ.</p>
+                </div>
+
+                <div class="two-column" style="margin-top: 2rem;">
+                    <div>
+                        <h3>სიგრძის მეთოდები:</h3>
+                        <ul>
+                            <li><strong>სიტყვების რაოდენობა:</strong> „დაწერე 300-სიტყვიანი ტექსტი“;</li>
+                            <li><strong>პარაგრაფები:</strong> „3 პარაგრაფში“;</li>
+                            <li><strong>ხანგრძლივობა:</strong> „მოკლედ“, „დეტალურად“, „ამომწურავად“;</li>
+                            <li><strong>ელემენტების რაოდენობა:</strong> „5-პუნქტიანი სია“;</li>
+                            <li><strong>გვერდები:</strong> „1 გვერდზე მოთავსებული“.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="demo-box">
+                            <h4>მაგალითები</h4>
+                            <pre><code>"დაწერე 500-სიტყვიანი სტატია..."
+
+"შეაჯამე ეს ტექსტი 3 წინადადებაში"
+
+"მომეცი მოკლე პასუხი (50 სიტყვამდე)"
+
+"განავრცე ეს იდეა დეტალურ
+2-გვერდიან ანალიზად"
+
+"შექმენი 10-პუნქტიანი საკონტროლო სია (checklist)"</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box" style="margin-top: 2rem;">
+                    <h4>⚠️ ყურადღება</h4>
+                    <p>AI ყოველთვის არ აკმაყოფილებს ზუსტ სიგრძის მოთხოვნას, მაგრამ მიახლოებით იცავს.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Constraints and Limitations -->
+        <div class="slide">
+            <span class="slide-number">16/28</span>
+            <h2>შეზღუდვები და დირექტივები</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>რას უნდა ან არ უნდა გააკეთოს AI?</h3>
+                    <p>მკაფიოდ მიუთითეთ რა უნდა ჩართოს ან გამოტოვოს.</p>
+                </div>
+
+                <div class="two-column" style="margin-top: 2rem;">
+                    <div>
+                        <div class="key-points">
+                            <h4>✅ რა უნდა ჩართოს</h4>
+                            <ul>
+                                <li>„ჩართე სტატისტიკური მონაცემები“;</li>
+                                <li>„მოიყვანე კონკრეტული მაგალითები“;</li>
+                                <li>„დაამატე წყაროები“;</li>
+                                <li>„ჩართე პრაქტიკული რჩევები“;</li>
+                                <li>„გამოიყენე ვიზუალური მეტაფორები“.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="warning-box">
+                            <h4>❌ რა არ უნდა ჩართოს</h4>
+                            <ul>
+                                <li>„არ გამოიყენო ტექნიკური ჟარგონი“;</li>
+                                <li>„გამოტოვე ისტორიული ექსკურსი“;</li>
+                                <li>„არ მოიყვანო ძალიან რთული მაგალითები“;</li>
+                                <li>„თავიდან აიცილე მოლაპარაკებები“;</li>
+                                <li>„არ დააკარგო ფოკუსი მთავარ თემაზე“.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-box" style="margin-top: 2rem;">
+                    <h4>პრაქტიკული მაგალითი</h4>
+                    <pre><code>"დაწერე სტატია blockchain ტექნოლოგიის შესახებ.
+✅ ჩართე: რეალური გამოყენების მაგალითები, უპირატესობები და ნაკლოვანებები
+❌ გამოტოვე: კრიპტოგრაფიის ტექნიკური დეტალები, კოდის მაგალითები
+აუდიტორია: ბიზნეს მენეჯერები ტექნიკური ფონის გარეშე"</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Iterative Refinement -->
+        <div class="slide">
+            <span class="slide-number">17/28</span>
+            <h2>იტერაციული დახვეწა</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>პირველი მითითება (პრომპტი) იშვიათად არის იდეალური</h3>
+                    <p>გაუმჯობესება და დახვეწა ნორმალური პროცესია!</p>
+                </div>
+
+                <div class="demo-box" style="margin-top: 2rem;">
+                    <h3>3-ნაბიჯიანი მიდგომა</h3>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>ნაბიჯი 1: საწყისი მითითება (Prompt)</h4>
+                        <pre><code>"დაწერე სტატია AI-ის შესახებ"</code></pre>
+                        <p style="color: #e74c3c;"><strong>შედეგი:</strong> ზოგადი, ბუნდოვანი ტექსტი</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>ნაბიჯი 2: გაუმჯობესებული მითითება (Prompt)</h4>
+                        <pre><code>"დაწერე 500-სიტყვიანი სტატია AI-ის გამოყენების შესახებ განათლებაში"</code></pre>
+                        <p style="color: #f39c12;"><strong>შედეგი:</strong> უკეთესი, მაგრამ კვლავ ზოგადი</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>ნაბიჯი 3: დახვეწილი მითითება (Prompt)</h4>
+                        <pre><code>"დაწერე 500-სიტყვიანი სტატია AI chatbots-ის გამოყენების
+შესახებ უნივერსიტეტების სტუდენტური მომსახურების
+ავტომატიზაციაში. ჩართე: 1) კონკრეტული გამოყენების მაგალითები,
+2) სარგებელი სტუდენტებისა და ადმინისტრაციისთვის,
+3) პოტენციური გამოწვევები. აუდიტორია: უნივერსიტეტის ადმინისტრაცია."</code></pre>
+                        <p style="color: #27ae60;"><strong>შედეგი:</strong> ზუსტი, რელევანტური, გამოსადეგი!</p>
+                    </div>
+                </div>
+
+                <div class="key-points" style="margin-top: 2rem;">
+                    <h4>💡 დამატებითი მითითებები (პრომპტები)</h4>
+                    <ul>
+                        <li>„გააფართოვე მე-2 პუნქტი უფრო დეტალურად“;</li>
+                        <li>„შეცვალე ტონი უფრო ფორმალურით“;</li>
+                        <li>„დაამატე 3 კონკრეტული სტატისტიკა“;</li>
+                        <li>„გამოტოვე ტექნიკური დეტალები და გახადე უფრო მარტივი“.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Common Mistakes -->
+        <div class="slide">
+            <span class="slide-number">18/28</span>
+            <h2>ხშირი შეცდომები</h2>
+            <div class="slide-content">
+                <div class="warning-box">
+                    <h3>თავიდან აიცილეთ ეს შეცდომები!</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem;">
+                    <div class="example-box">
+                        <h4>❌ შეცდომა 1: ძალიან ზოგადია</h4>
+                        <p>„დამეხმარე ბიზნესში“</p>
+                        <p style="color: #666; font-style: italic;">AI-მ არ იცის რა ტიპის ბიზნესია, რა დახმარება, ვის...</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>❌ შეცდომა 2: კონტექსტის არარსებობა</h4>
+                        <p>„დაწერე კოდი“</p>
+                        <p style="color: #666; font-style: italic;">რა ენაზე? რა ამოცანისთვის? რა დონის?</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>❌ შეცდომა 3: მრავალი ამოცანა ერთად</h4>
+                        <p>„დაწერე CV, cover letter და ლინკედინის პროფილი“</p>
+                        <p style="color: #666; font-style: italic;">გაყავით რამდენიმე მითითებად (პრომპტად)!</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>❌ შეცდომა 4: ბუნდოვანია ფორმატი</h4>
+                        <p>„მოამზადე ინფორმაცია“</p>
+                        <p style="color: #666; font-style: italic;">სია? ცხრილი? პარაგრაფები? განსაზღვრე!</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>❌ შეცდომა 5: აუდიტორიის უგულებელყოფა</h4>
+                        <p>„ახსენი კვანტური ფიზიკა“</p>
+                        <p style="color: #666; font-style: italic;">ვისთვის? ექსპერტებისთვის? ბავშვებისთვის?</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>❌ შეცდომა 6: ზედმეტი ინფორმაცია</h4>
+                        <p>3-გვერდიანი მითითება (prompt) არასაჭირო დეტალებით</p>
+                        <p style="color: #666; font-style: italic;">იყავი კონკრეტული, მაგრამ არა - ზედმეტად დიდი!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Best Practices -->
+        <div class="slide">
+            <span class="slide-number">19/28</span>
+            <h2>საუკეთესო პრაქტიკები</h2>
+            <div class="slide-content">
+                <div class="key-points">
+                    <h3>🌟 10 ოქროს წესი</h3>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <div class="highlight-box">
+                                                    <h4>1️⃣ დაიწყე მარტივით, თანდათან გაართულე</h4>                        <p>პირველ რიგში ცადე მარტივი მითითება (prompt), შემდეგ დაიწყე დეტალების დამატება.</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>2️⃣ იყავი სპეციფიკური და ზუსტი</h4>
+                        <p>რაც უფრო მეტი დეტალი, მით უკეთესი შედეგი.</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>3️⃣ მიაწოდე კონტექსტი</h4>
+                        <p>AI-მ უნდა იცოდეს ვინ ხართ და რა გჭირდებათ.</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>4️⃣ განსაზღვრე როლი</h4>
+                        <p>„შენ ხარ...“ - ეს ერთი წინადადება დიდ ცვლილებას გამოიწვევს.</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>5️⃣ მიუთითე ფორმატი</h4>
+                        <p>როგორ უნდა გამოიყურებოდეს პასუხი - სია, ცხრილი, პარაგრაფები...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Best Practices (continued) -->
+        <div class="slide">
+            <span class="slide-number">20/28</span>
+            <h2>საუკეთესო პრაქტიკები (გაგრძელება)</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h4>6️⃣ გამოიყენე მაგალითები (Few-shot)</h4>
+                    <p>აჩვენე რას გსურს 1-2 მაგალითით.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>7️⃣ აზროვნების ჯაჭვი რთულ ამოცანებში</h4>
+                    <p>„ნაბიჯ-ნაბიჯ“ მაგიური სიტყვებია!</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>8️⃣ მიუთითე შეზღუდვები</h4>
+                    <p>რა უნდა ჩართოს და რა არა - იყავი აშკარა (explicit).</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>9️⃣ იტერაციულად დახვეწე</h4>
+                    <p>თუ პირველი პასუხი არ მოგწონს, დაამატე დამატებითი მითითება (პრომპტი).</p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🔟 შეინახე რაც მუშაობს</h4>
+                    <p>შექმენი ბიბლიოთეკა წარმატებული მითითებებისა (პრომპტებისა) და გამოიყენე ისინი შაბლონებად.</p>
+                </div>
+
+                <div class="key-points" style="margin-top: 2rem;">
+                    <h4>💡 Pro Tip</h4>
+                    <p>შექმენი Google Doc ან Notion გვერდი სადაც შეინახავ შენს საუკეთესო მითითებებს (პრომპტებს) კატეგორიების მიხედვით: სამუშაო, სწავლა, კრეატივი, და ა.შ.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Advanced Techniques - Prompt Chaining -->
+        <div class="slide">
+            <span class="slide-number">21/28</span>
+            <h2>მოწინავე ტექნიკა: მითითებების (პრომპტების) დაკავშირება</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>რა არის მითითებების (პრომპტების) დაკავშირება?</h3>
+                    <p>რთული ამოცანის დაყოფა მარტივ ნაბიჯებად და თითოეული ნაბიჯის შედეგის გამოყენება შემდეგი მითითებისთვის (პრომპტისთვის).</p>
+                </div>
+
+                <div class="demo-box" style="margin-top: 2rem;">
+                    <h3>მაგალითი: ბიზნეს-გეგმის შექმნა</h3>
+
+                    <div style="margin-top: 1rem;">
+                        <h4>მითითება (პრომპტი) 1: იდეის გენერირება</h4>
+                        <pre><code>"შემოგთავაზე 5 ინოვაციური ბიზნეს იდეა IT სფეროში საქართველოსთვის"</code></pre>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <h4>მითითება (პრომპტი) 2: იდეის შეფასება</h4>
+                        <pre><code>"შეაფასე ეს 5 იდეა კრიტერიუმებით:
+მარტივი იმპლემენტაცია, ბაზრის პოტენციალი, კონკურენცია"</code></pre>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <h4>მითითება (პრომპტი) 3: ბიზნეს-მოდელის ტილო (Business Model Canvas)</h4>
+                        <pre><code>"შექმენი ბიზნეს მოდელის ტილო (Business Model Canvas) პირველი იდეისთვის [იდეას აქ ჩასვამთ]"</code></pre>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <h4>მითითება (პრომპტი) 4: ფინანსური პროექცია</h4>
+                        <pre><code>"მომზადე 12-თვიანი ფინანსური პროექცია ამ ბიზნეს მოდელისთვის..."</code></pre>
+                    </div>
+                </div>
+
+                <div class="key-points" style="margin-top: 1.5rem;">
+                    <h4>💡 უპირატესობები</h4>
+                    <ul>
+                        <li>უფრო ზუსტი და ფოკუსირებული შედეგები;</li>
+                        <li>ეტაპობრივი კონტროლი;</li>
+                        <li>მარტივი გამართვა (debugging).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Prompt Templates -->
+        <div class="slide">
+            <span class="slide-number">22/28</span>
+            <h2>მითითების (პრომპტის) შაბლონები</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>მზა ფორმულები სხვადასხვა სიტუაციისთვის</h3>
+                </div>
+
+                <div class="demo-box" style="margin-top: 2rem;">
+                    <h4>📝 კონტენტის შექმნის შაბლონი</h4>
+                    <pre><code>[როლი] შენ ხარ [პროფესია/ექსპერტი].
+[ამოცანა] დაწერე [ტიპი: სტატია/პოსტი/ესე] თემაზე [თემა].
+[აუდიტორია] მიზნობრივი აუდიტორია: [ვინ?].
+[ტონი] გამოიყენე [ფორმალური/მეგობრული/ტექნიკური] ტონი.
+[სიგრძე] [რაოდენობა] სიტყვა/პარაგრაფი.
+[შინაარსი] ჩართე: 1) [პუნქტი 1], 2) [პუნქტი 2], 3) [პუნქტი 3].
+[შეზღუდვები] თავიდან აიცილე: [რა არ უნდა იყოს].</code></pre>
+                </div>
+
+                <div class="demo-box">
+                    <h4>💼 ბიზნეს-ანალიზის შაბლონი</h4>
+                    <pre><code>[როლი] შენ ხარ გამოცდილი ბიზნეს-კონსულტანტი.
+[ამოცანა] გაანალიზე [კომპანია/პროდუქტი/სერვისი].
+[კონტექსტი] [ინდუსტრია], [ბაზარი], [სიტუაცია].
+[ფოკუსი] შეაფასე: 1) SWOT ანალიზი, 2) ბაზრის პოზიცია, 3) რეკომენდაციები.
+[ფორმატი] წარმოადგინე ცხრილებით და წერტილოვანი სიით.</code></pre>
+                </div>
+
+                <div class="demo-box">
+                    <h4>🎓 სწავლის შაბლონი</h4>
+                    <pre><code>[როლი] შენ ხარ მოთმინე მასწავლებელი.
+[ამოცანა] ახსენი [კონცეფცია/თემა].
+[აუდიტორია] [ასაკი/დონე] მოსწავლისთვის.
+[მეთოდი] გამოიყენე: 1) მარტივი მეტაფორები, 2) ყოველდღიური მაგალითები, 3) ვიზუალური აღწერები.
+[შემოწმება] ბოლოს დასვი 3 კითხვა გაგების შესამოწმებლად.</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Real-World Examples -->
+        <div class="slide">
+            <span class="slide-number">23/28</span>
+            <h2>რეალური გამოყენების მაგალითები</h2>
+            <div class="slide-content">
+                <div class="two-column">
+                    <div>
+                        <div class="demo-box">
+                            <h4>🎯 მარკეტინგი (საქართველო)</h4>
+                            <pre><code>"შენ ხარ სოციალური მედიის მარკეტინგის
+ექსპერტი საქართველოს ბაზრის ცოდნით.
+შექმენი 1 კვირის Instagram კონტენტის კალენდარი
+ახალი specialty coffee shop-ისთვის თბილისში,
+ვაკის რაიონში, რომელიც ორიენტირებულია
+ახალგაზრდა პროფესიონალებზე.
+თითოეულ დღეს: post იდეა (ქართულად),
+ორენოვანი წარწერა (bilingual caption - ქართული-ინგლისური),
+5 რელევანტური ჰეშთეგი (hashtags) (#TbilisiCoffee, #GeorgianCafe),
+optimal posting time (9am, 1pm, 6pm).
+ბრენდის ტონი: თბილი, თანამედროვე, არტისტული."</code></pre>
+                        </div>
+
+                        <div class="demo-box">
+                            <h4>💻 პროგრამირება</h4>
+                            <pre><code>"შენ ხარ senior Python developer.
+დაწერე function რომელიც იღებს
+user ელფოსტის (emails) სიას და აბრუნებს
+მხოლოდ ვალიდურ emails-ს.
+ჩართე: 1) error handling,
+2) docstrings, 3) unit tests.
+დაიცავი PEP 8-ის სტანდარტები."</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="demo-box">
+                            <h4>📊 ბიზნეს-ანალიზი</h4>
+                            <pre><code>"შენ ხარ ფინანსური ანალიტიკოსი.
+გაანალიზე ეს გაყიდვების მონაცემები და
+შექმენი რეზიუმე მენეჯერებისთვის (executive summary)
+CEO-სთვის. ჩართე:
+1) ძირითადი ტენდენციები,
+2) ზრდის შესაძლებლობები,
+3) რისკ-ფაქტორები.
+ფორმატი: 3 პარაგრაფი +
+5 წერტილოვანი პუნქტი."</code></pre>
+                        </div>
+
+                        <div class="demo-box">
+                            <h4>✍️ ტექსტის რედაქტირება</h4>
+                            <pre><code>"გადაწერე ეს ტექსტი უფრო
+პროფესიონალურ სტილში,
+შეინარჩუნე ძირითადი მნიშვნელობა.
+მიზნობრივი აუდიტორია:
+კორპორაციული კლიენტები.
+შეამოწმე გრამატიკა და
+გააუმჯობესე სტრუქტურა."</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Real-World Case Studies (2024-2025) -->
+        <div class="slide">
+            <span class="slide-number">24/28</span>
+            <h2>წარმატებული Case Studies (2024-2025)</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>📊 ბაზრის ზრდა და რეალური გამოყენება</h3>
+                    <p>AI Prompt Engineering-ის ბაზარი 2023 წელს შეადგენდა $222.1 მილიონს და მოსალოდნელია, რომ 2030 წლამდე 32.8%-იანი წლიური ზრდის ტემპით (CAGR) გაიზრდება.</p>
+                </div>
+
+                <div class="two-column" style="margin-top: 2rem;">
+                    <div>
+                        <div class="demo-box">
+                            <h4>🚀 Bolt - $50M ARR 5 თვეში</h4>
+                            <p><strong>გამოწვევა:</strong> AI-ზე დაფუძნებული კოდირების პლატფორმის შექმნა.</p>
+                            <p><strong>გადაწყვეტა:</strong> ძლიერი system prompt-ების გამოყენება.</p>
+                            <p><strong>შედეგი:</strong> მიაღწია $50M წლიურ შემოსავალს მხოლოდ 5 თვეში.</p>
+                            <p style="margin-top: 0.5rem; font-style: italic;">„System prompt-ი Bolt-ის წარმატების ერთ-ერთი მთავარი ფაქტორია“ - Aman Khan, Arize AI.</p>
+                        </div>
+
+                        <div class="demo-box">
+                            <h4>🏥 Healthcare - დიაგნოსტიკის სიზუსტე</h4>
+                            <p><strong>გამოყენება:</strong> სამედიცინო სისტემები იყენებენ სპეციალიზებულ მითითებებს (prompts).</p>
+                            <p><strong>შედეგი:</strong> გაიზარდა დიაგნოსტიკის სიზუსტე და გადაუდებლობის შეფასების ეფექტურობა.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="demo-box">
+                            <h4>🛍️ E-Commerce - Customer Service</h4>
+                            <p><strong>პრობლემა:</strong> შეუსაბამო AI პასუხები კლიენტების დაბნეულობას იწვევდა.</p>
+                            <p><strong>გადაწყვეტა:</strong> კონტექსტზე ორიენტირებული classification prompts.</p>
+                            <p><strong>შედეგი:</strong> მკვეთრად შემცირდა მომხმარებელთა მომსახურების დატვირთვა.</p>
+                        </div>
+
+                        <div class="demo-box">
+                            <h4>⚖️ Legal Tech - დოკუმენტების ანალიზი</h4>
+                            <p><strong>გამოყენება:</strong> იურიდიული დოკუმენტების სწრაფი ანალიზი.</p>
+                            <p><strong>შედეგი:</strong> შემცირდა მიმოხილვის (review) დრო კონტექსტ-aware summarization prompts-ის წყალობით.</p>
+                        </div>
+
+                        <div class="demo-box">
+                            <h4>🎮 Gaming - NPC Behavior</h4>
+                            <p><strong>გამოყენება:</strong> AI-ით მართული თამაშის პერსონაჟები და დინამიური storytelling.</p>
+                            <p><strong>შედეგი:</strong> იმერსიული და ინტერაქტიული სათამაშო გამოცდილება.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-points" style="margin-top: 2rem;">
+                    <h4>💡 ძირითადი დასკვნა</h4>
+                    <p>„2025 წელს ყველა Product Manager-მა უნდა იცოდეს prompt engineering. სტრატეგიები, რომლებიც 2024-ში მუშაობდა, უკვე იცვლება უფრო სტრუქტურირებული და ადაპტირებადი მიდგომებით.“</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Debugging Prompts -->
+        <div class="slide">
+            <span class="slide-number">25/28</span>
+            <h2>მითითებების (პრომპტების) დიაგნოსტიკა (Debugging)</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>რა ვქნათ თუ AI არ იძლევა სასურველ შედეგს?</h3>
+                </div>
+
+                <div class="two-column" style="margin-top: 2rem;">
+                    <div>
+                        <h3>🔍 პრობლემების დიაგნოსტიკა</h3>
+                        <div class="example-box">
+                            <h4>პრობლემა 1: ძალიან ზოგადი პასუხი</h4>
+                            <p><strong>გადაწყვეტა:</strong> დაამატე მეტი სპეციფიკა და კონტექსტი.</p>
+                        </div>
+
+                        <div class="example-box">
+                            <h4>პრობლემა 2: არასწორი ტონი</h4>
+                            <p><strong>გადაწყვეტა:</strong> მკაფიოდ მიუთითე სასურველი ტონი და აუდიტორია.</p>
+                        </div>
+
+                        <div class="example-box">
+                            <h4>პრობლემა 3: არასწორი ფორმატი</h4>
+                            <p><strong>გადაწყვეტა:</strong> მიაწოდე დეტალური ფორმატის მაგალითი.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 დებაგინგის ტექნიკები</h3>
+                        <div class="key-points">
+                            <h4>ნაბიჯი 1: იდენტიფიცირება</h4>
+                            <p>რა ზუსტად არ მოგწონთ პასუხში?</p>
+                        </div>
+
+                        <div class="key-points">
+                            <h4>ნაბიჯი 2: დახვეწა</h4>
+                            <p>დაამატე დამატებითი მითითება (პრომპტი) კონკრეტული მოთხოვნით.</p>
+                        </div>
+
+                        <div class="key-points">
+                            <h4>ნაბიჯი 3: ტესტირება</h4>
+                            <p>სცადე სხვადასხვა ფორმულირება.</p>
+                        </div>
+
+                        <div class="key-points">
+                            <h4>ნაბიჯი 4: შენახვა</h4>
+                            <p>რაც იმუშავა - შეინახეთ მომავლისთვის!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 26: Practice Exercise -->
+        <div class="slide">
+            <span class="slide-number">26/28</span>
+            <h2>პრაქტიკული ვარჯიში</h2>
+            <div class="slide-content">
+                <div class="exercise-box">
+                    <h3>🎯 ამოცანა: შექმენით ეფექტიანი მითითება (პრომპტი)</h3>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>სცენარი:</h4>
+                        <p>თქვენ ხართ სტარტაპის დამფუძნებელი და გჭირდებათ პრეზენტაციის (pitch deck-ის) შექმნა ინვესტორებისთვის. თქვენი სტარტაპი (startup) ქმნის AI-ზე დაფუძნებულ აპლიკაციას სტუდენტებისთვის, რომელიც ეხმარება სწავლის ორგანიზებაში.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>დავალება (ქართული კონტექსტი):</h4>
+                        <p>შექმენით მითითება (პრომპტი) AI-სთვის, რომ დაგეხმაროთ პრეზენტაციის (pitch deck-ის) სტრუქტურის შექმნაში.
+                        დამატებითი კონტექსტი: თქვენი სტარტაპი (startup) ფოკუსირებულია საქართველოს ბაზარზე და აპლიკაცია
+                        ეხმარება სტუდენტებს უნივერსიტეტებში (თსუ, სტუ, ბიზნეს-სკოლები).</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>ჩართეთ:</h4>
+                        <ul>
+                            <li>✅ როლი (რა როლი უნდა ჰქონდეს AI-ს);</li>
+                            <li>✅ კონტექსტი (ინფორმაცია სტარტაპის (startup) შესახებ);</li>
+                            <li>✅ სპეციფიკური ამოცანა;</li>
+                            <li>✅ სასურველი ფორმატი;</li>
+                            <li>✅ აუდიტორია (ინვესტორები);</li>
+                            <li>✅ შინაარსის მოთხოვნები.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box" style="margin-top: 1.5rem;">
+                    <h4>⏱️ დრო: 10 წუთი</h4>
+                    <p>დაწერეთ თქვენი მითითება (პრომპტი) და გააზიარეთ ჯგუფთან!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 27: Key Takeaways -->
+        <div class="slide">
+            <span class="slide-number">27/28</span>
+            <h2>მთავარი დასკვნები</h2>
+            <div class="slide-content">
+                <div class="key-points">
+                    <h3>🎯 რა ვისწავლეთ დღეს?</h3>
+
+                    <div style="margin-top: 2rem;">
+                        <h4>1️⃣ მითითებების ინჟინერია (Prompt Engineering) არის უნარი</h4>
+                        <p>რაც უფრო მეტს ივარჯიშებთ, მით უკეთესი გახდებით.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>2️⃣ სპეციფიკურობა = ხარისხი</h4>
+                        <p>მკაფიო, დეტალური მითითებები (პრომპტები) უკეთეს შედეგებს იძლევა.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>3️⃣ კონტექსტი მნიშვნელოვანია</h4>
+                        <p>AI-მ უნდა იცოდეს ვინ ხართ და რა გჭირდებათ.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>4️⃣ გამოიყენეთ სტრუქტურა</h4>
+                        <p>როლი + ამოცანა + კონტექსტი + ფორმატი + შეზღუდვები = წარმატება!</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>5️⃣ იტერაცია ნორმალურია</h4>
+                        <p>პირველი მითითება (პრომპტი) იშვიათად არის იდეალური - დახვეწეთ!</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4>6️⃣ შექმენით შაბლონების ბიბლიოთეკა</h4>
+                        <p>შეინახეთ რაც მუშაობს და გამოიყენეთ ისევ.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 28: What's Next -->
+        <div class="slide">
+            <span class="slide-number">28/28</span>
+            <h2>შემდეგი ნაბიჯები</h2>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <h3>📚 რა გელოდებათ?</h3>
+                    <p>შემდეგ ლექციაზე (ლექცია 3) განვიხილავთ <strong>ტექსტის გენერაციას და სტილს</strong>.</p>
+                </div>
+
+                <div class="two-column" style="margin-top: 2rem;">
+                    <div>
+                        <div class="key-points">
+                            <h3>საშინაო დავალება: პრაქტიკა</h3>
+                            <ul>
+                                <li>შექმენით 10 მითითება (პრომპტი) სხვადასხვა სცენარისთვის;</li>
+                                <li>სცადეთ როლზე დაფუძნებული მითითების შედგენა (პრომპტინგი);</li>
+                                <li>ივარჯიშეთ „few-shot“ მაგალითებზე;</li>
+                                <li>გამოცადეთ აზროვნების ჯაჭვი;</li>
+                                <li>შეინახეთ საუკეთესო მითითებები (პრომპტები).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="demo-box">
+                            <h3>რესურსები</h3>
+                            <ul>
+                                <li>📝 <a href="lecture-2-summary.html">ლექციის სრული შეჯამება</a></li>
+                                <li>✏️ <a href="lecture-2-exercises.html">პრაქტიკული ვარჯიშები</a></li>
+                                <li>📚 <a href="lecture-2-study-guide.html">სასწავლო გზამკვლევი</a></li>
+                                <li>🏠 <a href="index.html">კურსის მთავარი გვერდი</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 3rem;">
+                    <h2 style="color: #667eea;">გმადლობთ ყურადღებისთვის! 🙏</h2>
+                    <p style="font-size: 1.2rem; margin-top: 1rem;">კითხვები?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="navigation">
+            <div class="nav-container">
+                <a href="lecture-1-slides.html" class="nav-btn">← ლექცია 1</a>
+                <div class="nav-center">
+                    <span class="nav-info">ლექცია 2: მითითებების ინჟინერია (Prompt Engineering)</span>
+                    <a href="index.html" class="nav-btn">კურსის მთავარი გვერდი</a>
+                </div>
+                <a href="lecture-3-slides.html" class="nav-btn">ლექცია 3 →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle additional info sections
+        function toggleAdditionalInfo(element) {
+            element.classList.toggle('active');
+        }
+
+        // Add click handlers to additional-info elements
+        document.querySelectorAll('.additional-info').forEach(item => {
+            item.addEventListener('click', function() {
+                toggleAdditionalInfo(this);
+            });
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Dark mode toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('aiTheme', isDark? 'dark': 'light');
+            document.getElementById('themeToggle').textContent = isDark? '☀️': '🌙';
+        }
+
+        // Apply saved theme on load
+        if (localStorage.getItem('aiTheme') === 'dark') {
+            document.body.classList.add('dark');
+            document.addEventListener('DOMContentLoaded', function() {
+                const btn = document.getElementById('themeToggle');
+                if (btn) btn.textContent = '☀️';
+            });
+        }
+    </script>
+</body>
+</html>

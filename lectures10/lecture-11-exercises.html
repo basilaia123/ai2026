@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ლექცია 11 - სავარჯიშოები: Custom AI Assistants</title>
+    <link href="https://fonts.googleapis.com/css2?family=FiraGO:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .exercise-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #2196f315 0%, #21cbf315 100%);
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #ff980015 0%, #ff572215 100%);
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #4caf5015 0%, #8bc34a15 100%);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .example-box {
+            background: #f5f5f5;
+            border-left: 4px solid #9e9e9e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: #667eea;
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+
+        .navigation {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nav-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .deliverables {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .time-estimate {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 ლექცია 10 - სავარჯიშოები</h1>
+        <p class="subtitle">Custom AI Assistants - პრაქტიკული დავალებები</p>
+
+        <div class="highlight-box">
+            <h3>📋 მიმოხილვა</h3>
+            <p>ეს სავარჯიშოები დაგეხმარებათ, მიიღოთ პრაქტიკული გამოცდილება მორგებული AI ასისტენტების შექმნასა და კონფიგურაციაში. თითოეული სავარჯიშო აერთიანებს თეორიულ ცოდნას რეალურ პროექტებთან.</p>
+            <p><strong>სავარჯიშოების რაოდენობა:</strong> 5 ძირითადი + 2 დამატებითი</p>
+            <p><strong>სავარჯიშოების დრო:</strong> 2-3 საათი (ძირითადი)</p>
+        </div>
+
+        <div class="warning-box">
+            <h3>⚠️ მნიშვნელოვანი</h3>
+            <ul>
+                <li>ყველა სავარჯიშოს შესასრულებლად დაგჭირდებათ ChatGPT Plus ან Enterprise ანგარიში (Custom GPTs-ისთვის)</li>
+                <li>ან Claude.ai Pro ანგარიში (Projects-ისთვის)</li>
+                <li>შეინახეთ ყველა დოკუმენტაცია და თქვენი სამუშაოს ეკრანის სურათები (screenshots)</li>
+                <li>ტესტირება ჩაატარეთ რეალურ სიტუაციებში</li>
+            </ul>
+        </div>
+
+        <!-- სავარჯიშო 1 -->
+        <div class="exercise-box">
+            <h2>📝 სავარჯიშო 1: პირადი ასისტენტის შექმნა</h2>
+            <p class="time-estimate">⏱️ დრო: 30-40 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>შექმენით Custom GPT, რომელიც დაგეხმარებათ ყოველდღიურ პროფესიულ ამოცანებში თქვენი სპეციფიკური სამუშაო პროფილის მიხედვით.</p>
+
+            <h3>📋 ამოცანა</h3>
+            <ol>
+                <li><strong>აირჩიეთ თქვენი პროფესია/როლი:</strong>
+                    <ul>
+                        <li>მარკეტინგის მენეჯერი</li>
+                        <li>პროექტის მენეჯერი</li>
+                        <li>კონტენტის შემქმნელი</li>
+                        <li>HR სპეციალისტი</li>
+                        <li>ან ნებისმიერი სხვა პროფესია</li>
+                    </ul>
+                </li>
+                <li><strong>შექმენით Custom GPT შემდეგი პარამეტრებით:</strong>
+                    <ul>
+                        <li>სახელი და აღწერა (დაწერეთ ქართულად და ინგლისურად)</li>
+                        <li>ინსტრუქციები (Instructions) - მინიმუმ 300 სიტყვა</li>
+                        <li>საუბრის დამწყები ფრაზები - მინიმუმ 4 მაგალითი</li>
+                        <li>ცოდნის ბაზა - ატვირთეთ 2-3 დოკუმენტი თქვენი სფეროდან</li>
+                        <li>შესაძლებლობები - აირჩიეთ შესაბამისი ფუნქციები</li>
+                    </ul>
+                </li>
+                <li><strong>ტესტირება:</strong>
+                    <ul>
+                        <li>ჩაატარეთ მინიმუმ 5 სხვადასხვა ტიპის საუბარი</li>
+                        <li>ჩაიწერეთ რა მუშაობს კარგად და რა საჭიროებს გაუმჯობესებას</li>
+                        <li>გადაიღეთ ეკრანის სურათები</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="example-box">
+                <h4>მაგალითი ინსტრუქციები (მარკეტინგის მენეჯერისთვის):</h4>
+                <p>You are a Marketing Campaign Assistant specialized in digital marketing for the Georgian market. Your role is to:</p>
+                <ul>
+                    <li>Help create marketing campaigns tailored for a Georgian audience</li>
+                    <li>Analyze campaign performance and provide actionable insights</li>
+                    <li>Generate creative content ideas considering the cultural context</li>
+                    <li>Provide best practices for social media platforms popular in Georgia</li>
+                    <li>Always ask clarifying questions about the target audience, budget, and goals</li>
+                    <li>Use a data-driven approach when analyzing results</li>
+                    <li>Speak in Georgian when discussing with the client, use English for technical terms</li>
+                </ul>
+            </div>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები (ჩასაბარებელი მასალები):</h4>
+                <ul class="checklist">
+                    <li>Custom GPT-ის სრული კონფიგურაცია (ეკრანის სურათი)</li>
+                    <li>ინსტრუქციების სრული ტექსტი</li>
+                    <li>5 ტესტური საუბრის ეკრანის სურათები</li>
+                    <li>გაუმჯობესების რეკომენდაციები (150-200 სიტყვა)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 2 -->
+        <div class="exercise-box">
+            <h2>📝 სავარჯიშო 2: სწავლების ასისტენტი სტუდენტებისთვის</h2>
+            <p class="time-estimate">⏱️ დრო: 40-50 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>შექმენით სასწავლო ასისტენტი, რომელიც დაეხმარება სტუდენტებს კონკრეტული საგნის სწავლაში.</p>
+
+            <h3>📋 ამოცანა</h3>
+            <ol>
+                <li><strong>აირჩიეთ საგანი:</strong>
+                    <ul>
+                        <li>მათემატიკა</li>
+                        <li>ისტორია</li>
+                        <li>პროგრამირება</li>
+                        <li>ინგლისური ენა</li>
+                        <li>ბიზნესი</li>
+                        <li>ან ნებისმიერი სხვა</li>
+                    </ul>
+                </li>
+                <li><strong>გააკეთეთ პედაგოგიური დიზაინი:</strong>
+                    <ul>
+                        <li>განსაზღვრეთ სწავლების მეთოდი (სოკრატული მეთოდი, ნაბიჯ-ნაბიჯ ახსნა, ინტერაქტიული და ა.შ.)</li>
+                        <li>აღწერეთ, როგორ უნდა ასწავლოს ასისტენტმა</li>
+                        <li>რა ტიპის კითხვები უნდა დაუსვას სტუდენტს</li>
+                        <li>როგორ უნდა მიაწოდოს უკუკავშირი</li>
+                    </ul>
+                </li>
+                <li><strong>Knowledge Base:</strong>
+                    <ul>
+                        <li>ატვირთეთ სასწავლო მასალა (სილაბუსი, ლექციის ჩანაწერები, სავარჯიშოები)</li>
+                        <li>მინიმუმ 3-4 PDF/დოკუმენტი</li>
+                    </ul>
+                </li>
+                <li><strong>დაამატეთ უნიკალური ფუნქციები:</strong>
+                    <ul>
+                        <li>ქვიზების გენერაცია</li>
+                        <li>სავარჯიშოების შექმნა</li>
+                        <li>ახსნა სხვადასხვა სირთულის დონეზე</li>
+                        <li>რეალური მაგალითების მოყვანა ქართული კონტექსტიდან</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="highlight-box">
+                <h4>💡 რჩევები:</h4>
+                <ul>
+                    <li>გამოიყენეთ სოკრატული მეთოდი - ნუ მისცემს პირდაპირ პასუხებს</li>
+                    <li>ასისტენტი უნდა დაეხმაროს სტუდენტს, თავად იპოვოს პასუხი</li>
+                    <li>დააყენებინეთ სირთულის დონეები (დამწყები, საშუალო, მაღალი)</li>
+                    <li>ასისტენტი გახადეთ მომთმენი და წამახალისებელი</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>მაგალითი Conversation Starter:</h4>
+                <ul>
+                    <li>"ახსენი მარტივი ენით რა არის [კონცეფცია]"</li>
+                    <li>"შექმენი ქვიზი თემაზე: [თემა]"</li>
+                    <li>"დამეხმარე ამ ამოცანის გადაწყვეტაში: [ამოცანა]"</li>
+                    <li>"მოიყვანე რეალური მაგალითი [კონცეფცია]-ზე საქართველოდან"</li>
+                </ul>
+            </div>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები:</h4>
+                <ul class="checklist">
+                    <li>სასწავლო ასისტენტის სრული კონფიგურაცია</li>
+                    <li>Knowledge base დოკუმენტების სია</li>
+                    <li>ტესტური საუბრები სამ სირთულის დონეზე</li>
+                    <li>პედაგოგიური მიდგომის დოკუმენტაცია (200-250 სიტყვა)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 3 -->
+        <div class="exercise-box">
+            <h2>📝 სავარჯიშო 3: ბიზნეს ანალიტიკის ასისტენტი</h2>
+            <p class="time-estimate">⏱️ დრო: 45-60 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>შექმენით ასისტენტი, რომელიც ანალიზს გააკეთებს ბიზნეს დოკუმენტებზე, მონაცემებზე და დაგეხმარებათ გადაწყვეტილების მიღებაში.</p>
+
+            <h3>📋 ამოცანა</h3>
+            <ol>
+                <li><strong>ასისტენტის სპეციალიზაცია:</strong>
+                    <ul>
+                        <li>Financial analysis</li>
+                        <li>Market research</li>
+                        <li>Competitor analysis</li>
+                        <li>Customer insights</li>
+                    </ul>
+                </li>
+                <li><strong>კონფიგურაცია:</strong>
+                    <ul>
+                        <li>დააკონფიგურირეთ Code Interpreter (მონაცემების ანალიზისთვის)</li>
+                        <li>DALL-E (ვიზუალიზაციებისთვის)</li>
+                        <li>Web Browsing (ბაზრის კვლევისთვის)</li>
+                    </ul>
+                </li>
+                <li><strong>Knowledge Base:</strong>
+                    <ul>
+                        <li>ატვირთეთ ნიმუშის მონაცემები (CSV, Excel)</li>
+                        <li>კომპანიის ინფორმაცია</li>
+                        <li>ინდუსტრიის რეპორტები</li>
+                        <li>კონკურენტების ანალიზი</li>
+                    </ul>
+                </li>
+                <li><strong>ფუნქციონალი:</strong>
+                    <ul>
+                        <li>მონაცემების ავტომატური ანალიზი</li>
+                        <li>ტრენდების იდენტიფიცირება</li>
+                        <li>რეკომენდაციების გენერაცია</li>
+                        <li>ვიზუალური რეპორტების შექმნა</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="warning-box">
+                <h4>⚠️ მნიშვნელოვანი:</h4>
+                <ul>
+                    <li>არ ატვირთოთ რეალური კონფიდენციალური მონაცემები</li>
+                    <li>გამოიყენეთ demo/sample data</li>
+                    <li>დაიცავით privacy და data security წესები</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>მაგალითი Analysis Workflow:</h4>
+                <ol>
+                    <li>Upload data file (CSV/Excel)</li>
+                    <li>ასისტენტი ავტომატურად ამოიცნობს სტრუქტურას</li>
+                    <li>დასვამს კითხვებს კონტექსტის გასაგებად</li>
+                    <li>აკეთებს exploratory data analysis</li>
+                    <li>იძლევა insights და რეკომენდაციებს</li>
+                    <li>ქმნის ვიზუალიზაციებს</li>
+                    <li>აფორმებს executive summary</li>
+                </ol>
+            </div>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები:</h4>
+                <ul class="checklist">
+                    <li>ბიზნეს ასისტენტის კონფიგურაცია</li>
+                    <li>Sample dataset-ები (მინიმუმ 2)</li>
+                    <li>სრული ანალიზის მაგალითი screenshot-ებით</li>
+                    <li>Generated insights და რეკომენდაციები</li>
+                    <li>ვიზუალიზაციების მაგალითები</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 4 -->
+        <div class="exercise-box">
+            <h2>📝 სავარჯიშო 4: კრეატიული წერის კოუჩი</h2>
+            <p class="time-estimate">⏱️ დრო: 35-45 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>შექმენით ასისტენტი, რომელიც დაგეხმარებათ კრეატიულ წერაში - ბლოგ პოსტებიდან წიგნების წერამდე.</p>
+
+            <h3>📋 ამოცანა</h3>
+            <ol>
+                <li><strong>დააყენეთ წერის სტილი და ტონი:</strong>
+                    <ul>
+                        <li>განსაზღვრეთ სამიზნე აუდიტორია</li>
+                        <li>აღწერეთ სასურველი წერის სტილი</li>
+                        <li>დააკონკრეტეთ ენა და ტონი (ფორმალური, მეგობრული, პროფესიული)</li>
+                    </ul>
+                </li>
+                <li><strong>დაამატეთ წერის პროცესის სტრუქტურა:</strong>
+                    <ul>
+                        <li>Brainstorming → Outlining → Drafting → Editing → Polishing</li>
+                        <li>თითოეული ეტაპისთვის სპეციფიური ინსტრუქციები</li>
+                    </ul>
+                </li>
+                <li><strong>Knowledge Base (style guides):</strong>
+                    <ul>
+                        <li>ატვირთეთ writing style guides</li>
+                        <li>მაგალითი კონტენტი თქვენი ბრენდის ხმით</li>
+                        <li>სასურველი ფორმატების შაბლონები</li>
+                    </ul>
+                </li>
+                <li><strong>სპეციალური ფუნქციები:</strong>
+                    <ul>
+                        <li>Writer's block-ის დაძლევა</li>
+                        <li>იდეების გენერაცია</li>
+                        <li>სტრუქტურის გაუმჯობესება</li>
+                        <li>სტილისტური რედაქტირება</li>
+                        <li>SEO ოპტიმიზაცია (ბლოგებისთვის)</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="highlight-box">
+                <h4>💡 რომელი ელემენტები უნდა შეიცავდეს:</h4>
+                <ul>
+                    <li><strong>Brainstorming prompts:</strong> თემის იდეების გენერაცია</li>
+                    <li><strong>Outline creation:</strong> სტრუქტურის დაგეგმვა</li>
+                    <li><strong>First draft:</strong> პირველი ვერსია დახმარებით</li>
+                    <li><strong>Feedback loop:</strong> კონსტრუქციული კრიტიკა</li>
+                    <li><strong>Refinement:</strong> გაუმჯობესება და დახვეწა</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>მაგალითი Conversation Starters:</h4>
+                <ul>
+                    <li>"დამეხმარე ბლოგ პოსტის თემის მოფიქრებაში თემაზე: [თემა]"</li>
+                    <li>"შევქმნათ სტატიის outline [სათაური]-ზე"</li>
+                    <li>"გააუმჯობესე ეს პარაგრაფი: [ტექსტი]"</li>
+                    <li>"მომეცი feedback ამ draft-ზე"</li>
+                    <li>"დამეხმარე writer's block-ის დაძლევაში"</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <h4>✅ შეამოწმეთ:</h4>
+                <ul>
+                    <li>ასისტენტი სვამს კითხვებს რომ გაიგოს კონტექსტი?</li>
+                    <li>იძლევა კონსტრუქციულ feedback-ს?</li>
+                    <li>ეხმარება სტრუქტურის გაუმჯობესებაში?</li>
+                    <li>ინარჩუნებს თქვენს სასურველ სტილს?</li>
+                    <li>მოტივირებულია და წამხალისებელია?</li>
+                </ul>
+            </div>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები:</h4>
+                <ul class="checklist">
+                    <li>Writing Coach-ის სრული კონფიგურაცია</li>
+                    <li>Style guide დოკუმენტები</li>
+                    <li>მთლიანი writing session-ის მაგალითი (brainstorming-იდან final draft-მდე)</li>
+                    <li>Before/After მაგალითები (გაუმჯობესებული ტექსტები)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 5 -->
+        <div class="exercise-box">
+            <h2>📝 სავარჯიშო 5: Claude Projects - კომპლექსური პროექტის მენეჯმენტი</h2>
+            <p class="time-estimate">⏱️ დრო: 50-60 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>შექმენით Claude Project რომელიც მართავს კომპლექსურ მრავალდონიან პროექტს სრული კონტექსტითა და knowledge base-ით.</p>
+
+            <h3>📋 ამოცანა</h3>
+            <ol>
+                <li><strong>აირჩიეთ პროექტის ტიპი:</strong>
+                    <ul>
+                        <li>Software development project</li>
+                        <li>Content creation project (course, book, video series)</li>
+                        <li>Business transformation project</li>
+                        <li>Research project</li>
+                    </ul>
+                </li>
+                <li><strong>დააყენეთ Project Instructions (Custom Instructions):</strong>
+                    <ul>
+                        <li>პროექტის მიზნები და scope</li>
+                        <li>როლები და პასუხისმგებლობები</li>
+                        <li>სტანდარტები და best practices</li>
+                        <li>Output formats და templates</li>
+                        <li>მინიმუმ 400-500 სიტყვა დეტალური ინსტრუქციები</li>
+                    </ul>
+                </li>
+                <li><strong>Project Knowledge:</strong>
+                    <ul>
+                        <li>ატვირთეთ მინიმუმ 5-7 დოკუმენტი:
+                            <ul>
+                                <li>პროექტის დოკუმენტაცია</li>
+                                <li>Requirements & specifications</li>
+                                <li>Design documents</li>
+                                <li>Style guides</li>
+                                <li>Previous work samples</li>
+                            </ul>
+                        </li>
+                        <li>მაქსიმალურად გამოიყენეთ 200MB limit</li>
+                    </ul>
+                </li>
+                <li><strong>გამოიყენეთ Projects-ის უნიკალური ფუნქციები:</strong>
+                    <ul>
+                        <li>Long-term memory (context retention)</li>
+                        <li>Multi-file analysis</li>
+                        <li>Iterative development</li>
+                        <li>Version tracking</li>
+                    </ul>
+                </li>
+                <li><strong>დაგეგმეთ work sessions:</strong>
+                    <ul>
+                        <li>Session 1: Planning & Architecture</li>
+                        <li>Session 2: Implementation</li>
+                        <li>Session 3: Review & Refinement</li>
+                        <li>Session 4: Testing & Documentation</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="highlight-box">
+                <h4>💡 Claude Projects-ის უპირატესობები:</h4>
+                <ul>
+                    <li><strong>Context retention:</strong> იხსოვს ყველა წინა საუბარს</li>
+                    <li><strong>Knowledge base:</strong> 200MB-მდე დოკუმენტები</li>
+                    <li><strong>Custom Instructions:</strong> პროექტ-სპეციფიური ინსტრუქციები</li>
+                    <li><strong>Artifacts:</strong> კოდის, დოკუმენტების, ვიზუალების შექმნა</li>
+                    <li><strong>Multi-session work:</strong> ხანგრძლივი პროექტებისთვის</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>მაგალითი Project: კურსის შექმნა</h4>
+                <p><strong>Project Name:</strong> "AI Course Development Assistant"</p>
+                <p><strong>Custom Instructions:</strong></p>
+                <pre>
+You are an instructional design assistant for creating an AI/ML course.
+
+Context:
+- Target audience: Professionals wanting to integrate AI in their work
+- Course duration: 11 sessions (22 hours)
+- Language: Georgian with English technical terms
+- Delivery: In-person with online materials
+
+Your responsibilities:
+1. Help develop lecture content following course syllabus
+2. Create practical exercises aligned with learning objectives
+3. Design assessments and homework assignments
+4. Ensure content progression and proper pacing
+5. Maintain consistent formatting and style
+
+Standards to follow:
+- Each lecture: 2 hours (120 minutes)
+- Include: slides, summary, exercises, homework
+- Use FiraGO font for Georgian text
+- Follow color scheme: #667eea (primary), #764ba2 (secondary)
+- All files: UTF-8 encoding
+
+When creating content:
+- Always ask clarifying questions first
+- Provide practical, real-world examples
+- Include Georgian cultural context where relevant
+- Balance theory with hands-on practice
+- Create interactive elements (quizzes, exercises)
+
+Output formats:
+- Lecture slides: HTML with embedded CSS/JS
+- Summaries: Markdown and HTML versions
+- Exercises: Structured HTML with clear instructions
+                </pre>
+                <p><strong>Knowledge files:</strong> Syllabus PDF, sample lectures, style guides, course objectives, assessment rubrics</p>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Best Practices:</h4>
+                <ul>
+                    <li>დაიწყეთ მცირე scope-ით, შემდეგ გააფართოვეთ</li>
+                    <li>სისტემატურად განაახლეთ knowledge base</li>
+                    <li>ჩაიწერეთ sessions-ებს შორის მიღწეული პროგრესი</li>
+                    <li>გამოიყენეთ versioning დოკუმენტებისთვის</li>
+                    <li>რეგულარულად შეამოწმეთ Custom Instructions-ის ეფექტურობა</li>
+                </ul>
+            </div>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები:</h4>
+                <ul class="checklist">
+                    <li>Claude Project-ის სრული სეტაპი (screenshot-ები)</li>
+                    <li>Custom Instructions სრული ტექსტი (500+ სიტყვა)</li>
+                    <li>Knowledge base-ის სია აღწერებით</li>
+                    <li>4 work session-ის დოკუმენტაცია screenshots-ით</li>
+                    <li>პროექტის შედეგები (რა შეიქმნა)</li>
+                    <li>გამოცდილების ანალიზი: რა მუშაობს, რა არა (300-400 სიტყვა)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- დამატებითი სავარჯიშოები -->
+        <h2 style="color: #764ba2; margin-top: 50px;">🌟 დამატებითი სავარჯიშოები (Advanced)</h2>
+
+        <div class="exercise-box">
+            <h2>📝 დამატებითი სავარჯიშო A: Multi-Assistant Workflow</h2>
+            <p class="time-estimate">⏱️ დრო: 60-90 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>შექმენით 3-4 სპეციალიზებული ასისტენტი, რომლებიც ერთად მუშაობენ კომპლექსურ workflow-ში.</p>
+
+            <h3>📋 ამოცანა</h3>
+            <p><strong>სცენარი:</strong> კონტენტ პროდუქციის workflow ბლოგისთვის</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ასისტენტი</th>
+                        <th>როლი</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Researcher</td>
+                        <td>კვლევა და ფაქტების შეგროვება</td>
+                        <td>თემა</td>
+                        <td>Research brief</td>
+                    </tr>
+                    <tr>
+                        <td>Writer</td>
+                        <td>სტატიის დაწერა</td>
+                        <td>Research brief</td>
+                        <td>Draft article</td>
+                    </tr>
+                    <tr>
+                        <td>Editor</td>
+                        <td>რედაქტირება და გაუმჯობესება</td>
+                        <td>Draft article</td>
+                        <td>Polished article</td>
+                    </tr>
+                    <tr>
+                        <td>SEO Optimizer</td>
+                        <td>SEO ოპტიმიზაცია</td>
+                        <td>Polished article</td>
+                        <td>SEO-optimized final version</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>📋 დავალება:</h3>
+            <ol>
+                <li>შექმენით ყველა 4 ასისტენტი დეტალური Instructions-ით</li>
+                <li>გაიარეთ მთელი workflow რეალური თემით</li>
+                <li>დოკუმენტირება გააკეთეთ თითოეული ეტაპის</li>
+                <li>შეაფასეთ ეფექტურობა - დრო, ხარისხი, consistency</li>
+            </ol>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები:</h4>
+                <ul class="checklist">
+                    <li>ყველა 4 ასისტენტის კონფიგურაცია</li>
+                    <li>მთლიანი workflow-ის დოკუმენტაცია screenshots-ით</li>
+                    <li>Input და output თითოეული ეტაპისთვის</li>
+                    <li>Workflow-ის ეფექტურობის ანალიზი (400-500 სიტყვა)</li>
+                    <li>რეკომენდაციები გაუმჯობესებისთვის</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="exercise-box">
+            <h2>📝 დამატებითი სავარჯიშო B: Industry-Specific Expert</h2>
+            <p class="time-estimate">⏱️ დრო: 60-90 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>შექმენით ღრმად სპეციალიზებული ასისტენტი კონკრეტული ინდუსტრიისთვის ექსპერტ-დონის knowledge base-ით.</p>
+
+            <h3>📋 ამოცანა</h3>
+            <ol>
+                <li><strong>აირჩიეთ ინდუსტრია:</strong>
+                    <ul>
+                        <li>Healthcare (მაგალითად: Medical Diagnosis Assistant)</li>
+                        <li>Legal (მაგალითად: Contract Analysis Assistant)</li>
+                        <li>Finance (მაგალითად: Investment Analysis Assistant)</li>
+                        <li>Real Estate (მაგალითად: Property Valuation Assistant)</li>
+                        <li>Technology (მაგალითად: System Architecture Assistant)</li>
+                    </ul>
+                </li>
+                <li><strong>Knowledge Base - ექსპერტული დონე:</strong>
+                    <ul>
+                        <li>მინიმუმ 10-15 სპეციალიზებული დოკუმენტი</li>
+                        <li>ინდუსტრიის სტანდარტები და რეგულაციები</li>
+                        <li>Best practices და case studies</li>
+                        <li>ტექნიკური სპეციფიკაციები</li>
+                        <li>საქართველოს კანონმდებლობა (თუ relevantია)</li>
+                    </ul>
+                </li>
+                <li><strong>Advanced Features:</strong>
+                    <ul>
+                        <li>Multi-step analysis workflows</li>
+                        <li>Risk assessment capabilities</li>
+                        <li>Compliance checking</li>
+                        <li>Decision support systems</li>
+                        <li>Custom frameworks და methodologies</li>
+                    </ul>
+                </li>
+                <li><strong>Testing:</strong>
+                    <ul>
+                        <li>10+ რეალისტური სცენარი</li>
+                        <li>სხვადასხვა complexity level-ები</li>
+                        <li>Edge cases და exceptions</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="highlight-box">
+                <h4>💡 მაგალითი: Legal Contract Analysis Assistant</h4>
+                <p><strong>Knowledge Base:</strong></p>
+                <ul>
+                    <li>საქართველოს სამოქალაქო კოდექსი (relevant sections)</li>
+                    <li>შრომის კოდექსი</li>
+                    <li>კონტრაქტების ნიმუშები (NDA, employment, service agreements)</li>
+                    <li>Legal terminology glossary (GEO-ENG)</li>
+                    <li>Court precedents და case law</li>
+                    <li>International contract templates</li>
+                </ul>
+                <p><strong>Capabilities:</strong></p>
+                <ul>
+                    <li>კონტრაქტის ანალიზი და რისკების იდენტიფიცირება</li>
+                    <li>Missing clauses-ების მოძებნა</li>
+                    <li>შესაბამისობა ქართულ კანონმდებლობასთან</li>
+                    <li>კონტრაქტის პროექტის დახმარება</li>
+                    <li>Legal terminology-ის ახსნა</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Professional Disclaimer:</h4>
+                <p>ასისტენტმა უნდა მკაფიოდ განაცხადოს:</p>
+                <ul>
+                    <li>არ არის პროფესიონალური რჩევის ჩანაცვლება</li>
+                    <li>არის დამხმარე ინსტრუმენტი, არა საბოლოო ავტორიტეტი</li>
+                    <li>რეკომენდაციები საჭიროებს ვერიფიკაციას ექსპერტების მიერ</li>
+                    <li>განსაკუთრებით critical decisions-ში</li>
+                </ul>
+            </div>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები:</h4>
+                <ul class="checklist">
+                    <li>ინდუსტრიული ექსპერტის სრული კონფიგურაცია</li>
+                    <li>Comprehensive knowledge base (10+ documents)</li>
+                    <li>10 test scenarios-ის დეტალური დოკუმენტაცია</li>
+                    <li>Accuracy assessment - რამდენად სწორი პასუხები</li>
+                    <li>Limitations analysis - სად არის საზღვრები</li>
+                    <li>Professional use guide (500-600 სიტყვა)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="exercise-box">
+            <h2>📝 დამატებითი სავარჯიშო C: AI Agent Design (Conceptual)</h2>
+            <p class="time-estimate">⏱️ დრო: 40-50 წუთი</p>
+
+            <h3>🎯 მიზანი</h3>
+            <p>გაიგოთ AI Agents-ის კონცეპცია და დაგეგმოთ agent architecture რეალური use case-ისთვის (ბონუს სავარჯიშო - კოდირება არ არის საჭირო).</p>
+
+            <div class="warning-box">
+                <h4>⚠️ Note:</h4>
+                <p>ეს არის <strong>conceptual/planning exercise</strong> - კოდის წერა არ არის საჭირო! მიზანია გაიგოთ როგორ მუშაობს agents და როდის არის მათი გამოყენება გამართლებული.</p>
+            </div>
+
+            <h3>📋 ამოცანა</h3>
+
+            <p><strong>სცენარი:</strong> თქვენ ხართ Smart Academy-ს ტექნიკური დირექტორი. გინდათ შექმნათ AI Agent რომელიც <strong>ავტომატურად შეაგროვებს და დაამუშავებს student feedback-ს</strong> ლექციების შემდეგ.</p>
+
+            <h4 style="margin-top: 20px;">Ნაბიჯი 1: Agent Goal & Requirements (10 წთ)</h4>
+            <div class="task-list">
+                <p>დაწერეთ დეტალური აღწერა:</p>
+                <ol>
+                    <li><strong>Main Goal:</strong> რა უნდა მიაღწიოს agent-მა?</li>
+                    <li><strong>Input:</strong> რა მონაცემები აქვს ხელმისაწვდომი?
+                        <ul>
+                            <li>Student feedback forms (Google Forms responses)?</li>
+                            <li>Email-ების feedback-ით?</li>
+                            <li>ჩატის ისტორია?</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output:</strong> რა უნდა შექმნას?
+                        <ul>
+                            <li>Summary report?</li>
+                            <li>Action items for improvement?</li>
+                            <li>Alert თუ critical issues-ია?</li>
+                        </ul>
+                    </li>
+                    <li><strong>Success Criteria:</strong> როდის ითვლება წარმატებულად?</li>
+                </ol>
+            </div>
+
+            <h4>Ნაბიჯი 2: Agent Architecture Design (15 წთ)</h4>
+            <div class="task-list">
+                <p>დაგეგმეთ 5 კომპონენტი:</p>
+
+                <h5>1. 🎯 Goal/Task</h5>
+                <p>მაგალითი: "Collect feedback from Google Forms → Analyze sentiment → Identify top issues → Create weekly report → Alert instructor if critical issues"</p>
+
+                <h5>2. 🧠 Reasoning Engine</h5>
+                <p>რომელი LLM გამოიყენებთ? GPT-4? Claude? რატომ?</p>
+
+                <h5>3. 🛠️ Tools/Actions</h5>
+                <p>რა tools დასჭირდება agent-ს?</p>
+                <ul>
+                    <li>Google Forms API (read responses)?</li>
+                    <li>Gmail API (send reports)?</li>
+                    <li>Sentiment analysis tool?</li>
+                    <li>Database (store historical data)?</li>
+                    <li>Data visualization (create charts)?</li>
+                </ul>
+                <p>ჩამოთვალეთ ყველა!</p>
+
+                <h5>4. 💾 Memory</h5>
+                <p>რა უნდა გახსოვდეს agent-ს?</p>
+                <ul>
+                    <li>Short-term: მიმდინარე feedback batch?</li>
+                    <li>Long-term: ისტორიული ტრენდები? previous reports?</li>
+                </ul>
+
+                <h5>5. 🔄 Action Loop</h5>
+                <p>დაწერეთ step-by-step workflow:</p>
+                <ol>
+                    <li>Observe: Check Google Forms for new responses</li>
+                    <li>Think: Any new feedback since last check?</li>
+                    <li>Act: Fetch new responses</li>
+                    <li>Think: Is analysis needed? (more than 10 responses?)</li>
+                    <li>Act: Run sentiment analysis...</li>
+                    <li>...</li>
+                </ol>
+            </div>
+
+            <h4>Ნაბიჯი 3: Risk Assessment (10 წთ)</h4>
+            <div class="warning-box">
+                <p><strong>რა რისკები არსებობს ამ agent-ისთვის?</strong></p>
+                <ol>
+                    <li><strong>Cost:</strong> რამდენს დახარჯავს თვეში? (estimate LLM calls)
+                        <ul>
+                            <li>თუ 100 feedback თვეში → X agent cycles → Y LLM calls → Z ღირებულება?</li>
+                        </ul>
+                    </li>
+                    <li><strong>Privacy:</strong> student feedback შეიძლება იყოს sensitive!
+                        <ul>
+                            <li>როგორ დაიცავთ პირადულობას?</li>
+                            <li>ანონიმიზაცია საჭიროა?</li>
+                        </ul>
+                    </li>
+                    <li><strong>Errors:</strong> რა მოხდება თუ agent-მა არასწორად გაანალიზა feedback?
+                        <ul>
+                            <li>False negative (გამოტოვა critical issue)?</li>
+                            <li>False positive (არასწორად დაადგინა პრობლემა)?</li>
+                        </ul>
+                    </li>
+                    <li><strong>Security:</strong> API access რისკები?</li>
+                </ol>
+            </div>
+
+            <h4>Ნაბიჯი 4: Alternative Solution (5 წთ)</h4>
+            <div class="highlight-box">
+                <p><strong>Question:</strong> ამ use case-სთვის ნამდვილად საჭიროა AI Agent?</p>
+                <p><strong>ალტერნატივები:</strong></p>
+                <ul>
+                    <li>Custom GPT რომ ინსტრუქტორმა manually upload-ს feedback და მიიღოს summary?</li>
+                    <li>Simple automation (Zapier) + ChatGPT API call?</li>
+                    <li>Manual review ყოველ კვირას?</li>
+                </ul>
+                <p><strong>შეადარეთ:</strong></p>
+                <table>
+                    <tr>
+                        <th>Solution</th>
+                        <th>Cost</th>
+                        <th>Complexity</th>
+                        <th>Autonomy</th>
+                        <th>რჩევა</th>
+                    </tr>
+                    <tr>
+                        <td>Full AI Agent</td>
+                        <td>$50-100/mo</td>
+                        <td>High</td>
+                        <td>Full</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>Custom GPT + Manual</td>
+                        <td>$20/mo</td>
+                        <td>Low</td>
+                        <td>None</td>
+                        <td>?</td>
+                    </tr>
+                    <tr>
+                        <td>Zapier + API</td>
+                        <td>$30/mo</td>
+                        <td>Medium</td>
+                        <td>Partial</td>
+                        <td>?</td>
+                    </tr>
+                </table>
+                <p>რომელს აირჩევდით? რატომ?</p>
+            </div>
+
+            <div class="deliverables">
+                <h4>📤 შედეგები:</h4>
+                <ul class="checklist">
+                    <li>Agent Goal & Requirements დოკუმენტი (200-300 სიტყვა)</li>
+                    <li>5-component Architecture დიზაინი (დეტალური)</li>
+                    <li>Step-by-step Action Loop (10-15 steps)</li>
+                    <li>Risk Assessment ანალიზი (ყველა 4 რისკზე)</li>
+                    <li>Alternative Solutions შედარება + რეკომენდაცია</li>
+                    <li>Final Recommendation: Agent თუ Alternative? რატომ? (100-150 სიტყვა)</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <h4>✅ რას ისწავლით ამ სავარჯიშოდან:</h4>
+                <ul>
+                    <li>როგორ იფიქროთ agent architecture-ზე systematically</li>
+                    <li>როგორ შეაფასოთ cost vs benefit agent-ისთვის</li>
+                    <li>როდის არის agent-ი overkill და ალტერნატივა უკეთესია</li>
+                    <li>რა რისკები არსებობს და როგორ მივაგოთ მათ</li>
+                    <li>რეალური use case-ის დაგეგმვის პრაქტიკა</li>
+                </ul>
+                <p><strong>💡 Key Insight:</strong> უმეტეს შემთხვევაში, Custom GPT + Manual/Semi-automated workflow საკმარისია. Agents საჭიროა მხოლოდ მაშინ როცა <strong>full autonomy</strong> აუცილებელია!</p>
+            </div>
+        </div>
+
+        <!-- შეჯამება და რესურსები -->
+        <div class="success-box" style="margin-top: 50px;">
+            <h2>✅ სავარჯიშოების შემოწმების Checklist</h2>
+            <p>ყველა სავარჯიშოს დასრულების შემდეგ დარწმუნდით რომ:</p>
+            <ul class="checklist">
+                <li>ყველა ასისტენტი კარგად დოკუმენტირებულია</li>
+                <li>Instructions არის დეტალური და ნათელი</li>
+                <li>Knowledge base არის ორგანიზებული და relevantური</li>
+                <li>ტესტირება ჩატარებულია სხვადასხვა სცენარებით</li>
+                <li>შენახულია screenshots და მაგალითები</li>
+                <li>ჩაწერილია insights და გაკვეთილები</li>
+                <li>იდენტიფიცირებულია შესაძლებლობები გაუმჯობესებისთვის</li>
+            </ul>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 30px;">
+            <h2>📚 დამატებითი რესურსები</h2>
+            <h3>OpenAI Resources:</h3>
+            <ul>
+                <li><a href="https://help.openai.com/en/articles/8554397-creating-a-gpt" target="_blank">Creating a GPT - Official Guide</a></li>
+                <li><a href="https://openai.com/blog/introducing-gpts" target="_blank">Introducing GPTs - Blog Post</a></li>
+                <li><a href="https://help.openai.com/en/collections/8552635-gpts" target="_blank">GPTs Help Center</a></li>
+            </ul>
+
+            <h3>Claude Resources:</h3>
+            <ul>
+                <li><a href="https://support.anthropic.com/en/articles/9517075-what-are-projects" target="_blank">What are Projects - Anthropic</a></li>
+                <li><a href="https://www.anthropic.com/news/projects" target="_blank">Introducing Projects - Blog</a></li>
+            </ul>
+
+            <h3>Community Examples:</h3>
+            <ul>
+                <li>GPT Store - explore popular custom GPTs</li>
+                <li>Community forums და discussions</li>
+                <li>Best practices repositories</li>
+            </ul>
+        </div>
+
+        <div class="navigation">
+            <a href="lecture-9-exercises.html" class="nav-button">← ლექცია 9 სავარჯიშოები</a>
+            <a href="index.html" class="nav-button">მთავარი გვერდი</a>
+            <a href="lecture-11-exercises.html" class="nav-button">ლექცია 11 სავარჯიშოები →</a>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 5px; text-align: center;">
+            <p style="color: #666; font-size: 0.9em;">
+                AI - ხელოვნური ინტელექტი პრაქტიკაში | Smart Academy<br>
+                ლექტორი: გიორგი ბასილაია<br>
+                <a href="https://smartacademy.ge/trainings/587-AI-In-Practice" target="_blank" style="color: #667eea;">smartacademy.ge</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
