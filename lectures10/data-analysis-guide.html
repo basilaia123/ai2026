@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მონაცემთა ანალიზი და ექსელი AI-ით | ვრცელი გზამკვლევი</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; color: #e2e8f0; background: linear-gradient(135deg, #020617 0%, #064e3b 100%); min-height: 100vh; padding: 2rem; font-size: 16px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        .nav-back { display: inline-block; margin-bottom: 2rem; color: #10b981; text-decoration: none; background: rgba(16, 185, 129, 0.1); padding: 0.6rem 1.2rem; border-radius: 50px; transition: all 0.3s ease; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 600; }
+        .nav-back:hover { background: rgba(16, 185, 129, 0.2); transform: translateX(-3px); }
+        
+        .header { text-align: center; color: white; margin-bottom: 3rem; padding: 4rem 2rem; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .header h1 { font-size: 3.5rem; margin-bottom: 1.5rem; font-weight: 800; background: linear-gradient(to right, #34d399, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2;}
+        .header p { font-size: 1.3rem; opacity: 0.9; color: #94a3b8; max-width: 800px; margin: 0 auto;}
+        
+        .toc { background: #0f172a; padding: 2.5rem; border-radius: 15px; margin-bottom: 3rem; border: 1px solid #1e293b; box-shadow: 0 4px 20px rgba(0,0,0,0.3);}
+        .toc h3 { color: #10b981; margin-bottom: 1.5rem; border-bottom: 2px solid #020617; padding-bottom: 0.8rem; font-size: 1.5rem;}
+        .toc ol { margin-left: 2rem; color: #cbd5e1; font-size: 1.1rem;}
+        .toc li { margin-bottom: 0.8rem; }
+        .toc a { color: #cbd5e1; text-decoration: none; transition: color 0.3s; }
+        .toc a:hover { color: #10b981; }
+
+        .content-card { background: #0f172a; border-radius: 15px; padding: 3rem; margin-bottom: 3.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.4); border: 1px solid #1e293b; }
+        .content-card h2 { color: #10b981; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #020617; font-size: 2rem; font-weight: 800; }
+        .content-card h3 { color: #f1f5f9; margin: 2.5rem 0 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .content-card p { margin-bottom: 1.5rem; color: #94a3b8; font-size: 1.1rem;}
+        .content-card ul, .content-card ol { margin-left: 2.5rem; margin-bottom: 1.5rem; color: #cbd5e1; font-size: 1.1rem;}
+        .content-card li { margin-bottom: 0.8rem; }
+        .content-card strong { color: #f8fafc; }
+        
+        /* Box variants */
+        .highlight-box { background: #020617; border-left: 5px solid #10b981; padding: 2rem; border-radius: 0 12px 12px 0; margin: 2rem 0; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .highlight-box h4 { color: #34d399; margin-bottom: 0.8rem; font-size: 1.25rem; }
+        
+        .warning-box { background: #450a0a; border-left: 5px solid #ef4444; padding: 2rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .warning-box h4 { color: #fca5a5; margin-bottom: 0.8rem; font-size: 1.25rem; }
+        
+        .info-box { background: #172554; border-left: 5px solid #3b82f6; padding: 2rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .info-box h4 { color: #93c5fd; margin-bottom: 0.8rem; font-size: 1.25rem; }
+        
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .feature-item { background: #020617; padding: 2rem; border-radius: 15px; border: 1px solid #1e293b; transition: all 0.3s ease; }
+        .feature-item:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.5); border-color: #10b981; }
+        .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .feature-item h4 { color: #10b981; margin-bottom: 1rem; font-size: 1.3rem; }
+        .feature-item p { font-size: 1rem; color: #94a3b8; margin-bottom:0;}
+        
+        .prompt-example { background: #1e1b4b; border-left: 5px solid #8b5cf6; padding: 2rem; border-radius: 0 12px 12px 0; margin: 2rem 0; font-family: 'Consolas', monospace; color: #ddd6fe; white-space: pre-wrap; font-size: 1.05rem; line-height: 1.6; }
+        .prompt-example::before { content: "💬 პრომპტის მაგალითი:"; display: block; font-weight: bold; color: #a78bfa; margin-bottom: 1rem; font-family: 'FiraGO', sans-serif;}
+
+        .excel-formula { background: #064e3b; border-left: 5px solid #10b981; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 1.5rem 0; font-family: 'Consolas', monospace; color: #ecfdf5; font-size: 1.1rem; font-weight: bold; letter-spacing: 0.5px;}
+        .excel-formula::before { content: "ƒx Excel / DAX ფორმულა:"; display: block; font-weight: normal; color: #6ee7b7; margin-bottom: 0.5rem; font-size: 0.9rem; font-family: 'FiraGO', sans-serif;}
+
+        .code-block { background: #000000; border: 1px solid #1e293b; padding: 2rem; border-radius: 12px; font-family: 'Consolas', monospace; color: #e2e8f0; overflow-x: auto; margin: 2rem 0; font-size: 1rem;}
+        
+        .comparison-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 2rem; color: #cbd5e1; border-radius: 12px; overflow: hidden; border: 1px solid #1e293b; }
+        .comparison-table th { padding: 18px; text-align: left; color:#10b981; background: #020617; font-weight: 700; font-size: 1.1rem;}
+        .comparison-table td { padding: 18px; text-align: left; background: #0f172a; border-top: 1px solid #1e293b; font-size: 1.05rem;}
+        .comparison-table tr:hover td { background: #020617; }
+        
+        .btn-primary { display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #10b981 0%, #047857 100%); color: white; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 1.1rem; transition: all 0.3s ease; margin: 0.5rem; border: none; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); }
+        .nav-buttons { display: flex; justify-content: center; gap: 1.5rem; margin-top: 4rem; flex-wrap: wrap; }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 2.2rem; }
+            .content-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="nav-back">← მთავარ გვერდზე დაბრუნება</a>
+
+        <div class="header">
+            <h1>მონაცემთა ანალიზი და ექსელი AI-ით</h1>
+            <p>პროფესიონალური სახელმძღვანელო: როგორ ვაქციოთ ათასობით სტრიქონი, არეული ტექსტი და დაუმუშავებელი რიცხვები მძლავრ ბიზნეს-გადაწყვეტილებად და ინტერაქტიულ ვიზუალიზაციად.</p>
+        </div>
+
+        <div class="toc">
+            <h3>📖 სარჩევი</h3>
+            <ol>
+                <li><a href="#intro">რა შეცვალა AI-მ მონაცემთა ანალიზში? (Code Interpreter-ის ძალა)</a></li>
+                <li><a href="#file-upload">კონფიდენციალურობა და ფაილების სწორი ატვირთვა</a></li>
+                <li><a href="#unstructured">არასტრუქტურირებული მონაცემების სტრუქტურირება (PDF/ტექსტი -> Excel)</a></li>
+                <li><a href="#data-cleaning">Data Cleaning (მონაცემების გასუფთავება) - რუტინის განადგურება</a></li>
+                <li><a href="#excel-formulas">Excel & PowerBI: რთული ფორმულები, DAX და VBA მაკროსები</a></li>
+                <li><a href="#advanced-analytics">Advanced Analytics: პროგნოზები (Forecasting) და ტრენდები სტატისტიკის ცოდნის გარეშე</a></li>
+                <li><a href="#claude-artifacts">Claude Artifacts Masterclass: რეალური დროის ინტერაქტიული Dashboard-ები</a></li>
+                <li><a href="#scenarios">რეალური ბიზნეს-სცენარები 5 სხვადასხვა ინდუსტრიისთვის (Cheat Sheet)</a></li>
+                <li><a href="#tools-compare">რომელი მოდელი გამოვიყენოთ? (GPT-5.4 vs Claude 4.6)</a></li>
+            </ol>
+        </div>
+
+        <!-- Section 1 -->
+        <div id="intro" class="content-card">
+            <h2>1. რა შეცვალა AI-მ მონაცემთა ანალიზში?</h2>
+            <p>აქამდე მოცულობითი ცხრილების ანალიზი, Pivot Table-ების აწყობა, პითონით პროგნოზირება და ვიზუალიზაცია საჭიროებდა Excel/SQL/Python-ის სიღრმისეულ ცოდნას ან ძვირადღირებულ პროგრამულ უზრუნველყოფას (მაგ. PowerBI, Tableau). 
+            დღეს უფროსი მონაცემთა მეცნიერის (Senior Data Scientist) ძალა თქვენს ბრაუზერშია.</p>
+            
+            <div class="info-box">
+                <h4>რა არის 'Code Interpreter' (Advanced Data Analysis)?</h4>
+                <p>როდესაც ChatGPT-ში ატვირთავთ ექსელს, ის უბრალოდ ტექსტურად კი არ კითხულობს მას. ის <strong>კულისებში წერს Python-ის მოკლე სკრიპტს</strong>, უშვებს ამ კოდს სანდო გარემოში (Sandbox) და პასუხად გაძლევთ ამ კოდის მიერ დათვლილ, 100%-ით ზუსტ მათემატიკურ პასუხს. ამის გამო, ის აღარ "ჰალუცინაციებს" რიცხვებზე.</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🧹</div>
+                    <h4>მონაცემთა გასუფთავება</h4>
+                    <p>არეული თარიღების, შეცდომების, ცარიელი (Null) უჯრების მაგიური შესწორება ხელით მუშაობის გარეშე.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔍</div>
+                    <h4>Insight Extraction</h4>
+                    <p>დამალული კორელაციების პოვნა: "რატომ გვაქვს გაყიდვების ვარდნა სამშაბათობით?"</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔮</div>
+                    <h4>პროგნოზირება</h4>
+                    <p>მომავალი გაყიდვების, ინვენტარის თუ კლიენტთა ქცევის წინასწარმეტყველება ისტორიულ ბազაზე დაყრდნობით.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div id="file-upload" class="content-card">
+            <h2>2. კონფიდენციალურობა და ფაილების სწორი ატვირთვა</h2>
+            <p>პირველი ნაბიჯია AI-სთვის მონაცემების მიწოდება. ეს შეიძლება ორი გზით მოხდეს: <strong>უშუალოდ ცხრილის კოპირება/ჩასმა</strong> (პატარა ზომის მონაცემებისთვის) ან <strong>ფაილის პირდაპირი ტვირთვა</strong> (დიდი <code>.csv</code> ან <code>.xlsx</code> ბაზებისთვის).</p>
+
+            <div class="warning-box">
+                <h4>⚠️ კონფიდენციალურობის (Privacy) ოქროს წესი</h4>
+                <p><strong>არასოდეს ატვირთოთ PII (Personally Identifiable Information).</strong></p>
+                <p>ატვირთვამდე Excel-ში ყოველთვის ჩაატარეთ "ანონიმიზაცია". მაგალითად, წაშალეთ კლიენტების სახელები და მობილურის ნომრები და დატოვეთ მხოლოდ `Client_ID`, `Age`, `Purchase_Value`.</p>
+            </div>
+
+            <h3>აწყობის (Setup) საუკეთესო პრომპტი ატვირთვისას:</h3>
+            <p>ფაილის ატვირთვისთანავე ნუ მოსთხოვთ პირდაპირ რთულ ანალიზს. სჯობს ჯერ მიაწოდოთ კონტექსტი.</p>
+
+            <div class="prompt-example">მე აგიტვირთე CRM-დან გადმოწერილი B2B გაყიდვების ანონიმიზებული ბაზა. 
+გთხოვთ ჯერ:
+1. წაიკითხე სვეტები და მომწერე გესმის თუ არა რას ნიშნავს თითოეული.
+2. მითხარი თუ ხედავ რაიმე ტექნიკურ შეცდომას (ცარიელი ველები, არეული თარიღები).
+3. დამიდასტურე მზადყოფნა და მხოლოდ ამის შემდეგ მოგცემ კონკრეტულ დავალებებს.</div>
+        </div>
+
+        <!-- Section 3 -->
+        <div id="unstructured" class="content-card">
+            <h2>3. არასტრუქტურირებული მონაცემების სტრუქტურირება</h2>
+            <p>ძალიან ხშირად, ინფორმაცია ცხრილში კი არ გვაქვს, არამედ გაფანტულია PDF-ებში, Word დოკუმენტებში, კონტრაქტებსა თუ მეილებში. AI-ის ერთ-ერთი ყველაზე ჯადოსნური უნარი **არასტრუქტურირებული ტექსტის სტრუქტურირებაა**.</p>
+
+            <h3>სცენარი: PDF ინვოისების ან ხელშეკრულებების ექსელად ქცევა</h3>
+            <p>თუ გაქვთ 50-გვერდიანი PDF კვლევა და გინდათ შიგნიდან გამოკრიფოთ ყველა კომპანიის სახელი, შემოსავალი და წელი, ატვირთეთ PDF და გამოიყენეთ ეს პრომპტი:</p>
+
+            <div class="prompt-example">ატვირთულია 50-გვერდიანი PDF დოკუმენტი (ფინანსური რეპორტი).
+წაიკითხე მთლიანი დოკუმენტი და ამოიღე შემდეგი მონაცემები ექსელის (CSV) ფორმატში:
+- კომპანიის დასახელება
+- ნახსენები ფინანსური წელი
+- აღწერილი წმინდა მოგება
+- მთავარი რისკ ფაქტორი (მოკლე 1 წინადადებით)
+
+გამოტოვე ყველა სხვა ტექსტი. თუ რამე ველს ვერ პოულობ, ჩაწერე "N/A".
+მიპასუხე პირდაპირ გადმოსაწერი CSV ფაილით.</div>
+        </div>
+
+        <!-- Section 4 -->
+        <div id="data-cleaning" class="content-card">
+            <h2>4. Data Cleaning (მონაცემების გასუფთავება) - რუტინის განადგურება</h2>
+            <p>ექსელში მონაცემების დალაგება - მაგალითად სხვადასხვა ენაზე დაწერილი ქალაქების გაერთიანება, სატელეფონო ინდექსების გასწორება - საათობით დროს მოითხოვს. AI-სთან ერთად ეს სრულიად ავტომატურია.</p>
+
+            <div class="prompt-example">გიგზავნით "Raw_Survey_Data.csv" ფაილს გამოკითხვის შედეგებით. 
+გთხოვთ ჩაატარო "Data Cleaning" პროცესი:
+1. წაშალე სტრიქონები, სადაც "Email" ან "Phone" ორივე ცარიელია.
+2. "Date_of_Birth" სვეტში თარიღები არის სამი სხვადასხვა ფორმატითაა (12/05/2020, 2020-05-12, მაისი 12, 2020). ყველა გადაიყვანე ერთიან ISO ფორმატით (YYYY-MM-DD).
+3. "City" სვეტში სახელები არეულია (მაგ: TbLisi, Tbilis, თბილისი, tbilisi). ყველა ჩაანაცვლე ერთი სტანდარტული ფორმით: "Tbilisi". იგივე გაუკეთე სხვა ქალაქებს მართლწერის მიხედვით.
+4. "Full_Name" სვეტი გაყავი "First_Name" და "Last_Name" სვეტებად.
+
+მოქმედებების დასრულების შემდეგ, მომეცი ლოგი (Log) თუ რამდენი სტრიქონი წაიშალა და მომეცი სუფთა ფაილი გადმოსაწერად.</div>
+        </div>
+
+        <!-- Section 5 -->
+        <div id="excel-formulas" class="content-card">
+            <h2>5. Excel & PowerBI: რთული ფორმულები, DAX და VBA მაკროსები</h2>
+            <p>AI არ ჩაანაცვლებს ექსელს, ის აძლიერებს მას. თუ ცხრილის ატვირთვა არ გსურთ, გამოიყენეთ AI, რათა თქვენ მაგივრად დაწეროს ურთულესი სინტაქსი.</p>
+
+            <h3>A. ფორმულების (XLOOKUP / INDEX-MATCH) გენერაცია</h3>
+            <p>მთავარია ზუსტად აუხსნათ სად რა სვეტია განთავსებული.</p>
+            
+            <div class="prompt-example">მე მაქვს Excel-ის ფაილი ორი ფურცლით (Sheets): 'Employees' და 'Salaries'.
+- 'Employees' ფურცელზე, C სვეტში წერია პირადობის ნომერი.
+- 'Salaries' ფურცელზე, A სვეტში წერია პირადობის ნომერი, ხოლო E სვეტში შესაბამისი ხელფასი.
+მინდა, რომ 'Employees' ფურცლის D სვეტში ავტომატურად გაჩნდეს ხელფასი პირადობის მიხედვით.
+დამიწერე ყველაზე სწრაფი და ოპტიმალური ფორმულა. 
+თუ ვინმე ვერ მოიძებნა, გამოაჩინე ტექსტი "ბაზაში არ არის".</div>
+
+            <div class="excel-formula">
+=IFNA(XLOOKUP(C2, Salaries!A:A, Salaries!E:E), "ბაზაში არ არის")
+            </div>
+
+            <h3>B. PowerBI-სთვის DAX ფუნქციების დაწერა</h3>
+            <p>Power BI მომხმარებლებისთვის DAX ფორმულების წერა ერთ-ერთი ყველაზე რთული ბარიერია.</p>
+
+            <div class="excel-formula">
+// პრომპტი: დამიწერე DAX measure, რომელიც დათვლის გაყიდვებს მხოლოდ მიმდინარე თვისთვის, მაგრამ გამოტოვებს იმ პროდუქტებს, რომელთა სტატუსია "Inactive".
+
+Current_Month_Active_Sales = 
+CALCULATE(
+    SUM(Sales[Amount]),
+    DATESMTD(Calendar[Date]),
+    Products[Status] <> "Inactive"
+)
+            </div>
+
+            <h3>C. VBA Macros - ერთი ღილაკით ავტომატიზაცია</h3>
+            <p>თუ ყოველ დილით გიწევთ ერთი და იგივე რეპორტების გადმოწერა, დაკოპირება, ფერების შეცვლა და დაფორმატება - სთხოვეთ მოდელს VBA კოდი.</p>
+            <div class="prompt-example">დამიწერე Excel VBA მაკროსი "MorningFormat". 
+მისი გაშვებისას მან უნდა:
+1. წაშალოს პირველი 3 ზედმეტი სტრიქონი,
+2. გააყინოს (Freeze Panes) პირველი სვეტი და მოწინავე სტრიქონი (Header),
+3. Headers გაუკეთოს მუქი ლურჯი ფონი და თეთრი თამამი (Bold) ტექსტი,
+4. ყველა უჯრაზე დააყენოს ავტომატური სიგანე (AutoFit).
+მითხარი ზუსტად სად დავაკოპირო ეს კოდი ექსელში.</div>
+        </div>
+
+        <!-- Section 6 -->
+        <div id="advanced-analytics" class="content-card">
+            <h2>6. Advanced Analytics: პროგნოზები (Forecasting) და ტრენდები</h2>
+            <p>არ არის აუცილებელი იცოდეთ რა არის 'Linear Regression' ან 'ARIMA' მოდელი. მთავარია დაუსვათ ბიზნეს-კითხვა.</p>
+
+            <div class="info-box">
+                <h4>მონაცემთა "დაკითხვა" (Data Interrogation)</h4>
+                <p>როცა ფაილს ატვირთავთ, გამოიყენეთ მარტივი, ადამიანური ფრაზები: "იპოვე ანომალიები", "რა არის მთავარი ფაქტორი?", "იწინასწარმეტყველე".</p>
+            </div>
+
+            <div class="prompt-example">ატვირთულია კომპანიის ბოლო 3 წლის გაყიდვების დეტალური ბაზა. 
+გთხოვ დაივიწყო ზედაპირული სტატისტიკა და ჩაუღრმავდე ბაზას. მიპასუხე შემდეგ 3 კითხვაზე:
+
+1. Seasonality: ხედავ თუ არა რაიმე განმეორებად სეზონურობას? რომელ თვეებშია პიკი?
+2. 80/20 წესი (Pareto): დამიმტკიცე ან უარყავი მუშაობს თუ არა პარეტოს პრინციპი ამ ბაზაზე (თუ მოაქვს კლიენტების 20%-ს შემოსავლის 80%).
+3. Forecasting: ააგე პროგნოზირების მათემატიკური მოდელი და იწინასწარმეტყველე 2026 წლის Q1-ის მოსალოდნელი გაყიდვები 3 სცენარით (ოპტიმისტური, პესიმისტური, რეალისტური).</div>
+        </div>
+
+        <!-- Section 7 -->
+        <div id="claude-artifacts" class="content-card">
+            <h2>7. Claude Artifacts Masterclass: რეალური დროის ინტერაქტიული Dashboard-ები</h2>
+            <p><strong>ChatGPT Advanced Data Analysis</strong> არის საუკეთესო **გამოსათვლელად**, მაგრამ <strong>Claude 4.6 (Artifacts)</strong> არის საუკეთესო **წარსადგენად (Presentation)**.</p>
+            <p>Claude-ს შეუძლია თქვენი ცხრილი გადააქციოს ცოცხალ, მაუსზე რეაგირებად (Hover effects) და ლამაზ ვებ-აპლიკაციად (Dashboard).</p>
+
+            <h3>მაგალითი: პროექტების მართვის Dashboard-ის გენერაცია</h3>
+            
+            <div class="prompt-example">გამოიყენე თანდართული "Projects_2025.csv" ფაილის მონაცემები.
+გამოიყენე რეაქტი (React), Tailwind CSS და Recharts ბიბლიოთეკა და შექმენი სრულფასოვანი ინტერაქტიული Dashboard-ი დირექტორთა საბჭოსთვის.
+
+მოთხოვნები:
+1. ზემოთ განათავსე 4 დიდი KPI ბარათი: 
+   - დასრულებული პროექტები (%)
+   - ბიუჯეტის გადახარჯვა (ლარში)
+   - რისკის ქვეშ მყოფი პროექტები
+   - ჯამური ბიუჯეტი
+2. ცენტრში დახატე ბარ-ჩარტი (Bar Chart), რომელიც აჩვენებს პროექტების სტატუსს დეპარტამენტების მიხედვით.
+3. ბოლოში გააკეთე ცხრილი წითლად მონიშნული "Risky" პროექტებისთვის.
+4. დიზაინი გააკეთე თანამედროვე "Dark Mode Glassmorphism" სტილში, თვალისმომჭრელი ნეონის ფერებით.</div>
+
+            <p>ამის გაშვებისთანავე, კლოდის მარჯვენა პანელში აეწყობა რეალური პროგრამული პროდუქტი, რომელიც შეგიძლიათ პირებზე (Stakeholders) აჩვენოთ.</p>
+        </div>
+
+        <!-- Section 8 -->
+        <div id="scenarios" class="content-card">
+            <h2>8. რეალური ბიზნეს-სცენარები 5 სხვადასხვა ინდუსტრიისთვის (Cheat Sheet)</h2>
+
+            <div class="feature-grid">
+                <div class="feature-item" style="border-left: 4px solid #ef4444;">
+                    <h4>👨‍💼 HR / კადრები</h4>
+                    <p><em>"ატვირთულია თანამშრომელთა ბაზა (ასაკი, ხელფასი, სტაჟი, კმაყოფილება, წასვლის სტატუსი). გამოიყენე Decision Tree ალგორითმი და გამომითვალე, რომელი 3 ყველაზე მნიშვნელოვანი ფაქტორი განაპირობებს თანამშრომლის კომპანიიდან წასვლას. შექმენი პროფილის პორტრეტი თანამშრომლისა, რომელიც წასვლის ყველაზე დიდ რისკ-ჯგუფშია."</em></p>
+                </div>
+                <div class="feature-item" style="border-left: 4px solid #3b82f6;">
+                    <h4>🛒 E-Commerce & საცალო გაყიდვები</h4>
+                    <p><em>"ბაზაშია 1 წლის ონლაინ გაყიდვების ჩეკები (Order_ID, Product_Name). ჩაატარე Market Basket Analysis (Market Affinity). მაჩვენე ტოპ 5 პროდუქტების წყვილი, რომლებსაც კლიენტები ერთად ყიდულობენ ყველაზე ხშირად. ეს მჭირდება საიტზე "Recommended Products"-ის დასაყენებლად."</em></p>
+                </div>
+                <div class="feature-item" style="border-left: 4px solid #8b5cf6;">
+                    <h4>🎯 მარკეტინგი</h4>
+                    <p><em>"ატვირთულია სარეკლამო კამპანიების მონაცემები. გამოთვალე თითოეული არხის (Facebook, Google, TikTok) ROI, CPA და 1 შემოსულ ლიდზე დანახარჯი. შექმენი Scatter Plot ვიზუალიზაცია: `Y-ღერძზე` დახარჯული ბიუჯეტი, `X-ღერძზე` მოტანილი კონვერსიები. ბუშტის (Bubble) ზომა იყოს ჯამური ROI."</em></p>
+                </div>
+                <div class="feature-item" style="border-left: 4px solid #f59e0b;">
+                    <h4>🚚 ლოგისტიკა და მარაგები</h4>
+                    <p><em>"ბაზაშია არსებული მარაგები, მათი მოხმარების დღიური ტემპი (Burn rate) და მწარმოებლიდან მოწოდების დრო (Lead time). გამომითვალე თითოეული პროდუქტისთვის ზუსტად როდის უნდა გავაკეთო ახალი შეკვეთა (Reorder Point), რომ მარაგი არ გამინულდეს. მონიშნე წითლად კრიტიკული SKU-ები."</em></p>
+                </div>
+                <div class="feature-item" style="border-left: 4px solid #10b981;">
+                    <h4>📈 ფინანსები</h4>
+                    <p><em>"პირველ ფაილშია 2025 წლის დაგეგმილი ბიუჯეტი (Budget), მეორე ფაილშია რეალური დანახარჯები (Actuals). შემიყვანე მონაცემები, გააკეთე Variance Analysis (სხვაობების ანალიზი). ამოიღე ის ტოპ 5 კატეგორია, სადაც ყველაზე მეტად გადავაჭარბეთ ბიუჯეტს და ამიხსენი რატომ, ციფრებზე დაყრდნობით."</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 9 -->
+        <div id="tools-compare" class="content-card">
+            <h2>9. რომელი მოდელი გამოვიყენოთ? (GPT-5.4 vs Claude 4.6 vs Perplexity)</h2>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>ამოცანა</th>
+                    <th>საუკეთესო ინსტრუმენტი</th>
+                    <th>რატომ?</th>
+                </tr>
+                <tr>
+                    <td>**დიდი CSV ფაილების ატვირთვა და სტატისტიკური გამოთვლები**</td>
+                    <td><strong style="color:#10a37f;">ChatGPT (Adv. Data Analysis)</strong></td>
+                    <td>მუშაობს Python გარემოში. იძლევა მათემატიკურად 100%-იან სიზუსტეს. გამოიმუშავებს ექსელის ფაილებს უკან გადმოსაწერად.</td>
+                </tr>
+                <tr>
+                    <td>**რთული Excel VLOOKUP/VBA ფორმულების დაწერა**</td>
+                    <td><strong style="color:#d97757;">Claude 3.5 Sonnet / 4.6</strong></td>
+                    <td>საუკეთესოდ კითხულობს და წერს კოდს/სინტაქსს. კარგად ესმის კომპლექსური ლოგიკა.</td>
+                </tr>
+                <tr>
+                    <td>**მენეჯმენტთან წარსადგენი ინტერაქტიული Dashboard-ის შექმნა**</td>
+                    <td><strong style="color:#d97757;">Claude 4.6 Artifacts</strong></td>
+                    <td>React-ის და Recharts-ის დახმარებით მარჯვენა ეკრანზე თავად ხატავს UI ინტერფეისებს აპლიკაციად.</td>
+                </tr>
+                <tr>
+                    <td>**ბაზრის (მაკროეკონომიკური) მონაცემების მოძიება გარედან**</td>
+                    <td><strong style="color:#38bdf8;">Perplexity Pro</strong></td>
+                    <td>პირდაპირ წვდება ცოცხალ ვებს, კითხულობს ოფიციალურ PDFs და შეძლებს მოპოვებული ინფორმაციით პირდაპირ ცხრილის შექმნას.</td>
+                </tr>
+            </table>
+
+            <div class="highlight-box" style="margin-top: 3rem;">
+                <h4>🏆 PRO რჩევა (The Ultimate Workflow):</h4>
+                <p>მაქსიმალური შედეგისთვის გამოიყენეთ კონვეირული მიდგომა:</p>
+                <ol>
+                    <li>შეყარეთ "ჭუჭყიანი" ბიუჯეტის ფაილი <strong>ChatGPT</strong>-ში. სთხოვეთ Data Cleaning და შედეგის დაჯამება პროდუქტების მიხედვით.</li>
+                    <li>გადმოწერეთ გასუფთავებული სუფთა <code>Summary.csv</code> ფაილი ChatGPT-დან.</li>
+                    <li>ატვირთეთ ეს სუფთა ფაილი <strong>Claude 4.6</strong>-ში სათხოვარით: "გამიკეთე ამის ლამაზი ინტერაქტიული Dashboard-ი (Artifact), რომ დირექტორს ვაჩვენო ეკრანზე."</li>
+                </ol>
+                <p><em>შედეგი: თქვენ დაზოგეთ 4 საათიანი საგამომთვლელო შრომა და 2 საათიანი დიზაინის დრო სულ რაღაც 5 წუთში!</em></p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="content-card" style="text-align: center; background: #0f172a; border-color: #1e293b;">
+            <h2 style="border:none; padding:0; margin-bottom:1rem;">ნავიგაცია</h2>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn-primary" style="background:#334155;">🏠 მთავარი გვერდი</a>
+                <a href="cursor-guide.html" class="btn-primary" style="background:#0284c7;">⌨️ Cursor AI - პროფესიონალური კოდირება</a>
+                <a href="lovable-guide.html" class="btn-primary" style="background:#8b5cf6;">🎨 Lovable - App შექმნა წამებში</a>
+                <a href="make-com-detailed-guide.html" class="btn-primary" style="background:#db2777;">⚡ Make.com - ავტომატიზაცია</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
