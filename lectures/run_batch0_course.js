@@ -18,9 +18,9 @@ for (const file of targets) {
     }
     const changes = proofread(file);
     if (changes.length === 0) {
-        console.log(`✅ ${file} — შეცდომების გარეშეა`);
+        console.log(`✅ ${file} - შეცდომების გარეშეა`);
     } else {
-        console.log(`\n📄 ${file} — ${changes.length} ტიპის ცვლილება:`);
+        console.log(`\n📄 ${file} - ${changes.length} ტიპის ცვლილება:`);
         changes.forEach(c => console.log(`   • ${c}`));
         totalChanges += changes.length;
     }

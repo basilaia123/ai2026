@@ -12,11 +12,11 @@ function proofread(filePath) {
     // === RULE 5: DASHES ===
     // Em-dash and en-dash are banned in Georgian; replace with simple hyphen
     // But be careful not to break HTML entities like &mdash; or CSS borders
-    let emDashCount = (content.match(/—/g) || []).length;
+    let emDashCount = (content.match(/-/g) || []).length;
     let enDashCount = (content.match(/–/g) || []).length;
-    content = content.replace(/—/g, '-');
+    content = content.replace(/-/g, '-');
     content = content.replace(/–/g, '-');
-    if (emDashCount > 0) changes.push(`Em-dash (—) → hyphen: ${emDashCount} ჯერ`);
+    if (emDashCount > 0) changes.push(`Em-dash (-) → hyphen: ${emDashCount} ჯერ`);
     if (enDashCount > 0) changes.push(`En-dash (–) → hyphen: ${enDashCount} ჯერ`);
 
     // === RULE 5: ABBREVIATIONS ===
