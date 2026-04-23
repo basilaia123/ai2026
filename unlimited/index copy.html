@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlimited Summit - 2026</title>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #050505;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f0f0f0;
+      --text-muted: #9ca3af;
+      --accent: #8b5cf6;
+      --accent-glow: rgba(139, 92, 246, 0.4);
+      --accent-gradient: linear-gradient(135deg, #a855f7, #ec4899);
+      --btn-gradient: linear-gradient(135deg, #7c3aed, #db2777);
+      --stage-1: #a855f7;
+      --stage-2: #3b82f6;
+      --stage-3: #ec4899;
+      --break-bg: rgba(236, 72, 153, 0.05);
+      --break-border: rgba(236, 72, 153, 0.2);
+    }
+
+    [data-theme="light"] {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #7c3aed;
+      --accent-glow: rgba(124, 58, 237, 0.2);
+      --break-bg: rgba(236, 72, 153, 0.03);
+      --break-border: rgba(236, 72, 153, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'FiraGO', -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%);
+      background-attachment: fixed;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed; top: 20px; right: 20px; z-index: 1000;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      color: var(--text-main); width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    .theme-toggle:hover { transform: rotate(15deg) scale(1.1); }
+    [data-theme="light"] .sun-icon { display: none; }
+    [data-theme="dark"] .moon-icon { display: none; }
+    body:not([data-theme]) .moon-icon { display: none; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .header { padding: 40px 0 30px; text-align: center; position: relative; }
+    .header h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.02em; }
+    .text-gradient { background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-block; }
+    .header p { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+    .event-meta { display: flex; gap: 16px; margin-top: 16px; justify-content: center; flex-wrap: wrap; }
+    .meta-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-muted); background: var(--card-bg); padding: 6px 14px; border-radius: 100px; border: 1px solid var(--card-border); }
+    .meta-item svg { color: var(--accent); }
+
+    /* Countdown */
+    .countdown { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
+    .cd-item { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; min-width: 80px; text-align: center; backdrop-filter: blur(10px); }
+    .cd-item span:first-child { display: block; font-size: 1.6rem; font-weight: 700; color: var(--text-main); line-height: 1; }
+    .cd-item span:last-child { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+
+    /* Info Section Styles */
+    .info-section { margin-bottom: 40px; }
+    .about-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 24px 32px; text-align: center; max-width: 800px; margin: 0 auto 24px; }
+    .about-card h3 { font-size: 1.3rem; margin-bottom: 12px; color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .about-card p { font-size: 0.95rem; color: var(--text-main); line-height: 1.5; }
+
+    .audience-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 20px 32px; margin-bottom: 40px; cursor: pointer; }
+    .audience-content { max-height: 0; overflow: hidden; transition: all 0.4s ease; opacity: 0; }
+    .audience-card.active .audience-content { max-height: 1000px; opacity: 1; padding-top: 20px; }
+
+    /* Tabs */
+    .tabs-label { text-align: center; font-size: 0.9rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 16px; display: block; }
+    .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+    .tab-btn {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      color: var(--text-muted); padding: 12px 8px; border-radius: 16px;
+      cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px); display: flex; flex-direction: column;
+      align-items: center; gap: 6px; text-align: center; height: 100%; position: relative; overflow: hidden;
+    }
+    .tab-btn .floor-num { font-size: 0.6rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    .tab-btn .floor-name { font-size: 0.9rem; font-weight: 700; color: var(--text-main); }
+    .tab-btn .session-count { font-size: 0.65rem; background: rgba(128, 128, 128, 0.1); padding: 2px 8px; border-radius: 100px; color: inherit; }
+
+    .tab-btn.stage-1 { background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.3); color: #7e22ce; }
+    .tab-btn.stage-2 { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); color: #1d4ed8; }
+    .tab-btn.stage-3 { background: rgba(236, 72, 193, 0.12); border-color: rgba(236, 72, 193, 0.3); color: #be185d; }
+    .tab-btn.stage-fav { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.3); color: #b45309; }
+
+    body:not([data-theme="light"]) .tab-btn.stage-1 { color: #d8b4fe; }
+    body:not([data-theme="light"]) .tab-btn.stage-2 { color: #93c5fd; }
+    body:not([data-theme="light"]) .tab-btn.stage-3 { color: #f9a8d4; }
+    body:not([data-theme="light"]) .tab-btn.stage-fav { color: #fbbf24; }
+
+    .tab-btn.active.stage-1 { background: var(--stage-1); border-color: var(--stage-1); }
+    .tab-btn.active.stage-2 { background: var(--stage-2); border-color: var(--stage-2); }
+    .tab-btn.active.stage-3 { background: var(--stage-3); border-color: var(--stage-3); }
+    .tab-btn.active.stage-fav { background: #fbbf24; border-color: #fbbf24; }
+    .tab-btn.active * { color: white !important; }
+
+    /* Tag Styles */
+    .filter-bar { margin-bottom: 24px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: rgba(128, 128, 128, 0.1); border: 1px solid var(--card-border); color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+    .tag:hover, .tag.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    /* Favorite Star */
+    .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); cursor: pointer; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; z-index: 10; }
+    .fav-btn.active { background: #fbbf24; color: #000 !important; border-color: #fbbf24; }
+
+    /* Schedule List & Headers */
+    .stage-header { 
+      margin: 32px 0 24px; padding: 12px 20px; border-left: 5px solid var(--accent);
+      background: linear-gradient(to right, var(--card-bg), transparent);
+      border-radius: 4px 16px 16px 4px; text-align: left;
+    }
+    .stage-title { font-size: 1.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
+    .stage-header.floor-1 { border-left-color: var(--stage-1); }
+    .stage-header.floor-2 { border-left-color: var(--stage-2); }
+    .stage-header.floor-3 { border-left-color: var(--stage-3); }
+    .stage-header.floor-fav { border-left-color: #fbbf24; }
+
+    .schedule-list { display: flex; flex-direction: column; gap: 12px; max-width: 900px; margin: 0 auto 40px; position: relative; }
+    .schedule-card { position: relative; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px 20px; display: flex; gap: 24px; transition: all 0.3s ease; backdrop-filter: blur(12px); overflow: hidden; }
+    .schedule-card.is-break { background: var(--break-bg); border-color: var(--break-border); justify-content: center; text-align: center; }
+    .schedule-card.is-live { border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+    .schedule-card.is-live::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #10b981; }
+    .schedule-card.is-past { opacity: 0.4; }
+
+    .time { font-size: 1rem; font-weight: 600; color: var(--accent); min-width: 120px; }
+    .speaker { font-size: 1.15rem; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+    .topic { font-size: 0.95rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* Modal Styles */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+    .modal-overlay.active { display: flex; opacity: 1; }
+    .modal-content { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 24px; max-width: 600px; width: 100%; padding: 32px; position: relative; }
+    .modal-speaker-name { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .modal-topic { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: var(--text-main); }
+    .modal-bio { font-size: 1rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
+    .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; }
+
+    .live-scroll-btn { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 100px; font-weight: 700; cursor: pointer; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+    .pulse { width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+
+    @media (max-width: 600px) {
+      .tabs { grid-template-columns: repeat(2, 1fr); }
+      .header h1 { font-size: 2.2rem; }
+      .schedule-card { flex-direction: column; gap: 12px; }
+      .time { min-width: auto; flex-direction: row; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="theme-toggle" title="თემის შეცვლა">
+    <svg class="sun-icon" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    <svg class="moon-icon" width="20" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
+
+  <div class="container">
+    <header class="header">
+      <div class="header-badge" style="padding: 4px 12px; background: var(--card-bg); border-radius: 100px; font-size: 0.8rem; border: 1px solid var(--card-border); display: inline-block; margin-bottom: 16px;">Agenda 2026</div>
+      <h1><span class="text-gradient">Unlimited</span> Summit</h1>
+      <p>პრაქტიკული ვორქშოფები, კარიერული ზრდა და სტარტაპ ტექნოლოგიების რევოლუცია სამ სცენაზე.</p>
+
+      <div class="event-meta">
+        <div class="meta-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          25 აპრილი, 2026
+        </div>
+        <a href="https://www.google.com/maps/place/Combinati/@41.683904,44.8571563,842m" target="_blank" class="meta-item" style="text-decoration: none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          Combinati • მოსკოვის გამზირი 13/20
+        </a>
+      </div>
+
+      <div id="countdown" class="countdown">
+        <div class="cd-item"><span id="cd-days">00</span><span>დღე</span></div>
+        <div class="cd-item"><span id="cd-hours">00</span><span>სთ</span></div>
+        <div class="cd-item"><span id="cd-mins">00</span><span>წთ</span></div>
+        <div class="cd-item"><span id="cd-secs">00</span><span>წმ</span></div>
+      </div>
+    </header>
+
+    <section class="info-section">
+      <div class="about-card">
+        <h3>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          სამიტის შესახებ
+        </h3>
+        <p style="margin-bottom: 12px; font-weight: 500;">
+          Unlimited Summit არის სივრცე მათთვის, ვინც არ ცნობს საზღვრებს. ჩვენი მიზანია დაგეხმაროთ პერსონალური და პროფესიული ზრდის ახალ ეტაპზე გადასვლაში, პრაქტიკული ცოდნისა და ტექნოლოგიური ინოვაციების გამოყენებით.
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          ეს არ არის მხოლოდ კონფერენცია - ეს არის გარემო, სადაც იდეები გარდაიქმნება მოქმედებად, ხოლო ფრილანსინგი - მდგრად ბიზნეს მოდელად.
+        </p>
+      </div>
+
+      <div class="audience-card" onclick="this.classList.toggle('active')">
+        <h3 style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="display: flex; align-items: center; gap: 12px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            ვისთვის არის ეს ღონისძიება?
+          </span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </h3>
+        <div class="audience-content">
+          <p style="color: var(--text-muted); margin-bottom: 20px;">ჩვენი აუდიტორია შედგება ფრილანსერებისგან, ტექ-სტარტაპერებისა და დამწყები მეწარმეებისგან.</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+             <div><strong>სოლო-მეწარმეები:</strong> ნულიდან ბრენდის შემქმნელები.</div>
+             <div><strong>ფრილანსერები:</strong> მასშტაბირების მსურველები.</div>
+             <div><strong>ტექ-ენთუზიასტები:</strong> AI-ს დამნერგავები.</div>
+             <div><strong>სტარტაპერები:</strong> ინვესტიციების მაძიებლები.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <span class="tabs-label">აირჩიე სცენა / სართული</span>
+    <div class="tabs">
+      <button class="tab-btn active stage-1" onclick="switchTab(0)">
+        <span class="floor-num">I სართული</span><span class="floor-name">პრაქტიკული ვორქშოფების სივრცე</span><span class="session-count">7 სესია</span>
+      </button>
+      <button class="tab-btn stage-2" onclick="switchTab(1)">
+        <span class="floor-num">II სართული</span><span class="floor-name">კარიერა, პერსონალური ბრენდინგი და ფრილანსინგი</span><span class="session-count">21 სესია</span>
+      </button>
+      <button class="tab-btn stage-3" onclick="switchTab(2)">
+        <span class="floor-num">III სართული</span><span class="floor-name">მეწარმეობა, სტარტაპები და ტექნოლოგიები
+</span><span class="session-count">17 სესია</span>
+      </button>
+      <button class="tab-btn stage-fav" onclick="switchTab(3)">
+        <span class="floor-num">ჩემი</span><span class="floor-name">განრიგი</span><span class="session-count" id="fav-count">0</span>
+      </button>
+    </div>
+
+    <div id="agenda-container"></div>
+    
+    <footer style="margin-top: 80px; padding: 40px 0; border-top: 1px solid var(--card-border); text-align: center;">
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">&copy; 2026 Unlimited Summit. ყველა უფლება დაცულია.</p>
+      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 100px; font-size: 0.85rem; color: var(--text-muted);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: #4285F4;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        გვერდი შექმნილია Google Gemini-ს საშუალებით
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="speaker-modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <button class="live-scroll-btn" id="live-scroll-btn" onclick="scrollToLive()"><span class="pulse"></span>რა ხდება ახლა?</button>
+
+  <script>
+    const agendaData = [
+      {
+        id: "stage-1", title: "პრაქტიკული ვორქშოფების სცენა",
+        schedule: [
+          { id: "s1-1", tags: ["AI", "ვორქშოფი"], time: "11:00 - 12:30", speaker: "Tornike Bolokadze", link: "https://www.linkedin.com/in/tornike-bolokadze/", topic: "Agentic AI-ის მართვა", bio: "AI მკვლევარი და AI Pulse Georgia-ს დამფუძნებელი. თორნიკე გაჩვენებთ ხელოვნური ინტელექტის ყველაზე პრაქტიკულ მხარეს და გასწავლით იმ ხელსაწყოებს, რომლებიც დროს დაგიზოგავთ." },
+          { id: "s1-2", tags: ["კარიერა", "ვორქშოფი"], time: "12:30 - 14:00", speaker: "Salome Argvliani", link: "https://www.linkedin.com/in/salome-argvliani-55781547/", topic: "რა არის შენი შემდეგი ნაბიჯი?", bio: "საკონსულტაცო კომპანია EVA.ევა-ს დამფუძნებელი და დირექტორი, ID37 პიროვნული მოტივების შეფასების სერტიფიცირებული ექსპერტი (Master), მენტორი და სერტიფიცირებული გლობარული ტალანტების მართვის ლიდერი (GTML). სალომე აფასებს ორგანიზაციის და პიროვნების განვითარების პოტენციალს, ამოიცნობს გამოწვევებს და უზრუნველყოფს სრულ მხარდაჭერას განვითარებისათვის." },
+          { id: "s1-3", isBreak: true, time: "14:00 - 14:50", speaker: "სადილის შესვენება" },
+          { id: "s1-4", tags: ["მარკეტინგი", "ვორქშოფი"], time: "14:50 - 15:50", speaker: "Khatuna Mdinaradze", link: "https://www.linkedin.com/in/khatuna-mdinaradze/", topic: "გაყიდვების ფსიქოლოგია", bio: "Arche•არქეს დამფუძნებელი და ნეირომეცნიერებაზე დაფუძნებული გაყიდვების ექსპერტი ტრენერობის 20 წლიანი გამოცდილებით. ხათუნა გასწავლით, როგორ გამოიყენოთ ემოციური ინტელექტი და ქოფირაითინგი მომხმარებელთან ნდობის მოსაპოვებლად." },
+          { id: "s1-5", tags: ["დიზაინი", "AI"], time: "15:50 - 16:35", speaker: "Davit Jijavadze", link: "https://www.linkedin.com/in/davitjijavadze/", topic: "იდეა ვიზუალურ ფორმად", bio: "AI artist, Visual storyteller და Visual Fragments-ის არტ დირექტორი. ის მუშაობს გენერაციული AI-ის გამოყენებით ფოტო და ვიდეო კონტენტის შექმნაზე, სადაც აერთიანებს კრეატიულ ხედვას, ვიზუალურ თხრობას და თანამედროვე ციფრულ ინსტრუმენტებს." },
+          { id: "s1-6", isBreak: true, time: "16:35 - 16:55", speaker: "ყავის შესვენება I" },
+          { id: "s1-7", tags: ["AI", "ტექნოლოგიები"], time: "16:55 - 17:40", speaker: "Davit Tsilosani", link: "https://www.linkedin.com/in/davidtsilosani/", topic: "ძიება 2.0: Chat GPT vs Google", bio: "საქართველოში N1 SEO სააგენტოს - 10xSEO - SEO Agency დამფუძნებელი, საძიებო სისტემების ოპტიმიზაციის 12+ წლიანი გამოცდილებით. დავითმა იცის, როგორ იმუშავოს AI-ს დახმარებით SEO-ზე." },
+          { id: "s1-8", tags: ["მარკეტინგი", "ვორქშოფი"], time: "17:40 - 18:10", speaker: "Victoria Sakurova", link: "https://www.linkedin.com/in/victoriasakurova/", topic: "სტარტიდან ბრენდამდე", bio: "17 წლიანი გამოცდილება გაყიდვების მიმართულებით. 5 წელია მართავს საკუთარ კომპანიას Sakura Properties. ვიქტორიას მიზანია უძრავი ქონების ბაზარი შეცვალოს უკეთესობისკენ და დანერგოს საერთაშორისო სტანდარტების მომსახურება, ისეთი, როგორიც საქართველოში აქამდე თითქმის არ გვხვდებოდა." },
+          { id: "s1-9", isBreak: true, time: "18:10 - 18:30", speaker: "ყავის შესვენება II" },
+          { id: "s1-10", tags: ["დიზაინი", "Soft-Skills"], time: "18:30 - 19:30", speaker: "Anri S. (Anzor S.)", link: "https://www.linkedin.com/in/anri-s/", topic: "UX/UI პროცესის სრული გზა", bio: "პროდუქტ დიზაინერი (UX/UI) 10+ წლიანი გამოცდილებით, ისეთ კომპანიებთან, როგორებიცაა თეგეტა, თიბისი ბანკი, საქართველოს ბანკი, Porsche A.G. და სხვა. ანრი ანვითარებს ქართულ დიზაინ-კომუნას Instagram-ზე, აზიარებს პრაქტიკულ ცოდნას დიზაინზე, პროდუქტიულ აზროვნებასა და თანამედროვე ციფრულ ტენდენციებზე. ასევე არის კრაფტ-მაისურებისა და ჰუდების სტარტაპ „ასაკუსას“ თანადამფუძნებელი." }
+        ]
+      },
+      {
+        id: "stage-2", title: "კარიერა, პერსონალური ბრენდინგი და ფრილანსინგი",
+        schedule: [
+          { id: "s2-1", isBreak: true, time: "11:00 - 11:10", speaker: "ოფიციალური გახსნა" },
+          { id: "s2-2", tags: ["ფრილანსი", "მარკეტინგი"], time: "11:10 - 11:30", speaker: "Salome Sulaberidze", link: "https://www.linkedin.com/in/salomesulaberidze/", topic: "ფრილანსერობიდან სააგენტომდე: როგორ დავიწყოთ LinkedIn მონეტიზაცია?!", bio: "კარიერული განვითარების კონსულტანტი და Carrera Agency-ის CEO. სალომე დაგეხმარებათ პროფესიული პროფილის ოპტიმიზაციაში, რათა იპოვოთ თქვენი ოცნების სამსახური გლობალურ ბაზარზე." },
+          { id: "s2-3", tags: ["მარკეტინგი", "Soft-Skills"], time: "11:30 - 11:50", speaker: "David Chikvaidze", link: "https://www.linkedin.com/in/davidchikvaidze/", topic: "მოლაპარაკების ხელოვნება: როგორ გავხდეთ სასურველი პარტნიორი...", bio: "გაყიდვების ასოციაციისა და International Sales Institute - საერთაშორისო გაყიდვების ინსტიტუტი დამფუძნებელი. დავითი დაგეხმარებათ სწორად ჩამოაყალიბოთ თქვენი ღირებულება და წარადგინოთ საკუთარი თავი საუკეთესოდ." },
+          { id: "s2-4", tags: ["კარიერა", "ტექნოლოგიები"], time: "11:50 - 12:10", speaker: "Guro Davitlidze", link: "https://www.linkedin.com/in/guro-davitlidze-3968931bb/", topic: "რატომ არ უნდა შევწყვიტოთ ცურვა (დისტანციური კარიერა)", bio: "მრავალწლიანი გამოცდილების მქონე ფრილანსერია, რომელიც საერთაშორისო პლატფორმებსა და გლობალურ ბაზარზე წარმატებით მოღვაწეობს. მისი საქმიანობა ეფუძნება \"Never Stop Swimming\" პრინციპს, რაც ციფრულ სამყაროში მუდმივ განვითარებასა და სწრაფ ადაპტაციას გულისხმობს. 🐠 საკუთარი გამოცდილებით კი 2000-ზე მეტ ადამიანს დაეხმარა დისტანციური კარიერის დაწყებასა და საერთაშორისო ასპარეზზე გასვლაში." },
+          { id: "s2-5", tags: ["ბიზნესი", "კარიერა"], time: "12:10 - 12:30", speaker: "Alex Chikovani", link: "https://www.linkedin.com/in/alex-chikovani-92a48914/", topic: "რატომ ვერ ხდებიან ფრილანსერები ძლიერი ბრენდები...", bio: "ბრენდ-სტრატეგი და „Live Branding“-ის დამფუძნებელი და GIPA-ს სტრატეგიული ბრენდინგის ასოცირებული პროფესორი. ალექსს სჯერა, რომ ბრენდინგში მთავარი ადამიანური ფაქტორია. მისი დახმარებით თქვენი ბრენდი დიდხანს და ბედნიერად იცოცხლებს!" },
+          { id: "s2-6", tags: ["ტექნოლოგიები", "Soft-Skills"], time: "12:30 - 12:50", speaker: "Nodo Ivanidze", link: "https://www.linkedin.com/in/nodo-ivanidze/", topic: "მომავლის ტექნოლოგიები: The Art of Influence and Hard Work", bio: "Global Tech Weekend Tbilisi-ის (ყველაზე დიდი დეცენტრალიზებული ტექნოლოგიური მოძრაობის) თანადამფუძნებელი, ინვესტორი და სტრატეგი, რომელიც საჯარო და კერძო სექტორს ტექნოლოგიებზე დაფუძნებული განვითარების, კრეატიული ინდუსტრიებისა და ინოვაციური ეკოსისტემების შექმნაში ეხმარება." },
+          { id: "s2-7", tags: ["კარიერა", "Soft-Skills"], time: "12:50 - 13:10", speaker: "Irina Gagoshidze", link: "https://www.linkedin.com/in/irina-gagoshidze/", topic: "დასაქმების ბაზრის სწრაფი ცვლილებების დროს როგორ მოვახდინოთ ადაპტაცია", bio: "HR SPACE • ეიჩარ სფეისი დამფუძვნებელი, ორგანიზაციული განვითარების კონსულტანტი და სერტიფიცირებული კარიერული კონსულტანტი. ირინა წარმოადგენს როგორც დამსაქმებლის, ასევე მაძიებელი/ფრილანსერის მხარეს." },
+          { id: "s2-8", tags: ["ბიზნესი", "Soft-Skills"], time: "13:10 - 13:30", speaker: "Maria Ghlonti", link: "https://www.linkedin.com/in/maria-ghlonti/", topic: "Agile ცხოვრების წესი: იყავი ეფექტური და ბედნიერი", bio: "Agile Coach და ქართულენოვანი AgileXchange Georgia Podcast-ის ჰოსტი. მარია დაგეხმარებათ დანერგოთ Scrum და Kanban მიდგომები თქვენს ყოველდღიურობაში, რათა მართოთ ქაოსი და მიიღოთ შედეგი." },
+          { id: "s2-9", tags: ["კარიერა", "ბიზნესი"], time: "13:30 - 13:50", speaker: "Mariam Zumbadze", link: "https://www.linkedin.com/in/mariam-zumbadze/", topic: "HR-ის როლი თანამედროვე ბრენდის შექმნაში", bio: "თანამშრომელთა გამოცდილების მენეჯერი, რომელიც მუშაობს ორგანიზაციული კულტურისა და თანამშრომლის გამოცდილების გაუმჯობესებაზე. მარიამი ფოკუსირებულია იმაზე, თუ როგორ ქმნის HR რეალურ გავლენას ბრენდსა და გუნდზე." },
+          { id: "s2-10", isBreak: true, time: "13:50 - 14:40", speaker: "სადილის შესვენება" },
+          { id: "s2-11", tags: ["სტარტაპი", "ბიზნესი"], time: "14:40 - 15:00", speaker: "Giorgi Razmadze", link: "https://www.linkedin.com/in/razma21/", topic: "გუნდის აშენება და განვითარება ტექ. სტარტაპში", bio: "Awork-ის თანადამფუძნებელი. გიორგი გაგიზიარებთ პრაქტიკულ რჩევებს Networking-ის, გუნდის შერჩევისა და ზრდის სტრატეგიების შესახებ." },
+          { id: "s2-12", tags: ["ტექნოლოგიები", "კარიერა"], time: "15:00 - 15:20", speaker: "Maka Makhatadze", link: "https://www.linkedin.com/in/maka-makhatadze/", topic: "ტექნოლოგიური განათლების ძალა: იყავი მზად ხვალინდელი დღისთვის", bio: "IT Academy Step Georgia-ის თანადამფუძნებელი. მაკა ყოველდღიურად მუშაობს იმაზე, რომ ადამიანებმა არა უბრალოდ ისწავლონ ტექნოლოგიები, არამედ თავად შექმნან საკუთარი მომავალი." },
+          { id: "s2-13", tags: ["ფრილანსი", "ბიზნესი"], time: "15:20 - 15:40", speaker: "Salome Bortsvadze", link: "https://www.linkedin.com/in/salome-bortsvadze/", topic: "ფრილანსერობა და რისკები", bio: "სადაზღვევო კომპანია Wizer-ის ჯანმრთელობის ინდივიდუალური დაზღვევის  გაყიდვების სამსახურის ხელმძღვანელი. სალომე ეხმარება ადამიანებს სწორად მართონ რისკები და მიიღონ უსაფრთხო გადაწყვეტილებები." },
+          { id: "s2-14", tags: ["ტექნოლოგიები", "AI"], time: "15:40 - 16:00", speaker: "Nino Gorgadze", link: "https://www.linkedin.com/in/ninogorgadze/", topic: "პროექტების მართვა ციფრულ ეპოქაში", bio: "PMP® | PMI-ACP® | AI & გაციფრულების კონსულტანტი. ნინო გიჩვენებთ, როგორ გამოიყენოთ Work OS, workflows და AI აგენტები პროექტების მართვისა და სამუშაო პროცესების გასამარტივებლად." },
+          { id: "s2-15", tags: ["Soft-Skills", "კარიერა"], time: "16:00 - 16:20", speaker: "David Chiaberashvili", link: "https://www.linkedin.com/in/davidchiaberashvili/", topic: "მოტივაციის მართვა", bio: "15 წლიანი გამოცდილება ბრენდებთან, როგორიცაა Geocell, Microsoft. დავითი გაგიზიარებთ გამოცდილებას ოპერაციულ  და ადამიანების მართვაში, რაც ნებისმიერ სტარტაპს სჭირდება." },
+          { id: "s2-16", tags: ["AI", "Soft-Skills"], time: "16:20 - 16:40", speaker: "Giorgi Basilaia", link: "https://www.linkedin.com/in/basilaia/", topic: "ეფექტურობის ფორმულა AI-ის ეპოქაში: როგორ ვაქციოთ ტექნოლოგიური ქაოსი პროფესიულ უპირატესობად", bio: "ციფრული ტრანსფორმაციის ექსპერტი, თბილისის თავისუფალი უნივერსიტეტის ასოცირებული პროფესორი და AI - ხელოვნური ინტელექტი პრაქტიკაში კურსის ტრენერი სმარტ აკადემიაში. გიორგი ხელმძღვანელობს თავისუფალი და აგრარული უნივერსიტეტების IT მიმართულებებს და არის მკვლევარი ტექნოლოგიების სფეროში." },
+          { id: "s2-17", isBreak: true, time: "16:40 - 17:00", speaker: "ყავის შესვენება II" },
+          { id: "s2-18", tags: ["ბიზნესი", "ტექნოლოგიები"], time: "17:00 - 17:20", speaker: "Natia Skhvitaridze", link: "https://www.linkedin.com/in/natia-skhvitaridze/", topic: "ფინანსები, ტექნოლოგია და ზრდა: ახალი რეალობა...", bio: "ფინანსისტი 14+ წელიანი გამოცდილებით ადგილობრივ და საერთაშორისო ორგანიზაციებთან. FAS Group-ის დამფუძნებელი და დირექტორი. ჩესტერის უნივერსიტეტის (დიდი ბრიტანეთი) მაგისტრი საერთაშორისო ფინანსებში. ბუღალტერიისა და აუდიტის მიმართულებით ACCA, CIMA, FRM საერთაშორისო სერთიფიკატების მფლობელი და შესაბამისი ასოციაციების სრულუფლებიანი წევრი." },
+          { id: "s2-19", tags: ["ბიზნესი", "Soft-Skills"], time: "17:20 - 17:40", speaker: "Giorgi Gurgenidze", link: "https://www.linkedin.com/in/giorgi-gurgenidze/", topic: "ჭკვიანური ინვესტიცია", bio: "გიორგი გურგენიძე   Bank of Georgia-ს Product Owner." },
+          { id: "s2-20", tags: ["ბიზნესი", "კარიერა"], time: "17:40 - 18:00", speaker: "Nino Tsitlanadze", link: "https://www.linkedin.com/in/nino-tsitlanadze/", topic: "How to be your own brand", bio: "პერსონალური ბრენდინგის და შემოქმედებითი ინდუსტრიების ექსპერტი მრავალწლიანი გამოცდილებით. Personal Brand Agency • პერსონალური ბრენდინგის სააგენტოს კონსულტანტი და Creative Industries Platform-ის დირექტორი. ნინო გასწავლით პროფესიონალების დიდი იდეის აღმოჩენის ხელოვნებასა და კრეატიული ინსტრუმენტების ინტეგრირებას ბიზნესში." },
+          { id: "s2-21", tags: ["სტარტაპი", "AI"], time: "18:00 - 18:20", speaker: "Alex M Dascalu", link: "https://www.linkedin.com/in/dascalu/", topic: "როგორ ვაქციოთ იდეა ინვესტირებად სტარტაპად AI ეპოქაში", bio: "Founder Institute-ის CEE (ცენტრალური და აღმოსავლეთ ევროპა) რეგიონის დირექტორი და სტარტაპ ეკოსისტემის სტრატეგი, მრავალწლიანი გამოცდილებით საერთაშორისო პროგრამებსა და მენტორინგში. ალექსი ეხმარება დამფუძნებლებს იდეის ჩამოყალიბებიდან რეალურ, დაფინანსებად სტარტაპამდე მისვლაში." },
+          { id: "s2-22", tags: ["Soft-Skills", "ბიზნესი"], time: "18:20 - 18:35", speaker: "Maka Natsvlishvili", link: "https://www.linkedin.com/in/maka-natsvlishvili/", topic: "ნეთვორქინგის ხელოვნება", bio: "BUSINESS SHOP LLC-ის დამფუძნებელი და დირექტორი, საერთაშორისო ბიზნესისა და ინვესტიციების მიმართულებით 15+ წლიანი გამოცდილებით. მაკა ეხმარება მეწარმეებსა და კომპანიებს განვითარებასა და საერთაშორისო ბაზარზე გასვლაში." },
+          { id: "s2-23", tags: ["AI", "ფრილანსი"], time: "18:35 - 18:40", speaker: "Zurab Pertaia", link: "https://www.linkedin.com/in/zurabpertaia/", topic: "როგორ ყალიბდებიან და მდიდრდებიან სოლო ბრენდები AI-ს გამოყენებით", bio: "Edutech Academy-ს დამფუძნებელი. ზურაბი გვაჩვენებს, როგორ იცვლება მსოფლიო და და როგორ გამოვიყენოთ AI ტექნოლოგიები ბიზნესის ზრდისთვის." },
+          { id: "s2-24", tags: ["კარიერა", "ბიზნესი"], time: "18:40 - 19:00", speaker: "Levan Nikolaishvili", link: "https://www.linkedin.com/in/lenikolaishvili/", topic: "კარიერა, ბიზნესი და პირადი ბრენდი: როგორ შევქმნათ რეალური გავლენა", bio: "Modern 9 to 5 Podcast-ის წამყვანი და Echo Chamber Studio-ს დამფუძნებელი. აქვს სამუშაო გამოცდილება ისეთ საერთაშორისო გარემოში, როგორიცაა Revolut და Deel. ლევანი აერთიანებს სტრატეგიულ ხედვასა და ენერგიას იმ წერტილში, სადაც ბიზნესი, კარიერა, გავლენა და პირადი ბრენდი ერთმანეთს ხვდება." }
+        ]
+      },
+      {
+        id: "stage-3", title: "მეწარმეობა, სტარტაპები და ტექნოლოგიები",
+        schedule: [
+          { id: "s3-1", tags: ["ბიზნესი", "Soft-Skills"], time: "11:00 - 11:20", speaker: "Levan Giorgadze", link: "https://www.linkedin.com/in/levangiorgadze/", topic: "ბიზნესის გული: ადამიანი -> ბიზნესი -> ფული", bio: "SME განვითარების მენტორი, Bubblehead პოდკასტისა დამფუძნებელი და წამყვანი. ლევანი აზიარებს შთამაგონებელ იდეებს და პრაქტიკულ ინსტრუმენტებს, რომლებიც დაეხმარება თქვენი ბიზნესის ზრდას." },
+          { id: "s3-2", tags: ["სტარტაპი", "ბიზნესი"], time: "11:20 - 11:40", speaker: "Medea Janjghava", link: "https://www.linkedin.com/in/medea-janjghava/", topic: "იდეიდან მოქმედებამდე: პირველი ნაბიჯები დიდი ინვესტიციებისკენ", bio: "Venture & Innovation Ecosystem Enabler და სტარტაპ მენტორი, მედეა დაგეხმარებათ იპოვოთ გზა ნულიდან მაღალტექნოლოგიურ დამფუძნებლობამდე. გასწავლით საივესტიციო რაუნდების ხრიკებს და მოგცემთ პრაქტიკულ რჩევებს, როგორც გადარჩეთ." },
+          { id: "s3-3", tags: ["ბიზნესი", "მარკეტინგი"], time: "11:40 - 12:00", speaker: "Levan Koberidze", link: "https://www.linkedin.com/in/levan-koberidze/", topic: "ბრენდინგის ევოლუცია: ქართული წარმატების ისტორიები...", bio: "„BRANDING.GE“-ს დამფუძნებელი, ბრენდინგის გურუ და პირველი ბრენდ-სტრატეგი. მან შექმნა ისეთი ბრენდების იდენტობა, როგორიცაა „საქართველოს ფოსტა“ და „საირმე“. ლევანი დაგანახებთ გზას კლასიკურიდან თანამედროვე ბრენდინგამდე." },
+          { id: "s3-4", tags: ["ტექნოლოგიები", "ბიზნესი"], time: "12:00 - 12:20", speaker: "Levan Meskhishvili", link: "https://www.linkedin.com/in/levan-meskhishvili/", topic: "ტექნოლოგია, როგორც თქვენი საუკეთესო თანამშრომელი", bio: "WebApp | Software Development-ის დამფუძნებელი და CEO. ლევანი ბიზნესის ავტომატიზაციისა და სტრატეგიული განვითარების ექსპერტია, რომელიც ტექნოლოგიურ ხედვას მართვის სიზუსტესთან აერთიანებს." },
+          { id: "s3-5", tags: ["დიზაინი", "ვორქშოფი", "ბიზნესი"], time: "12:20 - 13:00", speaker: "პანელი", topic: "შემოქმედებითი ინდუსტრია და ავთენტურობა (D. Chkheidze, A. Gejadze, M. Pkhoveshvili, N. Bakradze)", bio: "პანელური დისკუსია: დოდოშკა ჩხეიძე, Ani Gejadze, Mariam Pkhoveshvili, Nick Bakradze. საუბარი შემოქმედებით პროცესებსა და ავთენტურობაზე." },
+          { id: "s3-6", tags: ["სტარტაპი", "ბიზნესი"], time: "13:00 - 13:20", speaker: "Giorgi Vekua", link: "https://www.linkedin.com/in/giorgi-vekua/", topic: "მეწარმეობის რევოლუცია", bio: "სამრეწველო პალატის გენერალური დირექტორის მოადგილე. გიორგიმ იცის, რა როლი აქვთ ქალებს ბიზნესების გაძლიერებასა და ეკონომიკის გაძლიერებაში. როგორ მუშაობს საერთაშორისო და სახელმწიფო ფონდები და როგორ მიიღოთ მხარდაჭერა თქვენი იდეებისთვის." },
+          { id: "s3-7", tags: ["სტარტაპი", "ტექნოლოგიები"], time: "13:20 - 13:40", speaker: "Irakli Tchavtchanidze", link: "https://www.linkedin.com/company/hotcardapp/", topic: "როგორ აქციო იდეა ყოველდღიურ გამოცდილებად", bio: "Hotcard-ის თანადამფუძნებელი და აღმასრულებელი დირექტორი. ირაკლი ქმნის პლატფორმას, რომელიც ყოველდღიურად ათასობით ადამიანს ეხმარება ფულის დაზოგვასა და საუკეთესო შეთავაზებების აღმოჩენაში." },
+          { id: "s3-8", tags: ["მარკეტინგი", "ტექნოლოგიები"], time: "13:40 - 14:00", speaker: "George Batsiashvili", link: "https://www.linkedin.com/in/ghostchaser/", topic: "მარკეტინგის მაგია: ინსტრუმენტები, ანალიტიკა...", bio: "Bliz.cc-ის თანადამფუძნებელი და პროგრამული უზრუნველყოფის ინჟინერი. გიორგი გასწავლით, როგორ გამოიყენოთ მონაცემები ისე, რომ თქვენი მარკეტინგი „ჭკვიანი“ და ეფექტური გახდეს." },
+          { id: "s3-9", tags: ["მარკეტინგი", "ტექნოლოგიები"], time: "14:00 - 14:20", speaker: "Aleksandre Chomakhidze", link: "https://www.linkedin.com/in/aleksandre-chomakhidze/", topic: "ციფრული სამყაროს Hack...", bio: "Simple Steps-ის ციფრული მარკეტინგის ხელმძღვანელი და Ad Summit-ის თანადამფუძნებელი. Facebook-ის რეკლამებისა და 360-გრადუსიანი მარკეტინგის გურუ!" },
+          { id: "s3-10", isBreak: true, time: "14:20 - 15:10", speaker: "სადილის შესვენება" },
+          { id: "s3-11", tags: ["AI", "მარკეტინგი"], time: "15:10 - 15:30", speaker: "Gigi Kurtanidze", link: "https://www.linkedin.com/in/gigikurtanidze/", topic: "E-commerce რევოლუცია: როგორ გავყიდოთ მეტი AI კონტენტით?", bio: "Admagica.ai-ს დამფუძნებელი და Facebook Ads ექსპერტი. გიგიმ იცის, როგორ მართოს მილიონობით სარეკლამო ბიუჯეტი და როგორ მოუტანოს ბიზნესს მაქსიმალური მოგება." },
+          { id: "s3-12", tags: ["ტექნოლოგიები", "AI"], time: "15:30 - 15:50", speaker: "Luka Khaladze", link: "https://www.linkedin.com/in/luka-khaladze/", topic: "ვებ დეველოპერები VS AI ბილდერები", bio: "ციფრული სააგენტო Web Features-ის, ჰოსტინგ პროვაიდერი კომპანია Web Hoster-ს და პირველი ქართული AI ბილდერის Weblive-ს დამფუძნებელი. ლუკა სპეციალიზებულია მაღალტექნოლოგიური და ესთეტიკური ვებ-გვერდების შექმნაზე, სადაც UX და UI იდეალურ ბალანსშია." },
+          { id: "s3-13", tags: ["მარკეტინგი", "Soft-Skills"], time: "15:50 - 16:10", speaker: "Natia Beridze", link: "https://www.linkedin.com/in/natia-beridze/", topic: "ინფლუენსერ კამპანიის დაგეგმვის სრული ციკლი", bio: "Echolize-ის მმართველი დირექტორი. ნათია არის ექსპერტი ინფლუენსერებთან ურთიერთობისა და კამპანიების ავტომატიზაციის მიმართულებით. ის გაგიზიარებთ გამოცდილებას, თუ როგორ უნდა შეარჩიოთ სწორი კონტენტი ან ადამიანი თქვენი ბრენდისთვის და როგორ მუშაობს მონაცემებზე დაფუძნებული მარკეტინგი ამ სფეროში." },
+          { id: "s3-14", tags: ["სტარტაპი", "ტექნოლოგიები"], time: "16:10 - 16:30", speaker: "Natia Giorgadze", link: "https://www.linkedin.com/in/natia-giorgadze/", topic: "ტექნოლოგიური და სტარტაპ საზოგადოებების მხარდაჭერა", bio: "ინოვაციების ეკოსისტემის მშენებელი, სტრატეგი და განათლების სფეროს წარმომადგენელი. ნათია ხელმძღვანელობს ინოვაციების საზოგადოების განვითარების დეპარტამენტს Georgia's Innovation and Technology Agency (GITA) და ავითარებს სტარტაპებისა და ტექნოლოგიური ეკოსისტემის მხარდაჭერის მექანიზმებს." },
+          { id: "s3-15", isBreak: true, time: "16:30 - 16:50", speaker: "ყავის შესვენება II" },
+          { id: "s3-16", tags: ["ტექნოლოგიები", "ბიზნესი"], time: "16:50 - 17:10", speaker: "Konstantine Dvalishvili", link: "https://www.linkedin.com/in/constantin-dvalishvili/", topic: "Overengineering: კარგი ინვესტიცია თუ ძვირადღირებული შეცდომა?", bio: "ტექნოლოგიური დირექტორი (CTO) და სისტემური არქიტექტორი, 10+ წლიანი გამოცდილებით რთული სისტემების დიზაინში, მასშტაბირებასა და ოპტიმიზაციაში როგორც სტარტაპებისთვის, ისე დიდი კომპანიებისთვის. ასევე არის SHUBI-ის აღმასრულებელი დირექტორი (CEO)." },
+          { id: "s3-17", tags: ["ბიზნესი", "მარკეტინგი"], time: "17:10 - 17:30", speaker: "Nina Pertenava", link: "https://www.linkedin.com/in/nina-pertenava/", topic: "ნდობაზე დაფუძნებული კომუნიკაცია - როგორ გავზარდოთ ბრენდი", bio: "Influencer.ge-სა და რეპუტაციის ინსტიტუტის თანადამფუძნებელი. ნინას ათწლიანი გამოცდილება თანამედროვე კომუნიკაციებსა და  PR-ში ეხმარება ბრენდებს, იპოვონ სწორი ხმა ციფრულ სამყაროში." },
+          { id: "s3-18", tags: ["ტექნოლოგიები", "Soft-Skills"], time: "17:30 - 17:50", speaker: "Luka Lomsadze", link: "https://www.linkedin.com/in/llomsadze/", topic: "ნდობის პრობლემა ციფრულ სამყაროში...", bio: "Focus Verify-ს დაფუძნებელი და CEO. მრავალ წლიანი გამოცდილებით ტექნოლოგიის, ფინტექ და კრიპტო პროექტების მიმართლებით. ლუკა ეხმარება როგორც ქართულ, ისე საერთაშორისო ციფრულ კომპანიებს საკუთარი მომხმარებლების ონბორდინგისა და ვერიფიკაციის პროცესის გამარტივებაში." },
+          { id: "s3-19", tags: ["ბიზნესი", "Soft-Skills"], time: "17:50 - 18:10", speaker: "Gvantsa Gabaidze", link: "https://www.linkedin.com/in/gvantsa-gabaidze/", topic: "პერსონალური მონაცემების დაცვა პრაქტიკაში", bio: "E_SoLAWtions-ის თანადამფუძნებელი და პერსონალურ მონაცემთა დაცვის იურისტი. იგი მუშაობს PrivacyTech პლატფორმის შექმნაზე, რომლის მიზანია კომპანიებს მონაცემთა დაცვის პროცესების გასამარტივებლად პრაქტიკული ინსტრუმენტები და მათზე მორგებული დოკუმენტების გენერირების შესაძლებლობა შესთავაზოს." },
+          { id: "s3-20", tags: ["ტექნოლოგიები", "AI"], time: "18:10 - 18:30", speaker: "Genadi Shamugia", link: "https://www.linkedin.com/in/genadi-shamugia/", topic: "კიბერუსაფრთხოების როლი Agentic AI-ის ეპოქაში", bio: "HackEthic-ის დამფუძნებელი და CEO, კიბერუსაფრთხოების ექსპერტი. გენადი ეხმარება ორგანიზაციებს კრიტიკული საფრთხეების წინასწარ აღმოჩენასა და მართვაში. თანამშრომლობს სხვადასხვა ინდუსტრიის კომპანიებთან და აკავშირებს ტექნიკურ ცოდნას ბიზნეს რისკების მართვასთან." },
+          { id: "s3-21", isBreak: true, time: "18:30 - 18:50", speaker: "Summit-ის პანელი / დახურვა" }
+        ]
+      }
+    ];
+
+    let currentFloor = 1;
+    let currentTag = null;
+
+    function renderAgenda() {
+      const container = document.getElementById('agenda-container');
+      container.innerHTML = '';
+      const favs = JSON.parse(localStorage.getItem('favs') || '[]');
+      const isFavMode = currentFloor === 0;
+
+      agendaData.forEach((floor, idx) => {
+        if (!isFavMode && (idx + 1) !== currentFloor) return;
+        
+        const filteredSchedule = floor.schedule.filter(s => {
+          if (isFavMode) return favs.includes(s.id);
+          if (currentTag && !s.isBreak) return s.tags?.includes(currentTag);
+          return true;
+        });
+
+        if (filteredSchedule.length === 0 && !isFavMode) {
+           container.innerHTML += `<div class="tab-content active"><div class="stage-header floor-${idx+1}"><h2 class="stage-title">${floor.title}</h2></div><p style="text-align:center; padding:20px; color:var(--text-muted);">ამ კატეგორიაში სესიები არ მოიძებნა.</p></div>`;
+           return;
+        }
+        if (isFavMode && filteredSchedule.length === 0) return;
+
+        const section = document.createElement('div');
+        section.className = 'tab-content active';
+        const floorClass = isFavMode ? 'floor-fav' : `floor-${idx+1}`;
+        section.innerHTML = `<div class="stage-header ${floorClass}"><h2 class="stage-title">${isFavMode ? 'ჩემი მონიშნული სესიები' : floor.title}</h2></div><div class="schedule-list"></div>`;
+        const list = section.querySelector('.schedule-list');
+
+        filteredSchedule.forEach(s => {
+          const isStarred = favs.includes(s.id);
+          const card = document.createElement('div');
+          card.className = `schedule-card ${s.isBreak ? 'is-break' : ''}`;
+          
+          const favBtnHtml = !s.isBreak ? `
+            <button class="fav-btn ${isStarred ? 'active' : ''}" onclick="toggleFav(event, '${s.id}')" title="ჩემს განრიგში დამატება">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </button>` : '';
+
+          const linkedInHtml = s.link ? ` <a href="${s.link}" target="_blank" onclick="event.stopPropagation()" style="color: #0077b5; display: inline-flex; align-items: center; vertical-align: middle; margin-left: 4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>` : '';
+
+          card.innerHTML = `
+            ${favBtnHtml}
+            <div class="time">${s.time}</div>
+            <div class="details">
+              <div class="speaker" ${s.bio ? `onclick="openModal('${s.id}')" style="cursor:pointer; text-decoration:underline dashed;"` : ''}>${s.speaker}${linkedInHtml}</div>
+              <div class="topic">${s.topic || ''}</div>
+              <div class="tag-container">${(s.tags || []).map(t => `<span class="tag ${currentTag===t?'active':''}" onclick="event.stopPropagation(); filterTag('${t}')">#${t}</span>`).join('')}</div>
+            </div>`;
+          list.appendChild(card);
+        });
+        container.appendChild(section);
+      });
+
+      if (isFavMode && container.innerHTML === '') {
+         container.innerHTML = '<p style="text-align:center; padding:40px;">ჯერ არ გაქვს მონიშნული სესიები. გამოიყენე ვარსკვლავი განრიგში.</p>';
+      }
+      
+      const currentFavsCount = JSON.parse(localStorage.getItem('favs') || '[]').length;
+      document.getElementById('fav-count').innerText = currentFavsCount;
+      updateLiveSessions();
+    }
+
+    function toggleFav(e, id) {
+      e.stopPropagation();
+      let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+      favs = favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id];
+      localStorage.setItem('favs', JSON.stringify(favs));
+      renderAgenda();
+    }
+
+    function switchTab(idx) {
+      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+      currentFloor = idx === 3 ? 0 : idx + 1;
+      renderAgenda();
+    }
+
+    function filterTag(t) {
+      currentTag = (currentTag === t) ? null : t;
+      document.querySelectorAll('.filter-bar .tag').forEach(el => el.classList.toggle('active', el.innerText === '#' + (currentTag || '')));
+      renderAgenda();
+    }
+
+    function openModal(id) {
+      const s = agendaData.flatMap(f => f.schedule).find(x => x.id === id);
+      document.getElementById('modal-body').innerHTML = `<h2 class="modal-speaker-name">${s.speaker}</h2><p class="modal-topic">${s.topic}</p><div class="modal-bio">${s.bio}</div>${s.link ? `<a href="${s.link}" target="_blank" class="cta-btn cta-secondary" style="margin-top:20px; display:inline-block; padding:10px 20px; text-decoration:none; color:white; border-radius:100px; font-size: 0.9rem;">LinkedIn პროფილი</a>` : ''}`;
+      document.getElementById('speaker-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() { document.getElementById('speaker-modal').classList.remove('active'); document.body.style.overflow = 'auto'; }
+
+    function initFilters() {
+      const tags = ["AI", "კარიერა", "ბიზნესი", "სტარტაპი", "ფრილანსი", "დიზაინი", "ტექნოლოგიები", "მარკეტინგი", "Soft-Skills", "ვორქშოფი"];
+      const bar = document.createElement('div'); bar.className = 'filter-bar';
+      bar.innerHTML = tags.map(t => `<span class="tag" onclick="filterTag('${t}')">#${t}</span>`).join('');
+      document.getElementById('agenda-container').before(bar);
+    }
+
+    function updateLiveSessions() {
+      const now = new Date(); 
+      let live = false;
+      document.querySelectorAll('.schedule-card').forEach(card => {
+        const timeEl = card.querySelector('.time');
+        if (!timeEl) return;
+        const timeText = timeEl.innerText.trim();
+        const times = timeText.split('-').map(t => t.trim());
+        if (times.length === 2) {
+          const start = new Date(); const [sh, sm] = times[0].split(':').map(Number); start.setHours(sh, sm, 0);
+          const end = new Date(); const [eh, em] = times[1].split(':').map(Number); end.setHours(eh, em, 0);
+          if (now >= start && now <= end) { 
+            card.classList.add('is-live'); 
+            card.style.background = 'rgba(16, 185, 129, 0.08)';
+            live = true; 
+          } else { 
+            card.classList.remove('is-live'); 
+            card.style.background = '';
+          }
+        }
+      });
+      const btn = document.getElementById('live-scroll-btn');
+      if (btn) btn.style.display = live ? 'flex' : 'none';
+    }
+
+    function initTheme() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.body.setAttribute('data-theme', theme);
+      document.getElementById('theme-toggle').onclick = () => {
+        const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      };
+    }
+
+    function scrollToLive() { document.querySelector('.is-live')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme(); initFilters(); renderAgenda();
+      setInterval(updateLiveSessions, 60000);
+      const eventDate = new Date('2026-04-25T11:00:00+04:00').getTime();
+      setInterval(() => {
+        const dist = eventDate - new Date().getTime();
+        if (dist < 0) return;
+        document.getElementById('cd-days').innerText = Math.floor(dist / 86400000).toString().padStart(2, '0');
+        document.getElementById('cd-hours').innerText = Math.floor((dist % 86400000) / 3600000).toString().padStart(2, '0');
+        document.getElementById('cd-mins').innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2, '0');
+        document.getElementById('cd-secs').innerText = Math.floor((dist % 60000) / 1000).toString().padStart(2, '0');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
