@@ -1,6 +1,6 @@
 import re
 
-file_path = r'C:\Users\GBASILAIA\claude\ai2026\tempo\lecture-1-slides.html'
+file_path = r'C:\Users\GBASILAIA\claude\ai2026\tempo\lecture-6-slides.html'
 
 with open(file_path, 'r', encoding='utf-8') as f:
     content = f.read()
@@ -112,7 +112,7 @@ new_head = """    <script>
         .bg-tempo-800 { background-color: #FFFFFF !important; box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important; border: 1px solid rgba(0,0,0,0.05) !important; }
         .hover\:bg-tempo-800:hover { background-color: #F8F9FA !important; }
 
-        /* Legacy Lecture 1 Specific Styles */
+        /* Legacy Lecture Specific Styles */
         .prompt-var {
             color: #C5A059;
             font-weight: bold;
@@ -146,21 +146,18 @@ content = content.replace('<body class="bg-gray-50">', '<body class="bg-[#F5F5F3
 # 3. Main headings inside sections
 content = content.replace('class="text-3xl font-serif font-bold text-white', 'class="text-3xl font-serif font-bold text-tempo-900')
 
-# 4. Glass cards to standard light design
+# 4. Glass cards to standard light design (in case any exist)
 content = content.replace('class="glass-card p-8 rounded-2xl mb-10"', 'class="mb-10"')
 
-# 5. Prose text colors
+# 5. Prose text colors (gray-400 to gray-700 in old files)
 content = content.replace('class="prose max-w-none text-gray-400"', 'class="prose max-w-none text-gray-700"')
 
-# 6. Specific hardcoded text colors in inner elements (we have to be careful, but generally white->tempo-900, gray-400->gray-700 inside prose)
+# 6. Specific hardcoded text colors in inner elements
 content = content.replace('<h4 class="font-bold text-white', '<h4 class="font-bold text-tempo-900')
 content = content.replace('<p class="text-gray-400', '<p class="text-gray-600')
 content = content.replace('<span class="text-white', '<span class="text-tempo-900')
 
-# 7. Sidebar text (Tempo Holding logo)
-content = content.replace('text-tempo-sky', 'text-tempo-gold')
-
 with open(file_path, 'w', encoding='utf-8') as f:
     f.write(content)
 
-print("Migration script completed.")
+print("Migration script for Lecture 6 completed.")
