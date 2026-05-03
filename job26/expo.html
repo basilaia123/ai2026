@@ -64,8 +64,8 @@ html, body {
   transform: translateX(0);
 }
 .slide.exit-left {
-  opacity: 0;
-  transform: translateX(-60px);
+  opacity: 0 !important;
+  transform: translateX(-60px) !important;
   pointer-events: none;
 }
 
@@ -1578,28 +1578,20 @@ function go(to) {
   if (animating || to === cur || to < 0 || to >= TOTAL) return;
   animating = true;
   const slides = document.querySelectorAll('.slide');
-  const prev = slides[cur];
-  const next = slides[to];
-  const dir = to > cur ? 1 : -1;
+  const fromSlide = slides[cur];
+  const toSlide = slides[to];
 
-  prev.classList.add('exit-left');
-  prev.classList.remove('active');
-  next.style.transform = `translateX(${dir * 60}px)`;
-  next.style.opacity = '0';
-  next.style.transition = 'none';
+  fromSlide.classList.add('exit-left');
+  fromSlide.classList.remove('active');
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      next.style.transition = '';
-      next.classList.add('active');
-      cur = to;
-      updateUI();
-      setTimeout(() => {
-        prev.classList.remove('exit-left');
-        animating = false;
-      }, 580);
-    });
-  });
+  toSlide.classList.add('active');
+  cur = to;
+  updateUI();
+
+  setTimeout(() => {
+    fromSlide.classList.remove('exit-left');
+    animating = false;
+  }, 580);
 }
 
 document.getElementById('prev').addEventListener('click', () => go(cur - 1));
