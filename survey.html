@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>კმაყოფილების კითხვარი - Tempo Holding AI Academy</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          tempo: {
+            gold: '#C5A059',
+            sky: '#48B8BE',
+            950: '#1A1A1A',
+            900: '#282828',
+            800: '#333333'
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+  html { scroll-behavior: smooth; }
+
+  /* Stars */
+  .stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+  .stars input { display: none; }
+  .stars label {
+    font-size: 30px; cursor: pointer; color: #4b5563; line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .stars label:hover,
+  .stars label:hover ~ label,
+  .stars input:checked ~ label { color: #C5A059; transform: scale(1.15); }
+
+  /* NPS & Rating buttons */
+  .nps-btn { display: none; }
+  .nps-lbl {
+    width: 40px; height: 40px; border-radius: 8px;
+    border: 1.5px solid #4b5563;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; color: #9ca3af;
+  }
+  .nps-btn:checked + .nps-lbl {
+    background: #48B8BE; border-color: #48B8BE;
+    color: #1A1A1A; transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(72,184,190,0.3);
+  }
+  .nps-lbl:hover { border-color: #48B8BE; color: #48B8BE; }
+
+  /* Likert */
+  .lk-input { display: none; }
+  .lk-label {
+    flex: 1; border: 1.5px solid #4b5563;
+    border-radius: 6px; padding: 6px 4px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; display: flex;
+    flex-direction: column; align-items: center; gap: 0;
+    background: #282828;
+  }
+  .lk-input:checked + .lk-label {
+    background: rgba(72,184,190,0.15); border-color: #48B8BE;
+  }
+  .lk-input:checked + .lk-label .lk-val { color: #48B8BE; font-weight: 700; }
+  .lk-label:hover { border-color: #48B8BE; }
+  .lk-val { font-size: 14px; font-weight: 600; color: #9ca3af; }
+
+  /* Pill */
+  .pill-in { display: none; }
+  .pill-lb {
+    border: 1.5px solid #4b5563; border-radius: 100px;
+    padding: 6px 16px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; color: #9ca3af; white-space: nowrap;
+    background: #282828;
+  }
+  .pill-in:checked + .pill-lb {
+    background: #48B8BE; border-color: #48B8BE;
+    color: #1A1A1A; box-shadow: 0 3px 10px rgba(72,184,190,0.25);
+  }
+  .pill-lb:hover { border-color: #48B8BE; color: #48B8BE; }
+
+  /* Textarea / text */
+  textarea, input[type="text"], select {
+    width: 100%; border: 1.5px solid #4b5563;
+    border-radius: 10px; padding: 12px 14px;
+    font-family: 'FiraGO', sans-serif; font-size: 14px;
+    color: #fff; outline: none;
+    background: #282828;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  textarea { min-height: 100px; }
+  textarea:focus, input[type="text"]:focus, select:focus {
+    border-color: #48B8BE;
+    box-shadow: 0 0 0 3px rgba(72,184,190,0.1);
+  }
+
+  /* Progress fill */
+  #prog-fill { transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.5s ease both; }
+
+  @media (max-width: 520px) {
+    .nps-lbl { width: 34px; height: 34px; font-size: 12px; }
+    .lk-label { padding: 8px 3px; }
+  }
+</style>
+</head>
+<body class="bg-tempo-950 text-gray-200">
+
+<!-- HERO -->
+<header class="bg-tempo-950 text-white relative overflow-hidden pt-12 pb-16 px-6">
+  <div class="absolute inset-0 opacity-[0.05]"
+    style="background-image:url('data:image/svg+xml,<svg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22><defs><pattern id=%22g%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22><path d=%22M60 0L0 60M-15 15L15-15M45 75L75 45%22 stroke=%22white%22 stroke-width=%221%22 fill=%22none%22/></pattern></defs><rect fill=%22url(%23g)%22 width=%2260%22 height=%2260%22/></svg>');">
+  </div>
+  <div class="relative max-w-3xl mx-auto text-center fade-up">
+    <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-6">
+      <span class="w-2 h-2 bg-tempo-sky rounded-full animate-pulse"></span>
+      <span class="text-xs font-bold tracking-widest text-tempo-sky uppercase">Tempo Holding · AI Academy · 2026</span>
+    </div>
+    <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4" style="font-family:'Playfair Display', serif">კმაყოფილების კითხვარი</h1>
+    <p class="text-gray-400 text-lg mb-1">ეტაპი I: საბაზისო კურსი (16.5 საათი)</p>
+    <div class="flex flex-col items-center gap-1 mt-6">
+      <p class="text-tempo-gold font-bold">ინსტრუქტორი: გიორგი ბასილაია</p>
+      <p class="text-white/40 text-xs flex items-center gap-1.5 mt-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        შევსებას სჭირდება 3-4 წუთი
+      </p>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="max-w-3xl mx-auto px-4 -mt-8 pb-20 relative z-10">
+
+  <!-- Progress Bar -->
+  <div class="bg-tempo-900 rounded-xl p-4 border border-white/5 mb-8 shadow-2xl fade-up" style="animation-delay:0.1s">
+    <div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-2">
+      <span>შევსების პროგრესი</span>
+      <span id="prog-label">0%</span>
+    </div>
+    <div class="h-2 bg-black/40 rounded-full overflow-hidden">
+      <div id="prog-fill" class="h-full bg-gradient-to-r from-tempo-sky to-tempo-cyan rounded-full" style="width:0%"></div>
+    </div>
+  </div>
+
+  <form id="tempo-survey-form" action="https://formsubmit.co/basilaia@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="Tempo AI Academy - Survey Results">
+    <input type="hidden" name="_captcha" value="false">
+
+    <!-- ── SECTION 1: General Satisfaction ── -->
+    <div class="bg-tempo-900 rounded-2xl border border-white/5 p-6 md:p-10 mb-6 shadow-xl fade-up" style="animation-delay:0.15s">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-tempo-sky/10 text-tempo-sky flex items-center justify-center text-lg font-black border border-tempo-sky/20">1</div>
+        <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">საერთო შეფასება</h2>
+      </div>
+
+      <div class="space-y-10">
+        <!-- Overall -->
+        <div>
+          <p class="text-base font-bold text-white mb-4">როგორ შეაფასებდით პროგრამის ხარისხს? <span class="text-tempo-sky">*</span></p>
+          <div class="stars">
+            <input type="radio" name="overall_rating" id="ov5" value="5" required><label for="ov5">★</label>
+            <input type="radio" name="overall_rating" id="ov4" value="4"><label for="ov4">★</label>
+            <input type="radio" name="overall_rating" id="ov3" value="3"><label for="ov3">★</label>
+            <input type="radio" name="overall_rating" id="ov2" value="2"><label for="ov2">★</label>
+            <input type="radio" name="overall_rating" id="ov1" value="1"><label for="ov1">★</label>
+          </div>
+        </div>
+
+        <!-- NPS -->
+        <div class="pt-8 border-t border-white/5">
+          <p class="text-base font-bold text-white mb-4">ურჩევდით ამ კურსს Tempo-ს სხვა თანამშრომელს? <span class="text-tempo-sky">*</span></p>
+          <div class="flex gap-2">
+            <input class="pill-in" type="radio" name="recommend" id="nps_yes" value="yes" required><label class="pill-lb flex-1 text-center" for="nps_yes">აუცილებლად</label>
+            <input class="pill-in" type="radio" name="recommend" id="nps_maybe" value="maybe"><label class="pill-lb flex-1 text-center" for="nps_maybe">ალბათ</label>
+            <input class="pill-in" type="radio" name="recommend" id="nps_no" value="no"><label class="pill-lb flex-1 text-center" for="nps_no">არა</label>
+          </div>
+        </div>
+
+        <!-- Expectations -->
+        <div class="pt-8 border-t border-white/5">
+          <p class="text-base font-bold text-white mb-4">შეესაბამებოდა კურიკულუმი თქვენს მოლოდინებს? <span class="text-tempo-sky">*</span></p>
+          <div class="flex flex-wrap gap-2">
+            <input class="pill-in" type="radio" name="expectations" id="exp_yes" value="yes" required><label class="pill-lb" for="exp_yes">სრულად</label>
+            <input class="pill-in" type="radio" name="expectations" id="exp_mostly" value="mostly"><label class="pill-lb" for="exp_mostly">მეტწილად</label>
+            <input class="pill-in" type="radio" name="expectations" id="exp_partial" value="partial"><label class="pill-lb" for="exp_partial">ნაწილობრივ</label>
+            <input class="pill-in" type="radio" name="expectations" id="exp_no" value="no"><label class="pill-lb" for="exp_no">არ შეესაბამებოდა</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: Sessions ── -->
+    <div class="bg-tempo-900 rounded-2xl border border-white/5 p-6 md:p-10 mb-6 shadow-xl fade-up" style="animation-delay:0.2s">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-tempo-sky/10 text-tempo-sky flex items-center justify-center text-lg font-black border border-tempo-sky/20">2</div>
+        <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">სესიების შეფასება</h2>
+      </div>
+      <p class="text-[10px] text-gray-500 uppercase font-bold mb-6 tracking-wider">1 = სუსტი · 2 = კარგი · 3 = შესანიშნავი</p>
+      
+      <div id="sessions-qs" class="space-y-8"></div>
+    </div>
+
+    <!-- ── SECTION 3: Trainer ── -->
+    <div class="bg-tempo-900 rounded-2xl border border-white/5 p-6 md:p-10 mb-6 shadow-xl fade-up" style="animation-delay:0.25s">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-tempo-sky/10 text-tempo-sky flex items-center justify-center text-lg font-black border border-tempo-sky/20">3</div>
+        <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">ინსტრუქტორის შეფასება</h2>
+      </div>
+      
+      <div class="space-y-6">
+        <div class="flex items-center justify-between gap-4">
+          <span class="text-sm font-medium text-gray-300">მასალის ახსნის სიცხადე</span>
+          <div class="flex gap-2">
+            <input class="nps-btn" type="radio" name="instr_clarity" id="ic1" value="1" required><label class="nps-lbl" for="ic1">1</label>
+            <input class="nps-btn" type="radio" name="instr_clarity" id="ic2" value="2"><label class="nps-lbl" for="ic2">2</label>
+            <input class="nps-btn" type="radio" name="instr_clarity" id="ic3" value="3"><label class="nps-lbl" for="ic3">3</label>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-4 pt-4 border-t border-white/5">
+          <span class="text-sm font-medium text-gray-300">პასუხები კითხვებზე</span>
+          <div class="flex gap-2">
+            <input class="nps-btn" type="radio" name="instr_qa" id="iq1" value="1" required><label class="nps-lbl" for="iq1">1</label>
+            <input class="nps-btn" type="radio" name="instr_qa" id="iq2" value="2"><label class="nps-lbl" for="iq2">2</label>
+            <input class="nps-btn" type="radio" name="instr_qa" id="iq3" value="3"><label class="nps-lbl" for="iq3">3</label>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-4 pt-4 border-t border-white/5">
+          <span class="text-sm font-medium text-gray-300">პრაქტიკული მაგალითების რელევანტურობა</span>
+          <div class="flex gap-2">
+            <input class="nps-btn" type="radio" name="instr_practical" id="ir1" value="1" required><label class="nps-lbl" for="ir1">1</label>
+            <input class="nps-btn" type="radio" name="instr_practical" id="ir2" value="2"><label class="nps-lbl" for="ir2">2</label>
+            <input class="nps-btn" type="radio" name="instr_practical" id="ir3" value="3"><label class="nps-lbl" for="ir3">3</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4: Practical Application ── -->
+    <div class="bg-tempo-900 rounded-2xl border border-white/5 p-6 md:p-10 mb-6 shadow-xl fade-up" style="animation-delay:0.3s">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-tempo-sky/10 text-tempo-sky flex items-center justify-center text-lg font-black border border-tempo-sky/20">4</div>
+        <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">პრაქტიკული გამოყენება</h2>
+      </div>
+      <p class="text-sm font-bold text-white mb-6">რომელ ამოცანებში აპირებთ AI-ს დანერგვას? (მონიშნეთ ყველა რელევანტური)</p>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <label class="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:border-tempo-sky/40 transition-all">
+          <input type="checkbox" name="use_comm" value="1" class="accent-tempo-sky w-4 h-4">
+          <span class="text-sm">კლიენტებთან კომუნიკაცია (Email/WhatsApp)</span>
+        </label>
+        <label class="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:border-tempo-sky/40 transition-all">
+          <input type="checkbox" name="use_props" value="1" class="accent-tempo-sky w-4 h-4">
+          <span class="text-sm">პერსონალიზებული შეთავაზებები (Proposal)</span>
+        </label>
+        <label class="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:border-tempo-sky/40 transition-all">
+          <input type="checkbox" name="use_sop" value="1" class="accent-tempo-sky w-4 h-4">
+          <span class="text-sm">სამუშაო ინსტრუქციების (SOP) წერა</span>
+        </label>
+        <label class="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:border-tempo-sky/40 transition-all">
+          <input type="checkbox" name="use_mkt" value="1" class="accent-tempo-sky w-4 h-4">
+          <span class="text-sm">კონტენტ-მარკეტინგი და სოც. მედია</span>
+        </label>
+        <label class="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:border-tempo-sky/40 transition-all">
+          <input type="checkbox" name="use_sales" value="1" class="accent-tempo-sky w-4 h-4">
+          <span class="text-sm">ლიდების კვალიფიკაცია (BANT)</span>
+        </label>
+        <label class="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:border-tempo-sky/40 transition-all">
+          <input type="checkbox" name="use_auto" value="1" class="accent-tempo-sky w-4 h-4">
+          <span class="text-sm">პროცესების ავტომატიზაცია (Make.com)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5: Feedback ── -->
+    <div class="bg-tempo-900 rounded-2xl border border-white/5 p-6 md:p-10 mb-10 shadow-xl fade-up" style="animation-delay:0.35s">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-tempo-sky/10 text-tempo-sky flex items-center justify-center text-lg font-black border border-tempo-sky/20">5</div>
+        <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">უკუკავშირი</h2>
+      </div>
+
+      <div class="space-y-8">
+        <div>
+          <label class="text-sm font-bold text-white block mb-3">რა იყო თქვენთვის ყველაზე ღირებული ამ კურსში?</label>
+          <textarea name="best_part" placeholder="აღწერეთ მოკლედ..."></textarea>
+        </div>
+        <div>
+          <label class="text-sm font-bold text-white block mb-3">რაიმე კონკრეტული თემა, რომელსაც მომავალში უფრო ღრმად ისწავლიდით?</label>
+          <textarea name="future_interest" placeholder="მაგ: ავტომატიზაცია, ვიდეო გენერაცია..."></textarea>
+        </div>
+        <div>
+          <label class="text-sm font-bold text-white block mb-3">თქვენი ზოგადი კომენტარი ან რჩევა</label>
+          <textarea name="general_feedback" placeholder="გაგვიზიარეთ თქვენი მოსაზრება..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="text-center fade-up" style="animation-delay:0.4s">
+      <button type="submit"
+        class="inline-flex items-center gap-3 bg-tempo-sky hover:bg-tempo-cyan text-tempo-950 font-black px-16 py-5 rounded-2xl text-lg transition-all duration-300 shadow-[0_10px_40px_rgba(72,184,190,0.3)] hover:shadow-[0_15px_50px_rgba(72,184,190,0.5)] hover:-translate-y-1 uppercase tracking-widest">
+        გაგზავნა
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </button>
+      <p class="text-xs text-gray-500 mt-6 font-bold uppercase tracking-widest">TEMPO AI Academy © 2026 · პასუხები ანონიმურია</p>
+    </div>
+
+  </form>
+
+  <!-- Thank You -->
+  <div id="thank-you" class="hidden text-center py-32 fade-up">
+    <div class="text-8xl mb-8">💎</div>
+    <h2 class="text-4xl font-black text-white mb-4" style="font-family:'Playfair Display', serif">მადლობა!</h2>
+    <p class="text-tempo-sky text-xl mb-8">თქვენი პასუხები წარმატებით მიღებულია.</p>
+    <a href="index.html" class="inline-flex items-center gap-2 text-white/40 hover:text-tempo-sky transition-colors font-bold uppercase tracking-widest text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      უკან დაბრუნება
+    </a>
+  </div>
+
+</main>
+
+<script>
+const sessions = [
+  { id: 's1', name: 'სესია 1: AI საფუძვლები + პრომპტ-ინჟინერია', desc: 'CREATE, CRISPE, Zero/Few-Shot' },
+  { id: 's2', name: 'სესია 2: ელფოსტა და ბიზნეს კომუნიკაცია', desc: 'Triage, Roast My Email, DEFUSE' },
+  { id: 's3', name: 'სესია 3: პრეზენტაციები და SOP დოკუმენტაცია', desc: 'Gamma, Notion AI, SOP Standards' },
+  { id: 's4', name: 'სესია 4: სოციალური მედია და AI მულტიმედია', desc: 'Calendar, Veo 3.1, ElevenLabs' },
+  { id: 's5', name: 'სესია 5: გაყიდვები და ლიდების მართვა', desc: 'BANT, Objection Handling, Follow-up' },
+  { id: 's6', name: 'სესია 6: AI ასისტენტები და ავტომატიზაცია', desc: 'Custom GPTs, NotebookLM, Make.com' }
+];
+
+const container = document.getElementById('sessions-qs');
+sessions.forEach((s, i) => {
+  const div = document.createElement('div');
+  div.className = i > 0 ? 'pt-6 border-t border-white/5' : '';
+  div.innerHTML = `
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <p class="text-sm font-bold text-white mb-0.5">${s.name}</p>
+        <p class="text-[11px] text-gray-500 font-medium uppercase tracking-wider">${s.desc}</p>
+      </div>
+      <div class="flex gap-2">
+        <input class="nps-btn" type="radio" name="rating_${s.id}" id="${s.id}_1" value="1" required><label class="nps-lbl" for="${s.id}_1">1</label>
+        <input class="nps-btn" type="radio" name="rating_${s.id}" id="${s.id}_2" value="2"><label class="nps-lbl" for="${s.id}_2">2</label>
+        <input class="nps-btn" type="radio" name="rating_${s.id}" id="${s.id}_3" value="3"><label class="nps-lbl" for="${s.id}_3">3</label>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+});
+
+// Form Logic
+const form = document.getElementById('tempo-survey-form');
+const required = ['overall_rating', 'recommend', 'expectations', 'instr_clarity', 'instr_qa', 'instr_practical', ...sessions.map(s => `rating_${s.id}`)];
+
+function updateProgress() {
+  let count = 0;
+  required.forEach(name => {
+    if (document.querySelector(`input[name="${name}"]:checked`)) count++;
+  });
+  const pct = Math.round((count / required.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = pct + '%';
+}
+
+form.addEventListener('change', updateProgress);
+
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const btn = this.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.innerHTML = 'იგზავნება...';
+
+  try {
+    const res = await fetch(this.action, {
+      method: 'POST',
+      body: new FormData(this),
+      headers: { 'Accept': 'application/json' }
+    });
+    
+    if (res.ok) {
+      form.classList.add('hidden');
+      document.getElementById('thank-you').classList.remove('hidden');
+      window.scrollTo(0,0);
+    }
+  } catch (err) {
+    alert('შეცდომა გაგზავნისას. სცადეთ მოგვიანებით.');
+    btn.disabled = false;
+    btn.innerHTML = 'გაგზავნა';
+  }
+});
+</script>
+</body>
+</html>
