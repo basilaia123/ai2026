@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სესია 1 | OPPA.GE – Advanced Prompting & AI Workflow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#0a1e30',
+                            900: '#1B3A5C',
+                            800: '#234a75',
+                            700: '#2c5a8e',
+                            600: '#356aa7',
+                            500: '#3e7ac0',
+                            400: '#6498cc',
+                            300: '#8ab6d9',
+                            200: '#b0d3e6',
+                            100: '#d6eef5',
+                            50:  '#edf7fb',
+                        },
+                        teal: {
+                            600: '#1e6e8a',
+                            500: '#2E86AB',
+                            400: '#3a9fc7',
+                            300: '#60b8d4',
+                            200: '#90d0e3',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; font-size: 17px; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link.active { background: rgba(255,255,255,0.12); border-left: 3px solid #3a9fc7; }
+        .nav-link:hover { background: rgba(255,255,255,0.08); }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .topic-card { border-left: 4px solid #1B3A5C; }
+
+        #backToTop {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #backToTop.visible { opacity: 1; pointer-events: auto; }
+        #backToTop:hover { transform: translateY(-2px); }
+
+        #fontControls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            z-index: 45;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(27, 58, 92, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        #fontControls button {
+            width: 34px; height: 34px;
+            display: flex; align-items: center; justify-content: center;
+            background: transparent; color: #fff;
+            border: none; border-radius: 8px;
+            cursor: pointer; font-size: 13px; font-weight: 700;
+            transition: background 0.2s ease;
+        }
+        #fontControls button:hover { background: rgba(255,255,255,0.15); }
+
+        .prompt-box {
+            background: #0f172a;
+            border: 1px solid rgba(46,134,171,0.3);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            position: relative;
+        }
+        .prompt-box pre {
+            color: #93c5fd;
+            font-size: 0.82rem;
+            line-height: 1.65;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem; right: 0.5rem;
+            background: rgba(46,134,171,0.25);
+            color: #7dd3fc;
+            border: none;
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover { background: rgba(46,134,171,0.45); }
+
+        .warning-box {
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        .tip-box {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        .activity-box {
+            background: #fefce8;
+            border-left: 4px solid #eab308;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        @media print {
+            #sidebar, #menuBtn, #overlay, #backToTop, #fontControls { display: none !important; }
+            main, #mainContent { margin-left: 0 !important; }
+            body { background: white; }
+            .topic-card { break-inside: avoid; }
+            @page { margin: 1.5cm; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div id="overlay" class="hidden" aria-hidden="true"></div>
+
+<!-- Toggle button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-navy-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-navy-800 transition-colors" title="მენიუ">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-navy-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+<div class="px-5 py-6 border-b border-white/10">
+    <div class="flex items-center gap-2 mb-2">
+        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
+        <span class="text-teal-300 text-xs font-medium">AI ტრენინგი · სესია 1</span>
+    </div>
+    <h1 class="text-base font-bold leading-tight">Advanced Prompting & AI Workflow ინტეგრაცია</h1>
+    <p class="text-blue-400/70 text-xs mt-1.5">სესია 1 · 2.5-საათიანი ვორქშოფი</p>
+</div>
+<div class="px-5 py-3 bg-teal-600/30 border-b border-white/10">
+    <p class="text-[10px] font-semibold uppercase tracking-wider text-teal-300 mb-2">სწრაფი მარშრუტი</p>
+    <p class="text-xs text-blue-200 leading-relaxed mb-1"><span class="text-green-400 font-bold">✅ ნაწილი I:</span> Role prompting, Chain-of-thought, Structured output, Few-shot</p>
+    <p class="text-xs text-blue-300/70 leading-relaxed"><span class="text-teal-300 font-bold">📚 ნაწილი II:</span> Claude Projects, Use-case Mapping, OPPA Prompt Library</p>
+</div>
+<nav class="py-3">
+    <a href="#seg-recap" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-recap">
+        <span class="leading-snug pr-2">S0 რეკაპი + სესიის მიზნები</span>
+        <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-role" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-role">
+        <span class="leading-snug pr-2">Role Prompting</span>
+        <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">20 წთ</span>
+    </a>
+    <a href="#seg-cot" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-cot">
+        <span class="leading-snug pr-2">Chain-of-Thought</span>
+        <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">15 წთ</span>
+    </a>
+    <a href="#seg-structured" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-structured">
+        <span class="leading-snug pr-2">Structured Output</span>
+        <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">15 წთ</span>
+    </a>
+    <a href="#seg-fewshot" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-fewshot">
+        <span class="leading-snug pr-2">Few-Shot Examples</span>
+        <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-break">
+        <span class="leading-snug pr-2">☕ შესვენება</span>
+        <span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-projects" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-projects">
+        <span class="leading-snug pr-2">Claude Projects & Custom Instructions</span>
+        <span class="shrink-0 text-[10px] bg-teal-500/20 text-teal-300 px-1.5 py-0.5 rounded">15 წთ</span>
+    </a>
+    <a href="#seg-usecases" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-usecases">
+        <span class="leading-snug pr-2">Use-case Mapping — OPPA-ს დეპარტამენტები</span>
+        <span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">20 წთ</span>
+    </a>
+    <a href="#seg-library" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-library">
+        <span class="leading-snug pr-2">OPPA Prompt Library — Notion-ში</span>
+        <span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">15 წთ</span>
+    </a>
+    <a href="#seg-commit" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-commit">
+        <span class="leading-snug pr-2">გუნდური Review + 30-დღიანი ვალდებულება</span>
+        <span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+</nav>
+<div class="px-5 py-4 border-t border-white/10 mt-2">
+    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">ტრენერი</p>
+    <p class="text-sm font-semibold text-white">გიორგი ბასილაია</p>
+    <p class="text-xs text-blue-400/70">Smart Academy · 2026</p>
+</div>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+<!-- Header -->
+<header class="bg-gradient-to-r from-navy-950 to-navy-800 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+    <div class="max-w-4xl">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
+            <span class="text-teal-300 text-sm font-medium">კორპორატიული AI ტრენინგი · სესია 1</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">Advanced Prompting &<br><span class="text-teal-300">AI ღრმა ინტეგრაცია სამუშაო პროცესებში</span></h1>
+        <p class="text-blue-200 text-base max-w-2xl leading-relaxed mb-5">სესია 0-ში გავეცანით ხელოვნურ ინტელექტს. ახლა გადადივართ პროფესიონალური გამოყენების დონეზე: Role prompting, Chain-of-Thought, Structured Output და Few-Shot ტექნიკები — ყველაფერი OPPA-ს რეალური სამუშაო სცენარებზე. სესიის ბოლოს OPPA-ს Prompt Library Notion-ში ცოცხლდება.</p>
+        <div class="flex flex-wrap gap-4">
+            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                150 წუთი (სრული)
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                ლაივ დემო + პრაქტიკა
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                9 სეგმენტი
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-teal-300 font-semibold">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                ფინტექ-სპეციფიკური
+            </span>
+        </div>
+    </div>
+</header>
+
+<div class="max-w-4xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
+
+<!-- Route Table -->
+<div class="bg-navy-900 text-white rounded-xl p-6 mb-10">
+    <div class="flex items-center gap-3 mb-5">
+        <span class="text-2xl">⏱</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-0.5">სესიის მარშრუტი</p>
+            <h2 class="text-lg font-bold">2.5 საათი – სრული სესიის გეგმა</h2>
+        </div>
+    </div>
+
+    <p class="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-2">ნაწილი I · Advanced Prompting ტექნიკები</p>
+    <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-white/20">
+                    <th class="text-left py-2 pr-3 text-teal-300 font-semibold w-6">#</th>
+                    <th class="text-left py-2 pr-4 text-teal-300 font-semibold">სეგმენტი</th>
+                    <th class="text-left py-2 pr-3 text-teal-300 font-semibold">დრო</th>
+                    <th class="text-left py-2 text-teal-300 font-semibold">ტიპი</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-200">
+                <tr class="border-b border-white/10">
+                    <td class="py-2 pr-3 text-green-400 font-bold">1</td>
+                    <td class="py-2 pr-4">S0 რეკაპი + სესიის მიზნები — სად ვართ, სად მივდივართ</td>
+                    <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                    <td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">განხილვა</span></td>
+                </tr>
+                <tr class="border-b border-white/10">
+                    <td class="py-2 pr-3 text-green-400 font-bold">2</td>
+                    <td class="py-2 pr-4">Role Prompting — კონტექსტი და პერსონა</td>
+                    <td class="py-2 pr-3 font-semibold text-white">20 წთ</td>
+                    <td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">დემო + პრაქტიკა</span></td>
+                </tr>
+                <tr class="border-b border-white/10">
+                    <td class="py-2 pr-3 text-green-400 font-bold">3</td>
+                    <td class="py-2 pr-4">Chain-of-Thought — AI-ს ვაფიქრებინებთ ნაბიჯობრივად</td>
+                    <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+                    <td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">დემო + პრაქტიკა</span></td>
+                </tr>
+                <tr class="border-b border-white/10">
+                    <td class="py-2 pr-3 text-green-400 font-bold">4</td>
+                    <td class="py-2 pr-4">Structured Output — პასუხი ჩვენს ფორმატში</td>
+                    <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+                    <td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">დემო + პრაქტიკა</span></td>
+                </tr>
+                <tr>
+                    <td class="py-2 pr-3 text-green-400 font-bold">5</td>
+                    <td class="py-2 pr-4">Few-Shot Examples — OPPA-ს სტილის სწავლება</td>
+                    <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                    <td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">დემო + პრაქტიკა</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex items-center gap-3 my-4 py-2 px-4 bg-white/10 rounded-lg">
+        <span class="text-amber-300 font-bold text-sm">☕</span>
+        <p class="text-sm text-amber-200 font-semibold">შესვენება – 10 წუთი</p>
+    </div>
+
+    <p class="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-2">ნაწილი II · Workflow ინტეგრაცია და Prompt Library</p>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <tbody class="text-gray-200">
+                <tr class="border-b border-white/10">
+                    <td class="py-2 pr-3 text-teal-400 font-bold">6</td>
+                    <td class="py-2 pr-4">Claude Projects & ChatGPT Custom Instructions — OPPA-ს კონტექსტი</td>
+                    <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+                    <td class="py-2"><span class="bg-teal-500/20 text-teal-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+                </tr>
+                <tr class="border-b border-white/10">
+                    <td class="py-2 pr-3 text-amber-400 font-bold">7</td>
+                    <td class="py-2 pr-4">Use-case Mapping — OPPA-ს დეპარტამენტების AI შესაძლებლობები</td>
+                    <td class="py-2 pr-3 font-semibold text-white">20 წთ</td>
+                    <td class="py-2"><span class="bg-amber-500/20 text-amber-300 text-xs px-2 py-0.5 rounded">გუნდური აქტივობა</span></td>
+                </tr>
+                <tr class="border-b border-white/10">
+                    <td class="py-2 pr-3 text-green-400 font-bold">8</td>
+                    <td class="py-2 pr-4">OPPA Prompt Library — Notion-ში შექმნა და შევსება</td>
+                    <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+                    <td class="py-2"><span class="bg-green-500/20 text-green-300 text-xs px-2 py-0.5 rounded">ვორქშოფი</span></td>
+                </tr>
+                <tr>
+                    <td class="py-2 pr-3 text-amber-400 font-bold">9</td>
+                    <td class="py-2 pr-4">გუნდური Review + 30-დღიანი ვალდებულება + Q&A</td>
+                    <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                    <td class="py-2"><span class="bg-amber-500/20 text-amber-300 text-xs px-2 py-0.5 rounded">აქტივობა</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 1: RECAP -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-recap" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">1</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 1 · 10 წუთი · განხილვა</p>
+            <h2 class="text-xl font-bold text-navy-900">S0 რეკაპი + სესიის მიზნები</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">სად ვართ ახლა — S0-ის შემდეგ</h3>
+        <ul class="space-y-2 text-gray-700 text-sm">
+            <li class="flex gap-2"><span class="text-green-500 font-bold mt-0.5">✅</span><span>ყველას აქვს AI ანგარიში (ChatGPT / Claude / Gemini) და პირველი პრომპტი გამოცდილი</span></li>
+            <li class="flex gap-2"><span class="text-green-500 font-bold mt-0.5">✅</span><span>ვიცით სად რომელი ინსტრუმენტი სჯობს OPPA-ს სამუშაოებისთვის</span></li>
+            <li class="flex gap-2"><span class="text-green-500 font-bold mt-0.5">✅</span><span>Gemini Gem-ის პირველი პროტოტიპი შეიქმნა; Make.com-ის ბაზისური სცენარი ნახეს</span></li>
+            <li class="flex gap-2"><span class="text-green-500 font-bold mt-0.5">✅</span><span>ყველას აქვს 1 კონკრეტული ამოცანა, რომელსაც AI-ით შეასრულებს</span></li>
+        </ul>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm">
+        <h3 class="font-bold text-navy-900 mb-3">დღეს სესიის ბოლოს გექნებათ</h3>
+        <ul class="space-y-2 text-gray-700 text-sm">
+            <li class="flex gap-2"><span class="text-teal-500 font-bold mt-0.5">→</span><span><strong>4 Advanced Prompting ტექნიკა</strong> — Role, Chain-of-Thought, Structured Output, Few-Shot</span></li>
+            <li class="flex gap-2"><span class="text-teal-500 font-bold mt-0.5">→</span><span><strong>Claude Project / ChatGPT Custom Instructions</strong> — OPPA-ს კონტექსტი ერთხელ ჩაიწერება</span></li>
+            <li class="flex gap-2"><span class="text-teal-500 font-bold mt-0.5">→</span><span><strong>OPPA Prompt Library Notion-ში</strong> — მინიმუმ 15 მზა შაბლონი</span></li>
+            <li class="flex gap-2"><span class="text-teal-500 font-bold mt-0.5">→</span><span><strong>საკუთარი 3 შაბლონი</strong> — ხვალვე გამოყენებადი</span></li>
+        </ul>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 2: ROLE PROMPTING -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-role" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">2</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 2 · 20 წუთი · დემო + პრაქტიკა</p>
+            <h2 class="text-xl font-bold text-navy-900">Role Prompting — კონტექსტი და პერსონა</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">რა არის Role Prompting?</h3>
+        <p class="text-gray-700 text-sm mb-4">AI-ს ვეუბნებით ვინ არის ის — რომელ სპეციალისტს, კომპანიას, ან კონტექსტს წარმოადგენს. ეს ერთი წინადადება პასუხის ხარისხს 3-ჯერ ზრდის.</p>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-red-50 rounded-lg p-4 border border-red-100">
+                <p class="text-xs font-bold text-red-500 uppercase mb-2">❌ გარეშე Role</p>
+                <p class="text-sm text-gray-600 italic">"დამიწერე მომხმარებლის პასუხი გვიანი გადახდის შესახებ."</p>
+                <p class="text-xs text-gray-400 mt-2">→ ზოგადი, უბრალო პასუხი</p>
+            </div>
+            <div class="bg-green-50 rounded-lg p-4 border border-green-100">
+                <p class="text-xs font-bold text-green-600 uppercase mb-2">✅ Role Prompting-ით</p>
+                <p class="text-sm text-gray-600 italic">"შენ ხარ OPPA.GE-ს customer support სპეციალისტი, ემპათიური და პროფესიონალური. დამიწერე მომხმარებლის პასუხი..."</p>
+                <p class="text-xs text-gray-400 mt-2">→ OPPA-ს ბრენდის ტონი, კონტექსტი</p>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="font-bold text-navy-900 mb-3">OPPA-ს Role Prompting შაბლონები</h3>
+
+    <div class="space-y-4 mb-6">
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Customer Support</p>
+            <pre>შენ ხარ OPPA.GE-ს გამოცდილი customer support სპეციალისტი.
+შენი ტონი: თბილი, პროფესიონალური, გამჭვირვალე.
+კომპანია: OPPA.GE — ქართული ფინტექ-სერვისი.
+წესი: არ გასცე ისეთი ინფორმაცია, რომელსაც ვერ დაადასტურებ.
+
+[აქ ჩაწერე კონკრეტული ამოცანა]</pre>
+        </div>
+
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Risk / Compliance</p>
+            <pre>შენ ხარ ფინტექ კომპანიის senior compliance officer.
+შენი პასუხი ყოველთვის უნდა ითვალისწინებდეს GDPR-ს, PCI DSS-ს
+და ქართული ეროვნული ბანკის მარეგულირებელ მოთხოვნებს.
+ყოველი რეკომენდაცია დაასაბუთე კანონის/სტანდარტის მითითებით.
+
+[კონკრეტული სიტუაცია ან კითხვა]</pre>
+        </div>
+
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Operations / HR</p>
+            <pre>შენ ხარ OPPA.GE-ს operations მენეჯერი 5-წლიანი გამოცდილებით
+ფინტექ კომპანიაში. შენი პრიორიტეტი: ეფექტურობა, სიზუსტე,
+მასშტაბირება. ყოველი გადაწყვეტა შეაფასე ROI-ის კუთხით.
+
+[ამოცანა ან პროცესი განსახილველად]</pre>
+        </div>
+    </div>
+
+    <div class="activity-box p-4 rounded-r-lg mb-4">
+        <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა — 8 წუთი</p>
+        <p class="text-sm text-yellow-900">შექმენი Role Prompt შენი პოზიციისთვის. გამოიყენე ზემოთ მოცემული სტრუქტურა: ვინ ხარ → ტონი → კომპანიის კონტექსტი → წესი. შედეგი Notion Library-ში შევა.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 3: CHAIN-OF-THOUGHT -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-cot" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">3</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 3 · 15 წუთი · დემო + პრაქტიკა</p>
+            <h2 class="text-xl font-bold text-navy-900">Chain-of-Thought — AI-ს ვაფიქრებინებთ ნაბიჯობრივად</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">რატომ Chain-of-Thought?</h3>
+        <p class="text-gray-700 text-sm mb-3">AI-ს პირდაპირ პასუხის გამოტანა ხშირად ზოგად ან არასწორ შედეგს იძლევა. CoT ატყვევებს AI-ს, ნაბიჯობრივად გაიაზროს პრობლემა — ისევე როგორც გამოცდილი ანალიტიკოსი.</p>
+        <p class="text-sm text-gray-600 bg-blue-50 rounded-lg px-4 py-3 border border-blue-100">
+            <strong>მაგია:</strong> პრომპტს დაუმატე <span class="font-mono bg-blue-100 px-1 rounded">"ნაბიჯობრივად გაანალიზე"</span> ან <span class="font-mono bg-blue-100 px-1 rounded">"Let's think step by step"</span> — შედეგი მყისიერად უმჯობესდება.
+        </p>
+    </div>
+
+    <div class="space-y-4 mb-6">
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Risk შეფასება — CoT</p>
+            <pre>ნაბიჯობრივად გაანალიზე შემდეგი ტრანზაქცია შესაძლო თაღლითობის
+(fraud) კუთხით:
+
+ტრანზაქცია: [ჩაწერე დეტალები]
+
+ნაბიჯ 1: დაახასიათე ტრანზაქცია (რა, ვინ, სად, როდის)
+ნაბიჯ 2: იდენტიფიცირე red flags (არის თუ არა, რატომ)
+ნაბიჯ 3: შეადარე ჩვეულ ქცევის პატერნს
+ნაბიჯ 4: მიეცი რისკ-შეფასება (დაბალი / საშუალო / მაღალი)
+ნაბიჯ 5: რეკომენდაცია — შემდეგი ნაბიჯი</pre>
+        </div>
+
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">პრობლემის გადაწყვეტა — CoT</p>
+            <pre>ნაბიჯობრივად დამეხმარე ამ პრობლემის გადაწყვეტაში:
+
+პრობლემა: [აღწერე]
+
+გთხოვ:
+1. პირველ რიგში გაარკვიე პრობლემის ძირეული მიზეზი
+2. ჩამოაყალიბე 3 შესაძლო გადაწყვეტა დადებით/უარყოფით მხარეებით
+3. გირჩიე ყველაზე პრაქტიკული ვარიანტი OPPA-ს კონტექსტში
+4. გამოკვეთე განხორციელების პირველი 3 ნაბიჯი</pre>
+        </div>
+    </div>
+
+    <div class="activity-box p-4 rounded-r-lg">
+        <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა — 5 წუთი</p>
+        <p class="text-sm text-yellow-900">აიღე შენი სამუშაო ნებისმიერი გუშინდელი ან წინა კვირის რეალური პრობლემა. გამოიყენე CoT პრომპტი. შეადარე — ნაბიჯობრივი პასუხი vs პირდაპირი.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 4: STRUCTURED OUTPUT -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-structured" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">4</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 4 · 15 წუთი · დემო + პრაქტიკა</p>
+            <h2 class="text-xl font-bold text-navy-900">Structured Output — პასუხი ჩვენს ფორმატში</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">AI-ს ვეუბნებით ზუსტ ფორმატს</h3>
+        <p class="text-gray-700 text-sm mb-4">AI-ს პასუხი ყოველთვის ჩვენი ინტეგრაციის, ანგარიშის, ან workflow-ის ფორმატს უნდა შეესაბამებოდეს. ეს ამცირებს ხელით დამუშავების საჭიროებას 90%-ით.</p>
+        <div class="grid md:grid-cols-3 gap-3 text-sm">
+            <div class="bg-navy-50 rounded-lg p-3 text-center">
+                <p class="font-bold text-navy-900">📋 Bullet List</p>
+                <p class="text-gray-500 text-xs mt-1">შეხვედრის შეჯამება, action items</p>
+            </div>
+            <div class="bg-navy-50 rounded-lg p-3 text-center">
+                <p class="font-bold text-navy-900">📊 ცხრილი</p>
+                <p class="text-gray-500 text-xs mt-1">შედარება, ანგარიში, KPI</p>
+            </div>
+            <div class="bg-navy-50 rounded-lg p-3 text-center">
+                <p class="font-bold text-navy-900">{ } JSON</p>
+                <p class="text-gray-500 text-xs mt-1">სისტემებს შორის მონაცემი</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="space-y-4 mb-6">
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">შეხვედრის შეჯამება — Structured</p>
+            <pre>გადამუშავე შემდეგი შეხვედრის ჩანაწერები და მომეც პასუხი
+მხოლოდ ამ ფორმატში:
+
+## 📌 გადაწყვეტილებები
+- [გადაწყვეტილება 1]
+- [გადაწყვეტილება 2]
+
+## ✅ სამოქმედო პუნქტები
+| ამოცანა | პასუხისმგებელი | ვადა |
+|---------|---------------|------|
+| ...     | ...           | ...  |
+
+## ❓ ღია კითხვები
+- [კითხვა, რომელსაც პასუხი ჯერ არ აქვს]
+
+ჩანაწერები: [ჩასვი ჩანაწერები]</pre>
+        </div>
+
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">კლიენტის პასუხი — Structured</p>
+            <pre>დამიწერე მომხმარებლის ელ-წერილი შემდეგი ფორმატით:
+
+**სათაური:** [მაქსიმუმ 8 სიტყვა]
+**ტონი:** [ემპათიური / ფორმალური / ინფორმაციული]
+**ტექსტი:**
+[პარაგრაფი 1: გაგება + ემპათია — 2 წინადადება]
+[პარაგრაფი 2: გადაწყვეტა ან ახსნა — 3 წინადადება]
+[პარაგრაფი 3: შემდეგი ნაბიჯი + CTA — 1-2 წინადადება]
+
+**სიგრძე:** მაქსიმუმ 120 სიტყვა
+
+სიტუაცია: [ჩასვი კლიენტის მოთხოვნა]</pre>
+        </div>
+    </div>
+
+    <div class="activity-box p-4 rounded-r-lg">
+        <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა — 6 წუთი</p>
+        <p class="text-sm text-yellow-900">შეარჩიე შენი სამუშაოს რაიმე ანგარიში ან მეილი, რომელსაც ხშირად ქმნი. ჩაწერე მისი ფორმატი პრომპტში. გამოცადე — AI ახლა ზუსტ ფორმატს გამოიტანს.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 5: FEW-SHOT -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-fewshot" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">5</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 5 · 10 წუთი · დემო + პრაქტიკა</p>
+            <h2 class="text-xl font-bold text-navy-900">Few-Shot Examples — OPPA-ს სტილის სწავლება</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">2-3 მაგალითი = ზუსტი სტილი</h3>
+        <p class="text-gray-700 text-sm mb-3">Few-Shot ნიშნავს: AI-ს ვაჩვენებთ 2-3 მაგალითს — სწორ შეყვანასა და სასურველ გამოსვლას. შემდეგ ის ზუსტად იმ სტილში, ტონში, სტრუქტურაში პასუხობს ახალ მოთხოვნებს.</p>
+        <div class="tip-box p-4 rounded-r-lg">
+            <p class="text-sm text-green-800"><strong>OPPA-ს გამოყენება:</strong> ერთხელ ვქმნით 2-3 "სწავლების მაგალითს" — ბრენდის ტონი, ფინტექ ტერმინოლოგია, ქართული სტილი. ეს მაგალითები Prompt Library-ში ინახება.</p>
+        </div>
+    </div>
+
+    <div class="prompt-box mb-6">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Few-Shot — Support პასუხი OPPA-ს სტილში</p>
+        <pre>ვასწავლი შენ OPPA.GE-ს კომუნიკაციის სტილს.
+გთხოვ, ზუსტად ამ სტილში უპასუხო ახალ შეკითხვებს.
+
+== მაგალითი 1 ==
+კლიენტი: "რატომ ჩამეჭრა ბარათი?"
+OPPA: "გმადლობ, რომ დაგვიკავშირდი! ბარათის შეჩერება შეიძლება
+რამდენიმე მიზეზით მოხდეს. შეგიძლია გვიამბო ბოლო ტრანზაქცია
+სად სცადე? ამ ინფორმაციით გარკვევას სწრაფად მოვახდენთ. 🙏"
+
+== მაგალითი 2 ==
+კლიენტი: "გადახდა ჩამოვიდა?"
+OPPA: "სიამოვნებით გადავამოწმებ! გთხოვ, გამომიგზავნე ტრანზაქციის
+თარიღი და თანხა. ჩვეულებრივ, გადახდები 1-2 სამუშაო დღეში
+ერიცხება ანგარიშს. 💳"
+
+== ახალი კითხვა ==
+კლიენტი: [ჩაწერე ახალი მომხმარებლის შეკითხვა]</pre>
+    </div>
+</section>
+
+<!-- BREAK -->
+<section id="seg-break" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-xl px-6 py-5">
+        <span class="text-3xl">☕</span>
+        <div>
+            <p class="font-bold text-amber-900">შესვენება — 10 წუთი</p>
+            <p class="text-sm text-amber-700">ახლა კარგი მომენტია — გადაავლე თვალი შენს Role Prompt-ს და Structured Output შაბლონს. მეორე ნაწილში Notion Library-ში გადაიტანთ.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 6: CLAUDE PROJECTS -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-projects" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-teal-600 text-white text-sm font-bold flex items-center justify-center">6</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 6 · 15 წუთი · ლაივ დემო</p>
+            <h2 class="text-xl font-bold text-navy-900">Claude Projects & ChatGPT Custom Instructions</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">პრობლემა — ყოველ ჯერ თავიდან ვიწყებთ</h3>
+        <p class="text-gray-700 text-sm mb-4">ახლა ყოველ ახალ სესიაში ვიმეორებთ: "შენ ხარ OPPA-ს..." — ეს დრო და ენერგიაა. <strong>Claude Projects</strong> და <strong>ChatGPT Custom Instructions</strong> ამ პრობლემას ამოწყვეტს.</p>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="border border-navy-100 rounded-lg p-4">
+                <p class="font-bold text-navy-900 text-sm mb-2">🤖 Claude Projects</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• OPPA-ს კონტექსტი პერმანენტულად შენახული</li>
+                    <li>• ფაილების (SOP, FAQ, Policy) ატვირთვა</li>
+                    <li>• გუნდის ყველა წევრი ერთ Project-ს იყენებს</li>
+                    <li>• ყოველი სესია "ახსოვს" წინა</li>
+                </ul>
+            </div>
+            <div class="border border-navy-100 rounded-lg p-4">
+                <p class="font-bold text-navy-900 text-sm mb-2">💬 ChatGPT Custom Instructions</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• "ვინ ხარ" — ერთხელ იწერება, ყოველთვის მუშაობს</li>
+                    <li>• "როგორ უნდა გიპასუხო" — ტონი, ფორმატი, ენა</li>
+                    <li>• OPPA-ს კონტექსტი + ბრენდის ხმა</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="prompt-box mb-6">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <p class="text-xs font-semibold text-teal-400 uppercase mb-2">ChatGPT Custom Instructions — OPPA.GE-სთვის</p>
+        <pre>== ვინ ვარ ==
+OPPA.GE-ს თანამშრომელი. კომპანია: ქართული ფინტექ-სერვისი,
+რომელიც გვთავაზობს გადახდის გადაწყვეტილებებს B2B და B2C
+სეგმენტებში. ჩემი ფუნქცია: [შეიყვანე შენი როლი].
+
+== როგორ უნდა გიპასუხო ==
+- ყოველთვის ქართულად, თუ სხვაგვარად არ ვთხოვ
+- ტონი: პროფესიონალური, მაგრამ გასაგები
+- ფინტექ ტერმინები: ინგლისურად (compliance, onboarding, KPI)
+- პასუხი: კონკრეტული, მოქმედებაზე ორიენტირებული
+- compliance: GDPR და PCI DSS ყოველთვის გაითვალისწინე
+- ჰალუცინაცია: თუ არ იცი — პირდაპირ თქვი</pre>
+    </div>
+
+    <div class="tip-box p-4 rounded-r-lg">
+        <p class="text-sm font-bold text-green-800 mb-1">✅ ლაივ დემო</p>
+        <p class="text-sm text-green-900">ტრენერი ახლა Claude-ში ქმნის OPPA-ს Project-ს და ChatGPT-ში — Custom Instructions-ს. მონაწილეები იმეორებენ საკუთარ ანგარიშებში.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 7: USE-CASE MAPPING -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-usecases" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center">7</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 7 · 20 წუთი · გუნდური აქტივობა</p>
+            <h2 class="text-xl font-bold text-navy-900">Use-case Mapping — OPPA-ს დეპარტამენტები</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-4">AI ინტეგრაციის წერტილები — OPPA-ს სტრუქტურა</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-navy-900 text-white">
+                        <th class="text-left py-2 px-3 rounded-tl-lg">დეპარტამენტი</th>
+                        <th class="text-left py-2 px-3">მაღალი პრიორიტეტი</th>
+                        <th class="text-left py-2 px-3 rounded-tr-lg">ინსტრუმენტი</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2.5 px-3 font-semibold text-navy-900">🎧 Customer Support</td>
+                        <td class="py-2.5 px-3 text-gray-600">FAQ პასუხები, escalation, ანგარიშები</td>
+                        <td class="py-2.5 px-3"><span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded">Claude / ChatGPT</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2.5 px-3 font-semibold text-navy-900">⚙️ Operations</td>
+                        <td class="py-2.5 px-3 text-gray-600">SOP-ები, რეპორტინგი, პროცეს-ოპტიმიზაცია</td>
+                        <td class="py-2.5 px-3"><span class="bg-teal-100 text-teal-700 text-xs px-2 py-0.5 rounded">Claude / Notion AI</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2.5 px-3 font-semibold text-navy-900">🔐 Risk / Compliance</td>
+                        <td class="py-2.5 px-3 text-gray-600">ტრანზაქციების ანალიზი, policy QA</td>
+                        <td class="py-2.5 px-3"><span class="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">Claude Opus</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2.5 px-3 font-semibold text-navy-900">👥 HR</td>
+                        <td class="py-2.5 px-3 text-gray-600">Job descriptions, onboarding docs, შეფასებები</td>
+                        <td class="py-2.5 px-3"><span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded">ChatGPT / Claude</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2.5 px-3 font-semibold text-navy-900">📣 Marketing / Growth</td>
+                        <td class="py-2.5 px-3 text-gray-600">კონტენტი, სოც. ქსელი, კამპანიები</td>
+                        <td class="py-2.5 px-3"><span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">ChatGPT / Gemini</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2.5 px-3 font-semibold text-navy-900">💼 Leadership</td>
+                        <td class="py-2.5 px-3 text-gray-600">KPI ანალიზი, პრეზენტაციები, სტრატეგია</td>
+                        <td class="py-2.5 px-3"><span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded">Claude Opus / Gamma</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="activity-box p-5 rounded-r-lg">
+        <p class="text-sm font-bold text-yellow-800 mb-2">🎯 გუნდური აქტივობა — 12 წუთი</p>
+        <p class="text-sm text-yellow-900 mb-3">თითოეული მონაწილე ავსებს საკუთარ სტრიქონს:</p>
+        <div class="bg-white rounded-lg p-4 border border-yellow-200 font-mono text-sm text-gray-600">
+            <p>ჩემი ფუნქცია: _______________</p>
+            <p>ყველაზე დროის მჭამელი ამოცანა: _______________</p>
+            <p>AI-ი შეძლებს ამის გაკეთებას? კი / ნაწილობრივ / არა</p>
+            <p>პირველი შესაცდელი ინსტრუმენტი: _______________</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 8: PROMPT LIBRARY -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-library" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-green-600 text-white text-sm font-bold flex items-center justify-center">8</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 8 · 15 წუთი · ვორქშოფი</p>
+            <h2 class="text-xl font-bold text-navy-900">OPPA Prompt Library — Notion-ში შექმნა</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">Prompt Library-ის სტრუქტურა</h3>
+        <p class="text-gray-700 text-sm mb-4">Notion Database — ყველა შაბლონი ერთ ადგილას. ახალი თანამშრომელი ებმება და პირველ დღიდანვე პრო-დონის AI კომუნიკაცია შეუძლია.</p>
+        <div class="bg-navy-900 text-white rounded-lg p-4 text-sm font-mono">
+            <p class="text-teal-300 text-xs mb-2">Notion Database სვეტები:</p>
+            <p>📌 სახელი | 🏢 დეპარტამენტი | 🎯 გამოყენება</p>
+            <p>⚡ ტიპი (Role/CoT/Structured/Few-shot)</p>
+            <p>📋 პრომპტის ტექსტი | ✅ ვალიდაციის სტატუსი</p>
+            <p>👤 ავტორი | 📅 თარიღი | ⭐ რეიტინგი</p>
+        </div>
+    </div>
+
+    <div class="warning-box p-4 rounded-r-lg mb-6">
+        <p class="text-sm font-bold text-orange-800 mb-1">⚠️ მნიშვნელოვანი წესები Library-ისთვის</p>
+        <ul class="text-sm text-orange-900 space-y-1">
+            <li>• <strong>არ ჩაიტანო</strong> სენსიტიური მონაცემები (სახელი, ანგარიში, პინი) პრომპტ-შაბლონებში</li>
+            <li>• ყოველი შაბლონი — <strong>ვალიდირებული</strong> compliance officer-ის მიერ Risk/Compliance ტიპისთვის</li>
+            <li>• <strong>ვერსიების მართვა</strong>: ძველი შაბლონი ნახულობს, ახალი — ანაცვლებს</li>
+        </ul>
+    </div>
+
+    <div class="activity-box p-5 rounded-r-lg">
+        <p class="text-sm font-bold text-yellow-800 mb-2">🎯 ვორქშოფი — 10 წუთი</p>
+        <p class="text-sm text-yellow-900">ახლა თითოეული მონაწილე ამატებს Notion Library-ში <strong>მინიმუმ 3 შაბლონს</strong>:<br>
+        1️⃣ Role Prompt — საკუთარი პოზიციისთვის (სეგ. 2-ში შექმენი)<br>
+        2️⃣ Structured Output — ყველაზე ხშირი ანგარიში ან მეილი (სეგ. 4-ში)<br>
+        3️⃣ Chain-of-Thought — ყველაზე ხშირი პრობლემა (სეგ. 3-ში)</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SEGMENT 9: COMMIT -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="seg-commit" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center">9</span>
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 9 · 10 წუთი · აქტივობა + Q&A</p>
+            <h2 class="text-xl font-bold text-navy-900">გუნდური Review + 30-დღიანი ვალდებულება</h2>
+        </div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-4">სესიის შემდეგ — რა ვალდებულება გაქვს?</h3>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start p-3 bg-green-50 rounded-lg border border-green-100">
+                <span class="text-green-600 font-bold text-lg mt-0.5">①</span>
+                <div>
+                    <p class="font-semibold text-green-900 text-sm">ხვალ — პირველი Advanced Prompt</p>
+                    <p class="text-xs text-green-700">გამოიყენე Role Prompting ან Chain-of-Thought ნებისმიერ რეალურ ამოცანაზე. შედეგი — Notion Library-ში.</p>
+                </div>
+            </div>
+            <div class="flex gap-3 items-start p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <span class="text-blue-600 font-bold text-lg mt-0.5">②</span>
+                <div>
+                    <p class="font-semibold text-blue-900 text-sm">ამ კვირაში — Claude Project / Custom Instructions</p>
+                    <p class="text-xs text-blue-700">OPPA-ს კონტექსტი კონფიგურირებულია. ყოველი AI სესია იწყება ნულიდან კი არ — OPPA-ს კონტექსტით.</p>
+                </div>
+            </div>
+            <div class="flex gap-3 items-start p-3 bg-purple-50 rounded-lg border border-purple-100">
+                <span class="text-purple-600 font-bold text-lg mt-0.5">③</span>
+                <div>
+                    <p class="font-semibold text-purple-900 text-sm">30 დღის განმავლობაში — 5 შაბლონი Library-ში</p>
+                    <p class="text-xs text-purple-700">ყოველ კვირა ერთი ახალი შაბლონი Prompt Library-ში. სესია 2-ის დაწყებამდე Library 30+ შაბლონს ითვლის.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-navy-900 text-white rounded-xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">🚀</span>
+            <h3 class="text-lg font-bold">სესია 1 — დასრულებულია</h3>
+        </div>
+        <p class="text-blue-200 text-sm mb-4">შემდეგ სესიაში: <strong class="text-white">Notion AI + Claude Cowork + SOP-ები + შეხვედრის ავტომატური რეზიუმე</strong></p>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="bg-white/10 rounded-lg p-3">
+                <p class="text-teal-300 font-semibold text-xs mb-1">დღეს მიაღწიე</p>
+                <p class="text-white">4 Advanced ტექნიკა ✓</p>
+                <p class="text-white">Claude Project / Custom Instructions ✓</p>
+                <p class="text-white">OPPA Prompt Library დაიწყო ✓</p>
+            </div>
+            <div class="bg-white/10 rounded-lg p-3">
+                <p class="text-teal-300 font-semibold text-xs mb-1">სესია 2-ის მიზანი</p>
+                <p class="text-white">Notion AI workspace</p>
+                <p class="text-white">SOP AI-ით</p>
+                <p class="text-white">შეხვედრა → ავტო-რეზიუმე</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div><!-- /max-w-4xl -->
+</main>
+
+<!-- Back to top -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 bg-navy-900 text-white p-3 rounded-full shadow-lg">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+<!-- Font controls -->
+<div id="fontControls">
+    <button onclick="changeFontSize(1)" title="გაზრდა">A+</button>
+    <button onclick="changeFontSize(-1)" title="შემცირება">A−</button>
+</div>
+
+<script>
+    /* ── Sidebar ── */
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const mainContent = document.getElementById('mainContent');
+
+    function toggleSidebar() {
+        const open = !sidebar.classList.contains('-translate-x-full');
+        if (open) {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            menuIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+            mainContent.style.marginLeft = '';
+        } else {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+            menuIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            if (window.innerWidth >= 1024) mainContent.style.marginLeft = '18rem';
+        }
+    }
+    overlay.addEventListener('click', toggleSidebar);
+
+    /* ── Active nav link ── */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link[data-topic]');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                navLinks.forEach(l => l.classList.remove('active'));
+                const active = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+
+    /* ── Back to top ── */
+    const btn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400));
+
+    /* ── Font size ── */
+    let fontSize = parseFloat(localStorage.getItem('oppa-font-size') || '17');
+    document.documentElement.style.fontSize = fontSize + 'px';
+    function changeFontSize(delta) {
+        fontSize = Math.min(22, Math.max(13, fontSize + delta));
+        document.documentElement.style.fontSize = fontSize + 'px';
+        localStorage.setItem('oppa-font-size', fontSize);
+    }
+
+    /* ── Copy prompt ── */
+    function copyPrompt(btn) {
+        const pre = btn.parentElement.querySelector('pre');
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = '✓ კოპირდა';
+            setTimeout(() => btn.textContent = orig, 1800);
+        });
+    }
+</script>
+</body>
+</html>
