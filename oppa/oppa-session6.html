@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>სესია 6 | OPPA.GE – Technical Efficiency & SQL Optimization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: {
+                navy: { 950:'#0a1e30',900:'#1B3A5C',800:'#234a75',700:'#2c5a8e',600:'#356aa7',500:'#3e7ac0',400:'#6498cc',300:'#8ab6d9',200:'#b0d3e6',100:'#d6eef5',50:'#edf7fb' },
+                teal: { 600:'#1e6e8a',500:'#2E86AB',400:'#3a9fc7',300:'#60b8d4',200:'#90d0e3' },
+                lovable: { 500:'#ff4f00', 600:'#e64600' }
+            }}}
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; font-size: 17px; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link.active { background: rgba(255,255,255,0.12); border-left: 3px solid #3a9fc7; }
+        .nav-link:hover { background: rgba(255,255,255,0.08); }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .topic-card { border-left: 4px solid #1B3A5C; }
+        #backToTop { opacity:0; pointer-events:none; transition: opacity .3s, transform .3s; }
+        #backToTop.visible { opacity:1; pointer-events:auto; }
+        #backToTop:hover { transform: translateY(-2px); }
+        #fontControls { position:fixed; bottom:1.5rem; left:1.5rem; z-index:45; display:flex; flex-direction:column; gap:4px; background:rgba(27,58,92,.92); backdrop-filter:blur(8px); padding:5px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+        #fontControls button { width:34px; height:34px; display:flex; align-items:center; justify-content:center; background:transparent; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; transition:background .2s; }
+        #fontControls button:hover { background:rgba(255,255,255,.15); }
+        .prompt-box { background:#0f172a; border:1px solid rgba(46,134,171,.3); border-radius:.75rem; padding:1rem 1.25rem; position:relative; }
+        .prompt-box pre { color:#93c5fd; font-size:.82rem; line-height:1.65; }
+        .copy-btn { position:absolute; top:.5rem; right:.5rem; background:rgba(46,134,171,.25); color:#7dd3fc; border:none; border-radius:6px; padding:3px 10px; font-size:.72rem; cursor:pointer; transition:background .2s; }
+        .copy-btn:hover { background:rgba(46,134,171,.45); }
+        .warning-box { background:#fff7ed; border-left:4px solid #f97316; border-radius:0 .5rem .5rem 0; }
+        .tip-box { background:#f0fdf4; border-left:4px solid #22c55e; border-radius:0 .5rem .5rem 0; }
+        .activity-box { background:#fefce8; border-left:4px solid #eab308; border-radius:0 .5rem .5rem 0; }
+        .code-box { background:#f8fafc; border-left:4px solid #334155; border-radius:0 .5rem .5rem 0; }
+        @media print { #sidebar,#menuBtn,#overlay,#backToTop,#fontControls{display:none!important} main,#mainContent{margin-left:0!important} body{background:white} .topic-card{break-inside:avoid} @page{margin:1.5cm} }
+    </style>
+</head>
+<body class="bg-gray-50">
+<div id="overlay" class="hidden" aria-hidden="true"></div>
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-navy-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-navy-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-navy-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+<div class="px-5 py-6 border-b border-white/10">
+    <div class="flex items-center gap-2 mb-2">
+        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
+        <span class="text-teal-300 text-xs font-medium">AI ტრენინგი · სესია 6</span>
+    </div>
+    <h1 class="text-base font-bold leading-tight">Technical Efficiency & SQL Optimization</h1>
+    <p class="text-blue-400/70 text-xs mt-1.5">სესია 6 · 2.5-საათიანი ვორქშოფი</p>
+</div>
+<div class="px-5 py-3 bg-lovable-500/20 border-b border-white/10">
+    <p class="text-[10px] font-semibold uppercase tracking-wider text-lovable-500 mb-1">სწრაფი მარშრუტი</p>
+    <p class="text-xs text-blue-200 mb-1"><span class="text-lovable-500 font-bold">I ნაწილი:</span> Lovable — No-Code Tools</p>
+    <p class="text-xs text-blue-300/70"><span class="text-teal-300 font-bold">II ნაწილი:</span> SQL & Legacy Code Modernization</p>
+</div>
+<nav class="py-3">
+    <a href="#seg-recap" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-recap"><span class="pr-2">S5 რეკაპი + სესიის მიზნები</span><span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span></a>
+    <a href="#seg-lovable" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-lovable"><span class="pr-2">Lovable — OPPA-ს Internal Tools</span><span class="shrink-0 text-[10px] bg-lovable-500/20 text-lovable-500 px-1.5 py-0.5 rounded">30 წთ</span></a>
+    <a href="#seg-sql" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-sql"><span class="pr-2">SQL Optimization & High Load DB</span><span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">30 წთ</span></a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-break"><span class="pr-2">☕ შესვენება</span><span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">10 წთ</span></a>
+    <a href="#seg-legacy" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-legacy"><span class="pr-2">Legacy Code Modernization</span><span class="shrink-0 text-[10px] bg-teal-500/20 text-teal-300 px-1.5 py-0.5 rounded">30 წთ</span></a>
+    <a href="#seg-prod-assistant" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-prod-assistant"><span class="pr-2">Production AI Assistant</span><span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">30 წთ</span></a>
+    <a href="#seg-wrap" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-wrap"><span class="pr-2">შეჯამება + Q&A</span><span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">10 წთ</span></a>
+</nav>
+<div class="px-5 py-4 border-t border-white/10 mt-2">
+    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">ტრენერი</p>
+    <p class="text-sm font-semibold text-white">გიორგი ბასილაია</p>
+    <p class="text-xs text-blue-400/70">Smart Academy · 2026</p>
+</div>
+</aside>
+
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+<header class="bg-gradient-to-r from-navy-950 to-navy-800 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+    <div class="max-w-4xl">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
+            <span class="text-teal-300 text-sm font-medium">კორპორატიული AI ტრენინგი · სესია 6</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">Technical Efficiency &<br><span class="text-lovable-500">SQL Optimization</span></h1>
+        <p class="text-blue-200 text-base max-w-2xl leading-relaxed mb-5">შიდა ინსტრუმენტების შექმნა Lovable-ით, ძველი კოდის რეფაქტორინგი და SQL ბაზების ოპტიმიზაცია Claude Code-ით. სესიის ბოლოს გუნდს ექნება მოქმედი internal tool და ოპტიმიზირებული ტექნიკური workflow.</p>
+        <div class="flex flex-wrap gap-4">
+            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>150 წუთი (2.5 სთ)</span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>Technical Focus</span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>6 სეგმენტი</span>
+        </div>
+    </div>
+</header>
+
+<div class="max-w-4xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
+
+<!-- SEG 1: RECAP -->
+<section id="seg-recap" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">1</span>
+        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 1 · 10 წუთი · განხილვა</p><h2 class="text-xl font-bold text-navy-900">S5 რეკაპი + სესიის მიზნები</h2></div>
+    </div>
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-5">
+        <h3 class="font-bold text-navy-900 mb-3">სესია 5-ის შემდეგ — სად ვართ</h3>
+        <ul class="space-y-2 text-gray-700 text-sm">
+            <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>Support Triage — ტერმინალების complaint-ების ავტომატური კატეგორიზაცია</span></li>
+            <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>KYC Onboarding — სარეზერვო სცენარი Make.com-ზე მზადაა</span></li>
+            <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>Error Handling — ფინანსური ტრანზაქციების დაზღვევა ავტომატიზაციისას</span></li>
+        </ul>
+    </div>
+</section>
+
+<!-- SEG 2: LOVABLE -->
+<section id="seg-lovable" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-lovable-500 text-white text-sm font-bold flex items-center justify-center">2</span>
+        <div><p class="text-xs font-semibold uppercase tracking-wider text-lovable-500 mb-0.5">სეგმენტი 2 · 30 წუთი · დემო + პრაქტიკა</p><h2 class="text-xl font-bold text-navy-900">Lovable — OPPA-ს Internal Tools</h2></div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">No-Code აპლიკაციები OPPA-სთვის</h3>
+        <p class="text-gray-700 text-sm mb-4">Lovable საშუალებას გვაძლევს 45 წუთში შევქმნათ სრული Dashboard-ი. მაგალითად: **Terminal Status Monitor** ან **Expense Approval App**.</p>
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-lovable-500 uppercase mb-2">Internal Tool Prompt</p>
+            <pre>Build an internal "PayBox Status Monitor" for OPPA.GE.
+- UI: Navy and Teal theme.
+- Features: Map view of terminals, status indicators (Online/Offline), current cash levels, and a "Request Maintenance" button.
+- Backend: Connect to a sample Supabase table.</pre>
+        </div>
+    </div>
+</section>
+
+<!-- SEG 3: SQL OPTIMIZATION -->
+<section id="seg-sql" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">3</span>
+        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 3 · 30 წუთი · დემო</p><h2 class="text-xl font-bold text-navy-900">SQL Optimization & High Load DB</h2></div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">მაღალ-დატვირთული ბაზების ოპტიმიზაცია</h3>
+        <p class="text-gray-700 text-sm mb-4">OPPA-ს ტრანზაქციების რაოდენობა მოითხოვს სუპერ-ეფექტურ SQL ქვერებს. Claude Code გვეხმარება bottleneck-ების პოვნაში.</p>
+        <div class="code-box p-4 rounded-r-lg font-mono text-xs text-gray-700">
+            <p class="text-blue-600 font-bold mb-1"># Claude Code CLI for SQL</p>
+            <p>$ claude "analyze this slow SQL query and suggest indexes: SELECT * FROM transactions WHERE status='PENDING'..."</p>
+            <p>$ claude "optimize this JOIN for a table with 10M+ rows"</p>
+        </div>
+    </div>
+</section>
+
+<!-- SEG 4: LEGACY MODERNIZATION -->
+<section id="seg-legacy" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-teal-600 text-white text-sm font-bold flex items-center justify-center">4</span>
+        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 4 · 30 წუთი · ვორქშოფი</p><h2 class="text-xl font-bold text-navy-900">Legacy Code Modernization</h2></div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">ძველი საგადახდო ლოგიკის რეფაქტორინგი</h3>
+        <p class="text-gray-700 text-sm mb-4">10+ წლის კოდის შენარჩუნება რთულია. AI-ი გვეხმარება კოდის გაწმენდაში, ტიპიზაციაში (TypeScript/C#) და ტესტების დამატებაში.</p>
+        <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <pre>გაანალიზე ეს Legacy გადახდის ფუნქცია.
+1. ახსენი რას აკეთებს ლოგიკა.
+2. გადააკეთე თანამედროვე სტანდარტზე (Clean Code).
+3. დაამატე Error Handling და Logging OPPA-ს სტანდარტით.
+4. დაწერე Unit Test-ი ამ ფუნქციისთვის.</pre>
+        </div>
+    </div>
+</section>
+
+<!-- SEG 5: PRODUCTION ASSISTANT -->
+<section id="seg-prod-assistant" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-green-600 text-white text-sm font-bold flex items-center justify-center">5</span>
+        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 5 · 30 წუთი · პრაქტიკა</p><h2 class="text-xl font-bold text-navy-900">Production AI Assistant (API & SOP)</h2></div>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">OPPA-ს ცოდნის ბაზაზე დაფუძნებული ასისტენტი</h3>
+        <p class="text-gray-700 text-sm mb-4">ასისტენტი, რომელიც პასუხობს მხოლოდ OPPA-ს API დოკუმენტაციისა და შიდა SOP-ების მიხედვით.</p>
+        <div class="activity-box p-4 rounded-r-lg">
+            <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა</p>
+            <p class="text-sm text-yellow-900">ვქმნით "Technical Support Assistant"-ს. ვაწვდით OPPA-ს API docs-ს და ვტესტავთ: "როგორ ხდება ტრანზაქციის სტატუსის შემოწმება API-ით?"</p>
+        </div>
+    </div>
+</section>
+
+<!-- SEG 6: WRAP -->
+<section id="seg-wrap" class="mb-14 scroll-mt-6">
+    <div class="flex items-center gap-3 mb-6">
+        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center">6</span>
+        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 6 · 10 წუთი · შეჯამება</p><h2 class="text-xl font-bold text-navy-900">შეჯამება + Q&A</h2></div>
+    </div>
+
+    <div class="bg-navy-900 text-white rounded-xl p-6 mb-6">
+        <p class="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-4">სესია 6 — რა გამოვიტანეთ</p>
+        <ul class="space-y-3 text-sm">
+            <li class="flex gap-3"><span class="text-green-400 font-bold text-base">✅</span><div><p class="font-semibold">Internal Tool</p><p class="text-gray-400 text-xs">OPPA-ს ტერმინალების მონიტორინგის პროტოტიპი Lovable-ით</p></div></li>
+            <li class="flex gap-3"><span class="text-green-400 font-bold text-base">✅</span><div><p class="font-semibold">Technical Optimization</p><p class="text-gray-400 text-xs">SQL და Legacy კოდის გაუმჯობესების მეთოდები</p></div></li>
+            <li class="flex gap-3"><span class="text-green-400 font-bold text-base">✅</span><div><p class="font-semibold">Production Assistant</p><p class="text-gray-400 text-xs">API-ზე ორიენტირებული დამხმარე გუნდისთვის</p></div></li>
+        </ul>
+    </div>
+
+    <div class="danger-box p-4 rounded-r-lg mb-6">
+        <p class="text-sm font-bold text-red-800 mb-1">🏁 ეტაპი I-ის ფინალი</p>
+        <p class="text-sm text-red-900">თქვენ დაასრულეთ Stage I Core Training. შემდეგი ნაბიჯი: ROI გაზომვა და ეტაპი II-ის Roadmap-ის შედგენა მენეჯმენტთან ერთად.</p>
+    </div>
+
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm">
+        <h3 class="font-bold text-navy-900 mb-3">გადასვლა ეტაპი II-ზე</h3>
+        <p class="text-gray-600 text-sm mb-3">ROI გაზომვა, Transition Workshop & Implementation Roadmap</p>
+        <div class="mt-4 flex gap-3">
+            <a href="oppa-session5.html" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-navy-900 transition-colors">← სესია 5</a>
+            <span class="text-gray-300">|</span>
+            <a href="index.html" class="inline-flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-800 font-semibold transition-colors">პროგრამის მთავარი გვერდი →</a>
+        </div>
+    </div>
+</section>
+
+</div>
+</main>
+
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 bg-navy-900 text-white p-3 rounded-full shadow-lg">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+</button>
+
+<div id="fontControls">
+    <button onclick="changeFontSize(1)" title="დიდი">A+</button>
+    <button onclick="changeFontSize(-1)" title="პატარა">A-</button>
+</div>
+
+<script>
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const menuIcon = document.getElementById('menuIcon');
+const closeIcon = document.getElementById('closeIcon');
+function toggleSidebar() {
+    const open = sidebar.classList.toggle('translate-x-0');
+    sidebar.classList.toggle('-translate-x-full', !open);
+    overlay.classList.toggle('hidden', !open);
+    menuIcon.classList.toggle('hidden', open);
+    closeIcon.classList.toggle('hidden', !open);
+}
+overlay.addEventListener('click', toggleSidebar);
+
+const navLinks = document.querySelectorAll('.nav-link[data-topic]');
+const sections = document.querySelectorAll('section[id]');
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            const active = document.querySelector(`.nav-link[data-topic="${e.target.id}"]`);
+            if (active) active.classList.add('active');
+        }
+    });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+const btt = document.getElementById('backToTop');
+window.addEventListener('scroll', () => btt.classList.toggle('visible', window.scrollY > 400));
+
+let fontSize = parseFloat(localStorage.getItem('oppa-font') || '17');
+document.documentElement.style.fontSize = fontSize + 'px';
+function changeFontSize(d) {
+    fontSize = Math.min(22, Math.max(14, fontSize + d));
+    document.documentElement.style.fontSize = fontSize + 'px';
+    localStorage.setItem('oppa-font', fontSize);
+}
+
+function copyPrompt(btn) {
+    const pre = btn.closest('.prompt-box').querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+        btn.textContent = '✓ კოპირდა';
+        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+    });
+}
+</script>
+</body>
+</html>
