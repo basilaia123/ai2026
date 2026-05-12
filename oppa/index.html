@@ -681,10 +681,6 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
   .reveal { opacity: 1; transform: translateY(0); }
-  .js .reveal {
-    opacity: 0; transform: translateY(24px);
-    transition: opacity .6s ease, transform .6s ease;
-  }
   .reveal.visible { opacity: 1; transform: translateY(0); }
 
   /* ─── RESPONSIVE ─── */
@@ -1564,8 +1560,9 @@
     const card = body.closest('.session-card');
     const header = card.querySelector('.session-header');
     const btn = card.querySelector('.expand-btn');
+    body.style.maxHeight = body.scrollHeight + 'px';
+    requestAnimationFrame(() => { body.style.maxHeight = '0px'; });
     body.classList.remove('open');
-    body.style.maxHeight = '0px';
     body.setAttribute('aria-hidden', 'true');
     header.setAttribute('aria-expanded', 'false');
     btn.classList.remove('open');
@@ -1589,8 +1586,9 @@
       header.setAttribute('aria-expanded', 'true');
       btn.classList.add('open');
       openBodies.add(body);
-      requestAnimationFrame(() => updateSessionHeight(body));
-      setTimeout(() => updateSessionHeight(body), 250);
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(() => { body.style.maxHeight = body.scrollHeight + 'px'; });
+      setTimeout(() => { body.style.maxHeight = 'none'; }, 450);
       setTimeout(() => { card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 50);
     } else {
       closeSession(body);
@@ -1607,7 +1605,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
     revealEls.forEach(el => observer.observe(el));
   } else {
     revealEls.forEach(el => el.classList.add('visible'));
