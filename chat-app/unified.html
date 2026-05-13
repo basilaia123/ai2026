@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unified AI Chat</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.2/purify.min.js"></script>
+<style>
+  :root {
+    --bg-dark: #0f172a;
+    --bg-sidebar: #1e293b;
+    --bg-chat: #0f172a;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --border: #334155;
+    --user-bubble: #1e293b;
+    --assistant-bubble: #0f172a;
+    --error: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  aside {
+    width: 260px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+  .new-chat-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .new-chat-btn:hover { background: var(--accent-hover); }
+  .history-list { flex: 1; overflow-y: auto; padding: 10px; }
+  .history-item {
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .history-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+  .history-item.active { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+  .delete-chat { visibility: hidden; color: var(--text-secondary); font-size: 1.2rem; }
+  .history-item:hover .delete-chat { visibility: visible; }
+  .delete-chat:hover { color: var(--error); }
+
+  /* Main Content */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* Header */
+  header {
+    height: 60px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-chat);
+  }
+  .selectors { display: flex; gap: 12px; }
+  select {
+    background: var(--bg-sidebar);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    outline: none;
+  }
+  .status-indicator { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--error); }
+  .dot.online { background: #10b981; }
+
+  /* Chat Area */
+  #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .msg {
+    max-width: 850px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .msg.user { align-items: flex-end; }
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 12px;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    position: relative;
+  }
+  .user .bubble { background: var(--user-bubble); border-bottom-right-radius: 2px; }
+  .assistant .bubble { background: var(--assistant-bubble); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+
+  .bubble pre { margin: 12px 0; border-radius: 8px; overflow: hidden; }
+  .bubble code { font-family: 'Fira Code', monospace; }
+  .bubble p { margin-bottom: 12px; }
+  .bubble p:last-child { margin-bottom: 0; }
+
+  /* Input Area */
+  .input-container {
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-chat);
+  }
+  .input-wrapper {
+    max-width: 850px;
+    margin: 0 auto;
+    background: var(--bg-sidebar);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: none;
+    max-height: 200px;
+    outline: none;
+    padding: 5px 0;
+  }
+  .send-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Modals */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--bg-sidebar);
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid var(--border);
+  }
+  .modal h2 { margin-bottom: 20px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
+  .field input {
+    width: 100%;
+    background: var(--bg-chat);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 10px;
+    border-radius: 6px;
+    outline: none;
+  }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+  .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    aside { display: none; }
+    .msg { padding: 0 10px; }
+  }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="sidebar-header">
+    <button class="new-chat-btn" onclick="app.newChat()">+ New Chat</button>
+  </div>
+  <div class="history-list" id="history-list"></div>
+  <div style="padding: 16px; border-top: 1px solid var(--border);">
+    <button class="btn-secondary" style="width: 100%;" onclick="app.toggleSettings()">Settings</button>
+  </div>
+</aside>
+
+<main>
+  <header>
+    <div class="selectors">
+      <select id="provider-select" onchange="app.onProviderChange()"></select>
+      <select id="model-select"></select>
+      <select id="skill-select"></select>
+    </div>
+    <div class="status-indicator">
+      <div id="status-dot" class="dot"></div>
+      <span id="status-text">Keys missing</span>
+    </div>
+  </header>
+
+  <div id="chat-messages"></div>
+
+  <div class="input-container">
+    <div class="input-wrapper">
+      <textarea id="user-input" rows="1" placeholder="Type a message..." oninput="app.autoResize(this)"></textarea>
+      <button id="send-btn" class="send-btn" onclick="app.sendMessage()" disabled>Send</button>
+    </div>
+  </div>
+</main>
+
+<div id="settings-modal" class="modal-overlay">
+  <div class="modal">
+    <h2>API Settings</h2>
+    <div class="field">
+      <label>Anthropic API Key</label>
+      <input type="password" id="key-anthropic" placeholder="sk-ant-...">
+    </div>
+    <div class="field">
+      <label>OpenAI API Key</label>
+      <input type="password" id="key-openai" placeholder="sk-proj-...">
+    </div>
+    <div class="field">
+      <label>Google API Key</label>
+      <input type="password" id="key-google" placeholder="AIza...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="app.toggleSettings()">Cancel</button>
+      <button class="new-chat-btn" style="width: auto; padding: 8px 20px;" onclick="app.saveSettings()">Save Keys</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PROVIDERS = {
+    anthropic: {
+      name: 'Anthropic',
+      url: 'https://api.anthropic.com/v1/messages',
+      models: [
+        { id: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
+        { id: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku' },
+        { id: 'claude-3-opus-20240229', label: 'Claude 3 Opus' }
+      ]
+    },
+    openai: {
+      name: 'OpenAI',
+      url: 'https://api.openai.com/v1/chat/completions',
+      models: [
+        { id: 'gpt-4o', label: 'GPT-4o' },
+        { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+        { id: 'o1-preview', label: 'o1 Preview' },
+        { id: 'o1-mini', label: 'o1 Mini' }
+      ]
+    },
+    google: {
+      name: 'Google',
+      url: 'https://generativelanguage.googleapis.com/v1beta/models',
+      models: [
+        { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
+        { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
+        { id: 'gemini-1.5-flash-8b', label: 'Gemini 1.5 Flash-8B' }
+      ]
+    }
+  };
+
+  const SKILLS = [
+    { id: 'general', label: 'General Assistant', prompt: 'You are a helpful, clever, and articulate assistant.' },
+    { id: 'proofreader', label: 'Georgian Proofreader', prompt: `# Georgian Proofreader Overview
+This skill transforms the assistant into an expert Georgian language editor. It is specifically optimized to identify and correct the recurring, predictable errors common in AI-generated Georgian text, such as incorrect postpositions, verb conjugation mismatches, and unnatural syntax.
+
+## Error Categories to Correct
+1. Postposition and Case Errors: Fix misuse of -ში vs. -ზე, case government, Dative vs. Instrumental, etc.
+2. Verb Conjugation: Correct preverb selection, version vowels, agreement, and transitivity.
+3. Word Order and Syntax: Revert SVO to natural Georgian. Reduce passive overuse.
+4. Lexical Issues: Replace corporate loanwords/barbarisms with Georgian equivalents.
+5. Punctuation: Use Georgian quotation marks (,,..."). Expand abbreviations. Replace dashes with standard hyphens.
+6. Morphological Errors: Fix plurals and suffixes.
+
+## Output Format
+Every response must strictly follow this structure:
+## გასწორებული ტექსტი
+[The fully corrected Georgian text here]
+## ცვლილებების ჩამონათვალი
+1. [Original phrase] → [Corrected phrase] — [Brief explanation in Georgian]
+## შეფასება
+- შეცდომების რაოდენობა: [number]
+- სირთულის დონე: [მცირე / საშუალო / მძიმე]
+- ზოგადი შენიშვნა: [One sentence summary]
+
+## Core Rules
+- Preserve Intent: Do NOT change meaning.
+- Technical Terms: Leave technical terms as-is unless surrounding grammar is broken.
+- Formatting: Preserve all bullets, numbering, and markdown styling.` },
+    { id: 'tempo', label: 'Tempo Course Generator', prompt: `You are an expert course generator for Tempo Holding. Generate high-quality, premium Tempo Holding course materials, slides, summaries, and exercises in HTML format using the established GIPA/Tempo layout.
+
+## Brand Guidelines & Tone
+- Tone: Premium, professional, authoritative, but accessible.
+- Colors: Deep Charcoal/Black (#1A1A1A, #2C2C2C) and Gold/Champagne (#C5A059, #E6D5B3).
+- Terminology: Relate concepts back to real estate, investments, and development.
+
+## Critical Design Rules for Slides
+1. Consolidate Content: Combine theoretical explanation and practical prompt (Code Block) on the same single slide.
+2. Data Visualization: Use Chart.js for percentages and stats.
+3. Apply the Template: Use Tailwind + custom styles, FiraGO and Playfair Display fonts.
+4. Populate Sidebar: Generate navigation links grouped by blocks.
+5. Visual Components: Use grids, warning boxes, and code blocks with copy buttons.` }
+  ];
+
+  const app = {
+    settings: {
+      keys: { anthropic: '', openai: '', google: '' },
+      provider: 'anthropic',
+      model: 'claude-3-5-sonnet-20241022',
+      skill: 'general'
+    },
+    chats: [],
+    currentChatId: null,
+    streaming: false,
+    abortCtrl: null,
+
+    init() {
+      this.loadSettings();
+      this.loadChats();
+      this.renderProviders();
+      this.renderSkills();
+      this.updateStatus();
+      this.renderHistory();
+
+      if (this.chats.length > 0) {
+        this.loadChat(this.chats[0].id);
+      } else {
+        this.newChat();
+      }
+
+      marked.setOptions({
+        highlight: function(code, lang) {
+          return hljs.highlightAuto(code).value;
+        },
+        breaks: true
+      });
+    },
+
+    loadSettings() {
+      const saved = localStorage.getItem('unified_settings');
+      if (saved) {
+        this.settings = { ...this.settings, ...JSON.parse(saved) };
+      }
+      // Fill key inputs
+      Object.keys(this.settings.keys).forEach(p => {
+        const el = document.getElementById(`key-${p}`);
+        if (el) el.value = this.settings.keys[p];
+      });
+    },
+
+    saveSettings() {
+      Object.keys(this.settings.keys).forEach(p => {
+        this.settings.keys[p] = document.getElementById(`key-${p}`).value.trim();
+      });
+      localStorage.setItem('unified_settings', JSON.stringify(this.settings));
+      this.updateStatus();
+      this.toggleSettings();
+    },
+
+    updateStatus() {
+      const provider = this.settings.provider;
+      const key = this.settings.keys[provider];
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      const btn = document.getElementById('send-btn');
+
+      if (key) {
+        dot.className = 'dot online';
+        text.textContent = `${PROVIDERS[provider].name} ready`;
+        btn.disabled = false;
+      } else {
+        dot.className = 'dot';
+        text.textContent = `${PROVIDERS[provider].name} key missing`;
+        btn.disabled = true;
+      }
+    },
+
+    renderProviders() {
+      const sel = document.getElementById('provider-select');
+      sel.innerHTML = Object.keys(PROVIDERS).map(id =>
+        `<option value="${id}" ${id === this.settings.provider ? 'selected' : ''}>${PROVIDERS[id].name}</option>`
+      ).join('');
+      this.onProviderChange();
+    },
+
+    renderSkills() {
+      const sel = document.getElementById('skill-select');
+      sel.innerHTML = SKILLS.map(s =>
+        `<option value="${s.id}" ${s.id === this.settings.skill ? 'selected' : ''}>${s.label}</option>`
+      ).join('');
+    },
+
+    onProviderChange() {
+      const provider = document.getElementById('provider-select').value;
+      this.settings.provider = provider;
+      const sel = document.getElementById('model-select');
+      sel.innerHTML = PROVIDERS[provider].models.map(m =>
+        `<option value="${m.id}" ${m.id === this.settings.model ? 'selected' : ''}>${m.label}</option>`
+      ).join('');
+      this.updateStatus();
+    },
+
+    toggleSettings: () => document.getElementById('settings-modal').classList.toggle('active'),
+
+    autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+    },
+
+    loadChats() {
+      const saved = localStorage.getItem('unified_chats');
+      this.chats = saved ? JSON.parse(saved) : [];
+    },
+
+    saveChats() {
+      localStorage.setItem('unified_chats', JSON.stringify(this.chats));
+    },
+
+    newChat() {
+      const id = Date.now().toString();
+      const chat = { id, title: 'New Chat', messages: [], provider: this.settings.provider, model: this.settings.model };
+      this.chats.unshift(chat);
+      this.saveChats();
+      this.renderHistory();
+      this.loadChat(id);
+    },
+
+    loadChat(id) {
+      this.currentChatId = id;
+      const chat = this.chats.find(c => c.id === id);
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = '';
+      chat.messages.forEach(m => this.appendMessage(m.role, m.content));
+      this.renderHistory();
+      container.scrollTop = container.scrollHeight;
+    },
+
+    deleteChat(e, id) {
+      e.stopPropagation();
+      this.chats = this.chats.filter(c => c.id !== id);
+      this.saveChats();
+      if (this.currentChatId === id) {
+        if (this.chats.length > 0) this.loadChat(this.chats[0].id);
+        else this.newChat();
+      } else {
+        this.renderHistory();
+      }
+    },
+
+    renderHistory() {
+      const list = document.getElementById('history-list');
+      list.innerHTML = this.chats.map(c => `
+        <div class="history-item ${c.id === this.currentChatId ? 'active' : ''}" onclick="app.loadChat('${c.id}')">
+          <span>${c.title}</span>
+          <span class="delete-chat" onclick="app.deleteChat(event, '${c.id}')">&times;</span>
+        </div>
+      `).join('');
+    },
+
+    appendMessage(role, content) {
+      const container = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      const html = DOMPurify.sanitize(marked.parse(content));
+      div.innerHTML = `<div class="bubble">${html}</div>`;
+      div.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+      });
+      container.appendChild(div);
+      return div.querySelector('.bubble');
+    },
+
+    updateBubble(bubble, raw) {
+      const html = DOMPurify.sanitize(marked.parse(raw));
+      bubble.innerHTML = html;
+      bubble.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+      });
+      bubble.setAttribute('data-raw', raw);
+    },
+
+    async sendMessage() {
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text || this.streaming) return;
+
+      const provider = document.getElementById('provider-select').value;
+      const model = document.getElementById('model-select').value;
+      const skillId = document.getElementById('skill-select').value;
+      const systemPrompt = SKILLS.find(s => s.id === skillId).prompt;
+      const key = this.settings.keys[provider];
+
+      if (!key) {
+        alert('API key missing for ' + PROVIDERS[provider].name);
+        return;
+      }
+
+      input.value = '';
+      input.style.height = 'auto';
+      this.appendMessage('user', text);
+      const chat = this.chats.find(c => c.id === this.currentChatId);
+      if (chat.messages.length === 0) {
+        chat.title = text.slice(0, 30) + (text.length > 30 ? '...' : '');
+        this.renderHistory();
+      }
+      chat.messages.push({ role: 'user', content: text });
+
+      this.streaming = true;
+      document.getElementById('send-btn').disabled = true;
+      const bubble = this.appendMessage('assistant', '...');
+      bubble.classList.add('streaming');
+
+      this.abortCtrl = new AbortController();
+      let fullResponse = '';
+
+      try {
+        if (provider === 'anthropic') {
+          await this.streamAnthropic(key, model, systemPrompt, chat.messages, bubble);
+        } else if (provider === 'openai') {
+          await this.streamOpenAI(key, model, systemPrompt, chat.messages, bubble);
+        } else if (provider === 'google') {
+          await this.streamGoogle(key, model, systemPrompt, chat.messages, bubble);
+        }
+
+        chat.messages.push({ role: 'assistant', content: bubble.getAttribute('data-raw') || bubble.textContent });
+        this.saveChats();
+      } catch (err) {
+        bubble.innerHTML = `<span style="color:var(--error)">Error: ${err.message}</span>`;
+      } finally {
+        this.streaming = false;
+        document.getElementById('send-btn').disabled = false;
+        bubble.classList.remove('streaming');
+      }
+    },
+
+    async streamAnthropic(key, model, system, messages, bubble) {
+      const res = await fetch(PROVIDERS.anthropic.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'dangerously-allow-browser': 'true'
+        },
+        body: JSON.stringify({
+          model, system, messages, max_tokens: 4096, stream: true
+        }),
+        signal: this.abortCtrl.signal
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const reader = res.body.getReader();
+      let raw = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = new TextDecoder().decode(value);
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.type === 'content_block_delta') {
+                raw += data.delta.text;
+                this.updateBubble(bubble, raw);
+              }
+            } catch (e) {}
+          }
+        }
+      }
+    },
+
+    async streamOpenAI(key, model, system, messages, bubble) {
+      const apiMsgs = [{ role: 'system', content: system }, ...messages];
+      const res = await fetch(PROVIDERS.openai.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${key}`
+        },
+        body: JSON.stringify({
+          model, messages: apiMsgs, stream: true
+        }),
+        signal: this.abortCtrl.signal
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const reader = res.body.getReader();
+      let raw = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = new TextDecoder().decode(value);
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+            try {
+              const data = JSON.parse(line.slice(6));
+              const delta = data.choices[0].delta.content;
+              if (delta) {
+                raw += delta;
+                this.updateBubble(bubble, raw);
+              }
+            } catch (e) {}
+          }
+        }
+      }
+    },
+
+    async streamGoogle(key, model, system, messages, bubble) {
+      const contents = messages.map(m => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.content }]
+      }));
+      const url = `${PROVIDERS.google.url}/${model}:streamGenerateContent?key=${key}&alt=sse`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents,
+          systemInstruction: { parts: [{ text: system }] }
+        }),
+        signal: this.abortCtrl.signal
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const reader = res.body.getReader();
+      let raw = '';
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += new TextDecoder().decode(value);
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.candidates && data.candidates[0].content) {
+                const parts = data.candidates[0].content.parts;
+                if (parts && parts[0].text) {
+                  raw += parts[0].text;
+                  this.updateBubble(bubble, raw);
+                }
+              }
+            } catch (e) {}
+          }
+        }
+      }
+    }
+  };
+
+  app.init();
+</script>
+
+</body>
+</html>
