@@ -41,6 +41,8 @@
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    transition: transform 0.3s ease;
+    z-index: 50;
   }
   .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
   .new-chat-btn {
@@ -215,18 +217,72 @@
   .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
   .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 8px 16px; border-radius: 6px; cursor: pointer; }
 
+  .search-container { padding: 0 16px 12px; }
+  .search-input {
+    width: 100%;
+    background: var(--bg-chat);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 10px;
+  }
+
   /* Mobile */
   @media (max-width: 768px) {
-    aside { display: none; }
+    aside {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      transform: translateX(-100%);
+    }
+    aside.active { transform: translateX(0); }
+    .hamburger { display: block; }
     .msg { padding: 0 10px; }
+    .selectors { gap: 4px; }
+    select { padding: 4px 6px; font-size: 0.75rem; max-width: 100px; }
   }
+
+  /* Code Copy Button */
+  .code-wrapper { position: relative; }
+  .copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .code-wrapper:hover .copy-code-btn { opacity: 1; }
+  .copy-code-btn:hover { background: var(--accent); color: white; }
 </style>
 </head>
 <body>
 
-<aside>
+<aside id="sidebar">
   <div class="sidebar-header">
-    <button class="new-chat-btn" onclick="app.newChat()">+ New Chat</button>
+    <button class="new-chat-btn" style="margin-bottom: 12px;" onclick="app.newChat()">+ New Chat</button>
+  </div>
+  <div class="search-container">
+    <input type="text" class="search-input" id="chat-search" placeholder="Search chats..." oninput="app.filterHistory()">
   </div>
   <div class="history-list" id="history-list"></div>
   <div style="padding: 16px; border-top: 1px solid var(--border);">
@@ -234,10 +290,12 @@
   </div>
 </aside>
 
-<main>
+<main onclick="app.closeSidebar()">
   <header>
-    <div class="selectors">
-      <select id="provider-select" onchange="app.onProviderChange()"></select>
+    <div style="display: flex; align-items: center;">
+      <button class="hamburger" onclick="event.stopPropagation(); app.toggleSidebar()">☰</button>
+      <div class="selectors">
+        <select id="provider-select" onchange="app.onProviderChange()"></select>
       <select id="model-select"></select>
       <select id="skill-select"></select>
     </div>
@@ -252,6 +310,7 @@
   <div class="input-container">
     <div class="input-wrapper">
       <textarea id="user-input" rows="1" placeholder="Type a message..." oninput="app.autoResize(this)"></textarea>
+      <button id="stop-btn" class="btn-secondary" style="display: none; border-color: var(--error); color: var(--error);" onclick="app.stopGeneration()">Stop</button>
       <button id="send-btn" class="send-btn" onclick="app.sendMessage()" disabled>Send</button>
     </div>
   </div>
@@ -272,9 +331,30 @@
       <label>Google API Key</label>
       <input type="password" id="key-google" placeholder="AIza...">
     </div>
-    <div class="modal-actions">
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="field">
+        <label>Temperature (0-2)</label>
+        <input type="number" id="setting-temp" step="0.1" min="0" max="2">
+      </div>
+      <div class="field">
+        <label>Max Tokens</label>
+        <input type="number" id="setting-tokens" step="256" min="256">
+      </div>
+    </div>
+
+    <div style="margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--border);">
+      <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">Chat History</label>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-secondary" style="flex: 1;" onclick="app.exportHistory()">Export JSON</button>
+        <button class="btn-secondary" style="flex: 1;" onclick="document.getElementById('import-file').click()">Import JSON</button>
+        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="app.importHistory(this)">
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top: 24px;">
       <button class="btn-secondary" onclick="app.toggleSettings()">Cancel</button>
-      <button class="new-chat-btn" style="width: auto; padding: 8px 20px;" onclick="app.saveSettings()">Save Keys</button>
+      <button class="new-chat-btn" style="width: auto; padding: 8px 20px;" onclick="app.saveSettings()">Save Settings</button>
     </div>
   </div>
 </div>
@@ -359,7 +439,9 @@ Every response must strictly follow this structure:
       keys: { anthropic: '', openai: '', google: '' },
       provider: 'anthropic',
       model: 'claude-3-5-sonnet-20241022',
-      skill: 'general'
+      skill: 'general',
+      temperature: 0.7,
+      maxTokens: 4096
     },
     chats: [],
     currentChatId: null,
@@ -380,11 +462,9 @@ Every response must strictly follow this structure:
         this.newChat();
       }
 
-      marked.setOptions({
-        highlight: function(code, lang) {
-          return hljs.highlightAuto(code).value;
-        },
-        breaks: true
+      marked.use({
+        breaks: true,
+        gfm: true
       });
     },
 
@@ -398,12 +478,16 @@ Every response must strictly follow this structure:
         const el = document.getElementById(`key-${p}`);
         if (el) el.value = this.settings.keys[p];
       });
+      document.getElementById('setting-temp').value = this.settings.temperature;
+      document.getElementById('setting-tokens').value = this.settings.maxTokens;
     },
 
     saveSettings() {
       Object.keys(this.settings.keys).forEach(p => {
         this.settings.keys[p] = document.getElementById(`key-${p}`).value.trim();
       });
+      this.settings.temperature = parseFloat(document.getElementById('setting-temp').value) || 0.7;
+      this.settings.maxTokens = parseInt(document.getElementById('setting-tokens').value) || 4096;
       localStorage.setItem('unified_settings', JSON.stringify(this.settings));
       this.updateStatus();
       this.toggleSettings();
@@ -459,6 +543,50 @@ Every response must strictly follow this structure:
       el.style.height = Math.min(el.scrollHeight, 200) + 'px';
     },
 
+    toggleSidebar: () => document.getElementById('sidebar').classList.toggle('active'),
+    closeSidebar: () => document.getElementById('sidebar').classList.remove('active'),
+
+    stopGeneration() {
+      if (this.abortCtrl) {
+        this.abortCtrl.abort();
+        this.streaming = false;
+        document.getElementById('stop-btn').style.display = 'none';
+        document.getElementById('send-btn').style.display = 'block';
+      }
+    },
+
+    exportHistory() {
+      const data = JSON.stringify(this.chats, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chat-history-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    },
+
+    importHistory(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            const currentIds = new Set(this.chats.map(c => c.id));
+            const newChats = imported.filter(c => !currentIds.has(c.id));
+            this.chats = [...newChats, ...this.chats];
+            this.saveChats();
+            this.renderHistory();
+            alert(`Imported ${newChats.length} new chats.`);
+          }
+        } catch (err) {
+          alert('Error parsing JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    },
+
     loadChats() {
       const saved = localStorage.getItem('unified_chats');
       this.chats = saved ? JSON.parse(saved) : [];
@@ -499,9 +627,15 @@ Every response must strictly follow this structure:
       }
     },
 
-    renderHistory() {
+    filterHistory() {
+      const query = document.getElementById('chat-search').value.toLowerCase();
+      this.renderHistory(query);
+    },
+
+    renderHistory(filter = '') {
       const list = document.getElementById('history-list');
-      list.innerHTML = this.chats.map(c => `
+      const filtered = this.chats.filter(c => c.title.toLowerCase().includes(filter));
+      list.innerHTML = filtered.map(c => `
         <div class="history-item ${c.id === this.currentChatId ? 'active' : ''}" onclick="app.loadChat('${c.id}')">
           <span>${c.title}</span>
           <span class="delete-chat" onclick="app.deleteChat(event, '${c.id}')">&times;</span>
@@ -515,9 +649,7 @@ Every response must strictly follow this structure:
       div.className = `msg ${role}`;
       const html = DOMPurify.sanitize(marked.parse(content));
       div.innerHTML = `<div class="bubble">${html}</div>`;
-      div.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
-      });
+      this.enhanceBubbles(div);
       container.appendChild(div);
       return div.querySelector('.bubble');
     },
@@ -525,10 +657,30 @@ Every response must strictly follow this structure:
     updateBubble(bubble, raw) {
       const html = DOMPurify.sanitize(marked.parse(raw));
       bubble.innerHTML = html;
-      bubble.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
-      });
+      this.enhanceBubbles(bubble);
       bubble.setAttribute('data-raw', raw);
+    },
+
+    enhanceBubbles(el) {
+      el.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+        const pre = block.parentElement;
+        if (!pre.parentElement.classList.contains('code-wrapper')) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'code-wrapper';
+          pre.parentNode.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+          const btn = document.createElement('button');
+          btn.className = 'copy-code-btn';
+          btn.textContent = 'Copy';
+          btn.onclick = () => {
+            navigator.clipboard.writeText(block.textContent);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+          };
+          wrapper.appendChild(btn);
+        }
+      });
     },
 
     async sendMessage() {
@@ -558,7 +710,9 @@ Every response must strictly follow this structure:
       chat.messages.push({ role: 'user', content: text });
 
       this.streaming = true;
-      document.getElementById('send-btn').disabled = true;
+      document.getElementById('send-btn').style.display = 'none';
+      document.getElementById('stop-btn').style.display = 'block';
+
       const bubble = this.appendMessage('assistant', '...');
       bubble.classList.add('streaming');
 
@@ -566,12 +720,13 @@ Every response must strictly follow this structure:
       let fullResponse = '';
 
       try {
+        const params = { temperature: this.settings.temperature, maxTokens: this.settings.maxTokens };
         if (provider === 'anthropic') {
-          await this.streamAnthropic(key, model, systemPrompt, chat.messages, bubble);
+          await this.streamAnthropic(key, model, systemPrompt, chat.messages, bubble, params);
         } else if (provider === 'openai') {
-          await this.streamOpenAI(key, model, systemPrompt, chat.messages, bubble);
+          await this.streamOpenAI(key, model, systemPrompt, chat.messages, bubble, params);
         } else if (provider === 'google') {
-          await this.streamGoogle(key, model, systemPrompt, chat.messages, bubble);
+          await this.streamGoogle(key, model, systemPrompt, chat.messages, bubble, params);
         }
 
         chat.messages.push({ role: 'assistant', content: bubble.getAttribute('data-raw') || bubble.textContent });
@@ -580,22 +735,25 @@ Every response must strictly follow this structure:
         bubble.innerHTML = `<span style="color:var(--error)">Error: ${err.message}</span>`;
       } finally {
         this.streaming = false;
-        document.getElementById('send-btn').disabled = false;
+        document.getElementById('send-btn').style.display = 'block';
+        document.getElementById('stop-btn').style.display = 'none';
         bubble.classList.remove('streaming');
       }
     },
 
-    async streamAnthropic(key, model, system, messages, bubble) {
+    async streamAnthropic(key, model, system, messages, bubble, params) {
       const res = await fetch(PROVIDERS.anthropic.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': key,
-          'anthropic-version': '2023-06-01',
-          'dangerously-allow-browser': 'true'
+          'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model, system, messages, max_tokens: 4096, stream: true
+          model, system, messages,
+          max_tokens: params.maxTokens,
+          temperature: params.temperature,
+          stream: true
         }),
         signal: this.abortCtrl.signal
       });
@@ -622,7 +780,7 @@ Every response must strictly follow this structure:
       }
     },
 
-    async streamOpenAI(key, model, system, messages, bubble) {
+    async streamOpenAI(key, model, system, messages, bubble, params) {
       const apiMsgs = [{ role: 'system', content: system }, ...messages];
       const res = await fetch(PROVIDERS.openai.url, {
         method: 'POST',
@@ -631,7 +789,10 @@ Every response must strictly follow this structure:
           'Authorization': `Bearer ${key}`
         },
         body: JSON.stringify({
-          model, messages: apiMsgs, stream: true
+          model, messages: apiMsgs,
+          temperature: params.temperature,
+          max_tokens: params.maxTokens,
+          stream: true
         }),
         signal: this.abortCtrl.signal
       });
@@ -659,7 +820,7 @@ Every response must strictly follow this structure:
       }
     },
 
-    async streamGoogle(key, model, system, messages, bubble) {
+    async streamGoogle(key, model, system, messages, bubble, params) {
       const contents = messages.map(m => ({
         role: m.role === 'user' ? 'user' : 'model',
         parts: [{ text: m.content }]
@@ -670,7 +831,11 @@ Every response must strictly follow this structure:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents,
-          systemInstruction: { parts: [{ text: system }] }
+          systemInstruction: { parts: [{ text: system }] },
+          generationConfig: {
+            temperature: params.temperature,
+            maxOutputTokens: params.maxTokens
+          }
         }),
         signal: this.abortCtrl.signal
       });
