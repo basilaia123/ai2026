@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI - გენერატიული ინტელექტი პრაქტიკაში | ღია ლექცია Smart Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        smart: {
+                            navy: '#3B4582',
+                            red: '#FF4757',
+                            dark: '#1e2652',
+                            light: '#f8f9ff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; font-size: 130%; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
+        .nav-link.active { background: #f0f2ff; border-left: 4px solid #FF4757; color: #3B4582; font-weight: 700; }
+        .nav-link:hover { background: #f8f9ff; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .topic-card { border-top: 4px solid #FF4757; transition: all 0.3s ease; }
+        .topic-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(59, 69, 130, 0.1); }
+        
+        @media print {
+            #sidebar, #menuBtn, #overlay, #backToTop, #smartControls { display: none !important; }
+            main, #mainContent { margin-left: 0 !important; }
+            body { background: white; }
+            .topic-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc; margin-bottom: 0.75rem; }
+            pre { font-size: 11px; padding: 0.5rem; background: #f9f9f9 !important; color: #333 !important; border: 1px solid #ddd; }
+            .bg-smart-navy { background: #3B4582 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { margin: 1.5cm; }
+        }
+
+        #backToTop {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #backToTop.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        body.dark {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        body.dark .bg-white { background-color: #1e293b !important; }
+        body.dark .bg-gray-50 { background-color: #0f172a !important; }
+        body.dark .text-gray-900 { color: #f8fafc !important; }
+        body.dark .text-gray-700 { color: #cbd5e1 !important; }
+        body.dark .text-gray-600 { color: #94a3b8 !important; }
+        body.dark .border-gray-100 { border-color: #334155 !important; }
+        body.dark .bg-gray-50, body.dark .bg-slate-100 { background-color: #0f172a !important; }
+        body.dark .nav-link:not(.active) { color: #94a3b8; }
+        body.dark .nav-link.active { background: #1e2652 !important; color: #fff !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800">
+
+<!-- Mobile overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Toggle button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-smart-navy text-white p-2.5 rounded-lg shadow-lg hover:bg-smart-dark transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-100 overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-6 py-8 border-b border-gray-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-smart-red rounded-full flex items-center justify-center text-white font-bold text-xl">S</div>
+            <h1 class="text-xl font-bold tracking-tight text-smart-navy">Smart Academy</h1>
+        </div>
+        <p class="text-gray-500 text-sm mt-2 font-medium">AI ღია ლექცია - მასალები</p>
+        <p class="text-smart-red/80 text-xs mt-1 font-bold">სტუდენტის გზამკვლევი (2026)</p>
+    </div>
+    <nav class="py-4">
+        <div class="px-6 pt-2 pb-2 text-[11px] uppercase tracking-widest text-gray-400 font-bold">შესავალი & Hook</div>
+        <a href="#topic-1" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-1">
+            <span class="leading-snug pr-2">1. მისალმება და Hook</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-2" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-2">
+            <span class="leading-snug pr-2">2. რატომ გადავიხადოთ $100?</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-3" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-3">
+            <span class="leading-snug pr-2">3. LMSYS Arena ფენომენი</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-4" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-4">
+            <span class="leading-snug pr-2">4. პლატფორმის პრეზენტაცია</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">2'</span>
+        </a>
+
+        <div class="px-6 pt-6 pb-2 text-[11px] uppercase tracking-widest text-gray-400 font-bold">მოდული 1: პრომპტინგი</div>
+        <a href="#topic-5" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-5">
+            <span class="leading-snug pr-2">5. უძლიერესი ტექნიკა</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-6" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-6">
+            <span class="leading-snug pr-2">6. „Direct Chat“ შერჩევა</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-7" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-7">
+            <span class="leading-snug pr-2">7. Mega-Prompting მეთოდი</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">2'</span>
+        </a>
+        <a href="#topic-8" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-8">
+            <span class="leading-snug pr-2">8. Extended Thinking</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-9" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-9">
+            <span class="leading-snug pr-2">9. ქეისი: ბიზნეს ანალიზი</span>
+            <span class="shrink-0 text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-bold">2'</span>
+        </a>
+
+        <div class="px-6 pt-6 pb-2 text-[11px] uppercase tracking-widest text-gray-400 font-bold">მოდული 2: ფოტოები</div>
+        <a href="#topic-10" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-10">
+            <span class="leading-snug pr-2">10. Image Arena ბრძოლა</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-11" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-11">
+            <span class="leading-snug pr-2">11. პრემიუმ მოდელები</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-12" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-12">
+            <span class="leading-snug pr-2">12. რეალისტური პორტრეტი</span>
+            <span class="shrink-0 text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-bold">2'</span>
+        </a>
+        <a href="#topic-13" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-13">
+            <span class="leading-snug pr-2">13. ფუტურისტული თბილისი</span>
+            <span class="shrink-0 text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-bold">2'</span>
+        </a>
+        <a href="#topic-14" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-14">
+            <span class="leading-snug pr-2">14. მინიმალისტური ლოგო</span>
+            <span class="shrink-0 text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-bold">2'</span>
+        </a>
+
+        <div class="px-6 pt-6 pb-2 text-[11px] uppercase tracking-widest text-gray-400 font-bold">მოდული 3 & 4: ვიდეო & კოდი</div>
+        <a href="#topic-15" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-15">
+            <span class="leading-snug pr-2">15. Video Arena: Sora/Veo</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">1'</span>
+        </a>
+        <a href="#topic-16" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-16">
+            <span class="leading-snug pr-2">16. „Text-to-Video“ დემო</span>
+            <span class="shrink-0 text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-bold">3'</span>
+        </a>
+        <a href="#topic-17" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-17">
+            <span class="leading-snug pr-2">17. „Image-to-Video“ ანიმაცია</span>
+            <span class="shrink-0 text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-bold">4'</span>
+        </a>
+        <a href="#topic-18" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-18">
+            <span class="leading-snug pr-2">18. კოდირება 0 ხაზით</span>
+            <span class="shrink-0 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">2'</span>
+        </a>
+        <a href="#topic-19" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-19">
+            <span class="leading-snug pr-2">19. Snake & Flappy Bird</span>
+            <span class="shrink-0 text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-bold">7'</span>
+        </a>
+        <a href="#topic-20" class="nav-link flex items-center justify-between px-6 py-3 text-sm text-gray-600 transition-all border-l-4 border-transparent" data-topic="topic-20">
+            <span class="leading-snug pr-2">20. შეჯამება და Q&A</span>
+            <span class="shrink-0 text-[10px] bg-smart-red text-white px-1.5 py-0.5 rounded font-bold">3'</span>
+        </a>
+    </nav>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="bg-smart-navy text-white pl-16 pr-6 md:pl-24 md:pr-10 py-16 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-smart-red/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+        <div class="max-w-4xl relative z-10">
+            <div class="inline-block bg-smart-red text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">Smart Academy Open Lecture Materials</div>
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4 tracking-tight">AI - გენერატიული ინტელექტი პრაქტიკაში</h1>
+            <p class="text-blue-100 text-lg max-w-2xl leading-relaxed font-light">ვორქშოპის სასწავლო მასალები: პრემიუმ AI მოდელები უფასოდ.</p>
+            <div class="flex flex-wrap gap-6 mt-8">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-smart-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-blue-200 uppercase font-bold tracking-wider">ხანგრძლივობა</p>
+                        <p class="text-sm font-bold">40 წუთი</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-smart-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-blue-200 uppercase font-bold tracking-wider">მოდულები</p>
+                        <p class="text-sm font-bold">5 ბლოკი</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl pl-16 pr-6 md:pl-24 md:pr-10 py-12">
+
+        <!-- სლაიდი 1 -->
+        <section id="topic-1" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 01</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">მისალმება და Hook</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100">1 წუთი</span>
+            </div>
+            <div class=”space-y-4”>
+                <p class=”text-slate-600 leading-relaxed font-light italic border-l-4 border-smart-red pl-4”>
+                    „რატომ უნდა გადაიხადოთ $100+ თვეში სხვადასხვა AI მოდელში, როცა მსოფლიოს საუკეთესო ინსტრუმენტები ერთ სივრცეში, სრულიად უფასოდ ხელმისაწვდომია?”
+                </p>
+                <p class=”text-slate-600 leading-relaxed text-sm”>ეს კითხვა ათასობით ადამიანს დაუსვამს. ChatGPT Plus — $20/თვე. Claude Pro — $20/თვე. Midjourney — $10–$60/თვე. Sora — $20/თვე. ჯამში $70–$120 ყოველთვიური ხარჯი. ამ ლექციაში ვნახავთ, რომ ეს ხარჯი სრულიად თავიდან ასაცილებელია — ეკვივალენტური ხარისხი ხელმისაწვდომია ნული ლარით.</p>
+            </div>
+        </section>
+
+        <!-- სლაიდი 2 -->
+        <section id="topic-2" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 02</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">Free Premium Access: რეალობა</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100">1 წუთი</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm">დღეს ჩვენ ვნახავთ, როგორ მივიღოთ წვდომა მსოფლიოს უძლიერეს მოდელებზე (GPT-5, Claude 4, Gemini 3) ზედმეტი ხარჯების გარეშე. გასაღები ერთი მარტივი პლატფორმაა, რომელიც კომპანიებმა — OpenAI-მ, Google-მა, Anthropic-მა — თავად შექმნეს საკუთარი მოდელების შესამოწმებლად. ჩვენ ვსარგებლობთ ამ კვლევითი პროცესის „გვერდითი ეფექტით" — ხელმისაწვდომ პრემიუმ გამოცდით.</p>
+        </section>
+
+        <!-- სლაიდი 3 -->
+        <section id="topic-3" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 03</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">LMSYS Arena: დამოუკიდებელი Leaderboard</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100">1 წუთი</span>
+            </div>
+            <div class="space-y-4">
+                <p class="text-slate-600 leading-relaxed text-sm">ეს არის LMSYS-ის კვლევითი პლატფორმა, სადაც ტოპ კომპანიები (OpenAI, Google, Anthropic) თავად ათავსებენ მოდელებს რეიტინგისთვის. UC Berkeley-ის მკვლევარებმა შექმნეს სისტემა სახელად <strong>„Chatbot Arena"</strong>, სადაც რეალური მომხმარებლები — არა ხელოვნური ტესტები — ადარებენ მოდელებს და ხმას აძლევენ. ეს ყველაზე სანდო, დამოუკიდებელი AI-ბენჩმარქია მსოფლიოში, რადგან მის შედეგებზე ვერ ახდენს გავლენას კომპანიის მარქეტინგი.</p>
+            </div>
+        </section>
+
+        <!-- სლაიდი 4 -->
+        <section id="topic-4" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 04</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">პლატფორმა: lmarena.ai</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">2 წუთი</span>
+            </div>
+            <div class="bg-smart-navy p-6 rounded-2xl text-white">
+                <h4 class="font-bold mb-2 uppercase text-xs tracking-widest text-smart-red">მთავარი ინსტრუმენტი</h4>
+                <p class="text-sm text-blue-100 font-light leading-relaxed mb-4">ჩვენ ვიყენებთ ამ პლატფორმას პრემიუმ ვერსიებზე უფასო წვდომისთვის კვლევის ფარგლებში. პლატფორმა გთავაზობთ სამ რეჟიმს: <strong>Direct Chat</strong> — ირჩევთ კონკრეტულ მოდელს და პირდაპირ ესაუბრებით; <strong>Arena Battle</strong> — ორი ანონიმური მოდელი ეჯიბრება, ხმა მიეცით გამარჯვებულს; <strong>Side-by-Side</strong> — ორი მოდელი ერთდროულად პასუხობს. ყველა რეჟიმი სრულიად უფასოა.</p>
+                <a href="https://lmarena.ai" target="_blank" class="text-xs font-bold underline decoration-smart-red underline-offset-4">გახსენით lmarena.ai</a>
+            </div>
+        </section>
+
+        <!-- სლაიდი 5 -->
+        <section id="topic-5" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 05</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">1 პრომპტის უძლიერესი ტექნიკა</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">1 წუთი</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm">როგორ მივიღოთ იდეალური პასუხი პირველივე ცდაზე? პასუხია: <strong>Mega-Prompting</strong>. AI-ის გამოყენების ყველაზე გავრცელებული შეცდომა ისაა, რომ ადამიანები ძალიან მოკლე, კონტექსტის გარეშე კითხვებს სვამენ. AI კი — ისევე, როგორც ახალი კოლეგა — ვერ ახდენს კარგ შედეგს, თუ არ გაქვს გადაცემული სრული სურათი. Mega-Prompting არის ხუთი ელემენტის სტრუქტურა, რომელიც უზრუნველყოფს, რომ AI პირველივე ცდაზე ზუსტად ისეთ შედეგს გასცეს, როგორსაც ელით.</p>
+        </section>
+
+        <!-- სლაიდი 6 -->
+        <section id="topic-6" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 06</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">„Direct Chat“ შერჩევა</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">1 წუთი</span>
+            </div>
+            <div class=”space-y-4”>
+                <p class=”text-slate-600 leading-relaxed text-sm”>გადადით ჩანართზე <span class=”text-smart-navy font-bold”>„Direct Chat”</span> და აირჩიეთ საუკეთესო მოდელი. lmarena.ai-ზე ყოველთვის ხელმისაწვდომია ყველაზე ახალი ვერსიები — ხშირად ოფიციალურ გამოშვებამდე რამდენიმე კვირით ადრე. ეს ნიშნავს, რომ პლატფორმის მომხმარებლები ხდებიან პირველი ადამიანები, ვინც ახალ მოდელებს სინამდვილეში ატესტირებს:</p>
+                <ul class=”list-disc list-inside text-sm text-slate-500 ml-4 space-y-1 font-bold”>
+                    <li>Claude 4.7 — Anthropic-ის ფლაგმანი, განსაკუთრებით ძლიერი ანალიზსა და კოდირებაში</li>
+                    <li>ChatGPT 5.5 High — OpenAI-ის მოდელი, ყველაზე ფართო ზოგადი ცოდნით</li>
+                    <li>Arena Battle — ორ ანონიმურ მოდელს ერთსა და იმავე კითხვაზე ეჯიბრება; შეგიძლიათ გამოიცნოთ, ვინ არის ვინ</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- სლაიდი 7 -->
+        <section id="topic-7" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 07</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">Mega-Prompting მეთოდოლოგია</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">2 წუთი</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm mb-4">Mega-Prompt შედგება ხუთი სავალდებულო კომპონენტისგან. ყველა ერთად მომარაგდება ერთ შეტყობინებაში:</p>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-6">
+                <div class="p-3 bg-slate-50 rounded-lg text-center">
+                    <div class="text-[10px] font-bold text-smart-navy mb-1">როლი</div>
+                    <div class="text-[9px] text-slate-500">„შენ ხარ..." — მიანიჭეთ AI-ს სპეციალობა</div>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-lg text-center">
+                    <div class="text-[10px] font-bold text-smart-navy mb-1">კონტექსტი</div>
+                    <div class="text-[9px] text-slate-500">ვინ ხართ, რა ვითარებაში, რა სიტუაციაა</div>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-lg text-center">
+                    <div class="text-[10px] font-bold text-smart-navy mb-1">დავალება</div>
+                    <div class="text-[9px] text-slate-500">კონკრეტული, გაზომვადი მოქმედება</div>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-lg text-center">
+                    <div class="text-[10px] font-bold text-smart-navy mb-1">შეზღუდვები</div>
+                    <div class="text-[9px] text-slate-500">რა არ გჭირდებათ, რა ტონი, სიგრძე</div>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-lg text-center">
+                    <div class="text-[10px] font-bold text-smart-navy mb-1">ფორმატი</div>
+                    <div class="text-[9px] text-slate-500">ცხრილი, სია, Word, JSON და სხვ.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- სლაიდი 8 -->
+        <section id="topic-8" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 08</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">Extended Thinking რეჟიმი</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">1 წუთი</span>
+            </div>
+            <p class=”text-slate-600 leading-relaxed text-sm”>დააკვირდით, როგორ „აზროვნებს” მოდელი პასუხის გაცემამდე. ეს რეჟიმი უზრუნველყოფს ლოგიკურად გამართულ და სტრუქტურირებულ შედეგს. ტექნიკურად, Extended Thinking ნიშნავს, რომ მოდელი პასუხის გამოქვეყნებამდე ახდენს <strong>შიდა მსჯელობას</strong> — ისევე, როგორც ექსპერტი, რომელიც ჯერ ფიქრობს, შემდეგ პასუხობს. ამ პროცესის ნაწილი ხილვადია: ნახავთ, რომ მოდელი ამოწმებს ფაქტებს, განიხილავს ალტერნატივებს და ასწორებს საკუთარ შეცდომებს პასუხის ჩამოყალიბებამდე. ეს განსაკუთრებით ღირებულია კომპლექსური, მრავალეტაპიანი ამოცანებისთვის.</p>
+        </section>
+
+        <!-- სლაიდი 9 -->
+        <section id="topic-9" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 09</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">ქეისი: ბიზნეს ანალიზი</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-green-50 text-green-600 px-3 py-1.5 rounded-full border border-green-100 font-bold">2 წუთი</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm mb-4">ეს არის Mega-Prompting-ის პირველი ცოცხალი დემო. შეხედეთ პრომპტს — ის შეიცავს ყველა ხუთ ელემენტს: <em>როლი</em> (უფროსი კონსულტანტი), <em>კონტექსტი</em> (ატვირთული ფაილი), <em>დავალება</em> (ანალიზი + 3 რისკი), <em>შეზღუდვა</em> (5 ნაბიჯი, არა მეტი), <em>ფორმატი</em> (ცხრილი). შედეგი: მზა ბიზნეს-ანგარიში 60 წამში, ნაცვლად საათობრივი მუშაობისა.</p>
+            <div class="bg-slate-900 rounded-2xl p-6 relative group border-t-4 border-smart-red shadow-xl">
+                <button onclick="copyCode(this)" class="absolute top-4 right-4 text-[10px] bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors font-bold uppercase">კოპირება</button>
+                <pre class="text-sm font-mono text-blue-300"><code>შენ ხარ უფროსი ბიზნეს კონსულტანტი.
+გააანალიზე ეს ბიზნეს ქეისი (ატვირთეთ ფაილი),
+გამოავლინე 3 ყველაზე კრიტიკული რისკი
+და შემომთავაზე მათი გადაჭრის 5 ნაბიჯი.
+პასუხი მოამზადე ცხრილის სახით.</code></pre>
+            </div>
+        </section>
+
+        <!-- სლაიდი 10 -->
+        <section id="topic-10" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 10</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">Image Arena: ვიზუალური ბრძოლა</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">1 წუთი</span>
+            </div>
+            <p class=”text-slate-600 leading-relaxed text-sm”>გადადით ჩანართზე <span class=”text-smart-navy font-bold”>„Image Arena”</span>. აქ ერთმანეთს ეჯიბრებიან საუკეთესო გენერატორები. ამ რეჟიმში ერთი და იგივე ტექსტური პრომპტი ერთდროულად გადაეცემა ორ განსხვავებულ მოდელს — შედეგები ნაჩვენებია გვერდიგვერდ, ანონიმურად (A vs B). თქვენ ხმა მიეცით უკეთესს, შემდეგ კი გაიხსნება, ვინ იყო ვინ. ეს მიდგომა გხდის <strong>AI-ის ობიექტურ მსაჯს</strong> — ტექნიკური სპეციფიკაციების ნაცვლად, რეალური ხარისხით ხდება გადაწყვეტილება.</p>
+        </section>
+
+        <!-- სლაიდი 11 -->
+        <section id="topic-11" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 11</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">პრემიუმ იმიჯ-გენერატორები</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">1 წუთი</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm mb-4">Image Arena-ში ძირითადად სამი ტოპ-მოდელი ეჯიბრება ერთმანეთს. თითოეულს აქვს თავისი ძლიერი მხარე:</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="p-4 bg-slate-50 rounded-xl">
+                    <div class="text-[10px] font-bold text-slate-700 uppercase mb-2">Midjourney</div>
+                    <div class="text-[11px] text-slate-500 leading-relaxed">საუკეთესო მხატვრული სტილისთვის. ქმნის კინემატოგრაფიულ, კომერციულ ხარისხის სურათებს. განსაკუთრებით ძლიერია ფანტასტიკასა და კომპოზიციაში.</div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl">
+                    <div class="text-[10px] font-bold text-slate-700 uppercase mb-2">DALL-E 3</div>
+                    <div class="text-[11px] text-slate-500 leading-relaxed">OpenAI-ის მოდელი, განსაკუთრებით ახდენს ტექსტის ზუსტ გაგებასა და ასახვას. შეეფერება სქემებს, ილუსტრაციებს, ტექსტის გამოსახვას სურათში.</div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl">
+                    <div class="text-[10px] font-bold text-slate-700 uppercase mb-2">FLUX</div>
+                    <div class="text-[11px] text-slate-500 leading-relaxed">ღია კოდის ლიდერი. ანათებს ფოტო-რეალისტური პორტრეტებით, სწრაფი გენერაციით. ზოგჯერ აჯობებს ფასიან კონკურენტებს.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- სლაიდი 12 -->
+        <section id="topic-12" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 12</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">პრაქტიკა 1: ფოტოგრაფიული</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-green-50 text-green-600 px-3 py-1.5 rounded-full border border-green-100 font-bold">2 წუთი</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm mb-4">ეს პრომპტი ტესტავს, თუ რომელი მოდელი ყველაზე კარგად ასახავს <strong>ადამიანის სახეს, ტექსტურებსა და განათებას</strong> — ეს არის ყველაზე რთული გამოწვევა ნებისმიერი გამოსახულების გენერატორისთვის. ჩვენ ვნახავთ, ვინ მართლა ფლობს 8K-ის ხარისხს.</p>
+            <div class="bg-slate-900 rounded-2xl p-6 relative group">
+                <button onclick="copyCode(this)" class="absolute top-4 right-4 text-[10px] bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors font-bold uppercase">კოპირება</button>
+                <pre class="text-sm font-mono text-blue-300"><code>Hyper-realistic close-up portrait of an old craftsman in his workshop, 8k, dramatic cinematic lighting, looking into the camera.</code></pre>
+            </div>
+        </section>
+
+        <!-- სლაიდი 13 -->
+        <section id="topic-13" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 13</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">პრაქტიკა 2: ფუტურიზმი</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-green-50 text-green-600 px-3 py-1.5 rounded-full border border-green-100 font-bold">2 წუთი</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-sm mb-4">ეს პრომპტი ყველასთვის ახლობელია — ჩვენი ქალაქი, ჩვენი კულტურა, მომავლის ვიზია. გენერირებული სურათი გახდება შემდეგი ნაბიჯის — Image-to-Video ბლოკის — ნედლი მასალა. <strong>შეინახეთ საუკეთესო გენერაცია!</strong> ის გამოგადგება Slide 17-ში.</p>
+            <div class="bg-slate-900 rounded-2xl p-6 relative group">
+                <button onclick="copyCode(this)" class="absolute top-4 right-4 text-[10px] bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors font-bold uppercase">კოპირება</button>
+                <pre class="text-sm font-mono text-blue-300"><code>Futuristic Tbilisi city in the year 2100, eco-friendly skyscrapers, flying cars, neon lights, cyberpunk aesthetic, rainy night.</code></pre>
+            </div>
+        </section>
+
+        <!-- სლაიდი 14 -->
+        <section id="topic-14" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 14</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">პრაქტიკა 3: ლოგო</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-green-50 text-green-600 px-3 py-1.5 rounded-full border border-green-100 font-bold">2 წუთი</span>
+            </div>
+            <div class="bg-slate-900 rounded-2xl p-6 relative group">
+                <button onclick="copyCode(this)" class="absolute top-4 right-4 text-[10px] bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors font-bold uppercase">კოპირება</button>
+                <pre class="text-sm font-mono text-blue-300"><code>Minimalist 3D abstract vector logo for a tech startup, vibrant neon colors, isolated on a clean black background.</code></pre>
+            </div>
+            <div class="mt-4 p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800 text-xs">
+                💡 <strong>რჩევა:</strong> გენერაციის შემდეგ მიეცით ხმა (Vote) საუკეთესოს, რომ გაიგოთ რომელი მოდელი იდგა გამოსახულების უკან.
+            </div>
+        </section>
+
+        <!-- სლაიდი 15 -->
+        <section id="topic-15" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 15</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">Video Arena: კინემატოგრაფია</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">1 წუთი</span>
+            </div>
+            <p class=”text-slate-600 leading-relaxed text-sm”>გადადით ჩანართზე <span class=”text-smart-navy font-bold”>„Video Arena”</span>. ეს ბლოკი ყველაზე „მომავლური” ნაწილია ლექციაში — ადამიანების უმეტესობა ჯერ კიდევ ვერ წარმოიდგენს, რომ ტექსტიდან კინოხარისხის ვიდეოს შექმნა შეიძლება. Arena-ზე ხელმისაწვდომია ოთხი ყველაზე ძლიერი პლატფორმა: <strong>Sora</strong> (OpenAI — ფიზიკის სიმულაციის ლიდერი), <strong>Veo 3</strong> (Google DeepMind — ჯობია კინემატოგრაფიაში), <strong>Kling</strong> (Kuaishou — ყველაზე სწრაფი, ქართველი კომერციალებისთვის), <strong>Runway Gen-4</strong> (Hollywood-ის სტუდიების არჩევანი).</p>
+        </section>
+
+        <!-- სლაიდი 16 -->
+        <section id="topic-16" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 16</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">„Text-to-Video“ დემო</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-green-50 text-green-600 px-3 py-1.5 rounded-full border border-green-100 font-bold">3 წუთი</span>
+            </div>
+            <p class=”text-slate-600 leading-relaxed text-sm mb-4”>ვირჩევთ Video Arena-ს, შევდივართ Side-by-Side რეჟიმში და ვაწვდით ქვემოთ მოცემულ პრომპტს. <strong>დაელოდეთ 20–40 წამს</strong> — ვიდეო მზადდება. ეს არის ის მომენტი, რომელიც ყველა მაყურებელს „ახ” ატანინებს: ტექსტი → მოძრავი კადრი, ნულიდან. მნიშვნელოვანია: ორი მოდელი ერთი პრომპტიდან სხვადასხვა ვიდეოს გენერირებს — ნახეთ განსხვავება სტილში, გლუვობაში, ფიზიკის ასახვაში.</p>
+            <div class=”bg-indigo-900 rounded-2xl p-8 text-white relative overflow-hidden”>
+                <p class=”text-lg italic font-light leading-relaxed”>„Cinematic drone shot of a majestic dragon flying through misty mountains during sunset, 4k resolution, high dynamic range.”</p>
+            </div>
+        </section>
+
+        <!-- სლაიდი 17 -->
+        <section id="topic-17" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 17</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">„Image-to-Video“: ფოტოს ანიმაცია</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-green-50 text-green-600 px-3 py-1.5 rounded-full border border-green-100 font-bold">4 წუთი</span>
+            </div>
+            <div class="space-y-4">
+                <p class="text-slate-600 leading-relaxed text-sm">Image-to-Video რეჟიმი განსხვავდება Text-to-Video-სგან: <strong>ჩვენ გვაქვს კონკრეტული, ჩვენ მიერ შექმნილი სტარტ-კადრი</strong> — Slide 13-ში გენერირებული ფუტურისტული თბილისი. ახლა ამ სტატიკურ სურათს ანიმაციას ვაძლევთ. მოდელმა „იცის", სად უნდა ასახოს მოძრაობა (ფრენადი მანქანები, ნეონური განათება) და სად შეინარჩუნოს ხელუხლებელი არქიტექტურა. ეს ტექნოლოგია ბიზნეს-პრეზენტაციებს, სარეკლამო ვიდეოებსა და სოციალური მედიის კონტენტს აბსოლუტურად ახლიდან განსაზღვრავს. ატვირთეთ წინა ბლოკში გენერირებული თბილისის ფოტო და ჩაწერეთ:</p>
+                <div class="p-5 rounded-2xl bg-slate-900 text-blue-300 font-mono text-xs border-l-4 border-smart-red">
+                    „Animate the flying vehicles and glowing neon signs with smooth, cinematic camera pan.“
+                </div>
+                <div class="p-3 bg-amber-50 rounded-xl text-amber-800 text-[10px] font-bold">
+                    ⚠️ გაითვალისწინეთ: ვიდეო მოდელებს აქვთ მცირე დღიური ლიმიტი, თუმცა ტესტირებისთვის საკმარისია.
+                </div>
+            </div>
+        </section>
+
+        <!-- სლაიდი 18 -->
+        <section id="topic-18" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 18</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">კოდირება 0 ხაზი კოდით</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-slate-50 text-slate-500 px-3 py-1.5 rounded-full border border-slate-100 font-bold">2 წუთი</span>
+            </div>
+            <p class=”text-slate-600 leading-relaxed text-sm”>ბრუნდებით <span class=”text-smart-navy font-bold”>„Direct Chat”</span>-ში და ირჩევთ კოდირებაში უძლიერეს მოდელს: <strong>Claude 4.7 Sonnet</strong>. ეს ბლოკი გახსნის ყველაზე მეტ „ვაუუ”-ს ლექციაში — განსაკუთრებით ადამიანებში, ვინც ფიქრობდა, რომ კოდირება პროგრამისტების ექსკლუზიური სამყაროა. AI-ის ეპოქაში ეს ეგება საბოლოოდ. თქვენ ერთ წინადადებას ჩაწერთ ქართულად ან ინგლისურად, და სანაცვლოდ მიიღებთ სრულად ფუნქციონირებად, გასაშვებ პროდუქტს. <strong>კოდის ერთი სტრიქონიც არ გჭირდებათ</strong> — მხოლოდ იდეა და AI.</p>
+        </section>
+
+        <!-- სლაიდი 19 -->
+        <section id="topic-19" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 19</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">Snake & Flappy Bird შექმნა</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-green-50 text-green-600 px-3 py-1.5 rounded-full border border-green-100 font-bold">7 წუთი</span>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-slate-900 rounded-2xl p-6 relative group">
+                    <button onclick="copyCode(this)" class="absolute top-4 right-4 text-[10px] bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors font-bold uppercase">კოპირება</button>
+                    <pre class="text-[12px] font-mono text-blue-300"><code>Write a single-file, fully functional HTML/CSS/JavaScript Retro Snake Game. Make it modern with neon green aesthetics, responsive controls, and a score counter. Give me the code ready to run.</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded-2xl p-6 relative group">
+                    <button onclick="copyCode(this)" class="absolute top-4 right-4 text-[10px] bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors font-bold uppercase">კოპირება</button>
+                    <pre class="text-[12px] font-mono text-blue-300"><code>Write a complete single-file HTML/JS Flappy Bird clone game with smooth graphics, spacebar control, and a game over restart screen.</code></pre>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 text-blue-800 text-xs leading-relaxed">
+                    💻 <strong>გაშვება 3 ნაბიჯში:</strong> დააკოპირეთ კოდი → გახსენით <strong>codepen.io</strong> → HTML ველში ჩასვით. თამაში მყისიერად ამოქმედდება. შეგიძლიათ ასევე შეინახოთ .html ფაილად და პირდაპირ ბრაუზერში გახსნათ — ინტერნეტი არ სჭირდება.
+                </div>
+            </div>
+        </section>
+
+        <!-- სლაიდი 20 -->
+        <section id="topic-20" class="topic-card bg-white rounded-2xl shadow-sm p-8 mb-10 scroll-mt-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <p class="text-smart-red text-xs font-bold uppercase tracking-widest mb-1">Slide 20</p>
+                    <h3 class="text-2xl font-bold text-smart-navy">შეჯამება და Q&A</h3>
+                </div>
+                <span class="shrink-0 text-xs font-bold bg-smart-red text-white px-3 py-1.5 rounded-full font-bold">3 წუთი</span>
+            </div>
+            <div class="space-y-6">
+                <p class="text-slate-600 text-sm">40 წუთში ჩვენ გავიარეთ ის, რასაც ჩვეულებრივი AI-კურსი 4–5 კვირაში ასწავლის. ეს არ არის გამონაკლისი — ეს არის ახალი ნორმა. ადამიანები, ვინც ეს ინსტრუმენტები დაეუფლა, დღეს კვირაში 10–20 საათს ზოგავენ და კონკურენტებზე ათჯერ სწრაფად ქმნიან კონტენტს, კოდს, ანალიტიკას. <span class="font-semibold text-smart-navy">40 წუთში გავქმენით:</span></p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="p-3 bg-slate-50 rounded-xl text-center text-[10px] font-bold text-smart-navy uppercase">1 Mega-Prompt</div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-center text-[10px] font-bold text-smart-navy uppercase">3 პრემიუმ ფოტო</div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-center text-[10px] font-bold text-smart-navy uppercase">2 AI ვიდეო</div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-center text-[10px] font-bold text-smart-navy uppercase">2 თამაში</div>
+                </div>
+                <div class="bg-smart-red text-white p-8 rounded-3xl text-center shadow-xl shadow-red-500/20">
+                    <h4 class="text-2xl font-bold mb-2">მზად ხართ სრული კურსისთვის?</h4>
+                    <p class="text-blue-100 text-sm mb-6">შეუერთდით „AI პრაქტიკაში“ Smart Academy-ში.</p>
+                    <a href="https://smartacademy.ge/trainings/587-AI-In-Practice" target="_blank" class="inline-block bg-white text-smart-red px-8 py-3 rounded-2xl font-bold text-sm hover:bg-blue-50 transition-colors uppercase tracking-widest">რეგისტრაცია</a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-12 py-12 border-t border-slate-100 text-center">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <div class="w-6 h-6 bg-smart-red rounded-full flex items-center justify-center text-white text-[10px] font-bold">S</div>
+                <span class="font-bold text-smart-navy text-sm uppercase tracking-widest">Smart Academy</span>
+            </div>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">&copy; 2026 გიორგი ბასილაია | AI პრაქტიკაში</p>
+        </footer>
+    </div>
+</main>
+
+<!-- Scripts -->
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const menuIcon = document.getElementById('menuIcon');
+        const closeIcon = document.getElementById('closeIcon');
+        const mainContent = document.getElementById('mainContent');
+        const menuBtn = document.getElementById('menuBtn');
+        
+        const isOpen = sidebar.classList.contains('translate-x-0');
+        
+        if (isOpen) {
+            sidebar.classList.remove('translate-x-0');
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            menuIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+            if (window.innerWidth >= 1024) {
+                mainContent.style.marginLeft = '0';
+                menuBtn.style.left = '1rem';
+            }
+        } else {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            overlay.classList.remove('hidden');
+            menuIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            if (window.innerWidth >= 1024) {
+                mainContent.style.marginLeft = '18rem';
+                menuBtn.style.left = '19rem';
+            }
+        }
+    }
+
+    window.addEventListener('load', () => {
+        if (window.innerWidth >= 1024) {
+            toggleSidebar();
+        }
+    });
+
+    function copyCode(button) {
+        const pre = button.closest('.group').querySelector('code');
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            const original = button.textContent;
+            button.textContent = 'კოპირებულია!';
+            button.classList.add('bg-green-600');
+            setTimeout(() => {
+                button.textContent = original;
+                button.classList.remove('bg-green-600');
+            }, 1500);
+        });
+    }
+
+    const sections = document.querySelectorAll('section[id^="topic-"]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 120) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+        
+        const backToTop = document.getElementById('backToTop');
+        if (backToTop) backToTop.classList.toggle('visible', window.scrollY > 600);
+    });
+</script>
+
+<!-- Back to Top -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 w-11 h-11 bg-smart-navy text-white rounded-full shadow-lg flex items-center justify-center hover:bg-smart-dark transition-colors" title="ზევით">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+</button>
+
+<!-- Smart Controls: Dark Mode -->
+<script>
+(function(){
+    var s=document.createElement('style');
+    s.textContent=`
+#smartControls{position:fixed;bottom:1.5rem;right:4.5rem;z-index:45;display:flex;flex-direction:row;align-items:center;gap:2px;background:#3B4582;padding:4px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+#smartControls button{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:transparent;color:#fff;border:none;border-radius:8px;cursor:pointer;transition:background .2s}
+#smartControls button:hover{background:rgba(255,255,255,0.15)}
+#smartControls svg{width:18px;height:18px}
+`;
+    document.head.appendChild(s);
+    var c=document.createElement('div');c.id='smartControls';
+    c.innerHTML='<button id="darkToggle" title="Dark / Light"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></button>';
+    document.body.appendChild(c);
+    var pref=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var saved=localStorage.getItem('smart-dark');
+    if((saved!==null?saved==='true':pref))document.body.classList.add('dark');
+    var moonSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+    var sunSvg='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+    function updIcon(){document.getElementById('darkToggle').innerHTML=document.body.classList.contains('dark')?sunSvg:moonSvg;}
+    updIcon();
+    document.getElementById('darkToggle').onclick=function(){document.body.classList.toggle('dark');localStorage.setItem('smart-dark',document.body.classList.contains('dark'));updIcon();};
+})();
+</script>
+
+</body>
+</html>
