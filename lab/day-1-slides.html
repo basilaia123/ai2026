@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megalab AI ტრენინგი - დღე 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lab: { 900: '#0f1f2e', 800: '#1a2f42', 700: '#243d54', sky: '#2196F3', gold: '#E91E63', light: '#F0F4F8' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --sky: #2196F3; --gold: #E91E63; --teal: #00BCD4;
+            --bg: #f4f7fb; --surface: #ffffff;
+            --text-1: #0f1f2e; --text-2: #374151; --text-3: #6b7280;
+        }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; font-size: 17px; line-height: 1.7; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link { display: flex; align-items: flex-start; padding: 0.6rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.07); }
+        .nav-link.active { background: rgba(33,150,243,0.15); border-left-color: #2196F3; color: #90caf9; }
+        .topic-card { border-left: 4px solid #2196F3; padding-left: 1.5rem; }
+        .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-theory { background: rgba(33,150,243,0.12); color: #1976D2; border: 1px solid rgba(33,150,243,0.3); }
+        .badge-practice { background: rgba(233,30,99,0.1); color: #C2185B; border: 1px solid rgba(233,30,99,0.3); }
+        .badge-break { background: rgba(0,188,212,0.1); color: #0097A7; border: 1px solid rgba(0,188,212,0.3); }
+        .badge-demo { background: rgba(103,58,183,0.1); color: #512DA8; border: 1px solid rgba(103,58,183,0.3); }
+        .highlight-box { background: #e3f2fd; border-left: 4px solid #2196F3; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .warning-box { background: #fce4ec; border-left: 4px solid #E91E63; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .success-box { background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .code-block { background: #1a2f42; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+        .copy-btn:hover { background: #2196F3; color: white; border-color: #2196F3; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+        .create-letter { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #2196F3; color: white; font-size: 1.2rem; font-weight: 800; margin-right: 0.75rem; flex-shrink: 0; }
+        .create-row { display: flex; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid #e5e7eb; }
+        .create-row:last-child { border-bottom: none; }
+        .timer-badge { background: #E91E63; color: white; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+        .section-header { background: linear-gradient(135deg, #0f1f2e 0%, #1a2f42 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .jci-badge { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.4); color: #2e7d32; border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.75rem; font-weight: 700; }
+        @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+        section { scroll-margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-lab-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-lab-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-lab-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#2196F3;">🔬 Megalab AI ტრენინგი</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">დღე 1: AI-ის საფუძვლები</p>
+        <p class="text-gray-400 text-xs mt-1">180 წუთი | 2 ბლოკი + შესვენება</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#E91E63;">შინაარსი</div>
+
+        <a href="#agenda" class="nav-link">🎯 დღის წესრიგი</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I — თეორია (80 წთ)</div>
+        <a href="#gen-ai" class="nav-link">🤖 რა არის გენერაციული AI?</a>
+        <a href="#llm" class="nav-link">⚙️ LLM — როგორ მუშაობს?</a>
+        <a href="#models" class="nav-link">🔍 AI მოდელების მიმოხილვა</a>
+        <a href="#safety" class="nav-link">🔒 უსაფრთხოების ოქროს წესები</a>
+        <a href="#hallucination" class="nav-link">⚠️ ჰალუცინაციები და მიკერძოება</a>
+        <a href="#jci" class="nav-link">🏥 JCI სტანდარტები და GDPR</a>
+        <a href="#role" class="nav-link">📝 პრომპტის ანატომია: R.O.L.E.</a>
+        <a href="#create" class="nav-link">🎯 C.R.E.A.T.E. მოდელი</a>
+        <a href="#create-c" class="nav-link" style="padding-left:2rem;">C – Context</a>
+        <a href="#create-r" class="nav-link" style="padding-left:2rem;">R – Request</a>
+        <a href="#create-e1" class="nav-link" style="padding-left:2rem;">E – Explanation</a>
+        <a href="#create-a" class="nav-link" style="padding-left:2rem;">A – Action</a>
+        <a href="#create-t" class="nav-link" style="padding-left:2rem;">T – Tone/Target</a>
+        <a href="#create-e2" class="nav-link" style="padding-left:2rem;">E – Extras</a>
+        <a href="#profcomm" class="nav-link">💼 AI პროფესიულ კომუნიკაციაში</a>
+        <a href="#b2b" class="nav-link" style="padding-left:2rem;">B2B და კორპორატიული</a>
+        <a href="#pr" class="nav-link" style="padding-left:2rem;">PR და მარკეტინგი</a>
+        <a href="#mgmt" class="nav-link" style="padding-left:2rem;">ტოპ-მენეჯმენტი</a>
+        <a href="#social" class="nav-link">📱 სოციალური მედია</a>
+        <a href="#iterative" class="nav-link">🔄 Iterative Prompting</a>
+        <a href="#practice1" class="nav-link">✏️ პრაქტიკა 1: კომუნიკაცია</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">☕ შესვენება (10 წთ)</div>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II — ვიზუალები (90 წთ)</div>
+        <a href="#gamma" class="nav-link">🎨 Gamma.app გაცნობა</a>
+        <a href="#gamma-demo" class="nav-link">🖥️ ინტერაქტიული დემო</a>
+        <a href="#practice2" class="nav-link">✏️ პრაქტიკა 2: Gamma</a>
+        <a href="#image-prompts" class="nav-link">🖼️ AI ვიზუალების გენერაცია</a>
+        <a href="#image-practice" class="nav-link">🎨 მიკრო-დავალება: სურათი</a>
+        <a href="#summary" class="nav-link">✅ შეჯამება და Q&amp;A</a>
+
+        <div class="mt-6 mx-4 mb-4">
+            <a href="index.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← ინდექსში დაბრუნება</a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Main -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #0f1f2e 0%, #1a3a5c 100%);">
+        <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#2196F3;"></div>
+        <div class="max-w-5xl relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">🔬</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest" style="color:#E91E63;">Megalab AI ტრენინგი</p>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">დღე 1: AI-ის საფუძვლები, პრომპტინგი<br><span style="color:#90caf9;">და კონტენტის გენერაცია</span></h1>
+                </div>
+            </div>
+            <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">ხელოვნური ინტელექტის მუშაობის პრინციპები, JCI-თავსებადი უსაფრთხოება, C.R.E.A.T.E. ფრეიმვორქი და პრეზენტაციების გენერაცია.</p>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">⏱ 180 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">👥 2 ბლოკი + შესვენება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">🎯 3 პრაქტიკული დავალება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(233,30,99,0.2);color:#f48fb1;">🏥 JCI-თავსებადი</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10 space-y-0">
+
+<!-- ═══════════════════════════════════════════════════
+     AGENDA
+═══════════════════════════════════════════════════ -->
+<section id="agenda" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📋 სესიის სტრუქტურა</span>
+    <h2 class="text-3xl font-bold mb-6" style="color:#0f1f2e;">🎯 დღევანდელი სესიის დღის წესრიგი</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <!-- Block 1 -->
+        <div class="p-6" style="background:#0f1f2e;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#2196F3;">⏱ 00:00 – 01:20</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი I: თეორია + პრომპტინგი</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#E91E63;">•</span><span><strong class="text-white">20 წთ</strong> — AI-ის ლოგიკა და JCI უსაფრთხოება</span></li>
+                <li class="flex gap-2"><span style="color:#E91E63;">•</span><span><strong class="text-white">40 წთ</strong> — R.O.L.E. + C.R.E.A.T.E. + კომუნიკაცია</span></li>
+                <li class="flex gap-2"><span style="color:#E91E63;">•</span><span><strong class="text-white">20 წთ</strong> — პრაქტიკა 1</span></li>
+            </ul>
+        </div>
+        <!-- Break -->
+        <div class="flex flex-col" style="background:#1a2f42;">
+            <div class="px-6 py-3 border-b border-white/10 flex items-center justify-between" style="background:rgba(0,188,212,0.15);">
+                <span class="font-bold text-white text-sm">☕ შესვენება</span>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#0097A7;color:white;">01:20 – 01:30</span>
+            </div>
+            <div class="p-6 flex-1">
+                <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#2196F3;">⏱ 01:30 – 03:00</div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი II: ვიზუალები</h3>
+                <ul class="text-sm text-gray-300 space-y-2">
+                    <li class="flex gap-2"><span style="color:#E91E63;">•</span><span><strong class="text-white">20 წთ</strong> — Gamma.app გაცნობა + დემო</span></li>
+                    <li class="flex gap-2"><span style="color:#E91E63;">•</span><span><strong class="text-white">30 წთ</strong> — პრაქტიკა 2: პრეზენტაცია</span></li>
+                    <li class="flex gap-2"><span style="color:#E91E63;">•</span><span><strong class="text-white">20 წთ</strong> — AI სურათების გენერაცია</span></li>
+                    <li class="flex gap-2"><span style="color:#E91E63;">•</span><span><strong class="text-white">20 წთ</strong> — შეჯამება + Q&amp;A</span></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Outcomes -->
+        <div class="p-6" style="background:#0f1f2e;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#E91E63;">🎯 სესიის შედეგები</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">რას ისწავლით?</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> AI-ის მუშაობის პრინციპი</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> JCI/GDPR-თავსებადი გამოყენება</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> C.R.E.A.T.E. ფრეიმვორქი</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Megalab-ის სპეციფიკური პრომპტები</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Gamma.app პრეზენტაციები</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> AI ვიზუალების გენერაცია</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border-left:4px solid #FF9800;">
+        <h4 class="font-bold text-lg mb-2">🧊 Icebreaker: „ყველაზე მოსაწყენი რუტინა"</h4>
+        <p class="text-gray-700 mb-2">სესიის დაწყებამდე — <strong>ჩატში დაწერეთ ერთი რამ</strong>, რაც თქვენს ყოველდღიურ სამუშაოში ყველაზე მეტ დროს ართმევთ.</p>
+        <p class="text-sm text-gray-500 italic">მაგ: „ანგარიშების ფორმატირება", „მეილების თარგმნა", „Q&A-ების გამარტივება", „მოხსენებების წერა"...</p>
+        <p class="text-sm mt-2" style="color:#E65100;font-weight:600;">ჩვენ ზუსტად ამ პრობლემებს მოვაგვარებთ დღეს.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK I HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🧠</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#90caf9;">ბლოკი I · 80 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">თეორია, პრომპტინგი და ტექსტური პრაქტიკა</h2>
+                <p class="text-gray-300 text-sm mt-1">00:00 – 01:20 · 3 ქვე-მოდული + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     GEN AI
+═══════════════════════════════════════════════════ -->
+<section id="gen-ai" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🤖 რა არის გენერაციული AI?</h2>
+
+    <div class="card mb-4">
+        <p class="text-xl font-bold mb-3" style="color:#1976D2;">მარტივი განმარტება</p>
+        <p class="text-gray-700 text-lg">გენერაციული AI არის პროგრამა, რომელიც <strong>ახალ კონტენტს ქმნის</strong> — ტექსტს, სურათებს, კოდს — ადამიანის ენაზე მიღებული ინსტრუქციების (პრომპტების) საფუძველზე.</p>
+    </div>
+
+    <div class="two-column">
+        <div class="card">
+            <p class="font-bold mb-2" style="color:#E91E63;">❌ ტრადიციული პროგრამა</p>
+            <ul class="text-gray-600 space-y-1 text-sm">
+                <li>• მუშაობს მკაცრი წესების მიხედვით</li>
+                <li>• შეუძლია მხოლოდ ის, რაც დაპროგრამებულია</li>
+                <li>• ვერ ესმის კონტექსტი</li>
+                <li>• ვერ ადაპტირდება ახალ სიტუაციებზე</li>
+            </ul>
+        </div>
+        <div class="card" style="border: 2px solid #2196F3;">
+            <p class="font-bold mb-2" style="color:#2196F3;">✅ გენერაციული AI (LLM)</p>
+            <ul class="text-gray-600 space-y-1 text-sm">
+                <li>• ესმის ბუნებრივი ენა (ქართული, ინგლისური...)</li>
+                <li>• ადაპტირდება ნებისმიერ კონტექსტზე</li>
+                <li>• ქმნის ახალ, ორიგინალ კონტენტს</li>
+                <li>• სწავლობს პრომპტიდან</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">🔬 Megalab-ისთვის პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">ანგარიშების ავტომატური შეჯამება → სამედიცინო ტერმინების გამარტივება → B2B მიმოწერის დრაფტები → პრეზენტაციების სწრაფი შექმნა</p>
+    </div>
+</section>
+
+<!-- LLM -->
+<section id="llm" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">⚙️ LLM — როგორ მუშაობს?</h2>
+
+    <div class="card mb-6">
+        <p class="text-xl font-bold mb-4" style="color:#1976D2;">Next-Word Prediction — "შემდეგი სიტყვის წინასწარმეტყველება"</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#e3f2fd;">
+                <div class="text-3xl mb-2">📚</div>
+                <p class="font-bold text-sm mb-1">ტრენინგი</p>
+                <p class="text-xs text-gray-600">AI-ს გაუვლია ინტერნეტის ტექსტების ტრილიონები — წიგნები, სტატიები, კოდი</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#f3e5f5;">
+                <div class="text-3xl mb-2">🎲</div>
+                <p class="font-bold text-sm mb-1">ალბათობები</p>
+                <p class="text-xs text-gray-600">სწავლობს: "ლაბორატორიის შედეგი" — ყველაზე ხშირად მოყვება "ნორმალური" ან "ელევირებული"</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <div class="text-3xl mb-2">💬</div>
+                <p class="font-bold text-sm mb-1">გენერაცია</p>
+                <p class="text-xs text-gray-600">თქვენი პრომპტის საფუძველზე ირჩევს ყველაზე სავარაუდო სიტყვებს</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="warning-box">
+        <p class="font-bold mb-1">⚠️ მნიშვნელოვანი: AI ფიქრს არ აკეთებს</p>
+        <p class="text-gray-700">AI <strong>არ „ფიქრობს"</strong> და <strong>არ „იცის"</strong> — ის სტატისტიკურად ყველაზე სავარაუდო სიტყვის კომბინაციებს ირჩევს. ამიტომ შეიძლება ზოგჯერ <strong>ჰალუცინაციები</strong> (მცდარი ფაქტები) გამოიმუშაოს.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 პრაქტიკული შედეგი:</p>
+        <p class="text-gray-700">რაც უფრო <strong>ზუსტ კონტექსტს</strong> მიაწვდით, მით უფრო ზუსტ პასუხს მიიღებთ. ეს არის მიზეზი, რატომ ვსწავლობთ C.R.E.A.T.E.-ს.</p>
+    </div>
+</section>
+
+<!-- MODELS -->
+<section id="models" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🔍 AI მოდელების მიმოხილვა</h2>
+
+    <div class="three-column">
+        <div class="card" style="border-top: 3px solid #10a37f;">
+            <p class="text-2xl mb-2">💚</p>
+            <p class="font-bold text-lg mb-1">ChatGPT (OpenAI)</p>
+            <p class="text-xs text-gray-500 mb-3">chat.openai.com</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ ყველაზე პოპულარული</li>
+                <li>✓ GPT-4o — ძლიერი მოდელი</li>
+                <li>✓ DALL-E სურათები</li>
+                <li>✓ ფართო ეკოსისტემა</li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded" style="background:#e8f5e9;color:#2e7d32;">გამოიყენეთ: ზოგადი დავალებები</div>
+        </div>
+        <div class="card" style="border-top: 3px solid #E91E63; border: 2px solid #E91E63;">
+            <p class="text-2xl mb-2">🤖</p>
+            <p class="font-bold text-lg mb-1">Claude (Anthropic)</p>
+            <p class="text-xs text-gray-500 mb-3">claude.ai</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ გრძელი დოკუმენტების ანალიზი</li>
+                <li>✓ ყველაზე ზუსტი ინსტრუქციების გაგება</li>
+                <li>✓ Projects — კონტექსტის შენახვა</li>
+                <li>✓ <strong>რეკომენდებული Megalab-ისთვის</strong></li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded font-bold" style="background:rgba(233,30,99,0.1);color:#C2185B;">⭐ ძირითადი ხელსაწყო</div>
+        </div>
+        <div class="card" style="border-top: 3px solid #4285F4;">
+            <p class="text-2xl mb-2">🔷</p>
+            <p class="font-bold text-lg mb-1">Gemini (Google)</p>
+            <p class="text-xs text-gray-500 mb-3">gemini.google.com</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ Google Workspace ინტეგრაცია</li>
+                <li>✓ Docs, Sheets, Slides-ში</li>
+                <li>✓ ინტერნეტ-ძიება პირდაპირ</li>
+                <li>✓ NotebookLM — ანალიზი</li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded" style="background:#e3f2fd;color:#1565C0;">გამოიყენეთ: Workspace + ძიება</div>
+        </div>
+    </div>
+</section>
+
+<!-- SAFETY -->
+<section id="safety" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🔒 უსაფრთხოების ოქროს წესები</h2>
+    <p class="text-gray-500 mb-6">კრიტიკული მნიშვნელობა Megalab-ის კონტექსტში</p>
+
+    <div class="warning-box mb-6">
+        <p class="font-bold text-lg mb-2">🚫 არასოდეს შეიტანოთ AI-ში:</p>
+        <div class="two-column">
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>❌ პაციენტის სახელი, გვარი, ID</li>
+                <li>❌ სამედიცინო ისტორია (anamnesis)</li>
+                <li>❌ ლაბორატორიის შედეგები სახელებით</li>
+                <li>❌ პირადი ნომერი / დაბადების თარიღი</li>
+            </ul>
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>❌ Megalab-ის შიდა ფინანსური მონაცემები</li>
+                <li>❌ მომწოდებლების კონფიდენციალური ხელშეკრულებები</li>
+                <li>❌ HR — თანამშრომლების პირადი ინფო</li>
+                <li>❌ სისტემების პაროლები / API გასაღებები</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="success-box mb-4">
+        <p class="font-bold text-lg mb-2">✅ ნებადართულია (ანონიმიზაციის შემდეგ):</p>
+        <div class="two-column">
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>✓ "პაციენტი X, 45 წ, მამაკაცი" (პირდაპირი სახელის გარეშე)</li>
+                <li>✓ ზოგადი ანალიზის ფორმატების შაბლონები</li>
+                <li>✓ სამედიცინო ტექსტების გამარტივება</li>
+            </ul>
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>✓ B2B წერილების დრაფტები (შაბლონური)</li>
+                <li>✓ SOPების ახსნა და ადაპტაცია</li>
+                <li>✓ ტრენინგ-მასალების შექმნა</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #FF9800;background:#fff8e1;">
+        <p class="font-bold mb-1">🔑 ოქროს წესი:</p>
+        <p class="text-gray-700">"თუ ეს ინფორმაცია <strong>სხვა თანამშრომელს ვერ გაუზიარებ</strong> ელექტრონული ფოსტით — AI-შიც ნუ შეიყვანთ."</p>
+    </div>
+</section>
+
+<!-- HALLUCINATION -->
+<section id="hallucination" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია</span>
+    <h2 class="text-3xl font-bold mb-6">⚠️ ჰალუცინაციები და მიკერძოება</h2>
+
+    <div class="two-column mb-6">
+        <div class="card" style="border-left:4px solid #FF5722;">
+            <p class="font-bold text-lg mb-3" style="color:#D84315;">🌀 ჰალუცინაცია (Hallucination)</p>
+            <p class="text-gray-700 text-sm mb-3">AI-ს <strong>გამოიმუშავებს არასწორ ფაქტებს</strong> სრული დარწმუნებით — თარიღები, სახელები, სტატისტიკა, კანონები.</p>
+            <div class="text-xs px-3 py-2 rounded" style="background:#fbe9e7;color:#bf360c;">
+                <strong>Megalab-ის რისკი:</strong> AI-მ შეიძლება "გამოიგონოს" არარსებული JCI სტანდარტი ან ლაბ-მეთოდი.
+            </div>
+            <p class="font-bold text-sm mt-3">✅ გამოსავალი: <span class="font-normal">ყოველთვის გადაამოწმეთ ფაქტები პირველადი წყაროებით</span></p>
+        </div>
+        <div class="card" style="border-left:4px solid #9C27B0;">
+            <p class="font-bold text-lg mb-3" style="color:#6A1B9A;">⚖️ მიკერძოება (Bias)</p>
+            <p class="text-gray-700 text-sm mb-3">AI ტრენინგი მოხდა ადამიანების მიერ დაწერილ ტექსტებზე. ამ ტექსტებში არსებული <strong>სტერეოტიპები და მიკერძოებები</strong> AI-შიც გადადის.</p>
+            <div class="text-xs px-3 py-2 rounded" style="background:#f3e5f5;color:#4a148c;">
+                <strong>პრაქტიკული გამოსავალი:</strong> კრიტიკულად შეხედეთ AI-ს გამოსვლას. ნუ გამოიყენებთ პირდაპირ.
+            </div>
+            <p class="font-bold text-sm mt-3">✅ გამოსავალი: <span class="font-normal">AI — პირველი დრაფტი, ადამიანი — საბოლოო შემოწმება</span></p>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🔬 Megalab-ის სამუშაო პრინციპი:</p>
+        <p class="text-gray-700"><strong>AI → დრაფტი → ადამიანი ამოწმებს → საბოლოო ვერსია.</strong> AI-ს გამოსვლა არასოდეს გამოქვეყნდეს ან გაიგზავნოს <strong>ექსპერტის შემოწმების გარეშე.</strong></p>
+    </div>
+</section>
+
+<!-- JCI -->
+<section id="jci" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🏥 JCI + GDPR · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🏥 JCI სტანდარტები და GDPR</h2>
+
+    <div class="card mb-4">
+        <div class="flex items-start gap-4">
+            <span class="text-4xl">🌍</span>
+            <div>
+                <p class="font-bold text-lg mb-1">GDPR — მონაცემთა დაცვის ზოგადი რეგლამენტი</p>
+                <p class="text-gray-700 text-sm">ევროკავშირის კანონი, რომელიც <strong>პაციენტებისა და კლიენტების პერსონალური მონაცემების</strong> დამუშავებას არეგულირებს. Megalab, როგორც სამედიცინო ლაბორატორია, სრულად ექვემდებარება ამ სტანდარტებს.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="flex items-start gap-4">
+            <span class="text-4xl">🏆</span>
+            <div>
+                <p class="font-bold text-lg mb-1">JCI — Joint Commission International</p>
+                <p class="text-gray-700 text-sm">სამედიცინო ხარისხის საერთაშორისო სტანდარტი. JCI-ს კრიტერიუმები მოიცავს <strong>ინფორმაციის კონფიდენციალობას, უვნებლობას და ჩანაწერების ზუსტობას.</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="three-column">
+        <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+            <p class="text-2xl mb-1">✅</p>
+            <p class="font-bold text-sm">ანონიმური ტექსტი</p>
+            <p class="text-xs text-gray-600 mt-1">პაციენტის მონაცემების გარეშე</p>
+        </div>
+        <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+            <p class="text-2xl mb-1">⚠️</p>
+            <p class="font-bold text-sm">შაბლონური ფორმატები</p>
+            <p class="text-xs text-gray-600 mt-1">AI ქმნის სტრუქტურას, ადამიანი ავსებს</p>
+        </div>
+        <div class="text-center p-4 rounded-lg" style="background:#fce4ec;">
+            <p class="text-2xl mb-1">❌</p>
+            <p class="font-bold text-sm">პირადი მონაცემები</p>
+            <p class="text-xs text-gray-600 mt-1">სახელი, ID, ანამნეზი — არასოდეს!</p>
+        </div>
+    </div>
+</section>
+
+<!-- ROLE -->
+<section id="role" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 პრომპტ-ინჟინერია · 40 წუთი დასაწყისი</span>
+    <h2 class="text-3xl font-bold mb-2">📝 პრომპტის ანატომია: R.O.L.E.</h2>
+    <p class="text-gray-500 mb-6">ნებისმიერი კარგი პრომპტი 4 ელემენტისგან შედგება</p>
+
+    <div class="grid grid-cols-1 gap-3 mb-6">
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#e3f2fd;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#1976D2;">R</div>
+            <div>
+                <p class="font-bold text-lg">Role — როლი</p>
+                <p class="text-gray-600 text-sm mb-2">AI-ს ეუბნება, <strong>ვინ</strong> უნდა იყოს ამ საუბარში.</p>
+                <div class="code-block" style="font-size:0.85rem;">„იმოქმედე, როგორც Megalab-ის გამოცდილი PR მენეჯერი..."</div>
+            </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#f3e5f5;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#7B1FA2;">O</div>
+            <div>
+                <p class="font-bold text-lg">Objective — მიზანი</p>
+                <p class="text-gray-600 text-sm mb-2">რა <strong>შედეგი</strong> გინდა, რა <strong>დავალება</strong> გაქვს.</p>
+                <div class="code-block" style="font-size:0.85rem;">„...და დაწერე 3 ვარიანტი პრესრელიზის სათაურისთვის..."</div>
+            </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#e8f5e9;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#388E3C;">L</div>
+            <div>
+                <p class="font-bold text-lg">Level — დონე / აუდიტორია</p>
+                <p class="text-gray-600 text-sm mb-2"><strong>ვინ</strong> კითხულობს — ექსპერტი? ბიზნეს-პარტნიორი? ჩვეულებრივი კლიენტი?</p>
+                <div class="code-block" style="font-size:0.85rem;">„...განკუთვნილია ბიზნეს-მედიისთვის, არ იყოს ტექნიკური..."</div>
+            </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#fff8e1;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#F57F17;">E</div>
+            <div>
+                <p class="font-bold text-lg">Edge — ფორმატი / შეზღუდვები</p>
+                <p class="text-gray-600 text-sm mb-2">სიგრძე, ფორმატი, ტონი, ენა, სტილი.</p>
+                <div class="code-block" style="font-size:0.85rem;">„...მაქსიმუმ 100 სიტყვა, ქართულ ენაზე, პოზიტიური ტონი."</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-2">💡 R.O.L.E. — სრული მაგალითი Megalab-ისთვის:</p>
+        <div class="code-block" style="position:relative;">
+            <button class="copy-btn" onclick="copyText(this)">კოპირება</button>
+„იმოქმედე, როგორც Megalab-ის PR სპეციალისტი [R].
+დაწერე ოფიციალური განცხადება ახალი PCR ტესტის სერვისის გახსნასთან დაკავშირებით [O].
+განკუთვნილია ბიზნეს-პარტნიორებისა და მედიისთვის [L].
+მაქსიმუმ 150 სიტყვა, ოფიციალური ტონი, ქართულ ენაზე [E]."</div>
+    </div>
+</section>
+
+<!-- CREATE -->
+<section id="create" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 C.R.E.A.T.E. ფრეიმვორქი</span>
+    <h2 class="text-3xl font-bold mb-2">🎯 C.R.E.A.T.E. მოდელი</h2>
+    <p class="text-gray-500 mb-6">დეტალური კონტროლისთვის — პროფესიული კომუნიკაციის ოქროს სტანდარტი</p>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+        <div style="background:#0f1f2e;padding:1.25rem 1.5rem;">
+            <p class="text-white font-bold text-lg">C.R.E.A.T.E. = 6 ელემენტი, 1 სრულყოფილი პრომპტი</p>
+        </div>
+        <div style="padding:0 1.5rem;">
+            <div class="create-row">
+                <span class="create-letter" style="background:#2196F3;">C</span>
+                <div><p class="font-bold">Context — კონტექსტი</p><p class="text-sm text-gray-600">რა სიტუაციაა? რა პრობლემა გვაქვს? სად ვართ?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#E91E63;">R</span>
+                <div><p class="font-bold">Request — მოთხოვნა</p><p class="text-sm text-gray-600">ზუსტად რა გინდა? რამდენი ვარიანტი? რა ტიპი?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#9C27B0;">E</span>
+                <div><p class="font-bold">Explanation — ახსნა</p><p class="text-sm text-gray-600">დამატებითი შეზღუდვები, კონტექსტი, ტერმინოლოგია</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#4CAF50;">A</span>
+                <div><p class="font-bold">Action — მოქმედება</p><p class="text-sm text-gray-600">AI-მ როგორ უნდა მოიქცეს? ვის სახელით? რა სტილი?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#FF9800;">T</span>
+                <div><p class="font-bold">Tone/Target — ტონი და სამიზნე</p><p class="text-sm text-gray-600">ვინ კითხულობს? ოფიციალური თუ არაფორმალური?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#00BCD4;">E</span>
+                <div><p class="font-bold">Extras — ფორმატი და დამატებები</p><p class="text-sm text-gray-600">სიგრძე, სტრუქტურა, ენა, სპეციალური მოთხოვნები</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREATE C -->
+<section id="create-c" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">C — Context</span>
+    <h2 class="text-2xl font-bold mb-4">C – Context (კონტექსტი)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">AI-ს ეუბნება <strong>სიტუაციის არსს</strong>: სად ვართ, რა ხდება, რა არის პრობლემა.</p>
+        <div class="two-column">
+            <div>
+                <p class="text-sm font-bold text-red-600 mb-2">❌ სუსტი კონტექსტი:</p>
+                <div class="code-block" style="font-size:0.82rem;">„დაწერე მეილი."</div>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-green-700 mb-2">✅ ძლიერი კონტექსტი:</p>
+                <div class="code-block" style="font-size:0.82rem;">„Megalab-ს 2025 წელს მოუწია PCR ტესტების ფასების გადახედვა, რაც გამოიწვია ზოგი B2B კლიენტის უკმაყოფილება. ახლა ვამზადებთ ოფიციალურ განმარტებით წერილს."</div>
+            </div>
+        </div>
+    </div>
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🔬 Megalab-ის კონტექსტის ელემენტები:</p>
+        <p class="text-sm text-gray-700">ორგანიზაციის სახელი • კონკრეტული სიტუაცია • ისტორია (საჭიროებისამებრ) • ძირითადი გამოწვევა</p>
+    </div>
+</section>
+
+<!-- CREATE R -->
+<section id="create-r" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">R — Request</span>
+    <h2 class="text-2xl font-bold mb-4">R – Request (მოთხოვნა)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3"><strong>ზუსტად</strong> რა გინდა AI-ს გამოიმუშავოს — ტიპი, რაოდენობა, ფორმა.</p>
+        <div class="two-column">
+            <div>
+                <p class="text-sm font-bold text-red-600 mb-2">❌ ბუნდოვანი:</p>
+                <div class="code-block" style="font-size:0.82rem;">„დამეხმარე ტექსტის დაწერაში."</div>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-green-700 mb-2">✅ ზუსტი:</p>
+                <div class="code-block" style="font-size:0.82rem;">„დაწერე 3 სხვადასხვა ვარიანტი სტრატეგიული ელ-ფოსტის სათაურისთვის, რომელიც კლიენტებს PCR ფასების ცვლილებაზე ატყობინებს."</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREATE E1 -->
+<section id="create-e1" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">E — Explanation</span>
+    <h2 class="text-2xl font-bold mb-4">E – Explanation (ახსნა)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">დამატებითი <strong>შეზღუდვები, ტერმინოლოგია, სპეციფიკური მოთხოვნები</strong> — ის, რაც AI-ს „ჩარჩოს" განსაზღვრავს.</p>
+        <div class="code-block" style="font-size:0.85rem;">„გამოიყენე ოფიციალური B2B ტერმინოლოგია. მოერიდე ემოციურ ენას.
+ნუ გამოიყენებ ფრაზა „ვწუხვართ" — ამის ნაცვლად: „მადლობა გაგებისთვის".
+ნუ ახსენებ კონკრეტულ ფასებს — ეს ხდება ცალკე კომუნიკაციაში."</div>
+    </div>
+</section>
+
+<!-- CREATE A -->
+<section id="create-a" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">A — Action</span>
+    <h2 class="text-2xl font-bold mb-4">A – Action (მოქმედება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">AI-ს ეუბნება <strong>ვის სახელით</strong> და <strong>როგორ</strong> უნდა მოიქცეს.</p>
+        <div class="code-block" style="font-size:0.85rem;">„დაწერე Megalab-ის გენერალური დირექტორის სახელით — პროფესიონალი,
+დიპლომატიური, გადამწყვეტი."</div>
+    </div>
+    <div class="highlight-box">
+        <p class="font-bold mb-1">Megalab-ის სტანდარტული როლები:</p>
+        <p class="text-sm text-gray-700">„Megalab-ის CEO" · „Megalab-ის PR დირექტორი" · „Megalab-ის CFO" · „Megalab-ის Legal Counsel" · „Megalab-ის HR მენეჯერი"</p>
+    </div>
+</section>
+
+<!-- CREATE T -->
+<section id="create-t" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">T — Tone/Target</span>
+    <h2 class="text-2xl font-bold mb-4">T – Tone/Target (ტონი და სამიზნე)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3"><strong>ვინ</strong> კითხულობს და <strong>რა ტონი</strong> შეესაბამება.</p>
+        <div class="three-column">
+            <div class="p-4 rounded-lg text-center" style="background:#e3f2fd;">
+                <p class="font-bold text-sm mb-2">🤝 B2B პარტნიორი</p>
+                <p class="text-xs text-gray-600">ოფიციალური, კოლეგიური, პატივისცემა</p>
+            </div>
+            <div class="p-4 rounded-lg text-center" style="background:#f3e5f5;">
+                <p class="font-bold text-sm mb-2">📢 მედია / PR</p>
+                <p class="text-xs text-gray-600">ნეიტრალური, ფაქტობრივი, ნდობის მსახევი</p>
+            </div>
+            <div class="p-4 rounded-lg text-center" style="background:#e8f5e9;">
+                <p class="font-bold text-sm mb-2">📋 ბორდი / ინვესტორები</p>
+                <p class="text-xs text-gray-600">ლაკონური, მონაცემებზე დაფუძნებული, სტრატეგიული</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREATE E2 -->
+<section id="create-e2" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">E — Extras</span>
+    <h2 class="text-2xl font-bold mb-4">E – Extras (დამატებითი ფორმატირება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">სიგრძე, სტრუქტურა, ენა, ბულეტები, სათაურები.</p>
+        <div class="code-block" style="font-size:0.85rem;">„მაქსიმუმ 200 სიტყვა. გამოიყენე სათაური (bold),
+შემდეგ 3 ბულეტ-პუნქტი, ბოლოს — მოკლე CTA (call-to-action).
+ქართულ ენაზე, პარაგრაფებს შორის ერთი ცარიელი ხაზი."</div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-2">🔥 სრული C.R.E.A.T.E. პრომპტი — Megalab-ის მაგალითი:</p>
+        <div class="code-block" style="position:relative;font-size:0.82rem;">
+            <button class="copy-btn" onclick="copyText(this)">კოპირება</button>
+[C] Megalab-ის სამედიცინო ლაბორატორიამ 2025 წლის მარტში განაახლა PCR ტესტების
+ფასები ინფლაციისა და ახალი JCI სტანდარტების გამო. ზოგმა B2B კლიენტმა
+გამოხატა უკმაყოფილება.
+
+[R] დაწერე ოფიციალური განმარტებითი წერილი B2B კლიენტებისთვის.
+
+[E] გამოიყენე ოფიციალური ბიზნეს ტერმინოლოგია. ნუ ახსენებ კონკრეტულ ფასებს.
+ხაზი გაუსვი JCI კვალიფიკაციის მნიშვნელობას.
+
+[A] იმოქმედე, როგორც Megalab-ის CEO — პროფესიონალი და გადამწყვეტი.
+
+[T] სამიზნე: ბიზნეს-კლიენტები. ტონი: ოფიციალური, ნდობის განმამტკიცებელი.
+
+[E] 180-200 სიტყვა. სათაური + 2 პარაგრაფი + CTA. ქართული ენა.</div>
+    </div>
+</section>
+
+<!-- PROF COMM -->
+<section id="profcomm" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 Megalab-ის სპეციფიკა</span>
+    <h2 class="text-3xl font-bold mb-2">💼 AI პროფესიულ კომუნიკაციაში</h2>
+    <p class="text-gray-500 mb-6">სამი ძირითადი მიმართულება Megalab-ის კონტექსტში</p>
+    <div class="three-column">
+        <div class="card text-center" style="border-top:3px solid #2196F3;">
+            <p class="text-3xl mb-2">🤝</p>
+            <p class="font-bold">B2B &amp; კორპორატიული</p>
+            <p class="text-xs text-gray-500 mt-1">სტრატეგიული მიმოწერა</p>
+        </div>
+        <div class="card text-center" style="border-top:3px solid #E91E63;">
+            <p class="text-3xl mb-2">📢</p>
+            <p class="font-bold">PR &amp; მარკეტინგი</p>
+            <p class="text-xs text-gray-500 mt-1">კრიზისი, პრესრელიზები</p>
+        </div>
+        <div class="card text-center" style="border-top:3px solid #9C27B0;">
+            <p class="text-3xl mb-2">📊</p>
+            <p class="font-bold">მენეჯმენტი</p>
+            <p class="text-xs text-gray-500 mt-1">ბორდი, ოპერაციები</p>
+        </div>
+    </div>
+</section>
+
+<!-- B2B -->
+<section id="b2b" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🤝 B2B კომუნიკაცია</span>
+    <h2 class="text-2xl font-bold mb-4">B2B და კორპორატიული კომუნიკაცია</h2>
+    <div class="card mb-4">
+        <p class="font-bold mb-3">AI-ს გამოყენება Megalab-ის B2B კომუნიკაციაში:</p>
+        <div class="two-column">
+            <ul class="text-sm text-gray-700 space-y-2">
+                <li class="flex gap-2"><span style="color:#2196F3;">→</span> სტრატეგიული წერილები სამედიცინო პარტნიორებისთვის</li>
+                <li class="flex gap-2"><span style="color:#2196F3;">→</span> სადაზღვევო კომპანიებთან Procurement მოლაპარაკებები</li>
+                <li class="flex gap-2"><span style="color:#2196F3;">→</span> მომწოდებლებთან (რეაქტივები, ეკვიპმენტი) ხელშეკრულებების დრაფტები</li>
+            </ul>
+            <ul class="text-sm text-gray-700 space-y-2">
+                <li class="flex gap-2"><span style="color:#2196F3;">→</span> კლინიკებთან და საავადმყოფოებთან პარტნიორობის წერილები</li>
+                <li class="flex gap-2"><span style="color:#2196F3;">→</span> Q&amp;A დოკუმენტები სხვადასხვა სამსახურებისთვის</li>
+                <li class="flex gap-2"><span style="color:#2196F3;">→</span> კვარტალური ანგარიშების შეჯამება პარტნიორებისთვის</li>
+            </ul>
+        </div>
+    </div>
+    <div class="code-block" style="position:relative;">
+        <button class="copy-btn" onclick="copyText(this)">კოპირება</button>
+მაგალითი — სადაზღვევო B2B:
+„იმოქმედე, როგორც Megalab-ის Procurement დირექტორი.
+დაწერე ფორმალური წერილი [სადაზღვევო კომპანია X]-ისთვის,
+სადაც ვთხოვთ გადახედვას ჩვენი PCR და ბიოქიმიური ტესტების
+სადაზღვევო ანაზღაურების ტარიფებზე 2025-2026 წლებისთვის.
+ხაზი გავუსვათ Megalab-ის JCI აკრედიტაციის ღირებულებას.
+ტონი: ოფიციალური, პარტნიორული. 200 სიტყვამდე. ქართულად."</div>
+</section>
+
+<!-- PR -->
+<section id="pr" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📢 PR &amp; მარკეტინგი</span>
+    <h2 class="text-2xl font-bold mb-4">PR და მარკეტინგი — Megalab-ის სტანდარტები</h2>
+    <div class="card mb-4">
+        <div class="two-column">
+            <div>
+                <p class="font-bold mb-2" style="color:#C2185B;">🚨 კრიზისული კომუნიკაცია:</p>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• ლაბ-შეცდომის ოფიციალური განცხადება</li>
+                    <li>• სერვის შეფერხების შეტყობინება</li>
+                    <li>• მედიისთვის პასუხები</li>
+                </ul>
+            </div>
+            <div>
+                <p class="font-bold mb-2" style="color:#1565C0;">📣 სტანდარტული PR:</p>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• ახალი სერვისის გახსნის პრესრელიზი</li>
+                    <li>• JCI ან სხვა სერტიფიკატის ანონსი</li>
+                    <li>• პარტნიორობის განცხადება</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="warning-box">
+        <p class="font-bold mb-1">⚠️ კრიზისული კომუნიკაციის წესი:</p>
+        <p class="text-sm text-gray-700">AI ქმნის <strong>პირველ დრაფტს მხოლოდ</strong>. კრიზისული განცხადება <strong>ყოველთვის</strong> უნდა გაიაროს Legal და Management-ის შემოწმება გამოქვეყნებამდე.</p>
+    </div>
+    <div class="code-block" style="position:relative;margin-top:1rem;">
+        <button class="copy-btn" onclick="copyText(this)">კოპირება</button>
+კრიზისული კომუნიკაციის პრომპტი:
+„იმოქმედე, როგორც Megalab-ის PR დირექტორი.
+სიტუაცია: ლაბ-სისტემის ტექნიკური გაუმართაობის გამო
+დღეს 3 საათი გადაიდო ონლაინ შედეგების გაცემა.
+დაწერე კლიენტებისთვის ოფიციალური შეტყობინება:
+— ბოდიში, გამჭვირვალობა, გამოსავალი, კომპენსაცია.
+ტონი: პასუხისმგებლური, მშვიდი. მაქსიმუმ 120 სიტყვა."</div>
+</section>
+
+<!-- MGMT -->
+<section id="mgmt" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📊 მენეჯმენტი</span>
+    <h2 class="text-2xl font-bold mb-4">ტოპ-მენეჯმენტი და ოპერაციები</h2>
+    <div class="three-column mb-4">
+        <div class="card">
+            <p class="font-bold text-sm mb-2">📋 ბორდის შეხვედრები</p>
+            <p class="text-xs text-gray-600">Meeting minutes-ის ავტომატური შეჯამება. ძირითადი გადაწყვეტილებების ამოღება გრძელი ოქმებიდან.</p>
+        </div>
+        <div class="card">
+            <p class="font-bold text-sm mb-2">💰 ფინანსური ანგარიშები</p>
+            <p class="text-xs text-gray-600">ფინანსური მონაცემების გამარტივება არა-ფინანსური მენეჯერებისთვის. ინვესტორების Executive Summary.</p>
+        </div>
+        <div class="card">
+            <p class="font-bold text-sm mb-2">🔧 IT Specs</p>
+            <p class="text-xs text-gray-600">ტექნიკური მოთხოვნების ფორმულირება, დეპარტამენტებს შორის კოორდინაციის დოკუმენტები.</p>
+        </div>
+    </div>
+    <div class="code-block" style="position:relative;">
+        <button class="copy-btn" onclick="copyText(this)">კოპირება</button>
+Executive Summary პრომპტი:
+„ქვემოთ მოცემულია Megalab-ის Q1 2025 ოპერაციული ანგარიში [ჩასვი ტექსტი].
+დაწერე 1-გვერდიანი Executive Summary ბორდის წევრებისთვის:
+— 3 ძირითადი მიღწევა
+— 2 ძირითადი გამოწვევა
+— 3 კონკრეტული სამოქმედო ნაბიჯი
+ტონი: სტრატეგიული, ლაკონური. ბულეტ-პუნქტები. ქართულად."</div>
+</section>
+
+<!-- SOCIAL MEDIA -->
+<section id="social" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📱 სოციალური მედია</span>
+    <h2 class="text-2xl font-bold mb-4">📱 სოციალური მედიის სპეციფიკა</h2>
+    <div class="card mb-4">
+        <p class="font-bold mb-3">ოთხი ელემენტი — ეფექტური პოსტი:</p>
+        <div class="grid grid-cols-1 gap-3">
+            <div class="flex gap-3 items-start p-3 rounded-lg" style="background:#e3f2fd;">
+                <span class="font-black text-2xl" style="color:#1976D2;">H</span>
+                <div><p class="font-bold">Hook — ყურადღების მიმქცევი დასაწყისი</p><p class="text-sm text-gray-600">პირველი 1-2 წინადადება — ამ გარეშე ვერავინ წაიკითხავს</p><p class="text-xs mt-1 font-mono" style="color:#1565C0;">„რამდენ ხანს ელოდებით ლაბ-შედეგებს? Megalab-ი ამას სამუდამოდ ცვლის."</p></div>
+            </div>
+            <div class="flex gap-3 items-start p-3 rounded-lg" style="background:#f3e5f5;">
+                <span class="font-black text-2xl" style="color:#7B1FA2;">B</span>
+                <div><p class="font-bold">Body — ძირითადი ტექსტი</p><p class="text-sm text-gray-600">ღირებულება, ფაქტები, სარგებელი — 2-3 წინადადება</p></div>
+            </div>
+            <div class="flex gap-3 items-start p-3 rounded-lg" style="background:#e8f5e9;">
+                <span class="font-black text-2xl" style="color:#388E3C;">C</span>
+                <div><p class="font-bold">CTA — მოქმედების მოწოდება</p><p class="text-sm text-gray-600">„დაჯავშნეთ", „ეწვიეთ", „გაიგეთ მეტი" — ერთი კონკრეტული ქმედება</p></div>
+            </div>
+            <div class="flex gap-3 items-start p-3 rounded-lg" style="background:#fff8e1;">
+                <span class="font-black text-2xl" style="color:#F57F17;">#</span>
+                <div><p class="font-bold">ჰეშთეგები</p><p class="text-sm text-gray-600">3-5 ქართული + ინგლისური ჰეშთეგი</p><p class="text-xs mt-1 font-mono" style="color:#E65100;">#მეგალაბი #ლაბორატორია #ჯანმრთელობა #Megalab #HealthcareGeorgia</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ITERATIVE -->
+<section id="iterative" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🔄 Follow-Along</span>
+    <h2 class="text-2xl font-bold mb-4">🔄 Iterative Prompting — მიკრო-დავალება</h2>
+    <p class="text-gray-600 mb-4">ტრენერთან ერთად, ეკრანის პარალელურად:</p>
+    <div class="card mb-4" style="background:#0f1f2e;color:white;">
+        <p class="font-bold mb-3" style="color:#90caf9;">3 ნაბიჯი — ერთი პრომპტიდან სრულყოფილ ტექსტამდე:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#2196F3;">1</span>
+                <div><p class="font-bold text-sm">პირველი დრაფტი</p><p class="text-gray-300 text-sm">„დაწერე Megalab-ის PCR სერვისის სოციალური მედიის პოსტი."</p></div>
+            </div>
+            <div class="flex gap-3">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#E91E63;">2</span>
+                <div><p class="font-bold text-sm">გამარტივება</p><p class="text-gray-300 text-sm">„ახლა გამარტივე — მაქსიმუმ 80 სიტყვა, ემოციური Hook-ით."</p></div>
+            </div>
+            <div class="flex gap-3">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#4CAF50;">3</span>
+                <div><p class="font-bold text-sm">ტონის შეცვლა</p><p class="text-gray-300 text-sm">„შეცვალე ტონი — ნაკლებად ოფიციალური, უფრო სითბო."</p></div>
+            </div>
+        </div>
+    </div>
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 ოქროს წესი:</p>
+        <p class="text-gray-700">AI-ს პასუხი <strong>არასოდეს</strong> არის საბოლოო. პირველი დრაფტი — 70%. თქვენ ამ 30%-ს ამატებთ გამოცდილებით, ბრენდის ხმით და კონტექსტით.</p>
+    </div>
+</section>
+
+<!-- PRACTICE 1 -->
+<section id="practice1" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 1 · 20 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">✏️ პრაქტიკული დავალება 1</h2>
+    <p class="text-gray-500 mb-6">C.R.E.A.T.E. ან R.O.L.E. ჩარჩოს გამოყენება</p>
+
+    <div class="card mb-6" style="border:2px solid #E91E63;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება: ერთი სრულყოფილი ტექსტი</p>
+        <p class="text-gray-700 mb-4">გამოიყენეთ C.R.E.A.T.E. ან R.O.L.E. ჩარჩო და <strong>აირჩიეთ ერთ-ერთი:</strong></p>
+
+        <div class="two-column">
+            <div class="p-5 rounded-xl" style="background:#e3f2fd;border:2px solid #2196F3;">
+                <p class="font-bold mb-2" style="color:#1565C0;">🔵 ვარიანტი 1: ოფიციალური კომუნიკაცია</p>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• სტრატეგიული B2B წერილი პარტნიორს</li>
+                    <li>• ბორდისთვის ფინანსური შეჯამება</li>
+                    <li>• იურიდიული მოთხოვნის დრაფტი</li>
+                    <li>• HR შეტყობინება სერვის-ცვლილებაზე</li>
+                </ul>
+            </div>
+            <div class="p-5 rounded-xl" style="background:#fce4ec;border:2px solid #E91E63;">
+                <p class="font-bold mb-2" style="color:#C2185B;">🔴 ვარიანტი 2: PR / მარკეტინგი</p>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• პრესსაიარელი ახალი სერვისის გახსნაზე</li>
+                    <li>• კრიზისული განცხადება</li>
+                    <li>• სოციალური მედიის პოსტი (Hook + CTA)</li>
+                    <li>• LinkedIn პოსტი Megalab-ისთვის</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="background:#f0fdf4;border:1px solid #4CAF50;">
+        <p class="font-bold mb-2">🎓 ტრენერის როლი:</p>
+        <ul class="text-sm text-gray-700 space-y-1">
+            <li>✓ დახმარება პრომპტის „გასამართლებაში"</li>
+            <li>✓ ტონის და სტილის შერჩევა</li>
+            <li>✓ შედეგების iterative გაუმჯობესება</li>
+            <li>✓ სეკტორ-სპეციფიკური ტერმინოლოგია</li>
+        </ul>
+    </div>
+</section>
+
+<!-- BREAK -->
+<div id="break" class="py-10 border-b border-gray-200">
+    <div class="card text-center" style="background:linear-gradient(135deg,#00BCD4,#0097A7);color:white;border:none;">
+        <p class="text-4xl mb-2">☕</p>
+        <p class="text-2xl font-bold mb-1">10-წუთიანი შესვენება</p>
+        <p class="text-white/80">01:20 – 01:30</p>
+    </div>
+</div>
+
+<!-- BLOCK II HEADER -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🎨</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#90caf9;">ბლოკი II · 90 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">პრეზენტაციები, ვიზუალები და შეჯამება</h2>
+                <p class="text-gray-300 text-sm mt-1">01:30 – 03:00 · Gamma.app + AI ვიზუალები + Q&amp;A</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GAMMA -->
+<section id="gamma" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 Gamma.app · 20 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🎨 Gamma.app-ის გაცნობა</h2>
+    <p class="text-gray-500 mb-6">AI-ზე დაფუძნებული პრეზენტაციების პლატფორმა — PowerPoint-ის ეპოქა გათავდა</p>
+
+    <div class="two-column mb-6">
+        <div class="card">
+            <p class="font-bold mb-3" style="color:#E91E63;">❌ ტრადიციული PowerPoint:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• 2-3 საათი სლაიდების მოწყობაზე</li>
+                <li>• ხელით დიზაინი და ფორმატირება</li>
+                <li>• შრიფტების და ფერების ამორჩევა</li>
+                <li>• სურათების ძიება და ჩასმა</li>
+            </ul>
+        </div>
+        <div class="card" style="border:2px solid #7C3AED;">
+            <p class="font-bold mb-3" style="color:#7C3AED;">✅ Gamma.app:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• <strong>5-10 წუთი</strong> — სრული პრეზენტაცია</li>
+                <li>• AI ავტომატურად ადგენს სტრუქტურას</li>
+                <li>• AI ირჩევს სურათებს და დიზაინს</li>
+                <li>• ადვილი რედაქტირება</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">🔧 Gamma-ს გამოყენება Megalab-ში:</p>
+        <div class="three-column">
+            <div class="p-3 rounded-lg text-center" style="background:#f3e5f5;">
+                <p class="text-2xl mb-1">📊</p>
+                <p class="text-sm font-bold">ბორდის პრეზენტაციები</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#e3f2fd;">
+                <p class="text-2xl mb-1">🤝</p>
+                <p class="text-sm font-bold">B2B პარტნიორ-პრეზენტაცია</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#e8f5e9;">
+                <p class="text-2xl mb-1">🎓</p>
+                <p class="text-sm font-bold">სტაფ-ტრეინინგი</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🌐 დარეგისტრირდით: <a href="https://gamma.app" target="_blank" style="color:#2196F3;text-decoration:underline;">gamma.app</a></p>
+        <p class="text-sm text-gray-700">უფასო ვერსია — 400 AI კრედიტი (საკმარისია 8-10 პრეზენტაციისთვის). Google-ის ანგარიშით შესვლა — ყველაზე მარტივი.</p>
+    </div>
+</section>
+
+<!-- GAMMA DEMO -->
+<section id="gamma-demo" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ Follow-Along დემო</span>
+    <h2 class="text-2xl font-bold mb-4">🖥️ ინტერაქტიული დემო — ერთად ვქმნით</h2>
+    <p class="text-gray-600 mb-4">ტრენერი და მონაწილეები — სინქრონულად, click-by-click:</p>
+
+    <div class="card" style="background:#0f1f2e;color:white;padding:0;overflow:hidden;">
+        <div class="p-4 border-b border-white/10" style="background:#1a2f42;">
+            <p class="font-bold" style="color:#90caf9;">📍 ნაბიჯები — ერთად გადის:</p>
+        </div>
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#2196F3;">1</span>
+                <div><p class="font-bold text-sm text-white">gamma.app → "New with AI"</p><p class="text-gray-400 text-xs">ან "Generate" ღილაკი</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#E91E63;">2</span>
+                <div><p class="font-bold text-sm text-white">Outline-ის შეყვანა</p><p class="text-gray-400 text-xs font-mono text-xs">„Megalab-ის PCR ტესტირების სერვისი: სიჩქარე, სიზუსტე, JCI აკრედიტაცია. 6 სლაიდი."</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#9C27B0;">3</span>
+                <div><p class="font-bold text-sm text-white">თემის და ფერის არჩევა</p><p class="text-gray-400 text-xs">Professional / Healthcare სტილი</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#4CAF50;">4</span>
+                <div><p class="font-bold text-sm text-white">Generate — პრეზენტაცია მზადაა!</p><p class="text-gray-400 text-xs">30-60 წამი</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FF9800;">5</span>
+                <div><p class="font-bold text-sm text-white">AI Agent ტრიუკი: Ctrl+E</p><p class="text-gray-400 text-xs">სლაიდზე ახალი ინსტრუქციის მიწოდება — ტექსტის ან სურათის ჩანაცვლება</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRACTICE 2 -->
+<section id="practice2" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 2 · 30 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">✏️ პრაქტიკული დავალება 2: Gamma პრეზენტაცია</h2>
+    <p class="text-gray-500 mb-6">შექმენით საკუთარი პრეზენტაცია</p>
+
+    <div class="card mb-6" style="border:2px solid #7C3AED;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#7C3AED;">1</span>
+                <p class="text-gray-700">შექმენით <strong>5-7 სლაიდიანი პრეზენტაცია</strong> მათთვის სასურველ Megalab-ის თემაზე</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#7C3AED;">2</span>
+                <p class="text-gray-700">დაარედაქტირეთ <strong>მინიმუმ 2 სლაიდი</strong> — შეცვალეთ ტექსტი ან სურათი</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#7C3AED;">3</span>
+                <p class="text-gray-700">სცადეთ <strong>Ctrl+E (AI Agent)</strong> — მიეცით ახალი ინსტრუქცია სლაიდზე</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold mb-3">💡 თემის იდეები:</p>
+        <div class="two-column">
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• Megalab-ის ახალი სერვისის გაცნობა</li>
+                <li>• ლაბ-ტესტირების პროცედურები</li>
+                <li>• JCI სტანდარტები — კლიენტებისთვის</li>
+            </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• B2B პარტნიორობის შეთავაზება</li>
+                <li>• Megalab 2025 — ყოველთვიური ანგარიში</li>
+                <li>• ახალი HR პოლიტიკის გაცნობა</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">30 წუთში — სრული, ვიზუალურად მიმზიდველი პრეზენტაცია, რომელიც გამოსადეგია რეალური სამუშაოდ.</p>
+    </div>
+</section>
+
+<!-- IMAGE PROMPTS -->
+<section id="image-prompts" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🖼️ AI ვიზუალები · 20 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">🖼️ AI ვიზუალების გენერაცია</h2>
+    <p class="text-gray-600 mb-4">სწორად დაწერილი პრომპტი = პროფესიონალური სურათი</p>
+
+    <div class="card mb-4">
+        <p class="font-bold mb-3">🔑 გამოსახულების პრომპტის 4 ელემენტი:</p>
+        <div class="grid grid-cols-1 gap-2">
+            <div class="flex gap-3 p-3 rounded-lg" style="background:#e3f2fd;">
+                <span class="font-black" style="color:#1976D2;">1.</span>
+                <div><strong>სუბიექტი:</strong> <span class="text-gray-700">ვინ ან რა არის სურათზე</span></div>
+            </div>
+            <div class="flex gap-3 p-3 rounded-lg" style="background:#f3e5f5;">
+                <span class="font-black" style="color:#7B1FA2;">2.</span>
+                <div><strong>სტილი:</strong> <span class="text-gray-700">professional photo, illustration, minimalist, corporate...</span></div>
+            </div>
+            <div class="flex gap-3 p-3 rounded-lg" style="background:#e8f5e9;">
+                <span class="font-black" style="color:#388E3C;">3.</span>
+                <div><strong>განათება და ფერები:</strong> <span class="text-gray-700">bright, clean, white background, blue tones...</span></div>
+            </div>
+            <div class="flex gap-3 p-3 rounded-lg" style="background:#fff8e1;">
+                <span class="font-black" style="color:#F57F17;">4.</span>
+                <div><strong>კომპოზიცია:</strong> <span class="text-gray-700">wide shot, close-up, centered, rule of thirds...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold mb-3">🔬 Megalab-ის ვიზუალური სტილი:</p>
+        <div class="two-column">
+            <div>
+                <p class="text-sm font-bold text-red-600 mb-2">❌ ნუ გამოიყენებთ:</p>
+                <ul class="text-xs text-gray-600 space-y-1">
+                    <li>• Stock photo სახელები (Getty, Shutterstock)</li>
+                    <li>• კონკრეტული ადამიანების სახეები</li>
+                    <li>• სისხლი / ექსტრემალური სამედიცინო სცენები</li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-green-700 mb-2">✅ სცადეთ:</p>
+                <ul class="text-xs text-gray-600 space-y-1">
+                    <li>• "modern laboratory, clean, blue tones"</li>
+                    <li>• "medical professional, diverse team"</li>
+                    <li>• "microscope, science, white background"</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-2">🆓 უფასო ხელსაწყოები:</p>
+        <div class="three-column">
+            <div class="text-center p-3 rounded-lg bg-white">
+                <p class="font-bold text-sm">Bing Image Creator</p>
+                <p class="text-xs text-gray-500">DALL-E 3 (Microsoft)</p>
+                <p class="text-xs mt-1" style="color:#2196F3;">bing.com/images/create</p>
+            </div>
+            <div class="text-center p-3 rounded-lg bg-white">
+                <p class="font-bold text-sm">Adobe Firefly</p>
+                <p class="text-xs text-gray-500">კომერციულად უსაფრთხო</p>
+                <p class="text-xs mt-1" style="color:#2196F3;">firefly.adobe.com</p>
+            </div>
+            <div class="text-center p-3 rounded-lg bg-white">
+                <p class="font-bold text-sm">Ideogram</p>
+                <p class="text-xs text-gray-500">ტექსტიანი სურათები</p>
+                <p class="text-xs mt-1" style="color:#2196F3;">ideogram.ai</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- IMAGE PRACTICE -->
+<section id="image-practice" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">🎨 მიკრო-დავალება · Follow-Along</span>
+    <h2 class="text-2xl font-bold mb-4">🎨 მიკრო-დავალება: AI ვიზუალი სოც. მედიისთვის</h2>
+    <p class="text-gray-600 mb-4">ტრენერთან ერთად — Bing Image Creator-ში:</p>
+
+    <div class="card mb-4" style="background:#0f1f2e;color:white;">
+        <p class="font-bold mb-3" style="color:#90caf9;">დავალება:</p>
+        <p class="text-gray-300 mb-4">შექმენით 1 ვიზუალი Megalab-ის LinkedIn ან Facebook პოსტისთვის</p>
+        <div class="code-block" style="background:#1a2f42;font-size:0.85rem;">
+მაგალითი პრომპტი:
+"A modern medical laboratory in Georgia, clean and professional,
+blue and white color scheme, laboratory technician in white coat
+working with advanced equipment, bright lighting, corporate style,
+no text, suitable for healthcare social media post"</div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 გახსოვდეთ:</p>
+        <p class="text-sm text-gray-700">AI-ს გამოსახულება — <strong>პირველი ვარიანტი</strong>. შეუძლია კიდევ 3-4-ჯერ შეცვალოთ პრომპტი, სანამ სასურველ შედეგს მიაღწევთ.</p>
+    </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="min-h-[80vh] flex flex-col justify-center py-12 topic-card">
+    <span class="badge badge-theory">✅ შეჯამება · 20 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">✅ შეჯამება, ნამუშევრების განხილვა და Q&amp;A</h2>
+
+    <div class="card mb-6" style="background:#0f1f2e;color:white;">
+        <p class="font-bold text-xl mb-4" style="color:#90caf9;">🏆 დღეს ისწავლეთ:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">AI-ს მუშაობის ლოგიკა</p><p class="text-gray-400 text-sm">LLM, Next-word prediction, ჰალუცინაციები</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">JCI/GDPR-თავსებადი გამოყენება</p><p class="text-gray-400 text-sm">რა შეიძლება, რა — არა</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">C.R.E.A.T.E. ფრეიმვორქი</p><p class="text-gray-400 text-sm">სრული 6-ელემენტიანი პრომპტი</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Megalab-ის კომუნიკაცია</p><p class="text-gray-400 text-sm">B2B, PR, მენეჯმენტი</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Gamma.app</p><p class="text-gray-400 text-sm">AI პრეზენტაცია 5-10 წუთში</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">AI ვიზუალები</p><p class="text-gray-400 text-sm">პრომპტი სურათებისთვის</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-6" style="border:2px solid #E91E63;">
+        <p class="font-bold text-lg mb-3">🔥 ოქროს პრომპტი — წაიღეთ სახლში:</p>
+        <div class="code-block" style="position:relative;">
+            <button class="copy-btn" onclick="copyText(this)">კოპირება</button>
+„[C] [სიტუაცია Megalab-ში]
+[R] დაწერე [ტიპი: წერილი / განცხადება / პოსტი / შეჯამება]
+[E] [შეზღუდვები: ტერმინოლოგია, რა გამოიტოვო]
+[A] იმოქმედე, როგორც Megalab-ის [ჩასვი: CEO / PR / CFO / HR]
+[T] სამიზნე: [ვინ კითხულობს]. ტონი: [ოფიციალური / კოლეგიური / პარტნიორული]
+[E] [სიგრძე] სიტყვა. [ფორმატი]. ქართულ ენაზე."</div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border:1px solid #FF9800;">
+        <p class="font-bold text-lg mb-3">❓ Q&amp;A სესია:</p>
+        <p class="text-gray-700 mb-3">რამდენიმე მონაწილე ანჩვენებს საკუთარ ნამუშევარს:</p>
+        <ul class="text-sm text-gray-700 space-y-1">
+            <li>• პრომპტი + AI-ს პასუხი</li>
+            <li>• Gamma.app-ის პრეზენტაცია</li>
+            <li>• AI-ს ვიზუალი + განხილვა</li>
+        </ul>
+    </div>
+
+    <div class="mt-8 p-6 rounded-xl text-center" style="background:linear-gradient(135deg,#0f1f2e,#1a3a5c);">
+        <p class="text-3xl mb-2">🔬</p>
+        <p class="text-white font-bold text-xl mb-2">Megalab AI ტრენინგი — დღე 1 დასრულდა!</p>
+        <p class="text-gray-300 text-sm">გამოიყენეთ C.R.E.A.T.E. ხვალვე სამსახურში.</p>
+        <p class="text-gray-400 text-xs mt-2">გიორგი ბასილაია · Smart Academy · 2025</p>
+    </div>
+</section>
+
+    </div><!-- end max-w-5xl -->
+</main>
+
+<script>
+// Sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    overlay.classList.toggle('hidden', isOpen);
+    menuIcon.classList.toggle('hidden', !isOpen);
+    closeIcon.classList.toggle('hidden', isOpen);
+    document.getElementById('mainContent').style.marginLeft = isOpen ? '0' : '';
+}
+
+// Active nav on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+            if (active) { active.classList.add('active'); active.scrollIntoView({ block: 'nearest' }); }
+        }
+    });
+}, { threshold: 0.2 });
+sections.forEach(s => observer.observe(s));
+
+// Copy button
+function copyText(btn) {
+    const codeBlock = btn.parentElement;
+    const text = codeBlock.innerText.replace('კოპირება', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ დაკოპირდა';
+        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+    });
+}
+</script>
+</body>
+</html>
