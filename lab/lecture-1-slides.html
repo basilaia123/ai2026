@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ტრენინგი - დღე 1: საფუძვლები და პრომპტინგი</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tempo: { 900: '#1A1A1A', 800: '#2C2C2C', 700: '#333333', sky: '#48B8BE', gold: '#C5A059', light: '#F0F0F0' }
+                    },
+                    fontFamily: {
+                        sans: ['FiraGO', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --sky: #48B8BE;
+            --sky-light: #A8DCDF;
+            --cyan: #2C8B90;
+            --teal: #1D5558;
+            --green: #48B8BE;
+            --deep: #F0F0F0;
+            --mid: #1E1E1E;
+            --bg: #282828;
+            --surface: #333333;
+            --border: rgba(255,255,255,0.10);
+            --text-1: #F0F0F0;
+            --text-2: #D4D4D4;
+            --text-3: #A0A0A0;
+            --shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        html { scroll-behavior: smooth; font-size: 24px; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link.active { background: rgba(197,160,89,0.15); border-left: 3px solid #48B8BE; color: #48B8BE; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); }
+        .topic-card { border-left: 4px solid #48B8BE; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .prompt-container code { font-family: 'Courier New', monospace; }
+        
+        .prose p { margin-bottom: 1rem; line-height: 1.7; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose li { margin-bottom: 0.5rem; }
+        .prose h3 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose h3:not([class*="text-"]) { color: #1A1A1A; }
+        .prose h4 { font-size: 1.25rem; font-weight: bold; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+        .prose h4:not([class*="text-"]) { color: #2C2C2C; }
+        
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+        
+        .highlight-box, .warning-box, .key-points {
+            background: #F9F9F9;
+            border: none;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #48B8BE;
+        }
+        .warning-box { border-left-color: #1A1A1A; }
+        
+        .day-theme {
+            background: linear-gradient(180deg, #edf6f7 0%, #e1eff1 100%);
+            color: #1f2937;
+            font-size: 27px;
+            line-height: 1.65;
+        }
+        .day-theme #sidebar,
+        .day-theme header,
+        .day-theme footer,
+        .day-theme .bg-tempo-900,
+        .day-theme .bg-tempo-800,
+        .day-theme .bg-tempo-700 {
+            background: #f3f8f9 !important;
+            color: #1f2937 !important;
+            border-color: rgba(44, 139, 144, 0.16) !important;
+            box-shadow: 0 10px 30px rgba(29, 85, 88, 0.08);
+        }
+        .day-theme .bg-tempo-800\/5,
+        .day-theme .bg-tempo-800\/10,
+        .day-theme .bg-tempo-800\/20,
+        .day-theme .bg-black\/30 {
+            background: rgba(72, 184, 190, 0.14) !important;
+            color: #1f2937 !important;
+            border-color: rgba(44, 139, 144, 0.24) !important;
+        }
+        .day-theme .text-white,
+        .day-theme .bg-tempo-900 .text-white,
+        .day-theme .bg-tempo-800 .text-white,
+        .day-theme header .text-white,
+        .day-theme footer .text-white,
+        .day-theme #sidebar .text-white {
+            color: #111827 !important;
+        }
+        .day-theme h1,
+        .day-theme h2,
+        .day-theme h3,
+        .day-theme h4,
+        .day-theme h5,
+        .day-theme h6,
+        .day-theme p,
+        .day-theme li,
+        .day-theme td,
+        .day-theme th,
+        .day-theme pre,
+        .day-theme strong {
+            color: #111827;
+        }
+        .day-theme .text-gray-300 { color: #374151 !important; }
+        .day-theme .text-gray-400 { color: #4b5563 !important; }
+        .day-theme .text-gray-500 { color: #6b7280 !important; }
+        .day-theme .text-gray-600 { color: #4b5563 !important; }
+        .day-theme .text-gray-700 { color: #374151 !important; }
+        .day-theme .badge-theory { background: rgba(72, 184, 190, 0.1) !important; color: #2C8B90 !important; border-color: rgba(72, 184, 190, 0.3) !important; }
+        .day-theme .badge-practice { background: rgba(197, 160, 89, 0.1) !important; color: #C5A059 !important; border-color: rgba(197, 160, 89, 0.3) !important; }
+
+        @media (max-width: 768px) {
+            .two-column, .three-column { grid-template-columns: 1fr; gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="day-theme">
+
+<!-- Mobile overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Toggle button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-tempo-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-tempo-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-tempo-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-xl font-serif font-bold text-tempo-gold">AI პრაქტიკული კურსი</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">დღე 1: საფუძვლები & პრომპტინგი</p>
+        <p class="text-gray-400 text-xs mt-1">180 წუთი | სრული გზამკვლევი</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-4 pb-2 text-[11px] uppercase tracking-wider text-tempo-gold font-bold">ბლოკი I: თეორია & ტექსტი</div>
+        
+        <a href="#topic-1" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent active">
+            <span class="pr-2 whitespace-normal break-words leading-snug">1. 🎯 დღის წესრიგი</span>
+        </a>
+        <a href="#topic-2" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">2. 🤔 რა არის გენერაციული AI?</span>
+        </a>
+        <a href="#topic-2b" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent" style="padding-left:2rem;">
+            <span class="pr-2 whitespace-normal break-words leading-snug text-xs">⚙️ LLM — Next-Word Prediction</span>
+        </a>
+        <a href="#topic-3" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">3. 🤖 მოდელები & LMSYS Arena</span>
+        </a>
+        <a href="#topic-4" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">4. 🔒 უსაფრთხოების ოქროს წესები</span>
+        </a>
+        <a href="#topic-5" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">5. 🍄 ჰალუცინაციები და მიკერძოება</span>
+        </a>
+        <a href="#topic-6" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">6. 📝 პრომპტის ანატომია: R.O.L.E.</span>
+        </a>
+        <a href="#topic-7" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">7. 🏗️ C.R.E.A.T.E. მოდელი</span>
+        </a>
+        <a href="#topic-7b" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent" style="padding-left:2rem;">
+            <span class="pr-2 whitespace-normal break-words leading-snug text-xs">⚡ Before / After დემო</span>
+        </a>
+        <a href="#topic-8" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">8. 📧 AI პროფესიულ კომუნიკაციაში</span>
+        </a>
+        <a href="#topic-9" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">9. 📢 PR და მარკეტინგი</span>
+        </a>
+        <a href="#topic-9b" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent" style="padding-left:2rem;">
+            <span class="pr-2 whitespace-normal break-words leading-snug text-xs">📊 ტოპ-მენეჯმენტი</span>
+        </a>
+        <a href="#topic-10" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">10. 📱 სოციალური მედიის სპეციფიკა</span>
+        </a>
+        <a href="#topic-11" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">11. 🔄 Iterative Prompting</span>
+        </a>
+        <a href="#topic-12" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">12. ✍️ პრაქტიკული დავალება 1</span>
+        </a>
+
+        <div class="px-5 pt-6 pb-2 text-[11px] uppercase tracking-wider text-tempo-gold font-bold">ბლოკი II: ვიზუალები & Gamma</div>
+        
+        <a href="#topic-13" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">13. ✨ Gamma.app-ის გაცნობა</span>
+        </a>
+        <a href="#topic-14" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">14. 🛠️ Gamma: ინტერაქტიული დემო</span>
+        </a>
+        <a href="#topic-15" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">15. 🤖 AI Agent-ის ტრიუკი</span>
+        </a>
+        <a href="#topic-16" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">16. 💻 პრაქტიკული დავალება 2: Gamma</span>
+        </a>
+        <a href="#topic-17" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">17. 🎨 AI ვიზუალების გენერაცია</span>
+        </a>
+        <a href="#topic-18" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">18. ✍️ ვიზუალების პრომპტინგი</span>
+        </a>
+        <a href="#topic-19" class="nav-link flex items-start px-5 py-2.5 text-sm text-gray-300 transition-all border-l-[3px] border-transparent">
+            <span class="pr-2 whitespace-normal break-words leading-snug">19. 🏁 შეჯამება და Q&A</span>
+        </a>
+
+        <div class="mt-8 px-5 space-y-2 mb-6">
+            <a href="index.html" class="block text-center bg-tempo-800/10 hover:bg-tempo-800/20 text-white text-sm py-2 rounded transition-colors">← მთავარ გვერდზე</a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300 ml-0 md:ml-0">
+
+    <!-- Header -->
+    <header class="bg-tempo-900 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-tempo-gold rounded-full blur-[100px] opacity-10"></div>
+        <div class="max-w-7xl relative z-10">
+            <h1 class="text-2xl md:text-4xl font-serif font-bold leading-tight mb-4">დღე 1: AI-ის საფუძვლები <span class="text-tempo-light">& ეფექტური პრომპტინგი</span></h1>
+            <p class="text-gray-300 text-lg max-w-4xl leading-relaxed mb-6">ხელოვნური ინტელექტის მუშაობის პრინციპები, უსაფრთხოების სტანდარტები და ტექსტური/ვიზუალური კონტენტის გენერაციის მასტერკლასი.</p>
+            
+            <div class="flex flex-wrap gap-4">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-tempo-800/10 px-3 py-1.5 rounded text-white"><svg class="w-4 h-4 text-tempo-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 180 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-tempo-800/10 px-3 py-1.5 rounded text-white"><svg class="w-4 h-4 text-tempo-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg> გიორგი ბასილაია</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-tempo-800/10 px-3 py-1.5 rounded text-white"><svg class="w-4 h-4 text-tempo-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg> ინტენსიური ვორკშოპი</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+
+        <!-- Slide 1: 🎯 დღის წესრიგი -->
+        <section id="topic-1" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🎯 Agenda</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>01. დღევანდელი სესიის დღის წესრიგი</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-tempo-900 border border-gray-200 rounded-xl p-8 shadow-sm">
+                    <h4 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="bg-tempo-gold/20 p-2 rounded-lg text-tempo-gold">01</span>
+                        ბლოკი I: თეორია & ტექსტი (80 წთ)
+                    </h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
+                            <div class="text-gray-300"><strong class="text-white">AI-ის ლოგიკა:</strong> როგორ მუშაობს LLM და Next-word prediction.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
+                            <div class="text-gray-300"><strong class="text-white">უსაფრთხოება:</strong> კონფიდენციალურობა, ჰალუცინაციები და Bias.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
+                            <div class="text-gray-300"><strong class="text-white">პრომპტ-ინჟინერია:</strong> R.O.L.E. და C.R.E.A.T.E. მოდელები.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>
+                            <div class="text-gray-300"><strong class="text-white">პრაქტიკა:</strong> პროფესიული კომუნიკაცია და სოც. მედია.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-tempo-900 border border-gray-200 rounded-xl p-8 shadow-sm">
+                    <h4 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="bg-tempo-gold/20 p-2 rounded-lg text-tempo-gold">02</span>
+                        ბლოკი II: პრეზენტაციები & ვიზუალები (90 წთ)
+                    </h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">5</span>
+                            <div class="text-gray-300"><strong class="text-white">Gamma.app:</strong> პრეზენტაციების ავტომატური აწყობა.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">6</span>
+                            <div class="text-gray-300"><strong class="text-white">AI Agent Trick:</strong> მონაცემების ჭკვიანი ჩანაცვლება.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">7</span>
+                            <div class="text-gray-300"><strong class="text-white">ვიზუალები:</strong> DALL-E 3 და Bing Image Creator.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-tempo-gold/10 text-tempo-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">8</span>
+                            <div class="text-gray-300"><strong class="text-white">შეჯამება:</strong> ნამუშევრების განხილვა და Q&A.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-tempo-gold/5 border border-tempo-gold/20 rounded-lg p-4 flex items-center justify-between">
+                <span class="text-tempo-900 font-bold">☕ შესვენება: 10 წუთი (ბლოკებს შორის)</span>
+                <span class="text-tempo-gold font-bold">⏱ 180 წუთი ჯამში</span>
+            </div>
+        </section>
+
+        <!-- Slide 2: 🤔 რა არის გენერაციული AI? -->
+        <section id="topic-2" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">📘 თეორია</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>02. რა არის გენერაციული AI?</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="prose max-w-none">
+                    <p class="text-lg">გენერაციული ხელოვნური ინტელექტი (GenAI) არის სისტემა, რომელსაც შეუძლია შექმნას <strong class="text-tempo-gold">ახალი კონტენტი</strong> (ტექსტი, გამოსახულება, აუდიო, კოდი) არსებულ მონაცემებზე დაყრდნობით.</p>
+                    
+                    <div class="highlight-box bg-white border border-gray-200 p-6 rounded-xl mt-6">
+                        <h4 class="text-tempo-gold font-bold mb-2">როგორ მუშაობს ის?</h4>
+                        <p class="text-sm">მისი მუშაობის პრინციპი ეფუძნება <strong class="text-tempo-900">Next-word prediction</strong>-ს (შემდეგი სიტყვის წინასწარმეტყველება). ის არ "ფიქრობს", ის ითვლის ალბათობას.</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="bg-tempo-800 p-6 rounded-xl border border-white/10 text-white">
+                        <h5 class="font-bold text-tempo-gold mb-3 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            ძირითადი მახასიათებლები
+                        </h5>
+                        <ul class="text-sm space-y-3 text-gray-300">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-tempo-gold rounded-full"></span> კრეატიულობა და სინთეზი</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-tempo-gold rounded-full"></span> კონტექსტის გაგება (Context Window)</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-tempo-gold rounded-full"></span> მრავალმხრივი გამოყენება (Multi-modal)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-tempo-900 p-6 rounded-xl border border-gray-200">
+                        <p class="text-sm italic text-gray-500">"GenAI არ არის ენციკლოპედია, ის არის წარმოუდგენლად განათლებული, მაგრამ ზოგჯერ დაბნეული ასისტენტი."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2b: ⚙️ LLM — Next-Word Prediction -->
+        <section id="topic-2b" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">⚙️ How It Works</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>02b. LLM — Next-Word Prediction</h3>
+
+            <div class="bg-white border border-gray-200 rounded-xl p-8 mb-6 shadow-sm">
+                <p class="text-xl font-bold mb-6 text-tempo-900">„შემდეგი სიტყვის წინასწარმეტყველება"</p>
+                <div class="three-column">
+                    <div class="text-center p-5 rounded-xl" style="background:#f0f9ff;">
+                        <div class="text-4xl mb-3">📚</div>
+                        <p class="font-bold text-sm mb-2">ტრენინგი</p>
+                        <p class="text-xs text-gray-600">AI-ს გაუვლია ინტერნეტის ტექსტების ტრილიონები — წიგნები, სტატიები, კოდი</p>
+                    </div>
+                    <div class="text-center p-5 rounded-xl" style="background:#fdf4ff;">
+                        <div class="text-4xl mb-3">🎲</div>
+                        <p class="font-bold text-sm mb-2">ალბათობები</p>
+                        <p class="text-xs text-gray-600">სწავლობს: „ბიზნეს-შეხვედრა" — ყველაზე ხშირად მოჰყვება „დღის წესრიგი" ან „ოქმი"</p>
+                    </div>
+                    <div class="text-center p-5 rounded-xl" style="background:#f0fdf4;">
+                        <div class="text-4xl mb-3">💬</div>
+                        <p class="font-bold text-sm mb-2">გენერაცია</p>
+                        <p class="text-xs text-gray-600">თქვენი პრომპტის საფუძველზე ირჩევს ყველაზე სავარაუდო სიტყვებს</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box bg-white border border-gray-200 p-6 rounded-xl mb-4" style="border-left: 4px solid #1A1A1A;">
+                <p class="font-bold mb-2">⚠️ მნიშვნელოვანი: AI ფიქრს არ აკეთებს</p>
+                <p class="text-gray-600 text-sm">AI <strong>არ „ფიქრობს"</strong> და <strong>არ „იცის"</strong> — ის სტატისტიკურად ყველაზე სავარაუდო სიტყვის კომბინაციებს ირჩევს. ამიტომ შეიძლება ზოგჯერ <strong>ჰალუცინაციები</strong> (მცდარი ფაქტები) გამოიმუშაოს.</p>
+            </div>
+
+            <div class="highlight-box bg-white border border-gray-200 p-6 rounded-xl" style="border-left: 4px solid #48B8BE;">
+                <p class="font-bold mb-1">💡 პრაქტიკული შედეგი:</p>
+                <p class="text-gray-600 text-sm">რაც უფრო <strong>ზუსტ კონტექსტს</strong> მიაწვდით, მით უფრო ზუსტ პასუხს მიიღებთ. ეს არის მიზეზი, რატომ ვსწავლობთ C.R.E.A.T.E.-ს.</p>
+            </div>
+        </section>
+
+        <!-- Slide 3: 🤖 მოდელების მიმოხილვა -->
+        <section id="topic-3" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🛠️ 2026 Ecosystem</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>03. მთავარი მოთამაშეები & LMSYS Arena</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <!-- ChatGPT -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-[#10a37f]/10 rounded-lg flex items-center justify-center mb-4">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" class="w-8 h-8" alt="ChatGPT">
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">ChatGPT GPT-5</h4>
+                    <p class="text-[10px] text-gray-500 mb-4 font-semibold uppercase italic">Reasoning & Omni-Intelligence</p>
+                    <ul class="text-[13px] space-y-2 text-gray-600">
+                        <li class="flex items-start gap-2">✅ ავტონომიური აგენტები</li>
+                        <li class="flex items-start gap-2">✅ რთული ამოცანების ლოგიკა</li>
+                    </ul>
+                </div>
+
+                <!-- Claude -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-[#d97757]/10 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" fill="#d97757"/>
+                            <path d="M8.5 15.5l3.5-7 3.5 7M9.5 13.5h5" stroke="#d97757" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">Claude 4</h4>
+                    <p class="text-[10px] text-gray-500 mb-4 font-semibold uppercase italic">Personalized Context & Safety</p>
+                    <ul class="text-[13px] space-y-2 text-gray-600">
+                        <li class="flex items-start gap-2">✅ კომპიუტერის მართვის ფუნქცია</li>
+                        <li class="flex items-start gap-2">✅ "ადამიანური" სინთეზი</li>
+                    </ul>
+                </div>
+
+                <!-- Gemini -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-[#4285f4]/10 rounded-lg flex items-center justify-center mb-4">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" class="w-8 h-8" alt="Gemini">
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">Gemini 2.0</h4>
+                    <p class="text-[10px] text-gray-500 mb-4 font-semibold uppercase italic">Integrated Ecosystem</p>
+                    <ul class="text-[13px] space-y-2 text-gray-600">
+                        <li class="flex items-start gap-2">✅ Infinite Context Window</li>
+                        <li class="flex items-start gap-2">✅ სრული Google ინტეგრაცია</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-tempo-900 border border-tempo-gold/30 rounded-xl p-8 text-white relative overflow-hidden shadow-2xl">
+                <div class="absolute top-0 right-0 p-4">
+                    <span class="bg-tempo-gold text-tempo-900 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Standard 2026</span>
+                </div>
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="shrink-0">
+                        <div class="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center text-4xl">🏆</div>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-tempo-gold mb-2">LMSYS Chatbot Arena (lmarena.ai)</h4>
+                        <p class="text-gray-300 text-sm leading-relaxed mb-4">2026 წლისთვის ეს რჩება ერთადერთ ობიექტურ საზომად. აქ ნახავთ, როგორ ეჯიბრებიან <strong>GPT-5</strong>, <strong>Claude 4</strong> და <strong>Llama 4</strong> ერთმანეთს რეალურ დროში.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="bg-white/5 border border-white/10 px-3 py-1 rounded text-[11px] text-gray-400">📊 150+ აქტიური მოდელი</span>
+                            <span class="bg-white/5 border border-white/10 px-3 py-1 rounded text-[11px] text-gray-400">🧠 Reasoning Leaderboard</span>
+                            <span class="bg-white/5 border border-white/10 px-3 py-1 rounded text-[11px] text-gray-400">⭐ Open-Source vs Frontier</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: 🔒 უსაფრთხოების ოქროს წესები -->
+        <section id="topic-4" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🔒 Security</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>04. უსაფრთხოების ოქროს წესები და შეზღუდვები</h3>
+            
+            <div class="warning-box bg-red-50 border-l-4 border-red-500 p-8 rounded-xl shadow-sm mb-10">
+                <h4 class="text-red-700 font-bold text-xl mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    რა არ უნდა გაუზიაროთ AI-ს?
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white/50 p-4 rounded-lg">
+                        <p class="font-bold text-red-800">პირადი მონაცემები</p>
+                        <p class="text-sm text-red-600">სახელი, გვარი, მისამართი, პირადი ნომერი, ტელეფონი.</p>
+                    </div>
+                    <div class="bg-white/50 p-4 rounded-lg">
+                        <p class="font-bold text-red-800">კონფიდენციალური ინფო</p>
+                        <p class="text-sm text-red-600">კომპანიის ფინანსური რეპორტები, ხელშეკრულებები, პაროლები.</p>
+                    </div>
+                    <div class="bg-white/50 p-4 rounded-lg">
+                        <p class="font-bold text-red-800">პაციენტის ისტორია</p>
+                        <p class="text-sm text-red-600">სამედიცინო დიაგნოზები, ანალიზის პასუხები (Megalab სპეციფიკა).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-tempo-800 p-6 rounded-xl text-white">
+                    <h5 class="font-bold text-tempo-gold mb-3 uppercase tracking-wider">უსაფრთხოების სტანდარტები</h5>
+                    <ul class="text-sm space-y-3">
+                        <li class="flex items-start gap-2"><span class="text-tempo-gold mt-1">✓</span> <strong>GDPR თავსებადობა:</strong> მონაცემთა დაცვის ევროპული რეგულაციები.</li>
+                        <li class="flex items-start gap-2"><span class="text-tempo-gold mt-1">✓</span> <strong>JCI სტანდარტები:</strong> სამედიცინო ხარისხის და უსაფრთხოების დაცვა.</li>
+                        <li class="flex items-start gap-2"><span class="text-tempo-gold mt-1">✓</span> <strong>მონაცემთა ანონიმიზაცია:</strong> შეცვალეთ სახელები და ციფრები პრომპტში გაგზავნამდე.</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-tempo-900 border border-gray-200 p-6 rounded-xl">
+                    <h5 class="font-bold text-tempo-900 mb-3 uppercase tracking-wider">მნიშვნელოვანი შეხსენება</h5>
+                    <p class="text-sm text-gray-600 leading-relaxed italic">"თუ მონაცემს აწვდით უფასო ვერსიის AI-ს, ჩათვალეთ, რომ ეს მონაცემი ხდება საჯარო და გამოიყენება მოდელის დასატრენინგებლად."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: 🍄 ჰალუცინაციები და მიკერძოება -->
+        <section id="topic-5" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">⚠️ Limitations</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>05. ჰალუცინაციები და მიკერძოება (Bias)</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                    <h4 class="text-2xl font-bold text-tempo-900 mb-4 flex items-center gap-2">
+                        <span class="text-3xl">🍄</span> ჰალუცინაციები
+                    </h4>
+                    <p class="text-gray-600 mb-6 leading-relaxed">AI ზოგჯერ დამაჯერებლად იტყუება. ის იგონებს ფაქტებს, ციტატებს, თარიღებს და წყაროებს, რადგან მისი მიზანია შექმნას ლოგიკურად გამართული ტექსტი და არა სიმართლე.</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-tempo-gold">
+                        <p class="text-sm font-bold text-tempo-900 mb-1">როგორ ავიცილოთ თავიდან?</p>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• ყოველთვის გადაამოწმეთ ციფრები და წყაროები.</li>
+                            <li>• სთხოვეთ AI-ს "აზროვნება ეტაპობრივად" (Chain of Thought).</li>
+                            <li>• გამოიყენეთ Perplexity ფაქტების გადასამოწმებლად.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                    <h4 class="text-2xl font-bold text-tempo-900 mb-4 flex items-center gap-2">
+                        <span class="text-3xl">⚖️</span> მიკერძოება (Bias)
+                    </h4>
+                    <p class="text-gray-600 mb-6 leading-relaxed">AI მოდელები იწვრთნება ადამიანების მიერ შექმნილ ტექსტებზე, რაც ნიშნავს, რომ ისინი ითვისებენ ჩვენს სტერეოტიპებს (გენდერული, რასობრივი, კულტურული).</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border-l-4 border-tempo-900">
+                        <p class="text-sm font-bold text-tempo-900 mb-1">გახსოვდეთ:</p>
+                        <p class="text-xs text-gray-600">AI არ არის ობიექტური მსაჯული. ის არის სარკე იმ მონაცემებისა, რაზეც ის დატრენინგდა.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: 📝 პრომპტის ანატომია: R.O.L.E. -->
+        <section id="topic-6" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">📝 Prompting</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>06. პრომპტის ანატომია: R.O.L.E. ჩარჩო</h3>
+            
+            <p class="text-lg text-gray-700 mb-8 max-w-3xl">ეს არის უმარტივესი და ყველაზე ეფექტური ფორმულა სწრაფი და ხარისხიანი პასუხის მისაღებად.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-10">
+                <div class="bg-tempo-900 text-white p-6 rounded-xl flex flex-col items-center text-center">
+                    <span class="text-4xl font-black text-tempo-gold mb-2">R</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Role</span>
+                    <p class="text-[10px] mt-2">ვინ არის AI?</p>
+                </div>
+                <div class="bg-tempo-800 text-white p-6 rounded-xl flex flex-col items-center text-center">
+                    <span class="text-4xl font-black text-tempo-gold mb-2">O</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Objective</span>
+                    <p class="text-[10px] mt-2">რა არის მიზანი?</p>
+                </div>
+                <div class="bg-tempo-700 text-white p-6 rounded-xl flex flex-col items-center text-center">
+                    <span class="text-4xl font-black text-tempo-gold mb-2">L</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Limit</span>
+                    <p class="text-[10px] mt-2">რა არის ზღვარი?</p>
+                </div>
+                <div class="bg-tempo-900 text-white p-6 rounded-xl flex flex-col items-center text-center">
+                    <span class="text-4xl font-black text-tempo-gold mb-2">E</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Example</span>
+                    <p class="text-[10px] mt-2">რა ფორმატში?</p>
+                </div>
+                <div class="bg-tempo-gold/10 border border-tempo-gold/30 p-6 rounded-xl flex flex-col items-center justify-center text-center">
+                    <span class="text-2xl font-bold text-tempo-gold">🎯</span>
+                    <p class="text-[10px] font-bold text-tempo-900 mt-2">სრულყოფილი შედეგი</p>
+                </div>
+            </div>
+
+            <div class="relative bg-tempo-900 rounded-lg p-6 text-sm text-gray-300 mt-6 group hover:border-tempo-gold/30 border border-transparent transition-all shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-[10px] uppercase tracking-widest text-tempo-gold font-bold">Prompt Blueprint</span>
+                    <button class="copy-btn bg-tempo-gold/10 hover:bg-tempo-gold hover:text-white text-tempo-gold text-[10px] px-3 py-1 rounded transition-all border border-tempo-gold/20" onclick="copyToClipboard(this)">კოპირება</button>
+                </div>
+                <pre class="font-mono leading-relaxed text-gray-200 whitespace-pre-wrap">R: იმოქმედე, როგორც უფროსი PR მენეჯერი.
+O: დაწერე პრესრელიზი ახალი ლაბორატორიის გახსნაზე.
+L: მაქსიმუმ 300 სიტყვა, გამოიყენე ოფიციალური ტონი.
+E: ფორმატი: სათაური, ძირითადი ტექსტი ბულეტებით, საკონტაქტო ინფო.</pre>
+            </div>
+        </section>
+
+        <!-- Slide 7: 🏗️ C.R.E.A.T.E. მოდელი -->
+        <section id="topic-7" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🏗️ Advanced Prompting</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>07. C.R.E.A.T.E. მოდელი (დეტალური კონტროლისთვის)</h3>
+            
+            <div class="three-column">
+                <div class="bg-white border border-gray-200 p-5 rounded-xl">
+                    <h5 class="font-bold text-tempo-900 border-b border-gray-100 pb-2 mb-3"><span class="text-tempo-gold">C</span> - Context</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">მიაწოდეთ ფონი. რა ხდება? ვინ არიან მონაწილეები? რა არის სიტუაცია?</p>
+                </div>
+                <div class="bg-white border border-gray-200 p-5 rounded-xl">
+                    <h5 class="font-bold text-tempo-900 border-b border-gray-100 pb-2 mb-3"><span class="text-tempo-gold">R</span> - Request</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">ზუსტად რა გსურთ? დაწერე, შეაჯამე, თარგმნე თუ გააანალიზე?</p>
+                </div>
+                <div class="bg-white border border-gray-200 p-5 rounded-xl">
+                    <h5 class="font-bold text-tempo-900 border-b border-gray-100 pb-2 mb-3"><span class="text-tempo-gold">E</span> - Explanation</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">დამატებითი დეტალები, ტერმინოლოგია ან სპეციფიკური მოთხოვნები.</p>
+                </div>
+                <div class="bg-white border border-gray-200 p-5 rounded-xl">
+                    <h5 class="font-bold text-tempo-900 border-b border-gray-100 pb-2 mb-3"><span class="text-tempo-gold">A</span> - Action</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">როგორ უნდა იმოქმედოს AI-მ? (როგორც ექსპერტმა, კრიტიკოსმა თუ მეგობარმა).</p>
+                </div>
+                <div class="bg-white border border-gray-200 p-5 rounded-xl">
+                    <h5 class="font-bold text-tempo-900 border-b border-gray-100 pb-2 mb-3"><span class="text-tempo-gold">T</span> - Tone/Target</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">ვინ კითხულობს პასუხს? როგორი უნდა იყოს განწყობა?</p>
+                </div>
+                <div class="bg-white border border-gray-200 p-5 rounded-xl">
+                    <h5 class="font-bold text-tempo-900 border-b border-gray-100 pb-2 mb-3"><span class="text-tempo-gold">E</span> - Extras</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">ფორმატირება, ბულეტები, ცხრილები თუ სხვა ვიზუალური ელემენტები.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7b: ⚡ Before / After დემო -->
+        <section id="topic-7b" class="scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-practice px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">⚡ Before / After დემო</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-4 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>07b. ერთი ამოცანა, ორი პრომპტი</h3>
+            <p class="text-gray-500 mb-8 text-sm">იგივე დავალება — სუსტი პრომპტი vs. C.R.E.A.T.E. პრომპტი. კლასი ადარებს.</p>
+
+            <div class="two-column mb-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-lg">❌</span>
+                        <p class="font-bold text-red-700">სუსტი პრომპტი</p>
+                    </div>
+                    <div class="bg-tempo-900 rounded-lg p-5 text-sm font-mono text-gray-300 mb-3 border-2 border-red-300">„დაწერე საქმიანი წერილი"</div>
+                    <div class="bg-red-50 border border-red-200 p-5 rounded-xl">
+                        <p class="text-xs font-bold mb-2 text-red-700">AI-ს გამოსვლა:</p>
+                        <p class="text-sm text-gray-700 italic">„ძვირფასო კოლეგო, გვსურს გაცნობოთ ჩვენი წინადადებების შესახებ. ჩვენ ვართ..."</p>
+                        <p class="text-xs mt-3 text-red-600 font-semibold">→ ზოგადი, უსარგებლო, ტონი გაუგებარი</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-lg">✅</span>
+                        <p class="font-bold text-green-700">C.R.E.A.T.E. პრომპტი</p>
+                    </div>
+                    <div class="bg-tempo-900 rounded-lg p-5 text-sm font-mono text-gray-300 mb-3 border-2 border-green-300">[C] კომპანიამ განაახლა სერვისის ფასები.
+[R] ოფიციალური წერილი B2B კლიენტებისთვის.
+[A] კომპანიის CEO.
+[T] ოფიციალური, ნდობის მომნიჭებელი.
+[E] 150 სიტყვა. ქართულად.</div>
+                    <div class="bg-green-50 border border-green-200 p-5 rounded-xl">
+                        <p class="text-xs font-bold mb-2 text-green-700">AI-ს გამოსვლა:</p>
+                        <p class="text-sm text-gray-700 italic">„პატივცემულო პარტნიორო, კომპანია განაგრძობს მაღალი ხარისხის სტანდარტებით მომსახურებას. 2026 წლის ახალი ტარიფები ასახავს..."</p>
+                        <p class="text-xs mt-3 text-green-600 font-semibold">→ კონკრეტული, პროფესიული, სარგებლიანი</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-tempo-900 rounded-xl p-6 text-white">
+                <p class="font-bold mb-2 text-tempo-gold">🗳️ კლასის კენჭისყრა:</p>
+                <p class="text-gray-300 text-sm">რომელი პასუხი გამოდგება რეალურ სამუშაოდ? → ხელი აიწიეთ: <strong class="text-red-400">A</strong> (სუსტი) ან <strong class="text-green-400">B</strong> (CREATE)</p>
+            </div>
+        </section>
+
+        <!-- Slide 8: 📧 AI პროფესიულ კომუნიკაციაში -->
+        <section id="topic-8" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">📧 Business Communication</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>08. AI პროფესიულ კომუნიკაციაში (B2B და კორპორატიული)</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-6">
+                    <div class="bg-tempo-900 p-6 rounded-xl border border-white/10 text-white">
+                        <h4 class="font-bold text-tempo-gold mb-3">სტრატეგიული წერილები</h4>
+                        <p class="text-sm text-gray-300">პარტნიორებთან მოლაპარაკებები, სადაზღვევო კომპანიებთან მიმოწერა, მომწოდებლებთან (Procurement) კოორდინაცია.</p>
+                    </div>
+                    <div class="bg-tempo-800 p-6 rounded-xl border border-white/10 text-white">
+                        <h4 class="font-bold text-tempo-gold mb-3">იურიდიული მიმოწერის დრაფტები</h4>
+                        <p class="text-sm text-gray-300">ხელშეკრულების პირობების განხილვა, მოთხოვნის წერილების (Demand Letters) მომზადება.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white border border-gray-200 p-8 rounded-xl shadow-sm">
+                    <h5 class="text-tempo-900 font-bold mb-4 uppercase text-xs tracking-widest">პროფესიული პრომპტის მაგალითი:</h5>
+                    <div class="relative bg-tempo-900 rounded-lg p-6 text-sm text-gray-300 mt-4 group hover:border-tempo-gold/30 border border-transparent transition-all shadow-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-[10px] uppercase tracking-widest text-tempo-gold font-bold">Prompt Blueprint</span>
+                            <button class="copy-btn bg-tempo-gold/10 hover:bg-tempo-gold hover:text-white text-tempo-gold text-[10px] px-3 py-1 rounded transition-all border border-tempo-gold/20" onclick="copyToClipboard(this)">კოპირება</button>
+                        </div>
+                        <pre class="font-mono leading-relaxed text-gray-200 whitespace-pre-wrap">კონტექსტი: ვწერთ ოფიციალურ წერილს პარტნიორ სადაზღვევო კომპანიას.
+ამოცანა: მოითხოვეთ პირობების გადახედვა მომსახურების ფასებთან დაკავშირებით.
+ტონი: დიპლომატიური, მაგრამ მტკიცე.
+ფორმატი: ოფიციალური მეილის სტრუქტურა.</pre>
+                    </div>
+                    <p class="text-[10px] text-gray-400 italic">გახსოვდეთ: AI-ის დაწერილი ტექსტი ყოველთვის უნდა გადამოწმდეს იურიდიული დეპარტამენტის მიერ.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: 📢 PR და მარკეტინგი -->
+        <section id="topic-9" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">📢 PR & Marketing</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>09. PR და მარკეტინგი: კრიზისული კომუნიკაცია</h3>
+            
+            <div class="bg-tempo-900 border border-gray-200 rounded-xl p-8 text-white mb-8">
+                <h4 class="text-xl font-bold text-tempo-gold mb-4 uppercase tracking-widest">Crisis Management 🚨</h4>
+                <p class="text-gray-300 leading-relaxed mb-6">როდესაც ხდება გაუთვალისწინებელი შემთხვევა (მაგ. სისტემური ხარვეზი ან უკმაყოფილო მომხმარებლის პოსტი), რეაგირების სისწრაფე გადამწყვეტია.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-tempo-800 p-4 rounded-lg">
+                        <p class="font-bold text-tempo-gold mb-2">ემპათია</p>
+                        <p class="text-xs text-gray-400">აჩვენეთ, რომ გესმით პრობლემა.</p>
+                    </div>
+                    <div class="bg-tempo-800 p-4 rounded-lg">
+                        <p class="font-bold text-tempo-gold mb-2">გამჭვირვალობა</p>
+                        <p class="text-xs text-gray-400">თქვით სიმართლე, რაც ხდება.</p>
+                    </div>
+                    <div class="bg-tempo-800 p-4 rounded-lg">
+                        <p class="font-bold text-tempo-gold mb-2">მოქმედება</p>
+                        <p class="text-xs text-gray-400">რა ნაბიჯებს დგამთ გამოსასწორებლად.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box bg-white border border-gray-200 p-6 rounded-xl">
+                <p class="text-sm font-bold text-tempo-900 mb-2">💡 პრო-რჩევა:</p>
+                <p class="text-xs text-gray-600">სთხოვეთ AI-ს: "იმოქმედე, როგორც კრიზისული კომუნიკაციების ექსპერტი. დაწერე 3 ვარიანტი ოფიციალური განცხადებისთვის, რომლებიც განსხვავდება სიმკაცრისა და ემპათიის დონით."</p>
+            </div>
+        </section>
+
+        <!-- Slide 9b: 📊 ტოპ-მენეჯმენტი და ოპერაციები -->
+        <section id="topic-9b" class="scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">📊 Management</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>09b. ტოპ-მენეჯმენტი და ოპერაციები</h3>
+
+            <div class="three-column mb-6">
+                <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                    <p class="font-bold text-sm mb-2">📋 ბორდის შეხვედრები</p>
+                    <p class="text-xs text-gray-600">Meeting minutes-ის ავტომატური შეჯამება. ძირითადი გადაწყვეტილებების ამოღება გრძელი ოქმებიდან.</p>
+                </div>
+                <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                    <p class="font-bold text-sm mb-2">💰 ფინანსური ანგარიშები</p>
+                    <p class="text-xs text-gray-600">ფინანსური მონაცემების გამარტივება არა-ფინანსური მენეჯერებისთვის. ინვესტორების Executive Summary.</p>
+                </div>
+                <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                    <p class="font-bold text-sm mb-2">🔧 IT Specs</p>
+                    <p class="text-xs text-gray-600">ტექნიკური მოთხოვნების ფორმულირება, დეპარტამენტებს შორის კოორდინაციის დოკუმენტები.</p>
+                </div>
+            </div>
+
+            <div class="bg-tempo-900 rounded-xl p-6 text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-[10px] uppercase tracking-widest text-tempo-gold font-bold">Executive Summary პრომპტი</span>
+                    <button class="copy-btn bg-tempo-gold/10 hover:bg-tempo-gold hover:text-white text-tempo-gold text-[10px] px-3 py-1 rounded transition-all border border-tempo-gold/20" onclick="copyToClipboard(this)">კოპირება</button>
+                </div>
+                <pre class="font-mono text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">ქვემოთ მოცემულია კომპანიის Q1 ოპერაციული ანგარიში [ჩასვი ტექსტი].
+დაწერე 1-გვერდიანი Executive Summary ბორდის წევრებისთვის:
+— 3 ძირითადი მიღწევა
+— 2 ძირითადი გამოწვევა
+— 3 კონკრეტული სამოქმედო ნაბიჯი
+ტონი: სტრატეგიული, ლაკონური. ბულეტ-პუნქტები. ქართულად.</pre>
+            </div>
+        </section>
+
+        <!-- Slide 10: 📱 სოციალური მედიის სპეციფიკა -->
+        <section id="topic-10" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">📱 Social Media</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>10. სოციალური მედიის სპეციფიკა</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="flex flex-col gap-4">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                        <h5 class="font-bold text-blue-900 mb-1">1. Hook (ყურადღება)</h5>
+                        <p class="text-xs text-blue-700">პირველი 2-3 სიტყვა, რომელიც აჩერებს მომხმარებელს სქროლვისას.</p>
+                    </div>
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+                        <h5 class="font-bold text-green-900 mb-1">2. Body (შინაარსი)</h5>
+                        <p class="text-xs text-green-700">მოკლე, გასაგები და ღირებულების მატარებელი ტექსტი.</p>
+                    </div>
+                    <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-lg">
+                        <h5 class="font-bold text-purple-900 mb-1">3. CTA (მოქმედება)</h5>
+                        <p class="text-xs text-purple-700">ზუსტად რა უნდა ქნას მომხმარებელმა? "დარეგისტრირდი", "გაიგე მეტი", "დააკომენტარე".</p>
+                    </div>
+                </div>
+
+                <div class="bg-tempo-900 p-8 rounded-xl text-white shadow-xl">
+                    <h5 class="font-bold text-tempo-gold mb-4 uppercase text-xs tracking-widest">AI პრომპტი სოც. მედიისთვის:</h5>
+                    <div class="relative bg-tempo-800/30 rounded-lg p-6 text-sm text-gray-300 group hover:border-tempo-gold/30 border border-transparent transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-[10px] uppercase tracking-widest text-tempo-gold font-bold">Prompt Blueprint</span>
+                            <button class="copy-btn bg-tempo-gold/10 hover:bg-tempo-gold hover:text-white text-tempo-gold text-[10px] px-3 py-1 rounded transition-all border border-tempo-gold/20" onclick="copyToClipboard(this)">კოპირება</button>
+                        </div>
+                        <pre class="font-mono leading-relaxed text-gray-200 whitespace-pre-wrap">დაწერე Facebook პოსტი Megalab-ის ახალ აქციაზე. 
+სამიზნე აუდიტორია: დაკავებული მშობლები. 
+ტონი: მზრუნველი და პროფესიული. 
+Extras: გამოიყენე 3 განსხვავებული Hook, დაამატე ემოჯები და ჰეშთეგები.</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: 🔄 Iterative Prompting -->
+        <section id="topic-11" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🔄 Iteration</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>11. Iterative Prompting და მიკრო-დავალება</h3>
+            
+            <div class="bg-tempo-900 border border-gray-200 rounded-xl p-8 text-white">
+                <h4 class="text-xl font-bold text-tempo-gold mb-6 uppercase tracking-widest">იტერაცია = დახვეწა 🔄</h4>
+                <p class="text-gray-300 leading-relaxed mb-8">პირველი პასუხი იშვიათად არის სრულყოფილი. AI-სთან მუშაობა არის დიალოგი.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-tempo-800 p-4 rounded-lg text-center border border-white/5">
+                        <span class="block text-2xl mb-2">💬</span>
+                        <p class="text-[10px] uppercase font-bold text-tempo-gold">Prompt</p>
+                    </div>
+                    <div class="bg-tempo-800 p-4 rounded-lg text-center border border-white/5">
+                        <span class="block text-2xl mb-2">🤖</span>
+                        <p class="text-[10px] uppercase font-bold text-tempo-gold">Response</p>
+                    </div>
+                    <div class="bg-tempo-800 p-4 rounded-lg text-center border border-white/5">
+                        <span class="block text-2xl mb-2">🧐</span>
+                        <p class="text-[10px] uppercase font-bold text-tempo-gold">Evaluate</p>
+                    </div>
+                    <div class="bg-tempo-800 p-4 rounded-lg text-center border border-white/5">
+                        <span class="block text-2xl mb-2">⚙️</span>
+                        <p class="text-[10px] uppercase font-bold text-tempo-gold">Refine</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 highlight-box bg-white border border-gray-200 p-6 rounded-xl">
+                <h5 class="text-tempo-900 font-bold mb-2">🚀 Follow-along (მიკრო-დავალება):</h5>
+                <p class="text-sm text-gray-600 mb-4">გახსენით ChatGPT/Claude და დაწერეთ მარტივი წინადადება. შემდეგ გამოიყენეთ ეს ბრძანებები:</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-gray-100 px-3 py-1 rounded-full text-[11px] border border-gray-200">"გაამარტივე ტექსტი"</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded-full text-[11px] border border-gray-200">"გახადე უფრო ოფიციალური"</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded-full text-[11px] border border-gray-200">"დაწერე იგივე 3 ბულეტით"</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded-full text-[11px] border border-gray-200">"შეცვალე ტონი მეგობრულით"</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: ✍️ პრაქტიკული დავალება 1 -->
+        <section id="topic-12" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-practice px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">✍️ Practice</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>12. პრაქტიკული დავალება 1: პროფესიული კომუნიკაცია</h3>
+            
+            <div class="bg-tempo-900 border border-gray-200 rounded-xl p-10 text-white relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 text-[10rem] opacity-5">📝</div>
+                <div class="relative z-10">
+                    <h4 class="text-2xl font-bold text-tempo-gold mb-6">აირჩიეთ ერთ-ერთი მიმართულება:</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                        <div class="bg-tempo-800 p-6 rounded-xl border border-white/5">
+                            <h5 class="font-bold text-white mb-3">1. ოფიციალური კომუნიკაცია</h5>
+                            <ul class="text-xs text-gray-400 space-y-2">
+                                <li>• სტრატეგიული წერილი პარტნიორს.</li>
+                                <li>• ბორდისთვის ფინანსური შეჯამება.</li>
+                                <li>• იურიდიული დოკუმენტის დრაფტი.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-tempo-800 p-6 rounded-xl border border-white/5">
+                            <h5 class="font-bold text-white mb-3">2. PR და მარკეტინგი</h5>
+                            <ul class="text-xs text-gray-400 space-y-2">
+                                <li>• საინფორმაციო პრესრელიზი.</li>
+                                <li>• კრიზისული განცხადება/პოსტი.</li>
+                                <li>• სოც. მედიის კამპანიის ტექსტი.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="key-points bg-white/5 border-l-4 border-tempo-gold p-6 rounded-r-xl">
+                        <p class="text-sm font-bold text-white mb-2">დავალება:</p>
+                        <p class="text-xs text-gray-300">გამოიყენეთ <strong class="text-tempo-gold">C.R.E.A.T.E.</strong> ან <strong class="text-tempo-gold">R.O.L.E.</strong> ჩარჩო და შექმენით ერთი სრულყოფილი ტექსტი. მოახდინეთ მინიმუმ 2 იტერაცია (დახვეწა).</p>
+                    </div>
+                    
+                    <div class="mt-8 flex items-center gap-4">
+                        <span class="text-tempo-gold font-bold">⏱ 20 წუთი</span>
+                        <span class="text-gray-500">|</span>
+                        <span class="text-gray-400 text-xs italic">ინდივიდუალური მუშაობა და უკუკავშირი.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: ✨ Gamma.app-ის გაცნობა -->
+        <section id="topic-13" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">✨ Presentations</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>13. Gamma.app: პრეზენტაციების რევოლუცია</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="prose max-w-none">
+                    <p class="text-lg">Gamma.app არის AI-ზე დაფუძნებული პლატფორმა, რომელიც წამებში ქმნის ლამაზ, ინტერაქტიულ პრეზენტაციებს, ვებ-გვერდებს და დოკუმენტებს.</p>
+                    
+                    <div class="highlight-box bg-white border border-gray-200 p-6 rounded-xl mt-6">
+                        <h4 class="text-tempo-gold font-bold mb-2">რატომ Gamma?</h4>
+                        <ul class="text-sm space-y-2 text-gray-600">
+                            <li>🚀 <strong class="text-tempo-900">სისწრაფე:</strong> დაზოგეთ საათები დიზაინზე.</li>
+                            <li>🎨 <strong class="text-tempo-900">ავტომატური დიზაინი:</strong> ფერები, ფონტები და სურათები თავისით ირჩევა.</li>
+                            <li>📱 <strong class="text-tempo-900">რესპონსიული:</strong> იდეალურად ჩანს ნებისმიერ მოწყობილობაზე.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-tempo-900 p-8 rounded-xl border border-gray-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4">
+                        <span class="bg-tempo-gold text-tempo-900 text-[10px] font-bold px-2 py-1 rounded">HOT TOOL</span>
+                    </div>
+                    <h5 class="text-white font-bold mb-4 uppercase text-xs tracking-widest">როგორ მივაწოდოთ სტრუქტურა?</h5>
+                    <p class="text-xs text-gray-400 mb-6">Gamma საუკეთესოდ მუშაობს, როდესაც აძლევთ მკაფიო <strong class="text-tempo-gold">Outline</strong>-ს (გეგმას).</p>
+                    
+                    <div class="relative bg-black/30 rounded-lg p-6 text-sm text-gray-300 group hover:border-tempo-gold/30 border border-white/5 transition-all shadow-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-[10px] uppercase tracking-widest text-tempo-gold font-bold">Presentation Outline</span>
+                            <button class="copy-btn bg-tempo-gold/10 hover:bg-tempo-gold hover:text-white text-tempo-gold text-[10px] px-3 py-1 rounded transition-all border border-tempo-gold/20" onclick="copyToClipboard(this)">კოპირება</button>
+                        </div>
+                        <pre class="font-mono leading-relaxed text-gray-200 whitespace-pre-wrap">1. შესავალი
+2. ბაზრის ანალიზი
+3. ჩვენი სტრატეგია
+4. ფინანსური პროგნოზი
+5. კითხვა-პასუხი</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 14: 🛠️ Gamma: ინტერაქტიული დემო -->
+        <section id="topic-14" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-practice px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🛠️ Workshop</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>14. Gamma.app: ინტერაქტიული დემო (Follow-along)</h3>
+            
+            <div class="bg-tempo-900 border border-gray-200 rounded-xl p-8 text-white">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="flex flex-col items-center text-center p-4">
+                        <span class="w-10 h-10 rounded-full bg-tempo-gold text-tempo-900 flex items-center justify-center font-bold mb-3">01</span>
+                        <h5 class="text-xs font-bold mb-1">რეგისტრაცია</h5>
+                        <p class="text-[10px] text-gray-400">გაიარეთ ავტორიზაცია Google-ით.</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center p-4">
+                        <span class="w-10 h-10 rounded-full bg-tempo-gold text-tempo-900 flex items-center justify-center font-bold mb-3">02</span>
+                        <h5 class="text-xs font-bold mb-1">Create New</h5>
+                        <p class="text-[10px] text-gray-400">აირჩიეთ "Presentation".</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center p-4">
+                        <span class="w-10 h-10 rounded-full bg-tempo-gold text-tempo-900 flex items-center justify-center font-bold mb-3">03</span>
+                        <h5 class="text-xs font-bold mb-1">Topic/Prompt</h5>
+                        <p class="text-[10px] text-gray-400">შეიყვანეთ თემა ქართულად.</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center p-4">
+                        <span class="w-10 h-10 rounded-full bg-tempo-gold text-tempo-900 flex items-center justify-center font-bold mb-3">04</span>
+                        <h5 class="text-xs font-bold mb-1">Generate</h5>
+                        <p class="text-[10px] text-gray-400">აირჩიეთ თემა და დააჭირეთ დაწყებას.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 bg-tempo-gold/10 border border-tempo-gold/30 rounded-xl p-6 flex items-center gap-6">
+                <div class="text-4xl">🖱️</div>
+                <div>
+                    <h5 class="text-tempo-900 font-bold mb-1">Click-by-click პროცესი:</h5>
+                    <p class="text-sm text-gray-600">ინტერაქტიული პროცესი: ნაბიჯ-ნაბიჯ აწყობა.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 15: 🤖 AI Agent-ის ტრიუკი -->
+        <section id="topic-15" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🤖 AI Agent</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>15. AI Agent-ის ტრიუკი Gamma-ში</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="bg-tempo-900 p-8 rounded-xl text-white">
+                    <h4 class="text-xl font-bold text-tempo-gold mb-6 uppercase tracking-widest">Magic Command: Ctrl + E ⚡</h4>
+                    <p class="text-gray-300 leading-relaxed mb-6">ეს არის "ჯადოსნური" ასისტენტი, რომელიც საშუალებას გაძლევთ დაარედაქტიროთ სლაიდი ბუნებრივი ენით.</p>
+                    
+                    <div class="bg-tempo-800 p-4 rounded-lg border-l-4 border-tempo-gold">
+                        <p class="text-xs font-bold text-white mb-2">რისი გაკეთება შეუძლია?</p>
+                        <ul class="text-[11px] text-gray-400 space-y-2">
+                            <li>• "შეცვალე ეს სურათი სამედიცინო აპარატურით."</li>
+                            <li>• "გადააქციე ეს ტექსტი 3 სვეტად."</li>
+                            <li>• "გახადე ფონი უფრო მუქი."</li>
+                            <li>• "დაამატე ახალი სექცია ფასებზე."</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col justify-center">
+                    <div class="highlight-box bg-white border border-gray-200 p-8 rounded-xl">
+                        <h5 class="text-tempo-900 font-bold mb-4">მონაცემების ჩანაცვლება:</h5>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-4">წარმოიდგინეთ, გაქვთ ყოველთვიური რეპორტის შაბლონი. უბრალოდ უთხარით AI აგენტს: "განაახლე ეს სლაიდი იანვრის მონაცემებით" და მიაწოდეთ ახალი რიცხვები.</p>
+                        <span class="text-xs font-bold text-tempo-gold uppercase">Efficiency: +300%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 16: 💻 პრაქტიკული დავალება 2 -->
+        <section id="topic-16" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-practice px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">💻 Practice</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>16. პრაქტიკული დავალება 2: Gamma პრეზენტაცია</h3>
+            
+            <div class="bg-tempo-900 border border-gray-200 rounded-xl p-10 text-white">
+                <h4 class="text-2xl font-bold text-tempo-gold mb-6 uppercase">თქვენი ჯერია! 🚀</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
+                    <div class="space-y-4">
+                        <h5 class="font-bold text-white border-b border-white/10 pb-2">დავალების პირობა:</h5>
+                        <ul class="text-sm text-gray-300 space-y-3">
+                            <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold">•</span> შექმენით <strong class="text-white">5-7 სლაიდიანი</strong> პრეზენტაცია.</li>
+                            <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold">•</span> თემა: თქვენი დეპარტამენტის რეპორტი, პროექტი ან პირადი ინტერესი.</li>
+                            <li class="flex items-start gap-2"><span class="text-tempo-gold font-bold">•</span> დაარედაქტირეთ მინიმუმ <strong class="text-white">2 სლაიდი</strong> AI Agent-ის გამოყენებით.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-tempo-800 p-6 rounded-xl border border-white/5">
+                        <h5 class="font-bold text-tempo-gold mb-3 text-xs uppercase tracking-widest">შედეგი:</h5>
+                        <p class="text-xs text-gray-400 leading-relaxed italic">"სესიის ბოლოს ჩვენ გადავხედავთ რამდენიმე ნამუშევარს და ვნახავთ, როგორ გაართვა თავი AI-მ დიზაინსა და შინაარსს."</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <span class="bg-tempo-gold text-tempo-900 px-4 py-2 rounded font-bold text-sm">⏱ 30 წუთი</span>
+                    <span class="text-gray-500">|</span>
+                    <span class="text-gray-400 text-xs">გამოიყენეთ Gamma-ს უფასო კრედიტები.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 17: 🎨 AI ვიზუალების გენერაცია -->
+        <section id="topic-17" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🎨 Visual AI</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>17. AI ვიზუალების გენერაცია</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="prose max-w-none">
+                    <p class="text-lg">ტექსტური პრომპტის საფუძველზე გამოსახულების შექმნა დღეს ხელმისაწვდომია ყველასთვის.</p>
+                    
+                    <div class="grid grid-cols-1 gap-4 mt-6">
+                        <div class="bg-white border border-gray-200 p-4 rounded-xl flex items-center gap-4 shadow-sm">
+                            <div class="w-10 h-10 bg-[#10a37f]/10 rounded-lg flex items-center justify-center shrink-0">🎨</div>
+                            <div>
+                                <h5 class="font-bold text-sm text-tempo-900">DALL-E 3 (OpenAI)</h5>
+                                <p class="text-[10px] text-gray-500 italic">ინტეგრირებულია ChatGPT-ში. საუკეთესოა დეტალების გაგებაში.</p>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-gray-200 p-4 rounded-xl flex items-center gap-4 shadow-sm">
+                            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">🔍</div>
+                            <div>
+                                <h5 class="font-bold text-sm text-tempo-900">Bing Image Creator</h5>
+                                <p class="text-[10px] text-gray-500 italic">DALL-E 3-ის უფასო ვერსია Microsoft-ისგან.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-tempo-900 p-8 rounded-xl text-white relative">
+                    <h5 class="font-bold text-tempo-gold mb-4 uppercase text-xs tracking-widest">რა ქმნის კარგ ვიზუალურ პრომპტს?</h5>
+                    <ul class="text-[11px] space-y-4">
+                        <li class="flex items-start gap-2"><span class="text-tempo-gold">1. სუბიექტი:</span> ზუსტად ვინ ან რა არის სურათზე?</li>
+                        <li class="flex items-start gap-2"><span class="text-tempo-gold">2. სტილი:</span> ფოტოგრაფიული, ციფრული ხელოვნება, 3D რენდერი, ზეთით ნახატი?</li>
+                        <li class="flex items-start gap-2"><span class="text-tempo-gold">3. განათება:</span> მზის შუქი, ნეონი, დრამატული განათება?</li>
+                        <li class="flex items-start gap-2"><span class="text-tempo-gold">4. ფერები:</span> პასტელური, ნათელი, შავ-თეთრი?</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 18: ✍️ ვიზუალების პრომპტინგი -->
+        <section id="topic-18" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-practice px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">✍️ Visual Workshop</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>ვიზუალების პრომპტინგი: პრაქტიკა</h3>
+            
+            <div class="bg-tempo-900 border border-gray-200 rounded-xl p-8 text-white mb-8 shadow-xl">
+                <h4 class="text-xl font-bold text-tempo-gold mb-4 uppercase tracking-widest">Follow-along: სოც. მედიის ვიზუალი 📸</h4>
+                <p class="text-gray-300 mb-6">შევქმნათ სურათი სოციალური მედიის პოსტისთვის, რომელიც ადრე დავწერეთ.</p>
+                
+                <div class="relative bg-tempo-800/30 rounded-lg p-6 text-sm text-gray-300 group hover:border-tempo-gold/30 border border-white/10 transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] uppercase tracking-widest text-tempo-gold font-bold">Visual Prompt</span>
+                        <button class="copy-btn bg-tempo-gold/10 hover:bg-tempo-gold hover:text-white text-tempo-gold text-[10px] px-3 py-1 rounded transition-all border border-tempo-gold/20" onclick="copyToClipboard(this)">კოპირება</button>
+                    </div>
+                    <pre class="font-mono leading-relaxed text-gray-200 whitespace-pre-wrap">პრომპტი: მულტიდისციპლინური ლაბორატორიის თანამედროვე ინტერიერი, თბილი და მეგობრული ატმოსფერო, რბილი ბუნებრივი განათება, ფოტოგრაფიული სტილი, მაღალი ხარისხი (8k), რეალისტური.</pre>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="highlight-box bg-white border border-gray-200 p-6 rounded-xl">
+                    <h5 class="text-tempo-900 font-bold mb-2">დავალება:</h5>
+                    <p class="text-sm text-gray-600">გამოიყენეთ Bing Image Creator და დააგენერირეთ 1 ვიზუალი თქვენი პოსტისთვის. სცადეთ შეცვალოთ სტილი (მაგ: "Pixel art" ან "Oil painting").</p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <span class="bg-tempo-gold text-tempo-900 px-4 py-2 rounded font-bold text-sm">⏱ 20 წუთი</span>
+                    <span class="text-gray-500">|</span>
+                    <span class="text-gray-400 text-xs">ვიზუალი + ტექსტი = სრულყოფილი პოსტი.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 19: 🏁 შეჯამება და Q&A -->
+        <section id="topic-19" class="min-h-[85vh] flex flex-col justify-center mb-0 scroll-mt-10 border-b border-gray-200 py-10 topic-card">
+            <span class="badge badge-theory px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block w-fit">🏁 Finish Line</span>
+            <h3 class="text-3xl font-serif font-bold text-tempo-900 mb-6 flex items-center gap-3"><span class="w-1.5 h-8 bg-tempo-gold rounded-full inline-block"></span>19. შეჯამება და Q&A</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="bg-tempo-900 p-8 rounded-xl text-white">
+                    <h4 class="text-xl font-bold text-tempo-gold mb-6 uppercase tracking-widest">რა ვისწავლეთ დღეს?</h4>
+                    <ul class="text-sm space-y-4">
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 bg-tempo-gold rounded-full"></span>
+                            <span>AI-ის მუშაობის პრინციპი და უსაფრთხოების წესები.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 bg-tempo-gold rounded-full"></span>
+                            <span>ეფექტური პრომპტინგის ჩარჩოები (R.O.L.E., C.R.E.A.T.E.).</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 bg-tempo-gold rounded-full"></span>
+                            <span>პრეზენტაციების ავტომატიზაცია Gamma-ს მეშვეობით.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 bg-tempo-gold rounded-full"></span>
+                            <span>ვიზუალური კონტენტის გენერირების საფუძვლები.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex flex-col justify-center">
+                    <div class="highlight-box bg-white border border-gray-200 p-8 rounded-xl">
+                        <h4 class="text-2xl font-bold text-tempo-900 mb-4">კითხვა-პასუხი 💬</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">ახლა თქვენი ჯერია. რა იყო ყველაზე გასაკვირი? რაში ხედავთ AI-ს გამოყენების ყველაზე დიდ პოტენციალს თქვენს საქმეში?</p>
+                        <div class="bg-tempo-gold/10 p-4 rounded-lg">
+                            <p class="text-xs font-bold text-tempo-900">Next Steps:</p>
+                            <p class="text-[10px] text-gray-500 italic">ხვალ ვისაუბრებთ მონაცემთა ანალიზზე, Excel-ზე და რთულ დოკუმენტებთან მუშაობაზე.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-tempo-900 text-white py-12 px-6 md:px-24 border-t border-white/10">
+        <div class="max-w-7xl flex flex-col md:flex-row justify-between items-center gap-8">
+            <div>
+                <h3 class="text-xl font-serif font-bold text-tempo-gold">AI პრაქტიკული კურსი</h3>
+                <p class="text-gray-400 text-sm mt-1">გიორგი ბასილაია &copy; 2026</p>
+            </div>
+            <div class="flex gap-4">
+                <a href="#topic-1" class="text-gray-400 hover:text-tempo-gold transition-colors">↑ ზემოთ დაბრუნება</a>
+            </div>
+        </div>
+    </footer>
+
+</main>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const menuIcon = document.getElementById('menuIcon');
+        const closeIcon = document.getElementById('closeIcon');
+        
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+        menuIcon.classList.toggle('hidden');
+        closeIcon.classList.toggle('hidden');
+    }
+
+    function copyToClipboard(btn) {
+        const container = btn.closest('.relative');
+        const code = container.querySelector('pre') ? container.querySelector('pre').innerText : container.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = 'COPIED!';
+            btn.classList.add('bg-tempo-gold', 'text-tempo-900');
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('bg-tempo-gold', 'text-tempo-900');
+            }, 2000);
+        });
+    }
+
+    // Active link highlighting
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= (sectionTop - 150)) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
