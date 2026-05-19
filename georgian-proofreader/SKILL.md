@@ -40,6 +40,7 @@ This skill transforms Gemini CLI into an expert Georgian language editor. It is 
 
 ### 5. Orthography and Punctuation
 - **Quotation Marks**: Use Georgian quotation marks (,,...") instead of standard ones ("...").
+- **Dashes vs Hyphens**: NEVER use em-dashes (—). ALWAYS use hyphens (-) for all types of dashes (punctuation, titles, compound words).
 - **Spacing**: Fix incorrect spacing around punctuation.
 - **Compound Words**: Correct word joining/splitting.
 - **Conventions**: Fix formatting of numbers, dates, and abbreviations.
@@ -82,3 +83,16 @@ Every response must strictly follow this structure:
 - **Invented Words**: Applying productive rules to roots that don't accept them.
 - **Preverb Nuances**: Subtle meaning shifts missed by preverb choices.
 - **Reported Speech**: Awkward handling of Georgian reported speech structures.
+- **Indirect Object Markers**: AI often misses the objective person markers (e.g., „ართმევთ“ vs „გართმევთ“; „მოგცემს“ vs „მოგცემთ“).
+- **Subject-Verb Agreement**: AI may incorrectly use the -ს suffix (Ergative/Dative) on the subject in the present tense (e.g., „AI-ს გამოიმუშავებს“ → „AI გამოიმუშავებს“; „AI ასწავლის“ → „AI-ს ვასწავლით“ - context dependent).
+- **Verb Stem Accuracy**: AI often produces slightly incorrect verb stems (e.g., „გავაუარეოთ“ → „გავაუარესოთ“; „ანალიზავს“ → „ანალიზებს“).
+- **Direct Object Case**: AI fails to decline nouns in the correct case when they are direct objects (e.g., „ვასწავლით ჩვენი სტილი“ → „ვასწავლით ჩვენს სტილს“).
+- **Relative Pronoun Case**: Failure to decline „რომელიც“ or „რაც“ correctly based on the sub-clause's verb (e.g., „რაც გამოიწვია“ → „რამაც გამოიწვია“).
+- **Agent of Action Suffix**: Incorrectly adding the -ს suffix to a pronoun in passive/agentive constructions (e.g., „თქვენს მიერ“ → „თქვენ მიერ“).
+- **Prefix Hyphenation**: Missing hyphens when attaching Georgian cases or compound word suffixes to English acronyms, brands, or terms (e.g., „Word-ის“, „B2B-მეილების“, „PDF-კითხვის“, „Text-to-Video-დემო“, „Image-to-Video-ანიმაცია“).
+- **Comparative Commas**: Missing comma before „როგორც“ in comparative or explanatory roles (e.g., „AI, როგორც აზროვნების პარტნიორი“; „იმოქმედე, როგორც...“).
+- **Title Punctuation**: ALWAYS use hyphens (-) in titles and for explanations. NEVER use em-dashes (—).
+- **No Em-Dashes**: Ensure that em-dashes (—) are never used; replace them with hyphens (-) in all contexts (titles, lists, explanations).
+- **Typographical Calques**: Using standard quotes ("...") instead of Georgian ones (,,...“ or „...“).
+- **Spelling Errors**: Confusion in double consonants or specific verb forms (e.g., „ანჩვენებს“ → „აჩვენებს“).
+
