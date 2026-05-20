@@ -1,11 +1,94 @@
-import re
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megalab AI ტრენინგი — დღე 3: სავარჯიშოები</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lab: { 900: '#0f1f2e', 800: '#1a2f42', 700: '#243d54', sky: '#2196F3', gold: '#E91E63', light: '#F0F4F8' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --sky: #2196F3; --gold: #E91E63; --teal: #00BCD4;
+            --bg: #f4f7fb; --surface: #ffffff;
+            --text-1: #0f1f2e; --text-2: #374151; --text-3: #6b7280;
+        }
+        html { scroll-behavior: smooth; font-size: 140%; }
+        body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; font-size: 24px; line-height: 1.7; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link { display: flex; align-items: flex-start; padding: 0.6rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.07); }
+        .nav-link.active { background: rgba(233,30,99,0.15); border-left-color: #E91E63; color: #f48fb1; }
+        .topic-card { border-left: 4px solid #E91E63; padding-left: 1.5rem; }
+        .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-ex { background: rgba(233,30,99,0.1); color: #C2185B; border: 1px solid rgba(233,30,99,0.3); }
+        .badge-quiz { background: rgba(103,58,183,0.1); color: #512DA8; border: 1px solid rgba(103,58,183,0.3); }
+        .badge-practice { background: rgba(76,175,80,0.1); color: #2e7d32; border: 1px solid rgba(76,175,80,0.3); }
+        .badge-bonus { background: rgba(255,152,0,0.1); color: #E65100; border: 1px solid rgba(255,152,0,0.3); }
+        .highlight-box { background: #e3f2fd; border-left: 4px solid #2196F3; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .warning-box { background: #fce4ec; border-left: 4px solid #E91E63; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .success-box { background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .answer-box { background: #f3e5f5; border-left: 4px solid #9C27B0; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; display: none; }
+        .code-block { background: #1a2f42; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+        .copy-btn:hover { background: #2196F3; color: white; border-color: #2196F3; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+        .section-header { background: linear-gradient(135deg, #0f1f2e 0%, #1a2f42 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .ex-input { width: 100%; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.75rem 1rem; font-family: 'FiraGO', sans-serif; font-size: 0.9rem; line-height: 1.6; resize: vertical; min-height: 100px; background: white; color: #1f2937; transition: border-color 0.2s; }
+        .ex-input:focus { outline: none; border-color: #E91E63; }
+        .fill-blank { display: inline-block; border-bottom: 2px solid #E91E63; min-width: 120px; text-align: center; color: #C2185B; font-weight: 700; padding: 0 4px; }
+        .choice-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.25rem; border: 2px solid #e5e7eb; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; text-align: left; width: 100%; font-family: 'FiraGO', sans-serif; font-size: 0.85rem; }
+        .choice-btn:hover { border-color: #E91E63; background: #fce4ec; }
+        .choice-btn.correct { border-color: #4CAF50; background: #e8f5e9; color: #1B5E20; }
+        .choice-btn.wrong { border-color: #f44336; background: #ffebee; color: #B71C1C; }
+        .tf-btn { padding: 0.6rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; }
+        @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+        section { scroll-margin-top: 2rem; }
+        .ex-number { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #E91E63; color: white; font-size: 1rem; font-weight: 900; margin-right: 0.75rem; flex-shrink: 0; }
+        .progress-bar { height: 6px; background: #e5e7eb; border-radius: 3px; margin: 0.5rem 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #E91E63, #2196F3); border-radius: 3px; transition: width 0.5s; }
+        textarea::placeholder { color: #9ca3af; font-style: italic; }
+    </style>
+</head>
+<body>
 
-def build_day3_exercises():
-    with open('c:/Users/GBASILAIA/claude/ai2026/lab/day-2-exercises.html', 'r', encoding='utf-8') as f:
-        html = f.read()
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
 
-    # Nav
-    nav_old = '''        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I — კრეატივი და SOP</div>
+<!-- Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-lab-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-lab-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-lab-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#E91E63;">✏️ სავარჯიშოები</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">დღე 3: დანერგვა და მართვა</p>
+        <p class="text-gray-400 text-xs mt-1">4 სავარჯიშო · ყველა დონე</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#E91E63;">სავარჯიშოები</div>
+
+        <a href="#ex-overview" class="nav-link">📋 მიმოხილვა და ქულები</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I — კრეატივი და SOP</div>
         <a href="#ex1" class="nav-link">🧠 სავ. 1 · შებრუნებული აზროვნება</a>
         <a href="#ex2" class="nav-link">📝 სავ. 2 · Few-Shot პრომპტინგი</a>
         <a href="#ex3" class="nav-link">📑 სავ. 3 · Notion AI სტრუქტურა</a>
@@ -13,32 +96,43 @@ def build_day3_exercises():
         <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II — ანალიზი და კვლევა</div>
         <a href="#ex4" class="nav-link">🔍 სავ. 4 · Perplexity კვლევა</a>
         <a href="#ex5" class="nav-link">📚 სავ. 5 · NotebookLM დოკუმენტები</a>
-        <a href="#ex6" class="nav-link">📊 სავ. 6 · მონაცემთა ანალიზი</a>'''
+        
 
-    nav_new = '''        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I — ასისტენტები</div>
-        <a href="#ex1" class="nav-link">🤖 სავ. 1 · Custom GPT / Gem ინსტრუქცია</a>
-        <a href="#ex2" class="nav-link">⚙️ სავ. 2 · რუტინის ავტომატიზაცია</a>
+        <div class="mt-6 mx-4 mb-4 space-y-2">
+            <a href="day-3-slides.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← სლაიდებზე დაბრუნება</a>
+            <a href="index.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← ინდექსი</a>
+        </div>
+    </nav>
+</aside>
 
-        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II — სტრატეგია და უსაფრთხოება</div>
-        <a href="#ex3" class="nav-link">🛡️ სავ. 3 · Shadow AI პოლიტიკა</a>
-        <a href="#ex4" class="nav-link">🚀 სავ. 4 · 3 Quick Wins</a>'''
+<!-- Main -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
 
-    html = html.replace(nav_old, nav_new)
-    
-    # Headers
-    html = html.replace('დღე 2: ოპერაციები და ანალიზი', 'დღე 3: დანერგვა და მართვა')
-    html = html.replace('დღე 2: სავარჯიშოები', 'დღე 3: სავარჯიშოები')
-    html = html.replace('დღე 2: სტრატეგიული ოპერაციები, ფინანსები, იურიდიული და PR ანალიზი', 'დღე 3: დანერგვა, კორპორატიული მართვა და Governance')
-    html = html.replace('6 ინტენსიური პრაქტიკული დავალება', '4 სტრატეგიული პრაქტიკული დავალება')
-    html = html.replace('6 დავალება · ტოპ-მენეჯმენტი', '4 დავალება · ტოპ-მენეჯმენტი')
-    html = html.replace('day-2-slides.html', 'day-3-slides.html')
-    html = html.replace('6 სავარჯიშო', '4 სავარჯიშო')
+    <!-- Header -->
+    <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #1a0030 0%, #2d0a4e 50%, #0f1f2e 100%);">
+        <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#E91E63;"></div>
+        <div class="absolute bottom-0 left-1/3 w-48 h-48 rounded-full blur-[100px] opacity-10" style="background:#2196F3;"></div>
+        <div class="max-w-5xl relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-5xl">✏️</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest" style="color:#E91E63;">Megalab AI ტრენინგი</p>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">დღე 3: სავარჯიშოები<br><span style="color:#90caf9;">AI საფუძვლები & პრომპტინგი</span></h1>
+                </div>
+            </div>
+            <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">5 ინტენსიური პრაქტიკული დავალება — თეორია, პრომპტინგი, რეალური სცენარები. ყველა სავარჯიშო Megalab-ის კონტექსტში.</p>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">✏️ 4 სავარჯიშო</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">🏆 100 ქულა სულ</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">⏱ ~60 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(233,30,99,0.2);color:#f48fb1;">🏥 JCI-თავსებადი</span>
+            </div>
+        </div>
+    </header>
 
-    # Content replacement
-    content_start = html.find('<!-- ═══════════════════════════════════════════════════\n     OVERVIEW')
-    content_end = html.find('<!-- Back to Top -->')
+    <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10">
 
-    new_content = '''<!-- ═══════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════
      OVERVIEW
 ═══════════════════════════════════════════════════ -->
 <section id="ex-overview" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
@@ -221,12 +315,4 @@ AI ავტომატიზაცია: შევქმნი Gemini Gem-ს
     
     </div>
 </main>
-'''
-    html = html[:content_start] + new_content + html[content_end:]
-    
-    with open('c:/Users/GBASILAIA/claude/ai2026/lab/day-3-exercises.html', 'w', encoding='utf-8') as f:
-        f.write(html)
-    print("Day 3 Exercises built.")
 
-if __name__ == '__main__':
-    build_day3_exercises()
