@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI ტრენინგი — მწვანე სკოლა</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-dark: #1a4731;
+    --green-mid: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --gold: #f4a261;
+    --text: #1a1a1a;
+    --text-light: #4a5568;
+    --white: #ffffff;
+    --bg: #f8fdf9;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'FiraGO', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 21px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 60%, var(--green-light) 100%);
+    color: var(--white);
+    padding: 60px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -20%;
+    width: 60%; height: 200%;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px 20px;
+    border-radius: 30px;
+    font-size: 15px;
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 8vw, 68px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    position: relative; z-index: 1;
+  }
+  .hero h1 span { color: #a7f3d0; }
+  .hero-sub {
+    font-size: clamp(18px, 3vw, 26px);
+    opacity: 0.88;
+    max-width: 800px;
+    margin: 0 auto 32px;
+    position: relative; z-index: 1;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    position: relative; z-index: 1;
+  }
+  .stat { text-align: center; min-width: 80px; }
+  .stat-num {
+    font-size: clamp(32px, 5vw, 47px);
+    font-weight: 700;
+    color: #a7f3d0;
+    display: block;
+  }
+  .stat-label { font-size: 15px; opacity: 0.8; }
+
+  /* LAYOUT */
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+  section { padding: 60px 0; }
+  section:nth-child(even) { background: var(--white); }
+
+  .section-title {
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+  }
+  .section-sub {
+    color: var(--text-light);
+    font-size: clamp(17px, 2.5vw, 19px);
+    margin-bottom: 40px;
+  }
+
+  /* MATCH BOX */
+  .match-box {
+    background: var(--green-pale);
+    border-left: 5px solid var(--green-light);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .match-box p {
+    font-size: clamp(18px, 2.8vw, 22px);
+    color: var(--green-dark);
+    line-height: 1.6;
+  }
+  .match-box strong { color: var(--green-mid); }
+
+  /* SESSION CARDS */
+  .sessions { display: flex; flex-direction: column; gap: 28px; }
+
+  .session-card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid #e2f0e8;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(26,71,49,0.07);
+  }
+  .session-header {
+    background: linear-gradient(90deg, var(--green-dark), var(--green-mid));
+    color: var(--white);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  @media (min-width: 600px) {
+    .session-header { padding: 24px 32px; flex-direction: row; align-items: center; gap: 20px; }
+  }
+  .session-num {
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; flex-shrink: 0;
+  }
+  .session-title {
+    font-size: clamp(18px, 3.5vw, 23px);
+    font-weight: 700; line-height: 1.3;
+  }
+  .session-duration {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+  @media (min-width: 600px) {
+    .session-duration { margin-left: auto; font-size: 17px; }
+  }
+
+  .session-body { padding: 24px 20px; }
+  @media (min-width: 600px) { .session-body { padding: 32px 36px; } }
+
+  /* BLOCKS */
+  .block { margin-bottom: 28px; }
+  .block:last-child { margin-bottom: 0; }
+  .block-label {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--green-light); margin-bottom: 8px;
+  }
+  .block-title {
+    font-size: clamp(17px, 3vw, 20px);
+    font-weight: 700; color: var(--green-dark); margin-bottom: 10px;
+  }
+  .block ul { list-style: none; padding: 0; }
+  .block ul li {
+    padding: 5px 0 5px 26px;
+    position: relative;
+    font-size: clamp(16px, 2.5vw, 18px);
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+  .block ul li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--green-light);
+  }
+
+  /* EXERCISES */
+  .exercises {
+    background: #f0fdf4;
+    border: 1.5px solid #b7e4c7;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .exercises-title {
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--green-mid); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .exercise-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid #d8f3dc;
+  }
+  .exercise-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .exercise-num {
+    background: var(--green-mid);
+    color: white;
+    border-radius: 50%;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .exercise-content { flex: 1; }
+  .exercise-name {
+    font-size: clamp(16px, 2.5vw, 18px);
+    font-weight: 700; color: var(--green-dark);
+    margin-bottom: 4px;
+  }
+  .exercise-desc {
+    font-size: clamp(14px, 2vw, 16px);
+    color: var(--text-light); line-height: 1.5;
+  }
+  .exercise-time {
+    background: var(--green-pale);
+    color: var(--green-dark);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 13px; font-weight: 700;
+    white-space: nowrap; margin-top: 2px;
+  }
+
+  /* HOMEWORK TAG */
+  .homework-tag {
+    display: block;
+    background: #fff9ed;
+    border: 1.5px solid #fcd34d;
+    color: #92400e;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 15px;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  /* AI-PROOF GRID */
+  .aiproof-grid, .results-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px; margin-top: 24px;
+  }
+  @media (min-width: 600px) {
+    .aiproof-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .results-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  }
+  @media (min-width: 900px) {
+    .aiproof-grid { grid-template-columns: repeat(3, 1fr); }
+    .results-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .aiproof-card, .result-item {
+    background: var(--white);
+    border: 1px solid #e2f0e8;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(26,71,49,0.05);
+    text-align: center;
+  }
+  .aiproof-icon, .result-icon {
+    font-size: 32px; margin-bottom: 12px; display: block;
+  }
+  .aiproof-card h4, .result-item h4 {
+    font-size: 18px; margin-bottom: 8px; color: var(--green-dark);
+  }
+  .aiproof-card p, .result-item p {
+    font-size: 15px; color: var(--text-light);
+  }
+
+  /* INSTRUCTOR */
+  .instructor-card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid #e2f0e8;
+    padding: 32px;
+    display: flex; gap: 28px; align-items: flex-start;
+    box-shadow: 0 2px 12px rgba(26,71,49,0.07);
+    flex-direction: column;
+  }
+  @media (min-width: 600px) {
+    .instructor-card { flex-direction: row; padding: 36px 40px; }
+  }
+  .instructor-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-mid), var(--green-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 700; color: white; flex-shrink: 0;
+  }
+  .instructor-info h3 {
+    font-size: 22px; font-weight: 700;
+    color: var(--green-dark); margin-bottom: 4px;
+  }
+  .instructor-role { color: var(--green-light); font-size: 15px; margin-bottom: 12px; }
+  .instructor-info p { font-size: 15px; color: var(--text-light); line-height: 1.7; }
+  .instructor-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .tag {
+    background: var(--green-pale); color: var(--green-dark);
+    padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    color: var(--white);
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .cta-section h2 { font-size: clamp(24px, 6vw, 40px); margin-bottom: 16px; }
+  .cta-section p { font-size: clamp(18px, 3vw, 21px); margin-bottom: 32px; opacity: 0.88; }
+  .cta-box {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 16px; padding: 24px;
+    display: inline-flex; flex-direction: column; gap: 14px;
+  }
+  .cta-contact {
+    display: flex; align-items: center; gap: 12px;
+    color: white; font-size: 17px;
+  }
+  .cta-contact-icon { font-size: 22px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Smart Academy · 2026</div>
+  <h1>AI ტრეინინგი<br><span>მწვანე სკოლის</span> მენეჯმენტისთვის</h1>
+  <p class="hero-sub">4 სესიანი პრაქტიკული კურსი — ეფექტურობის გაზრდა, AI-proof სწავლება, სკოლის AI სტრატეგია</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">4</span>
+      <span class="stat-label">სესია</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">12</span>
+      <span class="stat-label">საათი</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">8</span>
+      <span class="stat-label">პრაქტიკული დავალება</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">პრაქტიკული</span>
+    </div>
+  </div>
+</div>
+
+<!-- MATCH -->
+<section>
+  <div class="container">
+    <div class="match-box">
+      <p>
+        მწვანე სკოლა უკვე ახორციელებს <strong>გამოცდილებაზე დაფუძნებულ სწავლებას</strong> — ბუნებაში, კვლევით, აღმოჩენით.
+        ეს ზუსტად ის მიდგომაა, რომელსაც AI ვერ ჩაანაცვლებს.
+        ამ კურსის მიზანია ეს ფილოსოფია <strong>ციფრულ სივრცეშიც გავავრცელოთ</strong> —
+        AI გამოვიყენოთ მასწავლებლის დასახმარებლად, მოსწავლის ნაცვლად კი — არა.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SESSIONS -->
+<section style="background: var(--bg); padding-top: 16px;">
+  <div class="container">
+    <h2 class="section-title">კურსის სტრუქტურა</h2>
+    <p class="section-sub">4 სესია · თითო 3 საათი · დიღმის კამპუსი · 8 პრაქტიკული დავალება</p>
+
+    <div class="sessions">
+
+      <!-- SESSION 1 -->
+      <div class="session-card">
+        <div class="session-header">
+          <div class="session-num">1</div>
+          <div class="session-title">AI-ს გაგება და ადმინისტრაციული ბაზა</div>
+          <div class="session-duration">3 საათი</div>
+        </div>
+        <div class="session-body">
+          <div class="block">
+            <div class="block-label">ნაწილი I · 45 წთ</div>
+            <div class="block-title">საფუძვლები</div>
+            <ul>
+              <li>AI რა შეუძლია და რა არ შეუძლია — სკოლის კონტექსტი</li>
+              <li>ChatGPT, Claude, Gemini — განსხვავება და გამოყენება</li>
+              <li>პრომპტის 4 ელემენტი: როლი / კონტექსტი / დავალება / ფორმატი</li>
+              <li>ცოცხალი დემო — ერთი პრომპტი სამ AI-ში</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">ნაწილი II · 1 სთ 15 წთ</div>
+            <div class="block-title">ადმინისტრაციული სამუშაო AI-თ</div>
+            <ul>
+              <li>ოფიციალური წერილები და ბრძანებები</li>
+              <li>მშობელთა შეტყობინებები — ინდივიდუალური და მასობრივი</li>
+              <li>სხდომის ოქმები სწრაფად</li>
+              <li>HR: სამსახურში მიღება, შეფასების ფორმები</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">ნაწილი III · 30 წთ</div>
+            <div class="block-title">AI-ს კრიტიკული გამოყენება</div>
+            <ul>
+              <li>როდის ცდება AI — კონკრეტული მაგალითები</li>
+              <li>რა არ უნდა გაუზიაროთ AI-ს — მოსწავლის მონაცემები</li>
+              <li>ბოლო სიტყვა ყოველთვის ადამიანისაა</li>
+            </ul>
+          </div>
+
+          <div class="exercises">
+            <div class="exercises-title">✏️ პრაქტიკული დავალებები</div>
+            <div class="exercise-item">
+              <div class="exercise-num">1</div>
+              <div class="exercise-content">
+                <div class="exercise-name">პრომპტის გამოწვევა</div>
+                <div class="exercise-desc">ერთი და იგივე დავალება 3 სხვადასხვა პრომპტით — ვხედავთ განსხვავებას შედეგში</div>
+              </div>
+              <div class="exercise-time">15 წთ</div>
+            </div>
+            <div class="exercise-item">
+              <div class="exercise-num">2</div>
+              <div class="exercise-content">
+                <div class="exercise-name">ოფიციალური წერილი AI-თ</div>
+                <div class="exercise-desc">თითოეული წერს საკუთარ რეალურ წერილს — AI-ს დახმარებით, ბოლოს ადამიანი ასწორებს</div>
+              </div>
+              <div class="exercise-time">15 წთ</div>
+            </div>
+          </div>
+
+          <div class="homework-tag">📋 სახლის დავალება: 3 სამუშაო დოკუმენტი AI-ს დახმარებით — მომდევნო სესიამდე</div>
+        </div>
+      </div>
+
+      <!-- SESSION 2 -->
+      <div class="session-card">
+        <div class="session-header">
+          <div class="session-num">2</div>
+          <div class="session-title">ადმინისტრაციული გაღრმავება და იდეების გენერაცია</div>
+          <div class="session-duration">3 საათი</div>
+        </div>
+        <div class="session-body">
+          <div class="block">
+            <div class="block-label">ნაწილი I · 45 წთ</div>
+            <div class="block-title">ადმინისტრაციული ეფექტურობა — გაღრმავება</div>
+            <ul>
+              <li>ანგარიშები და სტატისტიკური შეჯამებები</li>
+              <li>კალენდარი და სასკოლო ღონისძიებების დაგეგმვა</li>
+              <li>პირველი სესიის სახლის დავალების განხილვა</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">ნაწილი II · 1 სთ</div>
+            <div class="block-title">იდეების გენერაცია და ბრეინშტორმინგი AI-თ</div>
+            <ul>
+              <li><strong>AI vs მარტო</strong> — ერთი პრობლემა ორნაირად, სხვაობის ჩვენება</li>
+              <li><strong>6-3-5 ტექნიკა</strong> — 6 იდეა, 3 მიმართულება, 5 წუთი AI-თ</li>
+              <li><strong>"How Might We"</strong> — პრობლემა → 20 გამოსავალი 1 წუთში</li>
+              <li><strong>შებრუნებული ბრეინშტორმინგი</strong> — "როგორ დავაბათ სკოლა?" → გადაბრუნება → გამოსავლები</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">შებრუნებული ბრეინშტორმინგი — როგორ მუშაობს</div>
+            <div class="block-title" style="color: var(--green-light); font-size: 15px;">ნაცვლად "როგორ გავუმჯობესოთ მოსწავლის ჩართულობა" — ვეკითხებით "რა უნდა გავაკეთოთ რომ მოსწავლეები სულ დაიბეზრონ?" → AI გენერირებს უარყოფით სიას → ჯგუფი აბრუნებს → არასტანდარტული გამოსავლები</div>
+          </div>
+
+          <div class="exercises">
+            <div class="exercises-title">✏️ პრაქტიკული დავალებები</div>
+            <div class="exercise-item">
+              <div class="exercise-num">1</div>
+              <div class="exercise-content">
+                <div class="exercise-name">ანგარიში 3 წუთში</div>
+                <div class="exercise-desc">ნედლი მონაცემები → AI → მზა ანგარიში. შედარება: ადამიანი vs AI სისწრაფე</div>
+              </div>
+              <div class="exercise-time">15 წთ</div>
+            </div>
+            <div class="exercise-item">
+              <div class="exercise-num">2</div>
+              <div class="exercise-content">
+                <div class="exercise-name">შებრუნებული ბრეინშტორმინგი</div>
+                <div class="exercise-desc">სკოლის რეალური პრობლემა — AI-თ, გადაბრუნება, ჯგუფური ფილტრაცია</div>
+              </div>
+              <div class="exercise-time">15 წთ</div>
+            </div>
+          </div>
+
+          <div class="homework-tag">📋 სახლის დავალება: 1 საგნის 1 თემა — სესია 3-ზე გადავამუშავებთ</div>
+        </div>
+      </div>
+
+      <!-- SESSION 3 -->
+      <div class="session-card">
+        <div class="session-header">
+          <div class="session-num">3</div>
+          <div class="session-title">გაკვეთილის გეგმა AI ეპოქაში</div>
+          <div class="session-duration">3 საათი</div>
+        </div>
+        <div class="session-body">
+          <div class="block">
+            <div class="block-label">ნაწილი I · 45 წთ</div>
+            <div class="block-title">პრობლემა და კონცეფცია</div>
+            <ul>
+              <li>რატომ "კვდება" ტრადიციული საშინაო დავალება</li>
+              <li>ChatGPT-ს ეპოქაში რა ნიშნავს "ცოდნა"</li>
+              <li>Bloom's Taxonomy AI ეპოქაში — რომელი დონეები კვლავ აქტუალურია</li>
+              <li>მოსწავლე + AI = თაღლითობა? თუ ახალი სწავლის მოდელი?</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">ნაწილი II · 1 სთ</div>
+            <div class="block-title">AI-proof დავალებები — 7 მეთოდი</div>
+            <ul>
+              <li>პირადი გამოცდილება — "დაწერე შენი ოჯახის ისტორია"</li>
+              <li>კლასში შესრულება — ზეპირი, დებატი, პრეზენტაცია</li>
+              <li>პროცესის ჩვენება — შავი მონახაზი → საბოლოო ვერსია</li>
+              <li>ადგილობრივი კვლევა — ინტერვიუ, ადგილზე დაკვირვება</li>
+              <li>AI-ის კრიტიკა — "ეს პასუხი სწორია? შეასწორე"</li>
+              <li>შემოქმედება + განმარტება — "შექმენი და ახსენი გადაწყვეტილებები"</li>
+              <li>კოლაბორაცია — ჯგუფური დინამიკა, AI ვერ ასრულებს</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">ნაწილი III · 45 წთ</div>
+            <div class="block-title">გაკვეთილის გეგმა AI-ს დახმარებით</div>
+            <ul>
+              <li>AI — მასწავლებლის ინსტრუმენტი, მოსწავლის ნაცვლად</li>
+              <li>შეფასების რუბრიკები AI-ს დახმარებით</li>
+              <li>დიფერენცირებული სწავლება — სამი დონე ერთი თემისთვის</li>
+              <li>ლაივ სავარჯიშო — ერთი გეგმა ერთად</li>
+            </ul>
+          </div>
+
+          <div class="exercises">
+            <div class="exercises-title">✏️ პრაქტიკული დავალებები</div>
+            <div class="exercise-item">
+              <div class="exercise-num">1</div>
+              <div class="exercise-content">
+                <div class="exercise-name">AI-proof დავალების შექმნა</div>
+                <div class="exercise-desc">თითოეული წერს საკუთარი საგნისთვის 1 დავალებას, რომელსაც AI ვერ შეასრულებს</div>
+              </div>
+              <div class="exercise-time">15 წთ</div>
+            </div>
+            <div class="exercise-item">
+              <div class="exercise-num">2</div>
+              <div class="exercise-content">
+                <div class="exercise-name">გაკვეთილის გეგმა AI-თ</div>
+                <div class="exercise-desc">1 თემა → AI → გეგმა → ჯგუფი ასწორებს. AI-ს ნამუშევარი vs ადამიანის კორექცია</div>
+              </div>
+              <div class="exercise-time">15 წთ</div>
+            </div>
+          </div>
+
+          <div class="homework-tag">📋 სახლის დავალება: მოიტანე 1 თემა სესია 4-ისთვის — ერთად გადავამუშავებთ</div>
+        </div>
+      </div>
+
+      <!-- SESSION 4 -->
+      <div class="session-card">
+        <div class="session-header">
+          <div class="session-num">4</div>
+          <div class="session-title">პოლიტიკა, ინსტრუმენტები და სტრატეგია</div>
+          <div class="session-duration">3 საათი</div>
+        </div>
+        <div class="session-body">
+          <div class="block">
+            <div class="block-label">ნაწილი I · 1 სთ</div>
+            <div class="block-title">ლაივ ვორქშოფი</div>
+            <ul>
+              <li>თითოეული მოტანილი თემა → AI-proof გეგმა — ლაივ</li>
+              <li>ჯგუფური ფიდბექი და გაუმჯობესება</li>
+              <li>მზა შაბლონების ბიბლიოთეკა სკოლის კოლექტივისთვის</li>
+              <li>შიდა ტრეინინგის სტრატეგია — ვინ, როგორ გადაამზადებს</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">ნაწილი II · 50 წთ</div>
+            <div class="block-title">სკოლის AI პოლიტიკა</div>
+            <ul>
+              <li>მოსწავლეთა AI გამოყენების წესები — ასაკის მიხედვით</li>
+              <li>მასწავლებლის AI გამოყენების სახელმძღვანელო</li>
+              <li>მშობლებთან კომუნიკაცია AI-ს შესახებ</li>
+              <li>სკოლის AI პოლიტიკის დოკუმენტი — ერთად ვწერთ</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-label">ნაწილი III · 50 წთ</div>
+            <div class="block-title">ინსტრუმენტების ეკოსისტემა</div>
+            <ul>
+              <li>Google Workspace + Gemini — სკოლებში</li>
+              <li>NotebookLM — სასკოლო მასალების ანალიზი</li>
+              <li>Canva AI — პრეზენტაციები და ვიზუალი</li>
+              <li>MagicSchool, Diffit, Khanmigo — სასკოლო AI ინსტრუმენტები</li>
+              <li>უფასო vs ფასიანი — სად ღირს გადახდა</li>
+            </ul>
+          </div>
+
+          <div class="exercises">
+            <div class="exercises-title">✏️ პრაქტიკული დავალებები</div>
+            <div class="exercise-item">
+              <div class="exercise-num">1</div>
+              <div class="exercise-content">
+                <div class="exercise-name">AI პოლიტიკის პარაგრაფი</div>
+                <div class="exercise-desc">თითოეული წერს 1 წესს AI-ს დახმარებით: მოსწავლე / მასწავლებელი / მშობელი — ბოლოს ერთ დოკუმენტად ვაერთიანებთ</div>
+              </div>
+              <div class="exercise-time">15 წთ</div>
+            </div>
+            <div class="exercise-item">
+              <div class="exercise-num">2</div>
+              <div class="exercise-content">
+                <div class="exercise-name">30-დღიანი სამოქმედო გეგმა</div>
+                <div class="exercise-desc">AI გენერირებს, ჯგუფი ადასტურებს — ვინ, რას, როდის იწყებს. პირადად ითვისებს თითოეული</div>
+              </div>
+              <div class="exercise-time">10 წთ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- AI-PROOF -->
+<section>
+  <div class="container">
+    <h2 class="section-title">AI-proof სწავლება — 7 პრინციპი</h2>
+    <p class="section-sub">დავალებები, რომელთა AI-ს ჩაბარება ძნელი ან შეუძლებელია</p>
+    <div class="aiproof-grid">
+      <div class="aiproof-card">
+        <span class="aiproof-icon">🌳</span>
+        <h4>გამოცდილება ბუნებაში</h4>
+        <p>მწვანე სკოლის ტყის კამპუსი — AI ვერ გასეირნდება, ვერ დააკვირდება, ვერ იგრძნობს</p>
+      </div>
+      <div class="aiproof-card">
+        <span class="aiproof-icon">🎤</span>
+        <h4>ზეპირი შესრულება</h4>
+        <p>პრეზენტაცია, დებატი, ზეპირი პასუხი — AI-ს კლასში ვერ გამოიძახებ</p>
+      </div>
+      <div class="aiproof-card">
+        <span class="aiproof-icon">📝</span>
+        <h4>პროცესის ჩვენება</h4>
+        <p>შავი მონახაზი → რედაქტირება → საბოლოო — AI-ის ნაწერს ეს გზა არ აქვს</p>
+      </div>
+      <div class="aiproof-card">
+        <span class="aiproof-icon">🏘️</span>
+        <h4>ადგილობრივი კვლევა</h4>
+        <p>ინტერვიუ მეზობელთან, დაკვირვება სკოლის გარემოში — ყოველთვის ახალი</p>
+      </div>
+      <div class="aiproof-card">
+        <span class="aiproof-icon">🔍</span>
+        <h4>AI-ის კრიტიკა</h4>
+        <p>"ეს AI-ს პასუხი სწორია? შეასწორე" — კრიტიკული აზროვნების საუკეთესო სავარჯიშო</p>
+      </div>
+      <div class="aiproof-card">
+        <span class="aiproof-icon">👥</span>
+        <h4>კოლაბორაცია</h4>
+        <p>ჯგუფური დინამიკა, კამათი, კომპრომისი — AI ამ პროცესს ვერ ასრულებს</p>
+      </div>
+      <div class="aiproof-card">
+        <span class="aiproof-icon">❤️</span>
+        <h4>პირადი ისტორია</h4>
+        <p>"დაწერე შენი ოჯახის ისტორია" — AI-ს ეს ინფორმაცია არ აქვს</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section style="background: var(--white);">
+  <div class="container">
+    <h2 class="section-title">კურსის შედეგები</h2>
+    <p class="section-sub">12 საათის შემდეგ მწვანე სკოლას ექნება</p>
+    <div class="results-grid">
+      <div class="result-item">
+        <span class="result-icon">⚡</span>
+        <h4>ადმინისტრაციული დაზოგვა</h4>
+        <p>კვირაში 3-5 საათი ნაკლები დოკუმენტაციაზე</p>
+      </div>
+      <div class="result-item">
+        <span class="result-icon">💡</span>
+        <h4>ბრეინშტორმინგის ახალი მეთოდები</h4>
+        <p>4 ტექნიკა სკოლის გამოწვევების გადასაჭრელად</p>
+      </div>
+      <div class="result-item">
+        <span class="result-icon">📚</span>
+        <h4>AI-proof გეგმები</h4>
+        <p>მზა გაკვეთილის გეგმების შაბლონები ყველა საგნისთვის</p>
+      </div>
+      <div class="result-item">
+        <span class="result-icon">📋</span>
+        <h4>სკოლის AI პოლიტიკა</h4>
+        <p>მზა დოკუმენტი მოსწავლეებისთვის, მასწავლებლებისთვის, მშობლებისთვის</p>
+      </div>
+      <div class="result-item">
+        <span class="result-icon">🛠️</span>
+        <h4>ინსტრუმენტების ნაკრები</h4>
+        <p>გამოცდილი AI ინსტრუმენტების სია სკოლის საჭიროებებისთვის</p>
+      </div>
+      <div class="result-item">
+        <span class="result-icon">🎯</span>
+        <h4>30-დღიანი გეგმა</h4>
+        <p>კონკრეტული სამოქმედო ნაბიჯები — ვინ, რას, როდის</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTRUCTOR -->
+<section>
+  <div class="container">
+    <h2 class="section-title">ტრენერი</h2>
+    <p class="section-sub"> </p>
+    <div class="instructor-card">
+      <div class="instructor-avatar">გბ</div>
+      <div class="instructor-info">
+        <h3>გიორგი ბასილაია</h3>
+        <div class="instructor-role">Smart Academy · AI & ტექნოლოგიების ტრენერი</div>
+        <p>
+          25+ წლის გამოცდილება ტექნოლოგიებში. უნივერსიტეტის პროფესორი, 14 სამეცნიერო ნაშრომი
+          (3,388 ციტირება), 18 საერთაშორისო სასწავლო პროექტი (NATO, USAID, ERASMUS).
+          Smart Academy-ში ასწავლის AI კურსებს კორპორატიული კლიენტებისა და პედაგოგებისთვის.
+        </p>
+        <div class="instructor-tags">
+          <span class="tag">AI Education</span>
+          <span class="tag">Corporate Training</span>
+          <span class="tag">25+ წელი ტექნოლოგიებში</span>
+          <span class="tag">NATO · USAID · ERASMUS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>დავიწყოთ მწვანე სკოლასთან ერთად</h2>
+  <p>4 სესიაში — ადმინისტრაციული ეფექტურობა, ბრეინშტორმინგი, AI-proof სწავლება და სკოლის სრული AI სტრატეგია</p>
+  <div class="cta-box">
+    <div class="cta-contact">
+      <span class="cta-contact-icon">📧</span>
+      <span>lasharisjvari@gmail.com</span>
+    </div>
+    <div class="cta-contact">
+      <span class="cta-contact-icon">🏫</span>
+      <span>Smart Academy</span>
+    </div>
+    <div class="cta-contact">
+      <span class="cta-contact-icon">📍</span>
+      <span>მწვანე სკოლა, დიღმის კამპუსი</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
