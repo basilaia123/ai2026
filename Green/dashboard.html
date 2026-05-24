@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>მწვანე სკოლა — მოსწავლეთა სტატისტიკა</title>
+  <style>
+    :root {
+      --green-dark:  #1a5c2e;
+      --green-mid:   #2e8b57;
+      --green-light: #52c374;
+      --green-pale:  #d4f5e0;
+      --accent:      #f0a500;
+      --accent2:     #e05c3a;
+      --bg:          #f4faf6;
+      --card:        #ffffff;
+      --text:        #1a2b22;
+      --text-muted:  #6b8c78;
+      --border:      #c8e6d3;
+      --shadow:      0 2px 16px rgba(30,90,50,.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+      color: #fff;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+
+    .header-left { display: flex; align-items: center; gap: 14px; }
+
+    .school-logo {
+      width: 46px; height: 46px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+
+    .school-name { line-height: 1.2; }
+    .school-name h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: .5px; }
+    .school-name p  { font-size: .78rem; opacity: .8; }
+
+    .header-right {
+      display: flex; align-items: center; gap: 20px;
+    }
+
+    .live-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: .8rem;
+    }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #4cff7e;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(76,255,126,.6); }
+      50%      { box-shadow: 0 0 0 6px rgba(76,255,126,0); }
+    }
+
+    #clock { font-size: .82rem; opacity: .9; }
+
+    /* ── LAYOUT ── */
+    main { padding: 24px 28px 40px; max-width: 1400px; margin: 0 auto; }
+
+    /* ── ALERT BANNER ── */
+    .alert-bar {
+      background: linear-gradient(90deg, #fff9e6, #fffbe8);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-size: .84rem;
+      margin-bottom: 22px;
+      display: flex; align-items: center; gap: 10px;
+      color: #7a5200;
+    }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      margin-top: 28px;
+    }
+
+    /* ── STAT CARDS ROW ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 20px 20px 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(30,90,50,.15); }
+
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    }
+    .stat-card.green::before  { background: var(--green-light); }
+    .stat-card.amber::before  { background: var(--accent); }
+    .stat-card.red::before    { background: var(--accent2); }
+    .stat-card.blue::before   { background: #4a90d9; }
+    .stat-card.purple::before { background: #9b5de5; }
+
+    .stat-icon {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+    }
+    .stat-value {
+      font-size: 2.1rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--green-dark);
+    }
+    .stat-label {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .stat-delta {
+      font-size: .73rem;
+      margin-top: 8px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .delta-up   { color: var(--green-mid); }
+    .delta-down { color: var(--accent2); }
+
+    /* ── TWO-COLUMN SECTION ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── THREE-COLUMN SECTION ── */
+    .three-col {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 1050px) { .three-col { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 680px)  { .three-col { grid-template-columns: 1fr; } }
+
+    /* ── CARD WRAPPER ── */
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── ATTENDANCE BAR ── */
+    .attendance-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .att-label { width: 90px; font-size: .8rem; color: var(--text-muted); flex-shrink: 0; }
+    .att-bar-bg {
+      flex: 1; height: 10px; border-radius: 10px;
+      background: var(--green-pale);
+      overflow: hidden;
+    }
+    .att-bar-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, var(--green-mid), var(--green-light));
+      transition: width .6s ease;
+    }
+    .att-pct { width: 36px; font-size: .8rem; font-weight: 700; text-align: right; color: var(--green-dark); }
+
+    /* ── DONUT CHART (CSS-only trick) ── */
+    .donut-wrap {
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .donut {
+      width: 110px; height: 110px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .donut-legend { flex: 1; }
+    .legend-item {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 8px; font-size: .8rem;
+    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── GRADE HEATMAP ── */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: 90px repeat(5, 1fr);
+      gap: 4px;
+      font-size: .76rem;
+    }
+    .hm-head { font-weight: 700; color: var(--text-muted); padding: 4px 0; }
+    .hm-class { font-weight: 600; padding: 5px 4px; }
+    .hm-cell {
+      border-radius: 6px;
+      padding: 6px 4px;
+      text-align: center;
+      font-weight: 700;
+      font-size: .8rem;
+      transition: transform .15s;
+      cursor: default;
+    }
+    .hm-cell:hover { transform: scale(1.15); }
+    .hm-5 { background: #1a7a40; color: #fff; }
+    .hm-4 { background: #52c374; color: #fff; }
+    .hm-3 { background: #a8e6be; color: #1a5c2e; }
+    .hm-2 { background: #ffd580; color: #7a4f00; }
+    .hm-1 { background: #f4998a; color: #7a1000; }
+
+    /* ── STUDENT TABLE ── */
+    .student-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+    .student-table th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--green-pale);
+      color: var(--green-dark);
+      font-weight: 700;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+    .student-table th:first-child { border-radius: 8px 0 0 8px; }
+    .student-table th:last-child  { border-radius: 0 8px 8px 0; }
+    .student-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .student-table tr:last-child td { border-bottom: none; }
+    .student-table tr:hover td { background: #f0faf4; }
+
+    .avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .name-cell { display: flex; align-items: center; gap: 8px; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: .7rem; font-weight: 700;
+    }
+    .badge-green  { background: #d4f5e0; color: var(--green-dark); }
+    .badge-amber  { background: #fff0cc; color: #7a4f00; }
+    .badge-red    { background: #fde2dc; color: #7a1000; }
+    .badge-blue   { background: #dbeeff; color: #1a3f7a; }
+
+    .star-rating { color: var(--accent); letter-spacing: 1px; }
+
+    /* ── EVENTS FEED ── */
+    .event-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .event-item:last-child { border-bottom: none; }
+    .event-time { font-size: .72rem; color: var(--text-muted); white-space: nowrap; width: 48px; flex-shrink: 0; padding-top: 2px; }
+    .event-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem; flex-shrink: 0;
+    }
+    .event-text { font-size: .8rem; line-height: 1.4; }
+    .event-text strong { color: var(--green-dark); }
+
+    /* ── MINI SPARKLINE ── */
+    .sparkline-wrap { display: flex; align-items: flex-end; gap: 3px; height: 40px; margin-top: 10px; }
+    .spark-bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      background: var(--green-light);
+      transition: height .4s;
+    }
+    .spark-bar.today { background: var(--green-dark); }
+
+    /* ── SUBJECT PROGRESS ── */
+    .subject-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 11px;
+    }
+    .subj-icon { font-size: 1rem; width: 22px; text-align: center; }
+    .subj-name { width: 110px; font-size: .79rem; color: var(--text-muted); }
+    .subj-bar-bg { flex: 1; height: 8px; border-radius: 8px; background: var(--green-pale); overflow: hidden; }
+    .subj-bar-fill { height: 100%; border-radius: 8px; }
+    .subj-score { width: 28px; font-size: .78rem; font-weight: 700; text-align: right; }
+
+    /* ── TEACHER ROW ── */
+    .teacher-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .teacher-card:last-child { border-bottom: none; }
+    .teacher-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .teacher-info { flex: 1; }
+    .teacher-name { font-size: .85rem; font-weight: 700; color: var(--text); }
+    .teacher-sub  { font-size: .73rem; color: var(--text-muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 22px;
+      font-size: .75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    /* ── PROGRESS RING ── */
+    .ring-wrap {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px;
+    }
+    .ring-container {
+      position: relative; width: 90px; height: 90px;
+    }
+    .ring-container svg { transform: rotate(-90deg); }
+    .ring-label {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 1.1rem; font-weight: 800; color: var(--green-dark);
+    }
+    .ring-title { font-size: .73rem; color: var(--text-muted); text-align: center; }
+
+    .rings-row {
+      display: flex; gap: 12px; justify-content: space-around; flex-wrap: wrap;
+    }
+
+    /* ── CALENDAR MINI ── */
+    .mini-cal {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 3px; font-size: .72rem;
+    }
+    .cal-head { text-align: center; color: var(--text-muted); font-weight: 700; padding: 3px 0; }
+    .cal-day {
+      text-align: center; padding: 4px 2px; border-radius: 5px;
+      cursor: default; transition: background .15s;
+    }
+    .cal-day:hover { background: var(--green-pale); }
+    .cal-day.today { background: var(--green-dark); color: #fff; font-weight: 700; }
+    .cal-day.event { color: var(--green-mid); font-weight: 700; position: relative; }
+    .cal-day.event::after {
+      content: '•'; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      font-size: 8px; color: var(--accent);
+    }
+    .cal-day.empty { opacity: 0; pointer-events: none; }
+
+    /* ══════════ 20 NEW ITEMS — STYLES ══════════ */
+
+    /* ── FOUR-COL GRID ── */
+    .four-col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 1100px) { .four-col { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px)  { .four-col { grid-template-columns: 1fr; } }
+
+    /* ── GAUGE ── */
+    .gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .gauge-arc  { position: relative; width: 120px; height: 64px; overflow: hidden; }
+    .gauge-arc svg { position: absolute; top: 0; left: 0; }
+    .gauge-val  { font-size: 1.3rem; font-weight: 800; color: var(--green-dark); }
+    .gauge-lbl  { font-size: .72rem; color: var(--text-muted); text-align: center; }
+
+    /* ── TICKER / SCROLLING ANNOUNCEMENT ── */
+    .ticker-wrap {
+      background: var(--green-dark);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 18px;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+      font-size: .82rem;
+    }
+    .ticker-label {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-weight: 700;
+      font-size: .73rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .ticker-inner { overflow: hidden; flex: 1; }
+    .ticker-text  {
+      display: inline-block;
+      animation: ticker 28s linear infinite;
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ── WEATHER ── */
+    .weather-main {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 12px;
+    }
+    .weather-icon { font-size: 2.8rem; }
+    .weather-temp { font-size: 2rem; font-weight: 800; color: var(--green-dark); }
+    .weather-desc { font-size: .78rem; color: var(--text-muted); }
+    .weather-row  {
+      display: flex; justify-content: space-between;
+      font-size: .75rem; color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 10px; margin-top: 4px;
+    }
+    .weather-row span strong { color: var(--text); }
+
+    /* ── COUNTDOWN CARDS ── */
+    .countdown-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .countdown-item:last-child { border-bottom: none; }
+    .countdown-days {
+      min-width: 48px; height: 48px; border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 900; color: #fff;
+      flex-shrink: 0; line-height: 1;
+    }
+    .countdown-days small { font-size: .5rem; font-weight: 400; opacity: .85; letter-spacing: .5px; }
+    .countdown-info { flex: 1; }
+    .countdown-name { font-size: .82rem; font-weight: 700; color: var(--text); }
+    .countdown-meta { font-size: .71rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── CLUB PILLS ── */
+    .club-item {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .club-icon { font-size: 1.1rem; width: 26px; text-align: center; }
+    .club-name { font-size: .79rem; color: var(--text-muted); width: 100px; }
+    .club-bar-bg  { flex: 1; height: 9px; border-radius: 9px; background: var(--green-pale); overflow: hidden; }
+    .club-bar-fill { height: 100%; border-radius: 9px; }
+    .club-count { font-size: .78rem; font-weight: 700; width: 28px; text-align: right; color: var(--green-dark); }
+
+    /* ── DISCIPLINE TABLE ── */
+    .disc-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 0; border-bottom: 1px solid var(--border); font-size: .8rem;
+    }
+    .disc-row:last-child { border-bottom: none; }
+    .disc-type { color: var(--text-muted); flex: 1; }
+    .disc-bar-wrap { flex: 2; margin: 0 10px; height: 6px; background: var(--green-pale); border-radius: 6px; overflow: hidden; }
+    .disc-bar { height: 100%; border-radius: 6px; }
+    .disc-num  { font-weight: 700; min-width: 24px; text-align: right; }
+
+    /* ── AT-RISK TABLE ── */
+    .risk-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+    .risk-table th {
+      text-align: left; padding: 8px 10px;
+      background: #fff3f0; color: #7a1a00;
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .7px;
+    }
+    .risk-table th:first-child { border-radius: 8px 0 0 8px; }
+    .risk-table th:last-child  { border-radius: 0 8px 8px 0; }
+    .risk-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+    .risk-table tr:last-child td { border-bottom: none; }
+    .risk-table tr:hover td { background: #fff8f7; }
+
+    /* ── OLYMPIAD MEDALS ── */
+    .medal-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+    }
+    .medal-row:last-child { border-bottom: none; }
+    .medal-icon { font-size: 1.4rem; }
+    .medal-info { flex: 1; font-size: .8rem; }
+    .medal-name { font-weight: 700; color: var(--text); }
+    .medal-sub  { font-size: .71rem; color: var(--text-muted); }
+    .medal-place { font-size: .75rem; font-weight: 700; }
+
+    /* ── NURSE / HEALTH ── */
+    .health-stat {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid var(--border); font-size: .8rem;
+    }
+    .health-stat:last-child { border-bottom: none; }
+    .health-left { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+    .health-val  { font-weight: 700; color: var(--text); }
+
+    /* ── CANTEEN ── */
+    .canteen-item {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .canteen-rank {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--green-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; color: var(--green-dark); flex-shrink: 0;
+    }
+    .canteen-name { flex: 1; font-size: .8rem; }
+    .canteen-pct  { font-size: .75rem; font-weight: 700; color: var(--green-dark); }
+
+    /* ── TRANSPORT ── */
+    .bus-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .bus-row:last-child { border-bottom: none; }
+    .bus-num  { font-size: .82rem; font-weight: 700; min-width: 60px; }
+    .bus-route { flex: 1; font-size: .76rem; color: var(--text-muted); }
+    .bus-status { font-size: .72rem; }
+
+    /* ── PARENT ENGAGEMENT ── */
+    .parent-stat {
+      text-align: center; padding: 14px 8px;
+      border-right: 1px solid var(--border);
+      flex: 1;
+    }
+    .parent-stat:last-child { border-right: none; }
+    .parent-val { font-size: 1.5rem; font-weight: 800; color: var(--green-dark); }
+    .parent-lbl { font-size: .71rem; color: var(--text-muted); margin-top: 3px; }
+    .parent-row { display: flex; }
+
+    /* ── LIBRARY ── */
+    .lib-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .lib-row:last-child { border-bottom: none; }
+    .lib-title { flex: 1; font-size: .79rem; }
+    .lib-borrower { font-size: .72rem; color: var(--text-muted); }
+    .lib-due { font-size: .71rem; font-weight: 700; }
+
+    /* ── MONTHLY TREND CHART ── */
+    .trend-chart-wrap { position: relative; height: 80px; }
+    .trend-canvas { width: 100%; height: 100%; }
+
+    /* ── GRADE DISTRIBUTION ── */
+    .dist-wrap { display: flex; align-items: flex-end; gap: 4px; height: 70px; margin-top: 8px; }
+    .dist-col  { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .dist-bar  { width: 100%; border-radius: 4px 4px 0 0; transition: height .5s; }
+    .dist-lbl  { font-size: .62rem; color: var(--text-muted); }
+
+    /* ── DIGITAL LEARNING ── */
+    .digital-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .digital-icon { font-size: 1rem; width: 22px; text-align: center; }
+    .digital-name { width: 110px; font-size: .78rem; color: var(--text-muted); }
+    .digital-bar-bg { flex: 1; height: 8px; border-radius: 8px; background: var(--green-pale); overflow: hidden; }
+    .digital-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg,#4a90d9,#7ab8f5); }
+    .digital-val { font-size: .77rem; font-weight: 700; width: 36px; text-align: right; color: #4a90d9; }
+
+    /* ── SPORTS ── */
+    .sport-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .sport-row:last-child { border-bottom: none; }
+    .sport-rank { font-size: .8rem; font-weight: 700; min-width: 20px; color: var(--text-muted); }
+    .sport-name { flex: 1; font-size: .8rem; }
+    .sport-score { font-size: .82rem; font-weight: 700; color: var(--green-dark); }
+    .sport-trend { font-size: .7rem; margin-left: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════ HEADER ════════════════ -->
+<header>
+  <div class="header-left">
+    <div class="school-logo">🌿</div>
+    <div class="school-name">
+      <h1>მწვანე სკოლა</h1>
+      <p>სასწავლო მართვის სისტემა — 2025/2026</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+    <div id="clock">––:––:––</div>
+  </div>
+</header>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main>
+
+  <!-- ALERT -->
+  <div class="alert-bar">
+    ⚡ <strong>დღევანდელი შეხსენება:</strong>&nbsp;მეოთხე კლასის გასვლითი გამოცდა — ოთახი 12A · 10:00 საათი
+  </div>
+
+  <!-- ── KPI STATS ── -->
+  <div class="section-title">სკოლის ზოგადი სტატისტიკა</div>
+  <div class="stat-grid">
+    <div class="stat-card green">
+      <div class="stat-icon">🎓</div>
+      <div class="stat-value" id="total-pupils">487</div>
+      <div class="stat-label">სულ მოსწავლე</div>
+      <div class="stat-delta delta-up">▲ +12 ამ სემესტრში</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value" id="present-today">431</div>
+      <div class="stat-label">დღეს დასწრებული</div>
+      <div class="stat-delta delta-up">▲ <span id="att-pct">88.5</span>% დასწრება</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-value" id="absent-today">56</div>
+      <div class="stat-label">დღეს არ მოსულა</div>
+      <div class="stat-delta delta-down">▼ 11 გამართლებული</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">📚</div>
+      <div class="stat-value">18</div>
+      <div class="stat-label">კლასი სულ</div>
+      <div class="stat-delta delta-up">I–XII კლასები</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-icon">👩‍🏫</div>
+      <div class="stat-value">34</div>
+      <div class="stat-label">პედაგოგი</div>
+      <div class="stat-delta delta-up">▲ 2 ახალი</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-value" id="avg-grade">8.4</div>
+      <div class="stat-label">საშ. ქულა / 10</div>
+      <div class="stat-delta delta-up">▲ +0.3 წინა კვარტ.</div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: ATTENDANCE + DONUTS ── -->
+  <div class="section-title">დასწრება და კლასები</div>
+  <div class="two-col">
+
+    <!-- Attendance by class -->
+    <div class="card">
+      <div class="card-title">📊 კლასების დასწრება (დღეს)</div>
+
+      <div class="attendance-row">
+        <div class="att-label">I კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:96%"></div></div>
+        <div class="att-pct">96%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">II კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:91%"></div></div>
+        <div class="att-pct">91%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">III კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:88%"></div></div>
+        <div class="att-pct">88%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">IV კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:82%"></div></div>
+        <div class="att-pct">82%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">V კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:90%"></div></div>
+        <div class="att-pct">90%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">VI კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:85%"></div></div>
+        <div class="att-pct">85%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">VII კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:79%"></div></div>
+        <div class="att-pct">79%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">VIII კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:87%"></div></div>
+        <div class="att-pct">87%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">IX კლასი</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:93%"></div></div>
+        <div class="att-pct">93%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">X–XII კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:84%"></div></div>
+        <div class="att-pct">84%</div>
+      </div>
+
+      <!-- Weekly sparkline -->
+      <div style="margin-top:14px;">
+        <div style="font-size:.73rem;color:var(--text-muted);margin-bottom:4px;">კვირის ტრენდი</div>
+        <div class="sparkline-wrap" id="sparkline"></div>
+      </div>
+    </div>
+
+    <!-- Gender / Status donuts -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="card">
+        <div class="card-title">👦👧 სქესობრივი განაწილება</div>
+        <div class="donut-wrap">
+          <canvas id="genderChart" width="110" height="110" class="donut"></canvas>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#52c374"></div>გოგოები &nbsp;<strong>249 (51%)</strong></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#1a5c2e"></div>ბიჭები &nbsp;<strong>238 (49%)</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌍 ეროვნებები</div>
+        <div class="donut-wrap">
+          <canvas id="nationChart" width="110" height="110" class="donut"></canvas>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#1a5c2e"></div>ქართველი &nbsp;<strong>81%</strong></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#52c374"></div>სომეხი &nbsp;<strong>9%</strong></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f0a500"></div>რუსი &nbsp;<strong>6%</strong></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4a90d9"></div>სხვა &nbsp;<strong>4%</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: GRADES HEATMAP + SUBJECT PROGRESS ── -->
+  <div class="section-title">საგნობრივი შედეგები</div>
+  <div class="two-col">
+
+    <!-- Heatmap -->
+    <div class="card">
+      <div class="card-title">🌡️ ქულების სითბური რუქა (საშ. ქულა)</div>
+      <div class="heatmap-grid">
+        <div class="hm-head">კლასი</div>
+        <div class="hm-head">მათემ.</div>
+        <div class="hm-head">ქართ.</div>
+        <div class="hm-head">ინგლ.</div>
+        <div class="hm-head">ბიოლ.</div>
+        <div class="hm-head">ისტ.</div>
+
+        <div class="hm-class">IV კლ.</div>
+        <div class="hm-cell hm-4">8.1</div>
+        <div class="hm-cell hm-5">9.2</div>
+        <div class="hm-cell hm-3">7.0</div>
+        <div class="hm-cell hm-4">8.5</div>
+        <div class="hm-cell hm-4">8.8</div>
+
+        <div class="hm-class">V კლ.</div>
+        <div class="hm-cell hm-5">9.4</div>
+        <div class="hm-cell hm-4">8.6</div>
+        <div class="hm-cell hm-4">8.0</div>
+        <div class="hm-cell hm-3">7.3</div>
+        <div class="hm-cell hm-5">9.1</div>
+
+        <div class="hm-class">VI კლ.</div>
+        <div class="hm-cell hm-3">7.5</div>
+        <div class="hm-cell hm-4">8.2</div>
+        <div class="hm-cell hm-5">9.0</div>
+        <div class="hm-cell hm-4">8.7</div>
+        <div class="hm-cell hm-3">7.4</div>
+
+        <div class="hm-class">VII კლ.</div>
+        <div class="hm-cell hm-2">6.4</div>
+        <div class="hm-cell hm-3">7.1</div>
+        <div class="hm-cell hm-4">8.3</div>
+        <div class="hm-cell hm-2">6.8</div>
+        <div class="hm-cell hm-4">8.0</div>
+
+        <div class="hm-class">VIII კლ.</div>
+        <div class="hm-cell hm-4">8.9</div>
+        <div class="hm-cell hm-5">9.5</div>
+        <div class="hm-cell hm-4">8.1</div>
+        <div class="hm-cell hm-4">8.4</div>
+        <div class="hm-cell hm-3">7.6</div>
+
+        <div class="hm-class">IX კლ.</div>
+        <div class="hm-cell hm-3">7.8</div>
+        <div class="hm-cell hm-4">8.4</div>
+        <div class="hm-cell hm-5">9.3</div>
+        <div class="hm-cell hm-5">9.0</div>
+        <div class="hm-cell hm-4">8.6</div>
+      </div>
+      <div style="margin-top:12px;font-size:.7rem;color:var(--text-muted);display:flex;gap:8px;flex-wrap:wrap;">
+        <span><span class="hm-cell hm-5" style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:.68rem;">9-10</span> შესანიშნავი</span>
+        <span><span class="hm-cell hm-4" style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:.68rem;">8-9</span> კარგი</span>
+        <span><span class="hm-cell hm-3" style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:.68rem;">7-8</span> საშ.</span>
+        <span><span class="hm-cell hm-2" style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:.68rem;">&lt;7</span> სუსტი</span>
+      </div>
+    </div>
+
+    <!-- Subject bars -->
+    <div class="card">
+      <div class="card-title">📈 სკოლის საშ. ქულა საგნებით</div>
+      <div class="subject-row">
+        <div class="subj-icon">➕</div>
+        <div class="subj-name">მათემატიკა</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:81%;background:linear-gradient(90deg,#1a5c2e,#52c374)"></div></div>
+        <div class="subj-score" style="color:#1a5c2e">8.1</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">📝</div>
+        <div class="subj-name">ქართული ენა</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:88%;background:linear-gradient(90deg,#1a5c2e,#52c374)"></div></div>
+        <div class="subj-score" style="color:#1a5c2e">8.8</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">🌍</div>
+        <div class="subj-name">ინგლისური</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:85%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="subj-score" style="color:#4a90d9">8.5</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">🔬</div>
+        <div class="subj-name">ბიოლოგია</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:76%;background:linear-gradient(90deg,#9b5de5,#c89ff5)"></div></div>
+        <div class="subj-score" style="color:#9b5de5">7.6</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">⚗️</div>
+        <div class="subj-name">ქიმია</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:73%;background:linear-gradient(90deg,#e05c3a,#f5a590)"></div></div>
+        <div class="subj-score" style="color:#e05c3a">7.3</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">🌐</div>
+        <div class="subj-name">გეოგრაფია</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:82%;background:linear-gradient(90deg,#f0a500,#ffd066)"></div></div>
+        <div class="subj-score" style="color:#c07800">8.2</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">🏛️</div>
+        <div class="subj-name">ისტორია</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:84%;background:linear-gradient(90deg,#1a5c2e,#52c374)"></div></div>
+        <div class="subj-score" style="color:#1a5c2e">8.4</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">💻</div>
+        <div class="subj-name">ინფ. ტექნ.</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:90%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="subj-score" style="color:#4a90d9">9.0</div>
+      </div>
+      <div class="subject-row">
+        <div class="subj-icon">🎨</div>
+        <div class="subj-name">ხელოვნება</div>
+        <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:92%;background:linear-gradient(90deg,#f0a500,#ffd066)"></div></div>
+        <div class="subj-score" style="color:#c07800">9.2</div>
+      </div>
+
+      <!-- Rings -->
+      <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+        <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;font-weight:600;">სემესტრის პროგრესი</div>
+        <div class="rings-row" id="rings-row"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4: TOP STUDENTS TABLE ── -->
+  <div class="section-title">წამყვანი მოსწავლეები</div>
+  <div class="card">
+    <div class="card-title">🏅 ტოპ 10 მოსწავლე — საერთო რეიტინგი</div>
+    <div style="overflow-x:auto;">
+      <table class="student-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>სახელი / გვარი</th>
+            <th>კლასი</th>
+            <th>საშ. ქულა</th>
+            <th>დასწრება</th>
+            <th>სტატუსი</th>
+            <th>მიღწევა</th>
+          </tr>
+        </thead>
+        <tbody id="top-students"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5: THREE-COL ── -->
+  <div class="section-title">ლაივ ფიდი და კალენდარი</div>
+  <div class="three-col">
+
+    <!-- Live events -->
+    <div class="card">
+      <div class="card-title">🔔 ბოლო მოვლენები</div>
+      <div id="live-events"></div>
+    </div>
+
+    <!-- Teachers -->
+    <div class="card">
+      <div class="card-title">👩‍🏫 პედაგოგები</div>
+      <div id="teachers-list"></div>
+    </div>
+
+    <!-- Mini calendar -->
+    <div class="card">
+      <div class="card-title">📅 მაისი 2026</div>
+      <div class="mini-cal" id="mini-cal"></div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       20 NEW DASHBOARD ITEMS
+  ══════════════════════════════════════════════ -->
+
+  <!-- ① SCROLLING ANNOUNCEMENT TICKER -->
+  <div class="section-title">განცხადებები</div>
+  <div class="ticker-wrap">
+    <span class="ticker-label">📢 ახალი ამბები</span>
+    <div class="ticker-inner">
+      <span class="ticker-text">
+        🏆 მწვანე სკოლამ მიიღო საუკეთესო სკოლის ჯილდო 2026 &nbsp;|&nbsp;
+        📅 26 მაისს — მოსწავლეთა კონცერტი, 15:00 საათი &nbsp;|&nbsp;
+        📚 ბიბლიოთეკა განახლებულ გრაფიკით: ორშ–პარ 09:00–17:00 &nbsp;|&nbsp;
+        ⚽ სკოლის გუნდი ნახევარფინალშია — ვუხარით! &nbsp;|&nbsp;
+        🌿 ეკო-კლუბი ნარგავთა დღეს მართავს 30 მაისს &nbsp;|&nbsp;
+        💻 ახალი კომპიუტერული ლაბორატორია გაიხსნება 1 ივნისს
+      </span>
+    </div>
+  </div>
+
+  <!-- ② EXTRA KPI ROW: homework, library, canteen, transport, nurse, digital -->
+  <div class="section-title">ოპერაციული მაჩვენებლები</div>
+  <div class="stat-grid">
+    <div class="stat-card green">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value" id="hw-rate">76</div>
+      <div class="stat-label">საშინ. დავ. %</div>
+      <div class="stat-delta delta-up">▲ +4% კვ. წინ</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">📖</div>
+      <div class="stat-value">143</div>
+      <div class="stat-label">ბიბლ. წიგნი გატ.</div>
+      <div class="stat-delta delta-up">▲ 23 ამ კვირაში</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-icon">🍽️</div>
+      <div class="stat-value" id="canteen-count">312</div>
+      <div class="stat-label">კვება დღეს</div>
+      <div class="stat-delta delta-up">64% მოსწ.</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">🚌</div>
+      <div class="stat-value">6</div>
+      <div class="stat-label">ავტობუსი მოქმ.</div>
+      <div class="stat-delta delta-up">198 მოსწ. ტრანსპ.</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-icon">🏥</div>
+      <div class="stat-value" id="nurse-count">8</div>
+      <div class="stat-label">ექთნის ვიზიტი</div>
+      <div class="stat-delta delta-down">▼ 3 სახლში გაიგზ.</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-icon">🖥️</div>
+      <div class="stat-value">89</div>
+      <div class="stat-label">ელ-სწავლება %</div>
+      <div class="stat-delta delta-up">▲ პლატ. შ/კ</div>
+    </div>
+  </div>
+
+  <!-- ③ WEATHER  +  ④ EXAM COUNTDOWNS  +  ⑤ PARENT ENGAGEMENT  +  ⑥ BUDGET GAUGE -->
+  <div class="section-title">გარემო, გამოცდები და ფინანსები</div>
+  <div class="four-col">
+
+    <!-- ③ WEATHER WIDGET -->
+    <div class="card">
+      <div class="card-title">🌤️ ამინდი — თბილისი</div>
+      <div class="weather-main">
+        <div class="weather-icon">⛅</div>
+        <div>
+          <div class="weather-temp">22°C</div>
+          <div class="weather-desc">ნაწილობრივ მოღრუბლული</div>
+        </div>
+      </div>
+      <div class="weather-row">
+        <span>💧 <strong>45%</strong> ტ/ტ</span>
+        <span>💨 <strong>12</strong> კმ/სთ</span>
+        <span>🌡️ <strong>17–24°</strong></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:.72rem;">
+        <div style="text-align:center"><div>ხუთ</div><div>🌦️</div><div>19°</div></div>
+        <div style="text-align:center"><div>პარ</div><div>☀️</div><div>26°</div></div>
+        <div style="text-align:center"><div>შაბ</div><div>☀️</div><div>28°</div></div>
+        <div style="text-align:center"><div>კვ</div><div>🌧️</div><div>18°</div></div>
+        <div style="text-align:center"><div>ორშ</div><div>⛅</div><div>21°</div></div>
+      </div>
+    </div>
+
+    <!-- ④ EXAM COUNTDOWNS -->
+    <div class="card">
+      <div class="card-title">⏳ გამოცდების ათვლა</div>
+      <div class="countdown-item">
+        <div class="countdown-days" style="background:#e05c3a">3<small>დღე</small></div>
+        <div class="countdown-info">
+          <div class="countdown-name">მათემ. გამოცდა — XII კლ.</div>
+          <div class="countdown-meta">26 მაისი · ოთახი 14B</div>
+        </div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-days" style="background:#f0a500">7<small>დღე</small></div>
+        <div class="countdown-info">
+          <div class="countdown-name">ქართ. ენის ტ. — X კლ.</div>
+          <div class="countdown-meta">30 მაისი · ოთახი 8A</div>
+        </div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-days" style="background:#4a90d9">14<small>დღე</small></div>
+        <div class="countdown-info">
+          <div class="countdown-name">ინგლ. ზეპ. ტ. — IX კლ.</div>
+          <div class="countdown-meta">6 ივნისი · ოთახი 5C</div>
+        </div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-days" style="background:#1a5c2e">21<small>დღე</small></div>
+        <div class="countdown-info">
+          <div class="countdown-name">ეროვნ. გამ. — XI კლ.</div>
+          <div class="countdown-meta">13 ივნისი · ეროვნ. ცენტრი</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ PARENT ENGAGEMENT -->
+    <div class="card">
+      <div class="card-title">👨‍👩‍👧 მშობელთა ჩართულობა</div>
+      <div class="parent-row" style="margin-bottom:14px;">
+        <div class="parent-stat">
+          <div class="parent-val">312</div>
+          <div class="parent-lbl">პორტ. შ/კ სს</div>
+        </div>
+        <div class="parent-stat">
+          <div class="parent-val">28</div>
+          <div class="parent-lbl">შეხვ. ამ კვ.</div>
+        </div>
+        <div class="parent-stat">
+          <div class="parent-val">94%</div>
+          <div class="parent-lbl">კმაყ. ქულა</div>
+        </div>
+      </div>
+      <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px;">მშობ. პორტ. ვიზიტი კვ. განმ.</div>
+      <div class="sparkline-wrap" id="parent-spark"></div>
+      <div style="margin-top:14px;">
+        <div style="font-size:.78rem;margin-bottom:6px;color:var(--text-muted)">საჩივრები / მოთხოვნები</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge badge-green">✅ 47 დახ.</span>
+          <span class="badge badge-amber">⏳ 8 პროც.</span>
+          <span class="badge badge-red">❗ 3 ახ.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ BUDGET GAUGE -->
+    <div class="card">
+      <div class="card-title">💰 ბიუჯეტი 2026</div>
+      <div class="gauge-wrap" style="margin-bottom:10px;">
+        <div class="gauge-arc">
+          <svg width="120" height="64" viewBox="0 0 120 64">
+            <path d="M10,60 A50,50 0 0,1 110,60" fill="none" stroke="#e0f0e8" stroke-width="12" stroke-linecap="round"/>
+            <path id="gauge-path" d="M10,60 A50,50 0 0,1 110,60" fill="none" stroke="#2e8b57" stroke-width="12" stroke-linecap="round"
+              stroke-dasharray="157" stroke-dashoffset="47"/>
+          </svg>
+        </div>
+        <div class="gauge-val">70%</div>
+        <div class="gauge-lbl">გამოყენებული ბიუჯეტი</div>
+      </div>
+      <div style="font-size:.77rem;display:flex;flex-direction:column;gap:7px;margin-top:8px;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-muted)">სახელფასო ფ.</span><strong>₾84,000</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-muted)">სასწ. მასალა</span><strong>₾12,400</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-muted)">ინფრასტ.</span><strong>₾8,600</strong></div>
+        <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;"><span style="color:var(--text-muted)">დარჩ. ბი.</span><strong style="color:var(--green-dark)">₾45,000</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ EXTRACURRICULAR CLUBS  +  ⑧ DISCIPLINE INCIDENTS -->
+  <div class="section-title">კლუბები და დისციპლინა</div>
+  <div class="two-col">
+
+    <!-- ⑦ CLUBS -->
+    <div class="card">
+      <div class="card-title">🎭 არჩევითი კლუბები — წევრობა</div>
+      <div class="club-item">
+        <div class="club-icon">⚽</div><div class="club-name">ფეხბურთი</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:88%;background:linear-gradient(90deg,#2e8b57,#52c374)"></div></div>
+        <div class="club-count">44</div>
+      </div>
+      <div class="club-item">
+        <div class="club-icon">♟️</div><div class="club-name">ჭადრაკი</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:60%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="club-count">30</div>
+      </div>
+      <div class="club-item">
+        <div class="club-icon">🎨</div><div class="club-name">ხელოვნება</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:70%;background:linear-gradient(90deg,#f0a500,#ffd066)"></div></div>
+        <div class="club-count">35</div>
+      </div>
+      <div class="club-item">
+        <div class="club-icon">🎵</div><div class="club-name">მუსიკა</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:50%;background:linear-gradient(90deg,#9b5de5,#c89ff5)"></div></div>
+        <div class="club-count">25</div>
+      </div>
+      <div class="club-item">
+        <div class="club-icon">🌿</div><div class="club-name">ეკო-კლუბი</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:46%;background:linear-gradient(90deg,#2e8b57,#52c374)"></div></div>
+        <div class="club-count">23</div>
+      </div>
+      <div class="club-item">
+        <div class="club-icon">💻</div><div class="club-name">კოდირება</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:80%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="club-count">40</div>
+      </div>
+      <div class="club-item">
+        <div class="club-icon">📰</div><div class="club-name">სკოლის გაზ.</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:30%;background:linear-gradient(90deg,#e05c3a,#f5a590)"></div></div>
+        <div class="club-count">15</div>
+      </div>
+      <div class="club-item">
+        <div class="club-icon">🏊</div><div class="club-name">ცურვა</div>
+        <div class="club-bar-bg"><div class="club-bar-fill" style="width:42%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="club-count">21</div>
+      </div>
+    </div>
+
+    <!-- ⑧ DISCIPLINE -->
+    <div class="card">
+      <div class="card-title">⚠️ დისციპლინური ინციდენტები — მაისი</div>
+      <div class="disc-row">
+        <div class="disc-type">დაგვიანება</div>
+        <div class="disc-bar-wrap"><div class="disc-bar" style="width:72%;background:#f0a500"></div></div>
+        <div class="disc-num">36</div>
+      </div>
+      <div class="disc-row">
+        <div class="disc-type">გამოუცხ.</div>
+        <div class="disc-bar-wrap"><div class="disc-bar" style="width:56%;background:#e05c3a"></div></div>
+        <div class="disc-num">28</div>
+      </div>
+      <div class="disc-row">
+        <div class="disc-type">ქცევა</div>
+        <div class="disc-bar-wrap"><div class="disc-bar" style="width:30%;background:#9b5de5"></div></div>
+        <div class="disc-num">15</div>
+      </div>
+      <div class="disc-row">
+        <div class="disc-type">ფ/სამოსი</div>
+        <div class="disc-bar-wrap"><div class="disc-bar" style="width:18%;background:#4a90d9"></div></div>
+        <div class="disc-num">9</div>
+      </div>
+      <div class="disc-row">
+        <div class="disc-type">ტელეფ. გამოყ.</div>
+        <div class="disc-bar-wrap"><div class="disc-bar" style="width:24%;background:#f0a500"></div></div>
+        <div class="disc-num">12</div>
+      </div>
+      <div class="disc-row">
+        <div class="disc-type">დაზიანება</div>
+        <div class="disc-bar-wrap"><div class="disc-bar" style="width:8%;background:#e05c3a"></div></div>
+        <div class="disc-num">4</div>
+      </div>
+      <!-- trend note -->
+      <div style="margin-top:14px;padding:10px;background:#fff9f0;border-radius:8px;font-size:.77rem;color:#7a4f00;border-left:3px solid var(--accent);">
+        ⬇️ ინციდენტები <strong>18%-ით შემცირდა</strong> გასულ თვესთან შედარებით
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑨ AT-RISK STUDENTS  +  ⑩ OLYMPIAD MEDALS -->
+  <div class="section-title">რისკ-ჯგუფი და მიღწევები</div>
+  <div class="two-col">
+
+    <!-- ⑨ AT-RISK -->
+    <div class="card">
+      <div class="card-title">🔴 ყურადღება საჭირო მოსწავლეები</div>
+      <div style="overflow-x:auto;">
+        <table class="risk-table">
+          <thead>
+            <tr>
+              <th>მოსწავლე</th><th>კლ.</th><th>საშ. ქ.</th><th>დასწ.</th><th>მიზეზი</th>
+            </tr>
+          </thead>
+          <tbody id="risk-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ⑩ OLYMPIAD -->
+    <div class="card">
+      <div class="card-title">🏅 ოლიმპიადები და კონკ. — 2026</div>
+      <div id="medals-list"></div>
+    </div>
+  </div>
+
+  <!-- ⑪ HEALTH/NURSE  +  ⑫ CANTEEN  +  ⑬ TRANSPORT -->
+  <div class="section-title">ჯანდაცვა, კვება და ტრანსპორტი</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+
+    <!-- ⑪ NURSE -->
+    <div class="card">
+      <div class="card-title">🏥 სამედიცინო პუნქტი — დღეს</div>
+      <div class="health-stat">
+        <div class="health-left">🤕 თავი ტკივა</div><div class="health-val">3</div>
+      </div>
+      <div class="health-stat">
+        <div class="health-left">🤒 ტემპ. >37.5°</div><div class="health-val">2</div>
+      </div>
+      <div class="health-stat">
+        <div class="health-left">🩹 ჭრილობა</div><div class="health-val">1</div>
+      </div>
+      <div class="health-stat">
+        <div class="health-left">😰 შფოთვა</div><div class="health-val">1</div>
+      </div>
+      <div class="health-stat">
+        <div class="health-left">💊 მედ. მოთხ.</div><div class="health-val">1</div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <span class="badge badge-red">🏠 3 სახლში</span>
+        <span class="badge badge-amber">🩺 5 მკ. შემდ.</span>
+      </div>
+    </div>
+
+    <!-- ⑫ CANTEEN -->
+    <div class="card">
+      <div class="card-title">🍽️ სასადილო — პოპ. კერძები</div>
+      <div class="canteen-item">
+        <div class="canteen-rank">1</div>
+        <div class="canteen-name">ხინკალი</div>
+        <div class="canteen-pct">28%</div>
+      </div>
+      <div class="canteen-item">
+        <div class="canteen-rank">2</div>
+        <div class="canteen-name">ლობიანი</div>
+        <div class="canteen-pct">22%</div>
+      </div>
+      <div class="canteen-item">
+        <div class="canteen-rank">3</div>
+        <div class="canteen-name">გრეჩნევა ქ.</div>
+        <div class="canteen-pct">18%</div>
+      </div>
+      <div class="canteen-item">
+        <div class="canteen-rank">4</div>
+        <div class="canteen-name">ბოსტნ. წვნ.</div>
+        <div class="canteen-pct">17%</div>
+      </div>
+      <div class="canteen-item">
+        <div class="canteen-rank">5</div>
+        <div class="canteen-name">ვეგ. მენიუ</div>
+        <div class="canteen-pct">15%</div>
+      </div>
+      <div style="margin-top:12px;font-size:.75rem;color:var(--text-muted);">სულ მირთმ.: <strong style="color:var(--green-dark)" id="canteen-served">312</strong> · შემ.: <strong style="color:var(--accent)">43</strong></div>
+    </div>
+
+    <!-- ⑬ TRANSPORT -->
+    <div class="card">
+      <div class="card-title">🚌 სასკოლო ავტობუსები</div>
+      <div class="bus-row">
+        <div class="bus-num">№1 — ვაკე</div>
+        <div class="bus-route">ვაკე → სკოლა</div>
+        <span class="badge badge-green">✅ მოვიდა</span>
+      </div>
+      <div class="bus-row">
+        <div class="bus-num">№2 — ისანი</div>
+        <div class="bus-route">ისანი → სკოლა</div>
+        <span class="badge badge-green">✅ მოვიდა</span>
+      </div>
+      <div class="bus-row">
+        <div class="bus-num">№3 — გლდანი</div>
+        <div class="bus-route">გლდ. → სკოლა</div>
+        <span class="badge badge-amber">⏳ 5 წ. დაგ.</span>
+      </div>
+      <div class="bus-row">
+        <div class="bus-num">№4 — სამგ.</div>
+        <div class="bus-route">სამ. → სკოლა</div>
+        <span class="badge badge-green">✅ მოვიდა</span>
+      </div>
+      <div class="bus-row">
+        <div class="bus-num">№5 — დიდ.</div>
+        <div class="bus-route">დიდ. → სკოლა</div>
+        <span class="badge badge-red">❌ გაფუჭ.</span>
+      </div>
+      <div class="bus-row">
+        <div class="bus-num">№6 — საბ.</div>
+        <div class="bus-route">საბ. → სკოლა</div>
+        <span class="badge badge-green">✅ მოვიდა</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑭ LIBRARY  +  ⑮ DIGITAL LEARNING -->
+  <div class="section-title">ბიბლიოთეკა და ელ-სწავლება</div>
+  <div class="two-col">
+
+    <!-- ⑭ LIBRARY -->
+    <div class="card">
+      <div class="card-title">📚 ბიბლიოთეკა — გასესხებული წიგნები</div>
+      <div style="display:flex;gap:16px;margin-bottom:16px;">
+        <div style="text-align:center;flex:1;padding:12px;background:var(--green-pale);border-radius:10px;">
+          <div style="font-size:1.6rem;font-weight:800;color:var(--green-dark)">143</div>
+          <div style="font-size:.72rem;color:var(--text-muted)">გასესხ. სულ</div>
+        </div>
+        <div style="text-align:center;flex:1;padding:12px;background:#dbeeff;border-radius:10px;">
+          <div style="font-size:1.6rem;font-weight:800;color:#1a3f7a">2480</div>
+          <div style="font-size:.72rem;color:var(--text-muted)">ფონდი</div>
+        </div>
+        <div style="text-align:center;flex:1;padding:12px;background:#fff0cc;border-radius:10px;">
+          <div style="font-size:1.6rem;font-weight:800;color:#7a4f00">12</div>
+          <div style="font-size:.72rem;color:var(--text-muted)">ვადაგ.</div>
+        </div>
+      </div>
+      <div id="lib-list"></div>
+    </div>
+
+    <!-- ⑮ DIGITAL LEARNING -->
+    <div class="card">
+      <div class="card-title">🖥️ ელ-სწავლება — პლატფორმები</div>
+      <div class="digital-row">
+        <div class="digital-icon">📘</div>
+        <div class="digital-name">Google Classroom</div>
+        <div class="digital-bar-bg"><div class="digital-fill" style="width:92%"></div></div>
+        <div class="digital-val">92%</div>
+      </div>
+      <div class="digital-row">
+        <div class="digital-icon">🎥</div>
+        <div class="digital-name">Khan Academy</div>
+        <div class="digital-bar-bg"><div class="digital-fill" style="width:68%"></div></div>
+        <div class="digital-val">68%</div>
+      </div>
+      <div class="digital-row">
+        <div class="digital-icon">🧪</div>
+        <div class="digital-name">PhET სიმ.</div>
+        <div class="digital-bar-bg"><div class="digital-fill" style="width:45%"></div></div>
+        <div class="digital-val">45%</div>
+      </div>
+      <div class="digital-row">
+        <div class="digital-icon">✍️</div>
+        <div class="digital-name">Duolingo</div>
+        <div class="digital-bar-bg"><div class="digital-fill" style="width:55%"></div></div>
+        <div class="digital-val">55%</div>
+      </div>
+      <div class="digital-row">
+        <div class="digital-icon">💡</div>
+        <div class="digital-name">Quizlet</div>
+        <div class="digital-bar-bg"><div class="digital-fill" style="width:78%"></div></div>
+        <div class="digital-val">78%</div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px;">
+        <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px;font-weight:600;">ლოგინი კვ. განმ. (სულ)</div>
+        <div class="sparkline-wrap" id="digital-spark"></div>
+        <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:4px;">
+          <span>ორშ</span><span>სამ</span><span>ოთხ</span><span>ხუთ</span><span>პარ</span><span>შაბ</span><span>კვ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑯ MONTHLY ENROLLMENT TREND  +  ⑰ GRADE DISTRIBUTION -->
+  <div class="section-title">ტრენდები და განაწილება</div>
+  <div class="two-col">
+
+    <!-- ⑯ MONTHLY TREND -->
+    <div class="card">
+      <div class="card-title">📅 ყოველთვიური დასწრება (%) — 2025/26</div>
+      <canvas id="trendCanvas" height="90" style="width:100%;display:block;"></canvas>
+      <div style="display:flex;justify-content:space-between;font-size:.66rem;color:var(--text-muted);margin-top:6px;">
+        <span>სექ</span><span>ოქ</span><span>ნოე</span><span>დეკ</span><span>იან</span><span>თებ</span><span>მარ</span><span>აპრ</span><span>მაი</span>
+      </div>
+    </div>
+
+    <!-- ⑰ GRADE DISTRIBUTION -->
+    <div class="card">
+      <div class="card-title">📊 ქულათა განაწილება (სულ 487 მოსწ.)</div>
+      <div class="dist-wrap" id="dist-chart"></div>
+      <div style="display:flex;justify-content:space-around;font-size:.68rem;color:var(--text-muted);margin-top:4px;">
+        <span>1–3</span><span>4–5</span><span>6–6</span><span>7–7</span><span>8–8</span><span>9–9</span><span>10</span>
+      </div>
+      <div style="margin-top:12px;font-size:.77rem;display:flex;gap:16px;flex-wrap:wrap;color:var(--text-muted);">
+        <span>📌 საშ: <strong style="color:var(--green-dark)">8.4</strong></span>
+        <span>📌 მედ: <strong style="color:var(--green-dark)">8.0</strong></span>
+        <span>📌 მოდ: <strong style="color:var(--green-dark)">9</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑱ SPORTS LEADERBOARD  +  ⑲ HOMEWORK COMPLETION  +  ⑳ LANGUAGE PROFILE -->
+  <div class="section-title">სპორტი, საშინაო დავ. და ენობრივი პროფილი</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+
+    <!-- ⑱ SPORTS -->
+    <div class="card">
+      <div class="card-title">🏃 სპორტული ლიდერბორდი — კლასები</div>
+      <div id="sports-list"></div>
+    </div>
+
+    <!-- ⑲ HOMEWORK COMPLETION BY CLASS -->
+    <div class="card">
+      <div class="card-title">📋 საშინ. დავ. შესრ. % — კლასებით</div>
+      <div class="attendance-row">
+        <div class="att-label">I კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:94%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="att-pct" style="color:#4a90d9">94%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">II კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:91%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="att-pct" style="color:#4a90d9">91%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">III კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:89%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="att-pct" style="color:#4a90d9">89%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">IV კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:78%;background:linear-gradient(90deg,#f0a500,#ffd066)"></div></div>
+        <div class="att-pct" style="color:#c07800">78%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">V კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:85%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="att-pct" style="color:#4a90d9">85%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">VI კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:72%;background:linear-gradient(90deg,#f0a500,#ffd066)"></div></div>
+        <div class="att-pct" style="color:#c07800">72%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">VII კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:65%;background:linear-gradient(90deg,#e05c3a,#f5a590)"></div></div>
+        <div class="att-pct" style="color:#e05c3a">65%</div>
+      </div>
+      <div class="attendance-row">
+        <div class="att-label">VIII კლ.</div>
+        <div class="att-bar-bg"><div class="att-bar-fill" style="width:80%;background:linear-gradient(90deg,#4a90d9,#7ab8f5)"></div></div>
+        <div class="att-pct" style="color:#4a90d9">80%</div>
+      </div>
+    </div>
+
+    <!-- ⑳ LANGUAGE PROFILE -->
+    <div class="card">
+      <div class="card-title">🗣️ სასაუბრო ენა სახლში</div>
+      <canvas id="langDonut" width="110" height="110" class="donut" style="display:block;margin:0 auto 12px;"></canvas>
+      <div id="lang-legend"></div>
+      <div style="margin-top:14px;padding:10px;background:var(--green-pale);border-radius:8px;font-size:.76rem;color:var(--green-dark);">
+        🌍 სკოლა სთავაზობს <strong>3-ენოვან სწავლებას</strong>: ქართ. · ინგლ. · რუს.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  მწვანე სკოლა &mdash; სასწავლო მართვის სისტემა &copy; 2026 &nbsp;|&nbsp;
+  განახლება ხდება ავტომატურად ყოველ 5 წამში
+</footer>
+
+<!-- ════════════════ SCRIPTS ════════════════ -->
+<script>
+/* ────── CLOCK ────── */
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('ka-GE', { hour12: false });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ────── CANVAS PIE / DONUT ────── */
+function drawDonut(canvasId, slices, lineWidth) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  const r = (canvas.width - lineWidth) / 2;
+  let start = -Math.PI / 2;
+  const total = slices.reduce((a, s) => a + s.value, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  slices.forEach(s => {
+    const sweep = (s.value / total) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, start, start + sweep);
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+    start += sweep;
+  });
+}
+
+drawDonut('genderChart', [
+  { value: 249, color: '#52c374' },
+  { value: 238, color: '#1a5c2e' }
+], 18);
+
+drawDonut('nationChart', [
+  { value: 81, color: '#1a5c2e' },
+  { value:  9, color: '#52c374' },
+  { value:  6, color: '#f0a500' },
+  { value:  4, color: '#4a90d9' }
+], 18);
+
+/* ────── SPARKLINE ────── */
+const weekAtt = [84, 88, 86, 91, 88, 90, 89];
+const sp = document.getElementById('sparkline');
+weekAtt.forEach((v, i) => {
+  const bar = document.createElement('div');
+  bar.className = 'spark-bar' + (i === weekAtt.length - 1 ? ' today' : '');
+  bar.style.height = (v / 100 * 40) + 'px';
+  bar.title = ['ორშ','სამ','ოთხ','ხუთ','პარ','შაბ','კვ'][i] + ': ' + v + '%';
+  sp.appendChild(bar);
+});
+
+/* ────── PROGRESS RINGS ────── */
+const ringData = [
+  { label: 'I სემ.', pct: 100, color: '#52c374' },
+  { label: 'II სემ.', pct: 64,  color: '#f0a500' },
+  { label: 'გამოც.', pct: 38,  color: '#4a90d9' },
+];
+const rr = document.getElementById('rings-row');
+ringData.forEach(d => {
+  const wrap = document.createElement('div');
+  wrap.className = 'ring-wrap';
+  const r = 35, circ = 2 * Math.PI * r;
+  wrap.innerHTML = `
+    <div class="ring-container">
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <circle cx="45" cy="45" r="${r}" fill="none" stroke="#e0f0e8" stroke-width="8"/>
+        <circle cx="45" cy="45" r="${r}" fill="none" stroke="${d.color}" stroke-width="8"
+          stroke-dasharray="${circ}" stroke-dashoffset="${circ * (1 - d.pct/100)}"
+          stroke-linecap="round"/>
+      </svg>
+      <div class="ring-label">${d.pct}%</div>
+    </div>
+    <div class="ring-title">${d.label}</div>
+  `;
+  rr.appendChild(wrap);
+});
+
+/* ────── TOP STUDENTS ────── */
+const students = [
+  { rank:1,  name:'ნინო ბერიძე',      cls:'IX ბ',  grade:9.8, att:99, status:'შესანიშნავი', stars:5, color:'#1a5c2e' },
+  { rank:2,  name:'გიორგი ხვედელიძე', cls:'VIII ა', grade:9.6, att:97, status:'შესანიშნავი', stars:5, color:'#2e8b57' },
+  { rank:3,  name:'მარიამ სვანიძე',   cls:'X ა',   grade:9.5, att:100,status:'შესანიშნავი', stars:5, color:'#52c374' },
+  { rank:4,  name:'ლუკა ჩიქოვანი',   cls:'VII ბ', grade:9.3, att:95, status:'კარგი',        stars:4, color:'#4a90d9' },
+  { rank:5,  name:'ანა კვარაცხელია', cls:'IX ა',  grade:9.1, att:96, status:'კარგი',        stars:4, color:'#9b5de5' },
+  { rank:6,  name:'დავით მელიქიძე',   cls:'VI ბ',  grade:9.0, att:93, status:'კარგი',        stars:4, color:'#f0a500' },
+  { rank:7,  name:'სოფო ელიაშვილი',  cls:'VIII ბ',grade:8.9, att:92, status:'კარგი',        stars:4, color:'#e05c3a' },
+  { rank:8,  name:'ნიკა ბარბაქაძე',  cls:'V ა',   grade:8.7, att:90, status:'კარგი',        stars:4, color:'#1a5c2e' },
+  { rank:9,  name:'თამარ ღოღელიანი', cls:'X ბ',   grade:8.5, att:88, status:'საშუალო',      stars:3, color:'#4a90d9' },
+  { rank:10, name:'ვახო ხაჩიძე',     cls:'VII ა', grade:8.4, att:87, status:'საშუალო',      stars:3, color:'#9b5de5' },
+];
+
+const tbody = document.getElementById('top-students');
+students.forEach(s => {
+  const initials = s.name.split(' ').map(w => w[0]).join('');
+  const statusClass = s.grade >= 9.5 ? 'badge-green' : s.grade >= 8.5 ? 'badge-blue' : 'badge-amber';
+  const stars = '★'.repeat(s.stars) + '☆'.repeat(5 - s.stars);
+  tbody.innerHTML += `
+    <tr>
+      <td><strong style="color:var(--text-muted)">${s.rank}</strong></td>
+      <td>
+        <div class="name-cell">
+          <div class="avatar" style="background:${s.color}">${initials}</div>
+          <span>${s.name}</span>
+        </div>
+      </td>
+      <td>${s.cls}</td>
+      <td><strong style="color:var(--green-dark);font-size:.95rem">${s.grade}</strong></td>
+      <td>${s.att}%</td>
+      <td><span class="badge ${statusClass}">${s.status}</span></td>
+      <td><span class="star-rating" style="font-size:.8rem">${stars}</span></td>
+    </tr>
+  `;
+});
+
+/* ────── LIVE EVENTS FEED ────── */
+const eventsData = [
+  { time:'10:47', icon:'✅', bg:'#d4f5e0', text:'<strong>ნინო ბერიძე</strong> — მათემატიკის ტეს­ტი: <strong>10/10</strong>' },
+  { time:'10:39', icon:'⚠️', bg:'#fff0cc', text:'<strong>ვახო ხაჩიძე</strong> — VII ა — გამოუცხადებლობა' },
+  { time:'10:22', icon:'📝', bg:'#dbeeff', text:'<strong>გ. ხვედელიძე</strong> — ქიმიის სამუ­შაო ჩაბარდა' },
+  { time:'09:58', icon:'🏆', bg:'#fff0cc', text:'სკოლამ მიიღო <strong>საგანმ. ოლიმ­პ. III ადგ.</strong>' },
+  { time:'09:41', icon:'🔔', bg:'#fde2dc', text:'<strong>IV კლასი</strong> — 3 მოსწავლე დაგვიანდა' },
+  { time:'09:15', icon:'📚', bg:'#d4f5e0', text:'<strong>VIII ბ</strong> — ისტ. საათი დაიწყო' },
+  { time:'08:55', icon:'✅', bg:'#d4f5e0', text:'სკოლის კარი გაიხსნა — 431 მოსწ. შემოვიდა' },
+];
+
+const ef = document.getElementById('live-events');
+eventsData.forEach(e => {
+  ef.innerHTML += `
+    <div class="event-item">
+      <div class="event-time">${e.time}</div>
+      <div class="event-icon" style="background:${e.bg}">${e.icon}</div>
+      <div class="event-text">${e.text}</div>
+    </div>
+  `;
+});
+
+/* ────── TEACHERS ────── */
+const teachers = [
+  { name:'ირმა ჯაფარიძე',   subj:'მათემატიკა',   color:'#1a5c2e', active:true  },
+  { name:'ზურა ჩხეიძე',     subj:'ქართული ენა',  color:'#2e8b57', active:true  },
+  { name:'ნათია ქობულია',   subj:'ბიოლოგია',     color:'#4a90d9', active:true  },
+  { name:'ელენე ბახტაძე',   subj:'ინგლისური',    color:'#9b5de5', active:false },
+  { name:'სალომე ხარება',   subj:'ისტორია',      color:'#f0a500', active:true  },
+  { name:'ლევან გოგიაშვილი',subj:'ინფ. ტექნ.',   color:'#e05c3a', active:true  },
+];
+
+const tl = document.getElementById('teachers-list');
+teachers.forEach(t => {
+  const init = t.name.split(' ').map(w => w[0]).join('').slice(0,2);
+  tl.innerHTML += `
+    <div class="teacher-card">
+      <div class="teacher-avatar" style="background:${t.color}">${init}</div>
+      <div class="teacher-info">
+        <div class="teacher-name">${t.name}</div>
+        <div class="teacher-sub">${t.subj}</div>
+      </div>
+      <span class="badge ${t.active ? 'badge-green' : 'badge-amber'}">${t.active ? 'სკოლაში' : 'არ არის'}</span>
+    </div>
+  `;
+});
+
+/* ────── MINI CALENDAR ────── */
+const days = ['კვ','ორ','სა','ოთ','ხუ','პა','შა'];
+const cal = document.getElementById('mini-cal');
+days.forEach(d => {
+  const h = document.createElement('div');
+  h.className = 'cal-head';
+  h.textContent = d;
+  cal.appendChild(h);
+});
+// May 2026 starts on Friday (index 5)
+const startOffset = 5;
+for (let i = 0; i < startOffset; i++) {
+  const empty = document.createElement('div');
+  empty.className = 'cal-day empty';
+  empty.textContent = '';
+  cal.appendChild(empty);
+}
+const eventDays = [5, 12, 15, 20, 23, 27];
+for (let d = 1; d <= 31; d++) {
+  const cell = document.createElement('div');
+  cell.className = 'cal-day' +
+    (d === 23 ? ' today' : '') +
+    (eventDays.includes(d) ? ' event' : '');
+  cell.textContent = d;
+  cal.appendChild(cell);
+}
+
+/* ────── LIVE COUNTER ANIMATION ────── */
+function lerp(el, target, duration) {
+  const start = parseFloat(el.textContent);
+  const diff = target - start;
+  const startTime = performance.now();
+  function step(now) {
+    const p = Math.min((now - startTime) / duration, 1);
+    el.textContent = (start + diff * p).toFixed(target % 1 !== 0 ? 1 : 0);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* simulate live fluctuation every 5s */
+setInterval(() => {
+  const delta = Math.floor(Math.random() * 5) - 2;
+  const currentPresent = parseInt(document.getElementById('present-today').textContent);
+  const newPresent = Math.max(420, Math.min(487, currentPresent + delta));
+  const newAbsent = 487 - newPresent;
+  lerp(document.getElementById('present-today'), newPresent, 800);
+  lerp(document.getElementById('absent-today'),  newAbsent,  800);
+  const newPct = ((newPresent / 487) * 100).toFixed(1);
+  document.getElementById('att-pct').textContent = newPct;
+  // slight grade shift
+  const curGrade = parseFloat(document.getElementById('avg-grade').textContent);
+  const newGrade = Math.max(7.0, Math.min(9.9, curGrade + (Math.random() - 0.5) * 0.05));
+  lerp(document.getElementById('avg-grade'), newGrade, 800);
+  // nurse & canteen live
+  const nc = document.getElementById('nurse-count');
+  if (nc) lerp(nc, Math.max(5, Math.min(14, parseInt(nc.textContent) + (Math.random()>.7?1:(Math.random()>.5?-1:0)))), 600);
+  const cc = document.getElementById('canteen-count');
+  if (cc) lerp(cc, Math.max(300, Math.min(400, parseInt(cc.textContent) + Math.floor(Math.random()*3))), 600);
+  const cs = document.getElementById('canteen-served');
+  if (cs) lerp(cs, Math.max(300, Math.min(400, parseInt(cs.textContent) + Math.floor(Math.random()*3))), 600);
+  const hw = document.getElementById('hw-rate');
+  if (hw) lerp(hw, Math.max(70, Math.min(85, parseFloat(hw.textContent) + (Math.random()-.5)*0.5)), 600);
+}, 5000);
+
+/* ════════════ NEW ITEMS JS ════════════ */
+
+/* ⑨ AT-RISK STUDENTS */
+const riskStudents = [
+  { name:'ვახო ხაჩიძე',     cls:'VII ა', grade:'6.4', att:'71%', reason:'გამ. + ქ.' },
+  { name:'ეკა ნოზაძე',      cls:'IV ბ',  grade:'5.8', att:'68%', reason:'შეფ. სირთ.' },
+  { name:'ზაალ ქობულაძე',   cls:'VI ა',  grade:'6.1', att:'74%', reason:'ქცევა' },
+  { name:'თინა სარჯველაძე', cls:'III ბ', grade:'6.8', att:'80%', reason:'სწავლ. ჩამ.' },
+  { name:'ბეკა გელაშვილი',  cls:'VIII ა',grade:'6.5', att:'72%', reason:'გამ. + ქ.' },
+];
+const rtb = document.getElementById('risk-tbody');
+riskStudents.forEach(r => {
+  const gr = parseFloat(r.grade);
+  const cls = gr < 6 ? 'badge-red' : 'badge-amber';
+  rtb.innerHTML += `<tr>
+    <td><strong>${r.name}</strong></td>
+    <td>${r.cls}</td>
+    <td><span class="badge ${cls}">${r.grade}</span></td>
+    <td>${r.att}</td>
+    <td style="color:var(--accent2);font-size:.74rem">${r.reason}</td>
+  </tr>`;
+});
+
+/* ⑩ OLYMPIAD MEDALS */
+const medals = [
+  { icon:'🥇', name:'ნინო ბერიძე',      sub:'მათ. ოლიმ. — ქ. ეტ.', place:'I ადგ.', color:'#c07800' },
+  { icon:'🥈', name:'გ. ხვედელიძე',     sub:'ფიზ. ოლიმ. — ქ. ეტ.', place:'II ადგ.', color:'#888' },
+  { icon:'🥇', name:'ანა კვარაცხელია', sub:'ქართ. ლიტ. კონკ.',     place:'I ადგ.', color:'#c07800' },
+  { icon:'🥉', name:'ლუკა ჩიქოვანი',   sub:'ინფ. ოლიმ. — რ. ეტ.',  place:'III ადგ.', color:'#b87333' },
+  { icon:'🏅', name:'მწვ. სკ. გუნდი',   sub:'ფეხბ. ქ. ჩემპ.',       place:'ნახ/ფ', color:'#2e8b57' },
+];
+const ml = document.getElementById('medals-list');
+medals.forEach(m => {
+  ml.innerHTML += `<div class="medal-row">
+    <div class="medal-icon">${m.icon}</div>
+    <div class="medal-info">
+      <div class="medal-name">${m.name}</div>
+      <div class="medal-sub">${m.sub}</div>
+    </div>
+    <div class="medal-place" style="color:${m.color}">${m.place}</div>
+  </div>`;
+});
+
+/* ⑭ LIBRARY RECENT BORROWS */
+const libBooks = [
+  { title:'ვეფხისტყაოსანი',    borrower:'ნ. ბერიძე',   due:'30 მ.',  color:'#2e8b57' },
+  { title:'პატარა მთავარი',     borrower:'გ. ხვედ.',    due:'02 ი.',  color:'#4a90d9' },
+  { title:'Harry Potter I',     borrower:'ა. კვარ.',    due:'28 მ.',  color:'#9b5de5' },
+  { title:'ფიზიკა X კლ.',       borrower:'ლ. ჩიქ.',    due:'25 მ.',  color:'#e05c3a' },
+  { title:'ქართ. ისტორია',      borrower:'დ. მელ.',    due:'31 მ.',  color:'#f0a500' },
+];
+const ll = document.getElementById('lib-list');
+libBooks.forEach(b => {
+  ll.innerHTML += `<div class="lib-row">
+    <div style="width:26px;height:26px;border-radius:6px;background:${b.color};display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#fff;flex-shrink:0">📖</div>
+    <div class="lib-title">${b.title}</div>
+    <div class="lib-borrower">${b.borrower}</div>
+    <div class="lib-due" style="color:${b.due.includes('25')||b.due.includes('28')?'#e05c3a':'var(--green-dark)'}">${b.due}</div>
+  </div>`;
+});
+
+/* ⑯ MONTHLY TREND LINE */
+(function() {
+  const canvas = document.getElementById('trendCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth || 500;
+  const H = 90;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const data = [82, 87, 85, 80, 78, 84, 86, 89, 88];
+  const padL = 8, padR = 8, padT = 10, padB = 20;
+  const cw = W - padL - padR;
+  const ch = H - padT - padB;
+  const minV = 70, maxV = 100;
+  const toX = i => padL + (i / (data.length - 1)) * cw;
+  const toY = v => padT + (1 - (v - minV) / (maxV - minV)) * ch;
+
+  // gradient fill
+  const grad = ctx.createLinearGradient(0, padT, 0, H);
+  grad.addColorStop(0, 'rgba(46,139,87,0.25)');
+  grad.addColorStop(1, 'rgba(46,139,87,0)');
+  ctx.beginPath();
+  data.forEach((v, i) => i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)));
+  ctx.lineTo(toX(data.length-1), H - padB);
+  ctx.lineTo(toX(0), H - padB);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // line
+  ctx.beginPath();
+  data.forEach((v, i) => i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)));
+  ctx.strokeStyle = '#2e8b57';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // dots + labels
+  data.forEach((v, i) => {
+    const x = toX(i), y = toY(v);
+    ctx.beginPath();
+    ctx.arc(x, y, i === data.length-1 ? 5 : 3, 0, Math.PI*2);
+    ctx.fillStyle = i === data.length-1 ? '#1a5c2e' : '#52c374';
+    ctx.fill();
+    ctx.fillStyle = '#1a5c2e';
+    ctx.font = `bold ${10*dpr/dpr}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillText(v + '%', x, y - 8);
+  });
+})();
+
+/* ⑰ GRADE DISTRIBUTION */
+(function() {
+  const wrap = document.getElementById('dist-chart');
+  if (!wrap) return;
+  const buckets = [
+    { label:'1–3', count:12,  color:'#f4998a' },
+    { label:'4–5', count:28,  color:'#ffd580' },
+    { label:'6',   count:45,  color:'#a8e6be' },
+    { label:'7',   count:98,  color:'#52c374' },
+    { label:'8',   count:142, color:'#2e8b57' },
+    { label:'9',   count:118, color:'#1a7a40' },
+    { label:'10',  count:44,  color:'#0d4020' },
+  ];
+  const maxC = Math.max(...buckets.map(b => b.count));
+  buckets.forEach(b => {
+    const col = document.createElement('div');
+    col.className = 'dist-col';
+    const barH = Math.round((b.count / maxC) * 65);
+    col.innerHTML = `
+      <span style="font-size:.65rem;color:var(--text-muted);font-weight:700">${b.count}</span>
+      <div class="dist-bar" style="height:${barH}px;background:${b.color}"></div>
+    `;
+    wrap.appendChild(col);
+  });
+})();
+
+/* ⑱ SPORTS LEADERBOARD */
+const sports = [
+  { name:'VIII ა კლასი', score:'1240 ქ.',  trend:'▲', color:'#c07800' },
+  { name:'IX ბ კლასი',   score:'1185 ქ.',  trend:'▲', color:'#888' },
+  { name:'VII ბ კლასი',  score:'1102 ქ.',  trend:'→', color:'#b87333' },
+  { name:'X ა კლასი',    score:'1090 ქ.',  trend:'▼', color:'#4a90d9' },
+  { name:'VI ა კლასი',   score:'980 ქ.',   trend:'▲', color:'#2e8b57' },
+  { name:'V ბ კლასი',    score:'870 ქ.',   trend:'→', color:'#9b5de5' },
+];
+const sl = document.getElementById('sports-list');
+sports.forEach((s, i) => {
+  const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+  const tc = s.trend === '▲' ? 'var(--green-mid)' : s.trend === '▼' ? 'var(--accent2)' : 'var(--text-muted)';
+  sl.innerHTML += `<div class="sport-row">
+    <div class="sport-rank">${medal || (i+1)}</div>
+    <div class="sport-name">${s.name}</div>
+    <div class="sport-score">${s.score}<span class="sport-trend" style="color:${tc}">${s.trend}</span></div>
+  </div>`;
+});
+
+/* ⑳ LANGUAGE DONUT + LEGEND */
+drawDonut('langDonut', [
+  { value: 72, color: '#1a5c2e' },
+  { value: 14, color: '#4a90d9' },
+  { value:  8, color: '#f0a500' },
+  { value:  4, color: '#9b5de5' },
+  { value:  2, color: '#e05c3a' },
+], 16);
+const langData = [
+  { lang:'ქართული', pct:'72%', color:'#1a5c2e' },
+  { lang:'სომხური',  pct:'14%', color:'#4a90d9' },
+  { lang:'რუსული',   pct:'8%',  color:'#f0a500' },
+  { lang:'აზერბ.',   pct:'4%',  color:'#9b5de5' },
+  { lang:'სხვა',     pct:'2%',  color:'#e05c3a' },
+];
+const lg = document.getElementById('lang-legend');
+langData.forEach(l => {
+  lg.innerHTML += `<div class="legend-item">
+    <div class="legend-dot" style="background:${l.color}"></div>
+    ${l.lang} &nbsp;<strong>${l.pct}</strong>
+  </div>`;
+});
+
+/* PARENT SPARK */
+(function() {
+  const sp2 = document.getElementById('parent-spark');
+  if (!sp2) return;
+  [210, 195, 280, 310, 265, 320, 312].forEach((v, i) => {
+    const b = document.createElement('div');
+    b.className = 'spark-bar' + (i === 6 ? ' today' : '');
+    b.style.height = Math.round((v / 320) * 40) + 'px';
+    b.style.background = i === 6 ? '#4a90d9' : '#a8d4f5';
+    sp2.appendChild(b);
+  });
+})();
+
+/* DIGITAL SPARK */
+(function() {
+  const sp3 = document.getElementById('digital-spark');
+  if (!sp3) return;
+  [320, 410, 390, 445, 430, 180, 95].forEach((v, i) => {
+    const b = document.createElement('div');
+    b.className = 'spark-bar' + (i === 4 ? ' today' : '');
+    b.style.height = Math.round((v / 445) * 40) + 'px';
+    b.style.background = i === 4 ? '#4a90d9' : '#a8d4f5';
+    sp3.appendChild(b);
+  });
+})();
+</script>
+</body>
+</html>
