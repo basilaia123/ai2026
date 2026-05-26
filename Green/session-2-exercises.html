@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>სესია 2: სავარჯიშოები — მწვანე სკოლა</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    green: { 950: '#0a1f14', 900: '#1a4731', 800: '#2d6a4f', 500: '#52b788', 100: '#d8f3dc' }
+                },
+                fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+            }
+        }
+    }
+</script>
+<style>
+    :root {
+        --green-dark: #1a4731; --green-mid: #2d6a4f; --green-light: #52b788;
+        --green-pale: #d8f3dc; --gold: #f4a261;
+        --bg: #f8fdf9; --surface: #ffffff;
+        --text-1: #1a1a1a; --text-2: #374151; --text-3: #6b7280;
+    }
+    html { scroll-behavior: smooth; font-size: 100%; }
+    body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; line-height: 1.7; }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .nav-link { display: flex; align-items: flex-start; padding: 0.55rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+    .nav-link:hover { background: rgba(255,255,255,0.07); }
+    .nav-link.active { background: rgba(82,183,136,0.15); border-left-color: #52b788; color: #a7f3d0; }
+    .topic-card { border-left: 4px solid var(--green-light); padding-left: 1.5rem; }
+    .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-quiz { background: rgba(82,183,136,0.12); color: #2d6a4f; border: 1px solid rgba(82,183,136,0.4); }
+    .badge-ex  { background: rgba(244,162,97,0.12); color: #92400e; border: 1px solid rgba(244,162,97,0.4); }
+    .badge-practice { background: rgba(33,150,243,0.1); color: #1565c0; border: 1px solid rgba(33,150,243,0.3); }
+    .badge-bonus { background: rgba(156,39,176,0.1); color: #6a1b9a; border: 1px solid rgba(156,39,176,0.3); }
+    .highlight-box { background: var(--green-pale); border-left: 4px solid var(--green-light); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+    .warning-box  { background: #fff5f5; border-left: 4px solid #f87171; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+    .success-box  { background: #f0fdf4; border-left: 4px solid #4caf50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+    .answer-box   { background: #f3e5f5; border-left: 4px solid #9c27b0; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; display: none; }
+    .code-block { background: #0f1f2e; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.88rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+    .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+    .copy-btn:hover { background: var(--green-light); color: white; border-color: var(--green-light); }
+    .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+    .two-column   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+    .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+    .section-header { background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+    .ex-input { width: 100%; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.75rem 1rem; font-family: 'FiraGO', sans-serif; font-size: 0.9rem; line-height: 1.6; resize: vertical; min-height: 90px; background: white; color: #1f2937; transition: border-color 0.2s; }
+    .ex-input:focus { outline: none; border-color: var(--green-light); }
+    .choice-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.25rem; border: 2px solid #e5e7eb; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; text-align: left; width: 100%; font-family: 'FiraGO', sans-serif; font-size: 0.85rem; }
+    .choice-btn:hover { border-color: var(--green-light); background: var(--green-pale); }
+    .choice-btn.correct { border-color: #4caf50; background: #e8f5e9; color: #1b5e20; }
+    .choice-btn.wrong   { border-color: #f44336; background: #ffebee; color: #b71c1c; }
+    .tf-btn { padding: 0.6rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; font-family: 'FiraGO', sans-serif; }
+    .ex-number { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--green-mid); color: white; font-size: 1rem; font-weight: 900; margin-right: 0.75rem; flex-shrink: 0; }
+    textarea::placeholder { color: #9ca3af; font-style: italic; }
+    section { scroll-margin-top: 2rem; }
+    @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 text-white p-2.5 rounded-lg shadow-lg transition-colors" style="background:var(--green-dark);">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300" style="background:var(--green-dark);">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#52b788;">✏️ სავარჯიშოები</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 2: მართვა და მონაცემები</p>
+        <p class="text-gray-400 text-xs mt-1">10 სავარჯიშო · 100 ქულა</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#52b788;">მიმოხილვა</div>
+        <a href="#overview" class="nav-link">📋 ქულები და სტრუქტურა</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ნაწილი I — მონაცემები</div>
+        <a href="#ex1" class="nav-link">📊 სავ. 1 · მონაცემთა ატვირთვა</a>
+        <a href="#ex2" class="nav-link">📈 სავ. 2 · ტრენდების აღმოჩენა</a>
+        <a href="#ex3" class="nav-link">📉 სავ. 3 · ანომალიების ძებნა</a>
+        <a href="#ex4" class="nav-link">💰 სავ. 4 · ბიუჯეტის პროგნოზი</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ნაწილი II — Custom Gems</div>
+        <a href="#ex5" class="nav-link">💎 სავ. 5 · Gem-ის ინსტრუქცია</a>
+        <a href="#ex6" class="nav-link">🤝 სავ. 6 · HR-ასისტენტი</a>
+        <a href="#ex7" class="nav-link">🧠 სავ. 7 · ფსიქოლოგის ასისტენტი</a>
+        
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ნაწილი III — ხარისხი & აუდიტი</div>
+        <a href="#ex8" class="nav-link">✅ სავ. 8 · სტანდარტების აუდიტი</a>
+        <a href="#ex9" class="nav-link">💬 სავ. 9 · Sentiment Analysis</a>
+        <a href="#ex10" class="nav-link">🌟 სავ. 10 · Notion AI-ის დემო</a>
+
+        <div class="mt-6 mx-4 mb-4 space-y-2">
+            <a href="lecture-2.html" class="block text-center text-gray-300 text-sm py-2 rounded transition-colors" style="background:rgba(255,255,255,0.05);">← სლაიდებზე დაბრუნება</a>
+            <a href="index.html"     class="block text-center text-gray-300 text-sm py-2 rounded transition-colors" style="background:rgba(255,255,255,0.05);">← კურსის მთავარი გვერდი</a>
+            <a href="dashboard.html" class="block text-center text-gray-300 text-sm py-2 rounded transition-colors" style="background:rgba(255,255,255,0.05);">📊 სტატისტიკის პანელი</a>
+        </div>
+    </nav>
+</aside>
+
+<main id="mainContent" class="min-h-screen">
+
+<!-- HERO -->
+<header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #0a2918 0%, #1a4731 50%, #2d6a4f 100%);">
+    <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#52b788;"></div>
+    <div class="max-w-5xl relative z-10">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="text-5xl">✏️</span>
+            <div>
+                <p class="text-sm font-bold uppercase tracking-widest" style="color:#52b788;">მწვანე სკოლა · AI კურსი</p>
+                <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">სესია 2: სავარჯიშოები<br><span style="color:#a7f3d0;">ორგანიზაციული მართვა, მონაცემები & ხარისხი</span></h1>
+            </div>
+        </div>
+        <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">10 სავარჯიშო სამ ნაწილად — მწვანე სკოლის მონაცემებისა და ხარისხის მართვის კონტექსტში.</p>
+        <div class="flex flex-wrap gap-3">
+            <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded text-gray-200" style="background:rgba(255,255,255,0.1);">✏️ 10 სავარჯიშო</span>
+            <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded text-gray-200" style="background:rgba(255,255,255,0.1);">🏆 100 ქულა სულ</span>
+            <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded text-gray-200" style="background:rgba(255,255,255,0.1);">⏱ ~60 წუთი</span>
+            <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(82,183,136,0.2);color:#a7f3d0;">🌿 REAL სწავლება</span>
+        </div>
+    </div>
+</header>
+
+<div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+
+<!-- OVERVIEW -->
+<section id="overview" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-quiz">📋 მიმოხილვა</span>
+    <h2 class="text-3xl font-bold mb-6">სავარჯიშოების რუქა და ქულები</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <div class="p-6" style="background:#1a4731;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#52b788;">ნაწილი I</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">📊 მონაცემები</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex justify-between"><span>სავ. 1 · მონაცემთა ატვირთვა</span><span class="font-bold" style="color:#52b788;">10 ქ.</span></li>
+                <li class="flex justify-between"><span>სავ. 2 · ტრენდების აღმოჩენა</span><span class="font-bold" style="color:#52b788;">10 ქ.</span></li>
+                <li class="flex justify-between"><span>სავ. 3 · ანომალიების ძებნა</span><span class="font-bold" style="color:#52b788;">10 ქ.</span></li>
+                <li class="flex justify-between"><span>სავ. 4 · ბიუჯეტის პროგნოზი</span><span class="font-bold" style="color:#52b788;">10 ქ.</span></li>
+            </ul>
+        </div>
+        <div class="p-6" style="background:#2d6a4f;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#a7f3d0;">ნაწილი II</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">💎 Custom Gems</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex justify-between"><span>სავ. 5 · Gem-ის ინსტრუქცია</span><span class="font-bold" style="color:#a7f3d0;">10 ქ.</span></li>
+                <li class="flex justify-between"><span>სავ. 6 · HR-ასისტენტი</span><span class="font-bold" style="color:#a7f3d0;">10 ქ.</span></li>
+                <li class="flex justify-between"><span>სავ. 7 · ფსიქოლოგის ასისტენტი</span><span class="font-bold" style="color:#a7f3d0;">10 ქ.</span></li>
+            </ul>
+        </div>
+        <div class="p-6" style="background:#1a4731;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#f4a261;">ნაწილი III</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">✅ ხარისხი & აუდიტი</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex justify-between"><span>სავ. 8 · სტანდარტების აუდიტი</span><span class="font-bold" style="color:#f4a261;">10 ქ.</span></li>
+                <li class="flex justify-between"><span>სავ. 9 · Sentiment Analysis</span><span class="font-bold" style="color:#f4a261;">10 ქ.</span></li>
+                <li class="flex justify-between"><span>სავ. 10 · Notion AI-ის დემო</span><span class="font-bold" style="color:#f4a261;">10 ქ.</span></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="card" style="background:#fff9ed;border-left:4px solid #f4a261;">
+        <p class="font-bold mb-2">💡 გამოყენების წესი:</p>
+        <p class="text-sm text-gray-700">მონაცემთა ანალიზისთვის სასურველია გამოიყენოთ <strong>ChatGPT Plus (Advanced Data Analysis)</strong> ან <strong>Claude Pro</strong>. ტექსტური პასუხები შეამოწმეთ „პასუხის ჩვენება“ ღილაკით.</p>
+    </div>
+</section>
+
+<!-- PART I HEADER -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">📊</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#a7f3d0;">ნაწილი I · სავ. 1–4</p>
+                <h2 class="text-2xl font-bold text-white">მონაცემთა ანალიზი</h2>
+                <p class="text-gray-300 text-sm mt-1">ატვირთვა · ტრენდები · ანომალიები · პროგნოზი</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EX 1: Data Upload -->
+<section id="ex1" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">📊 სავარჯიშო 1 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">1</span>მონაცემთა სწორი ატვირთვა</h2>
+    <p class="text-gray-600 mb-6">სანამ AI-ის ეტყვით მონაცემების გაანალიზებას, მნიშვნელოვანია, რომ სწორად მიაწოდოთ ფაილი და კონტექსტი. რა არის საუკეთესო პრაქტიკა?</p>
+
+    <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-4">დაალაგეთ სწორი თანმიმდევრობით მონაცემთა ანალიზის პრომპტის ნაწილები:</h3>
+        
+        <div class="space-y-3 mb-6">
+            <div class="p-3 bg-white border border-gray-300 rounded shadow-sm flex items-center gap-3 cursor-move">
+                <span class="text-gray-400">☰</span> 1. "მოგაწვდით Excel ფაილს, რომელიც შეიცავს გასული წლის მოსწავლეთა დასწრების სტატისტიკას."
+            </div>
+            <div class="p-3 bg-white border border-gray-300 rounded shadow-sm flex items-center gap-3 cursor-move">
+                <span class="text-gray-400">☰</span> 2. "გააანალიზე ეს მონაცემები და გამომიყავი 3 მთავარი მიგნება."
+            </div>
+            <div class="p-3 bg-white border border-gray-300 rounded shadow-sm flex items-center gap-3 cursor-move">
+                <span class="text-gray-400">☰</span> 3. "შენ ხარ მწვანე სკოლის მონაცემთა ანალიტიკოსი."
+            </div>
+            <div class="p-3 bg-white border border-gray-300 rounded shadow-sm flex items-center gap-3 cursor-move">
+                <span class="text-gray-400">☰</span> 4. "[ფაილის ატვირთვა]"
+            </div>
+        </div>
+        
+        <p class="text-sm text-gray-500 italic mb-4">ჩაწერეთ რიცხვების სწორი თანმიმდევრობა (მაგ: 1,2,3,4):</p>
+        <input type="text" id="ex1_input" class="ex-input mb-4" placeholder="მაგალითად: 3, 1, 4, 2">
+
+        <button onclick="document.getElementById('ans1').style.display='block'" class="text-sm font-bold text-green-700 hover:underline">პასუხის ჩვენება</button>
+        <div id="ans1" class="answer-box">
+            <h4 class="font-bold text-green-800 mb-2">✅ სწორი თანმიმდევრობა: 3, 1, 4, 2</h4>
+            <ol class="list-decimal pl-5 text-sm">
+                <li><strong>როლი:</strong> "შენ ხარ მწვანე სკოლის მონაცემთა ანალიტიკოსი."</li>
+                <li><strong>კონტექსტი:</strong> "მოგაწვდით Excel ფაილს, რომელიც შეიცავს გასული წლის მოსწავლეთა დასწრების სტატისტიკას."</li>
+                <li><strong>ფაილი:</strong> [ფაილის ატვირთვა]</li>
+                <li><strong>დავალება:</strong> "გააანალიზე ეს მონაცემები და გამომიყავი 3 მთავარი მიგნება."</li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+<!-- EX 2: Trends -->
+<section id="ex2" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-ex">📈 სავარჯიშო 2 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">2</span>ტრენდების აღმოჩენა</h2>
+    <p class="text-gray-600 mb-6">რომელი პრომპტი არის უფრო ეფექტური ტრენდების აღმოსაჩენად მცირე მონაცემთა ბაზაში?</p>
+
+    <div class="space-y-4">
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">A</span>
+            <div class="text-left">
+                <span class="block font-bold">ზოგადი:</span>
+                <span class="block text-sm text-gray-600">"რა ხდება ამ ცხრილში?"</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">B</span>
+            <div class="text-left">
+                <span class="block font-bold">ზედმეტად სპეციფიკური:</span>
+                <span class="block text-sm text-gray-600">"გამომითვალე მე-3 სვეტის საშუალო არითმეტიკული და გამიყავი მე-4 სვეტის ჯამზე."</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('correct')">
+            <span class="text-xl">C</span>
+            <div class="text-left">
+                <span class="block font-bold">მიზანმიმართული ღია კითხვა:</span>
+                <span class="block text-sm text-gray-600">"გააანალიზე ეს დასწრების ცხრილი თვეების მიხედვით და დამიწერე, იკვეთება თუ არა რაიმე სეზონური ტრენდი კლასების მიხედვით."</span>
+            </div>
+        </button>
+    </div>
+</section>
+
+<!-- EX 3: Anomalies -->
+<section id="ex3" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-ex">📉 სავარჯიშო 3 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">3</span>ანომალიების ძებნა</h2>
+    <p class="text-gray-600 mb-6">თქვენ გაქვთ სკოლის კომუნალური ხარჯების 3 წლის ცხრილი (დენი, წყალი, გაზი). გსურთ იპოვოთ თვეები, სადაც ხარჯი საეჭვოდ მაღალია.</p>
+
+    <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">დაწერეთ პრომპტი, რომელიც AI-ის დაავალებს ამ ანომალიების პოვნას.</h3>
+        <textarea class="ex-input" rows="4" placeholder="შენი პრომპტი..."></textarea>
+        
+        <div class="mt-4">
+            <button onclick="document.getElementById('ans3').style.display='block'" class="text-sm font-bold text-green-700 hover:underline">საუკეთესო პასუხის ნახვა</button>
+            <div id="ans3" class="answer-box">
+                <p><strong>იდეალური პრომპტი:</strong></p>
+                <div class="code-block" style="margin: 5px 0;">"ეს არის ჩვენი კომუნალური ხარჯების 3 წლის ცხრილი. გთხოვ, იპოვე 'ანომალიები' — ის თვეები კონკრეტულ წლებში, როცა რომელიმე კომუნალურის ხარჯი წინა წლის იმავე თვესთან შედარებით 20%-ით ან მეტით გაიზარდა. შედეგები მომეცი ცხრილის სახით: წელი/თვე, კატეგორია, ზრდის პროცენტი."</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EX 4: Budget -->
+<section id="ex4" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-ex">💰 სავარჯიშო 4 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">4</span>ბიუჯეტის პროგნოზირება</h2>
+    <p class="text-gray-600 mb-6">ბიუჯეტის პროგნოზირებისას, რა არის <strong>ყველაზე მნიშვნელოვანი</strong> შეზღუდვა (Constraint), რომელიც უნდა დავუწესოთ AI-ის?</p>
+
+    <div class="space-y-4">
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">A</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">ვთხოვოთ, რომ პროგნოზი 100%-ით ზუსტი იყოს.</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('correct')">
+            <span class="text-xl">B</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">ვთხოვოთ, რომ პროგნოზს დაურთოს განმარტება, თუ რა დაშვებებს (Assumptions) ეყრდნობა მისი გამოთვლები.</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">C</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">არანაირი შეზღუდვა, მივცეთ სრული თავისუფლება.</span>
+            </div>
+        </button>
+    </div>
+</section>
+
+<!-- PART II HEADER -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">💎</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#a78bfa;">ნაწილი II · სავ. 5–7</p>
+                <h2 class="text-2xl font-bold text-white">Custom Gems (სპეციალიზებული ასისტენტები)</h2>
+                <p class="text-gray-300 text-sm mt-1">ინსტრუქციის შექმნა · HR-ასისტენტი · ფსიქოლოგის ასისტენტი</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EX 5: Gem Instructions -->
+<section id="ex5" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-purple">💎 სავარჯიშო 5 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">5</span>Gem-ის (ან Custom GPT-ის) System Instructions</h2>
+    <p class="text-gray-600 mb-6">Custom Gem-ის შექმნისას მთავარია "System Instructions" (ან "Instructions" ველის) სწორად შევსება. რა უნდა ეწეროს იქ?</p>
+    
+    <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">მონიშნეთ ყველა სწორი პასუხი (მრავალი პასუხია შესაძლებელი):</h3>
+        
+        <div class="space-y-3 mt-4">
+            <label class="flex items-start gap-3 p-3 bg-white border border-gray-300 rounded cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" class="mt-1" checked>
+                <span>მოდელის როლი (მაგ: "შენ ხარ მწვანე სკოლის HR ასისტენტი").</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 bg-white border border-gray-300 rounded cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" class="mt-1" checked>
+                <span>ტონის მითითება (მაგ: "იყავი პროფესიონალური, ემპათიური და ლაკონიური").</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 bg-white border border-gray-300 rounded cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" class="mt-1">
+                <span>კონკრეტული დღის დავალება (მაგ: "გააანალიზე ეს 1 ექსელის ფაილი დღეს"). <em>(ეს უნდა მიეცეს ჩატში და არა სისტემურ ინსტრუქციაში)</em></span>
+            </label>
+            <label class="flex items-start gap-3 p-3 bg-white border border-gray-300 rounded cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" class="mt-1" checked>
+                <span>შეზღუდვები/წესები (მაგ: "არასოდეს გენერირებ ფიქტიური კანონები, ყოველთვის ითხოვე დამატებითი დეტალები თუ ინფორმაცია აკლია").</span>
+            </label>
+        </div>
+    </div>
+</section>
+
+<!-- EX 6: HR Assistant -->
+<section id="ex6" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-purple">🤝 სავარჯიშო 6 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">6</span>HR-ასისტენტის სიმულაცია</h2>
+    <p class="text-gray-600 mb-6">თქვენ შექმენით HR-ასისტენტი Gem. გსურთ, რომ მან გააანალიზოს კანდიდატის CV მწვანე სკოლის <strong>IRESPECT</strong> ღირებულებებთან მიმართებაში.</p>
+
+    <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">რა იქნება ყველაზე სწორი პრომპტი, რომელსაც უკვე მზა Gem-ს მიწერთ CV-ის ატვირთვისას?</h3>
+        <textarea class="ex-input" rows="4" placeholder="შენი პრომპტი..."></textarea>
+        
+        <div class="mt-4">
+            <button onclick="document.getElementById('ans6').style.display='block'" class="text-sm font-bold text-green-700 hover:underline">საუკეთესო პასუხის ნახვა</button>
+            <div id="ans6" class="answer-box">
+                <p><strong>იდეალური პრომპტი:</strong></p>
+                <div class="code-block" style="margin: 5px 0;">"გთხოვ, გააანალიზე ატვირთული CV 'დაწყებითი კლასების მასწავლებლის' პოზიციისთვის. შეაფასე კანდიდატის გამოცდილება ჩვენი IRESPECT ღირებულებების ჭრილში (განსაკუთრებული ყურადღება მიაქციე ემპათიასა და პასუხისმგებლობას). დამიწერე მისი 3 ძლიერი მხარე, 2 სუსტი მხარე და 3 კითხვა, რომელიც უნდა დავუსვა გასაუბრებაზე."</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EX 7: Psychologist Assistant -->
+<section id="ex7" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-purple">🧠 სავარჯიშო 7 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">7</span>ფსიქოლოგის ასისტენტი და ეთიკა</h2>
+    <p class="text-gray-600 mb-6">ფსიქოლოგი იყენებს AI-ასისტენტს რთული ქეისების განსახილველად (როგორც ე.წ. Sounding Board). რა არის ყველაზე დიდი რისკი და როგორ ავიცილოთ ის თავიდან სისტემურ ინსტრუქციებში?</p>
+
+    <div class="space-y-4">
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">A</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">რისკია, რომ AI-მ სწორი დიაგნოზი ვერ დასვას. ინსტრუქციაში უნდა მივუთითოთ, რომ დიაგნოზები დასვას DSM-5-ის მიხედვით.</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('correct')">
+            <span class="text-xl">B</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">რისკია კონფიდენციალობის დარღვევა და AI-ზე პასუხისმგებლობის გადატანა. ინსტრუქციაში უნდა ეწეროს: "არასოდეს დასვა დიაგნოზი. დაეხმარე ფსიქოლოგს ალტერნატიული ხედვების გენერირებაში. გააფრთხილე მომხმარებელი, რომ არ გამოიყენოს რეალური სახელები."</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">C</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">რისკია, რომ AI-მ ძალიან გრძელი პასუხები გასცეს. ინსტრუქციაში უნდა ეწეროს, რომ ილაპარაკოს მხოლოდ 50 სიტყვით.</span>
+            </div>
+        </button>
+    </div>
+</section>
+
+<!-- PART III HEADER -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header" style="background: linear-gradient(135deg, #14532d, #166534);">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">✅</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#a7f3d0;">ნაწილი III · სავ. 8–10</p>
+                <h2 class="text-2xl font-bold text-white">ხარისხი და აუდიტი</h2>
+                <p class="text-gray-300 text-sm mt-1">სტანდარტები · სენტიმენტების ანალიზი · Notion AI</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EX 8: Standards Audit -->
+<section id="ex8" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✅ სავარჯიშო 8 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">8</span>სტანდარტებთან შესაბამისობის აუდიტი</h2>
+    <p class="text-gray-600 mb-6">გსურთ შეამოწმოთ მასწავლებლის მიერ მოწოდებული ახალი კლუბის (მაგ: რობოტიქსის) სილაბუსი — შეესაბამება თუ არა ის მწვანე სკოლის "REAL სწავლების" სტანდარტებს.</p>
+    
+    <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">დაწერეთ პრომპტი ამ აუდიტისთვის:</h3>
+        <textarea class="ex-input" rows="4" placeholder="შენი პრომპტი..."></textarea>
+        
+        <div class="mt-4">
+            <button onclick="document.getElementById('ans8').style.display='block'" class="text-sm font-bold text-green-700 hover:underline">საუკეთესო პასუხის ნახვა</button>
+            <div id="ans8" class="answer-box">
+                <p><strong>იდეალური პრომპტი:</strong></p>
+                <div class="code-block" style="margin: 5px 0;">"გთხოვ, გააანალიზე ეს რობოტიქსის კლუბის სილაბუსი ჩვენი სკოლის 'REAL სწავლების' (Relevant, Engaging, Authentic, Learner-centered) სტანდარტების მიხედვით.
+შეაფასე თითოეული კრიტერიუმი (R, E, A, L) 1-დან 5 ბალამდე.
+მომეცი 3 კონკრეტული რეკომენდაცია, თუ როგორ გავხადოთ ეს სილაბუსი უფრო ავთენტური (Authentic) და მოსწავლეზე ორიენტირებული (Learner-centered)."</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EX 9: Sentiment Analysis -->
+<section id="ex9" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">💬 სავარჯიშო 9 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">9</span>მშობელთა უკუკავშირის Sentiment Analysis</h2>
+    <p class="text-gray-600 mb-6">თქვენ შეაგროვეთ 100-მდე თავისუფალი ტექსტური კომენტარი მშობელთა კრების შემდეგ. როგორ უნდა დაავალოთ AI-ის მათი "სენტიმენტების" (განწყობების) ანალიზი?</p>
+    
+    <div class="space-y-4">
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">A</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">"წაიკითხე ეს კომენტარები და მითხარი, კმაყოფილები არიან თუ არა."</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('correct')">
+            <span class="text-xl">B</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">"გააანალიზე ეს 100 კომენტარი. დააჯგუფე ისინი 3 კატეგორიად: პოზიტიური, ნეიტრალური, ნეგატიური (მიუთითე პროცენტული განაწილება). ნეგატიური კომენტარებიდან გამოავლინე 2 ყველაზე ხშირად ნახსენები პრობლემა და თითოეულისთვის მოიყვანე 1 ანონიმური ციტატა."</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">C</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">"გადათარგმნე ეს კომენტარები ინგლისურად და მერე დაითვალე რამდენი პოზიტიური სიტყვაა გამოყენებული."</span>
+            </div>
+        </button>
+    </div>
+</section>
+
+<!-- EX 10: Notion AI -->
+<section id="ex10" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">🌟 სავარჯიშო 10 · 10 ქულა</span>
+    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3"><span class="ex-number">10</span>Notion AI-ის უპირატესობა</h2>
+    <p class="text-gray-600 mb-6">რა არის Notion AI-ის (როგორც სკოლის მართვის ერთიანი პანელის) მთავარი უპირატესობა სტანდარტულ ChatGPT-სთან შედარებით ორგანიზაციული მართვისას?</p>
+
+    <div class="space-y-4">
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">A</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">Notion AI-ის აქვს უფრო დიდი ენობრივი მოდელი ვიდრე ChatGPT-ს.</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('correct')">
+            <span class="text-xl">B</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">ის ინტეგრირებულია სამუშაო სივრცეში, შეუძლია პირდაპირ თქვენი მონაცემთა ბაზებიდან, ცხრილებიდან და ტექსტებიდან (არსებული კონტექსტიდან) ინფორმაციის ამოღება, ტექსტის გენერირება და სტრუქტურირება იქვე, სხვა აპლიკაციაში გადასვლის გარეშე.</span>
+            </div>
+        </button>
+        <button class="choice-btn" onclick="this.classList.add('wrong')">
+            <span class="text-xl">C</span>
+            <div class="text-left">
+                <span class="block text-sm text-gray-600">Notion AI უფასოა ყველა სკოლისთვის, ხოლო ChatGPT ფასიანია.</span>
+            </div>
+        </button>
+    </div>
+</section>
+
+</div>
+</main>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const menuIcon = document.getElementById('menuIcon');
+        const closeIcon = document.getElementById('closeIcon');
+        
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+        menuIcon.classList.toggle('hidden');
+        closeIcon.classList.toggle('hidden');
+    }
+
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (scrollY >= sectionTop - 150) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const text = btn.closest('.card, .highlight-box, .answer-box').querySelector('.code-block').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = 'დაკოპირდა!';
+                btn.classList.add('bg-green-500', 'text-white', 'border-green-500');
+                setTimeout(() => {
+                    btn.textContent = orig;
+                    btn.classList.remove('bg-green-500', 'text-white', 'border-green-500');
+                }, 2000);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

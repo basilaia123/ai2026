@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>სასკოლო ცხრილის AI-გენერატორი — მწვანე სკოლა</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    green: { 950: '#0a1f14', 900: '#1a4731', 800: '#2d6a4f', 500: '#52b788', 100: '#d8f3dc' },
+                    gold: '#f4a261'
+                },
+                fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+            }
+        }
+    }
+</script>
+<style>
+    :root {
+        --green-dark: #1a4731; --green-mid: #2d6a4f; --green-light: #52b788;
+        --green-pale: #d8f3dc; --gold: #f4a261;
+        --bg: #f8fdf9; --surface: #ffffff;
+        --text-1: #1a1a1a; --text-2: #374151; --text-3: #6b7280;
+    }
+    body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; }
+    
+    .step-container { display: none; }
+    .step-container.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .nav-btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: bold; transition: all 0.2s; border: 2px solid transparent; }
+    .nav-btn.active { background: var(--green-pale); color: var(--green-dark); border-color: var(--green-light); }
+    .nav-btn:hover:not(.active) { background: #f3f4f6; }
+    
+    .input-field { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-family: inherit; font-size: 0.875rem; transition: border-color 0.2s; }
+    .input-field:focus { outline: none; border-color: var(--green-light); ring: 2px solid rgba(82,183,136,0.2); }
+    
+    .action-btn { background: var(--green-mid); color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: bold; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .action-btn:hover { background: var(--green-dark); }
+    
+    .remove-btn { color: #ef4444; padding: 0.25rem; border-radius: 0.25rem; cursor: pointer; transition: background 0.2s; }
+    .remove-btn:hover { background: #fee2e2; }
+
+    .data-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) auto; gap: 1rem; align-items: center; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; margin-bottom: 0.5rem; background: white; }
+
+    #prompt-output { font-family: monospace; font-size: 0.875rem; white-space: pre-wrap; background: #1e293b; color: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; min-height: 300px; border: 1px solid #334155; }
+    
+    table.rendered-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.875rem; }
+    table.rendered-table th, table.rendered-table td { border: 1px solid #e2e8f0; padding: 0.75rem; text-align: left; }
+    table.rendered-table th { background: var(--green-dark); color: white; font-weight: bold; }
+    table.rendered-table tr:nth-child(even) { background: #f8fafc; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<header class="bg-green-900 text-white py-6 shadow-md">
+    <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold flex items-center gap-3">
+                <span>🗓️</span> სასკოლო ცხრილის AI-გენერატორი
+            </h1>
+            <p class="text-green-100 text-sm mt-1">მწვანე სკოლა · ჰიბრიდული (ვიზუალური + AI) ინსტრუმენტი</p>
+        </div>
+        <a href="index.html" class="text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">← მთავარზე დაბრუნება</a>
+    </div>
+</header>
+
+<div class="max-w-6xl mx-auto px-6 py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- NAVIGATION SIDEBAR -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky top-6">
+            <h3 class="font-bold text-gray-800 mb-4 uppercase text-xs tracking-wider border-b pb-2">ნაბიჯები</h3>
+            <div class="space-y-2 flex flex-col" id="nav-container">
+                <button class="nav-btn active text-left flex items-center gap-3" onclick="switchStep('step1', this)">
+                    <span class="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs">1</span> 
+                    მონაცემების შეყვანა
+                </button>
+                <button class="nav-btn text-left flex items-center gap-3" onclick="switchStep('step2', this)">
+                    <span class="w-6 h-6 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs">2</span> 
+                    AI-პრომპტის გენერაცია
+                </button>
+                <button class="nav-btn text-left flex items-center gap-3" onclick="switchStep('step3', this)">
+                    <span class="w-6 h-6 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs">3</span> 
+                    ცხრილის ვიზუალიზაცია
+                </button>
+            </div>
+            
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <h4 class="text-blue-800 font-bold text-sm mb-2 flex items-center gap-2">💡 როგორ მუშაობს?</h4>
+                <p class="text-xs text-blue-700 leading-relaxed">ეს ინსტრუმენტი თქვენ მიერ შეყვანილ რთულ პირობებს გარდაქმნის იდეალურად სტრუქტურირებულ <strong class="text-blue-900">პრომპტად</strong>. შემდეგ, ამ პრომპტს აკოპირებთ ChatGPT-ში ან Claude-ში, მიღებულ ცხრილს კი უკან აბრუნებთ მე-3 ნაბიჯში დიზაინისთვის.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="lg:col-span-3">
+        
+        <!-- STEP 1: DATA INPUT -->
+        <div id="step1" class="step-container active">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 class="text-xl font-bold text-green-900 mb-2 border-b pb-3">1. საბაზისო მონაცემები & კლასები</h2>
+                <div class="grid grid-cols-2 gap-4 mb-6 mt-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">სასწავლო დღეები</label>
+                        <input type="text" id="school-days" class="input-field" value="ორშაბათი - პარასკევი" placeholder="მაგ: ორშაბათი - პარასკევი">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">გაკვეთილების მაქს. რაოდენობა დღეში</label>
+                        <input type="number" id="max-lessons" class="input-field" value="6" min="1" max="10">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 flex justify-between items-center">
+                        კლასები
+                        <button onclick="addRow('classes-list', createClassRow())" class="action-btn text-xs py-1 px-2">+ დამატება</button>
+                    </h3>
+                    <div id="classes-list" class="space-y-2">
+                        <!-- Rows will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 class="text-xl font-bold text-green-900 mb-2 border-b pb-3">2. საგნები და მასწავლებლები</h2>
+                <p class="text-xs text-gray-500 mb-4">დააკავშირეთ საგანი კონკრეტულ მასწავლებელთან და მიუთითეთ საათების რაოდენობა კვირაში თითოეული კლასისთვის.</p>
+                
+                <div id="teachers-list" class="space-y-2">
+                    <!-- Rows will be added here -->
+                </div>
+                <button onclick="addRow('teachers-list', createTeacherRow())" class="action-btn mt-4">+ მასწავლებლის / საგნის დამატება</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 class="text-xl font-bold text-green-900 mb-2 border-b pb-3">3. სპეციფიკური შეზღუდვები და კაბინეტები</h2>
+                <p class="text-xs text-gray-500 mb-4">დაამატეთ "მყარი წესები" (Hard Constraints). მაგალითად: "ფიზკულტურა მხოლოდ სპორტდარბაზში ტარდება", ან "ნინო (მათემატიკა) არ მუშაობს ოთხშაბათს".</p>
+                
+                <div id="constraints-list" class="space-y-2">
+                    <!-- Rows will be added here -->
+                </div>
+                <button onclick="addRow('constraints-list', createConstraintRow())" class="action-btn mt-4">+ შეზღუდვის დამატება</button>
+            </div>
+
+            <div class="flex justify-end mt-8">
+                <button onclick="generatePromptAndGoToStep2()" class="bg-green-800 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-green-900 transition flex items-center gap-2">
+                    პრომპტის გენერაცია →
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: PROMPT GENERATION -->
+        <div id="step2" class="step-container">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-green-900">AI-პრომპტი გენერირებულია!</h2>
+                        <p class="text-sm text-gray-600 mt-1">დააკოპირეთ ქვემოთ მოცემული ტექსტი და ჩასვით ChatGPT-ში ან Claude-ში.</p>
+                    </div>
+                    <button id="copyBtn" onclick="copyPrompt()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-blue-700 transition flex items-center gap-2 text-sm">
+                        <span>📋</span> კოპირება
+                    </button>
+                </div>
+                
+                <div class="relative">
+                    <textarea id="prompt-output" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
+                <h4 class="font-bold text-blue-900 flex items-center gap-2 mb-2">🔄 რა ხდება შემდეგ?</h4>
+                <ol class="list-decimal pl-5 text-sm text-blue-800 space-y-1">
+                    <li>გახსენით <a href="https://chatgpt.com" target="_blank" class="underline font-bold">ChatGPT</a> ან <a href="https://claude.ai" target="_blank" class="underline font-bold">Claude</a>.</li>
+                    <li>ჩასვით კოპირებული პრომპტი და გააგზავნეთ.</li>
+                    <li>AI მოგცემთ ცხრილს Markdown ფორმატში (ცხრილის სახით).</li>
+                    <li>დააკოპირეთ AI-ის მოცემული ცხრილი და გადადით მე-3 ნაბიჯზე.</li>
+                </ol>
+            </div>
+
+            <div class="flex justify-between mt-8">
+                <button onclick="switchStep('step1', document.querySelectorAll('.nav-btn')[0])" class="text-gray-600 font-bold hover:text-gray-900">← უკან (რედაქტირება)</button>
+                <button onclick="switchStep('step3', document.querySelectorAll('.nav-btn')[2])" class="bg-green-800 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-green-900 transition flex items-center gap-2">
+                    მე-3 ნაბიჯი: ვიზუალიზაცია →
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: VISUALIZATION -->
+        <div id="step3" class="step-container">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <h2 class="text-xl font-bold text-green-900 mb-2 border-b pb-3">შედეგის ვიზუალიზაცია</h2>
+                <p class="text-sm text-gray-600 mb-4">ჩასვით AI-სგან მიღებული Markdown ცხრილი ქვემოთ მოცემულ ველში.</p>
+                
+                <textarea id="md-input" class="w-full border-2 border-gray-300 rounded-lg p-3 font-mono text-sm mb-4 h-40 focus:border-green-500 focus:outline-none" placeholder="| დღე | გაკვეთილი 1 | გაკვეთილი 2 |\n|---|---|---|\n| ორშაბათი | მათემატიკა (ნინო) | ..."></textarea>
+                
+                <button onclick="renderTable()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-green-700 transition w-full">
+                    ცხრილის დახატვა
+                </button>
+
+                <div id="table-render-area" class="mt-8 overflow-x-auto">
+                    <!-- Rendered HTML table will appear here -->
+                </div>
+            </div>
+            
+            <div class="flex justify-start mt-8">
+                <button onclick="switchStep('step2', document.querySelectorAll('.nav-btn')[1])" class="text-gray-600 font-bold hover:text-gray-900">← უკან (პრომპტზე დაბრუნება)</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Navigation Logic
+    function switchStep(stepId, btnElement) {
+        document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.querySelector('span').classList.replace('bg-green-500', 'bg-gray-300');
+        });
+        
+        btnElement.classList.add('active');
+        btnElement.querySelector('span').classList.replace('bg-gray-300', 'bg-green-500');
+        
+        // Ensure steps before the active one also have green numbers for better UX UX
+        const navBtns = document.querySelectorAll('.nav-btn');
+        let activeFound = false;
+        navBtns.forEach(btn => {
+            if(btn === btnElement) activeFound = true;
+            if(!activeFound) {
+                btn.querySelector('span').classList.replace('bg-gray-300', 'bg-green-500');
+            }
+        });
+    }
+
+    // Dynamic Row Creation
+    function addRow(containerId, htmlContent) {
+        const container = document.getElementById(containerId);
+        const div = document.createElement('div');
+        div.className = 'data-row';
+        div.innerHTML = htmlContent;
+        container.appendChild(div);
+    }
+
+    function removeRow(btn) {
+        btn.closest('.data-row').remove();
+    }
+
+    // Row Templates
+    function createClassRow() {
+        return `
+            <div><input type="text" class="input-field class-name" placeholder="კლასის სახელი (მაგ: 5-ა)"></div>
+            <div><input type="number" class="input-field class-students" placeholder="მოსწავლეთა რ-ბა" value="20"></div>
+            <button onclick="removeRow(this)" class="remove-btn">✖</button>
+        `;
+    }
+
+    function createTeacherRow() {
+        return `
+            <div><input type="text" class="input-field teacher-name" placeholder="მასწავლებელი (მაგ: ნინო)"></div>
+            <div><input type="text" class="input-field subject-name" placeholder="საგანი (მაგ: მათემატიკა)"></div>
+            <div><input type="text" class="input-field target-classes" placeholder="რომელ კლასებში? (მაგ: 5-ა, 6-ბ)"></div>
+            <div><input type="number" class="input-field hours-per-week" placeholder="საათი/კვირაში" min="1" value="3"></div>
+            <button onclick="removeRow(this)" class="remove-btn">✖</button>
+        `;
+    }
+
+    function createConstraintRow() {
+        return `
+            <div style="grid-column: span 2;"><input type="text" class="input-field constraint-text" placeholder="აღწერეთ შეზღუდვა (მაგ: ნინო არ მუშაობს ოთხშაბათს)"></div>
+            <select class="input-field constraint-type">
+                <option value="hard">აუცილებელი (Hard Constraint)</option>
+                <option value="soft">სასურველი (Soft Constraint)</option>
+            </select>
+            <button onclick="removeRow(this)" class="remove-btn">✖</button>
+        `;
+    }
+
+    // Initialize with default rows
+    window.onload = () => {
+        addRow('classes-list', createClassRow());
+        addRow('teachers-list', createTeacherRow());
+        addRow('constraints-list', createConstraintRow());
+    };
+
+    // Prompt Generation
+    function generatePromptAndGoToStep2() {
+        // Collect Base Data
+        const days = document.getElementById('school-days').value;
+        const maxLessons = document.getElementById('max-lessons').value;
+        
+        // Collect Classes
+        let classesTxt = "";
+        document.querySelectorAll('#classes-list .data-row').forEach(row => {
+            const name = row.querySelector('.class-name').value;
+            if(name) classesTxt += `- ${name} კლასი\n`;
+        });
+
+        // Collect Teachers & Subjects
+        let teachersTxt = "";
+        document.querySelectorAll('#teachers-list .data-row').forEach(row => {
+            const tName = row.querySelector('.teacher-name').value;
+            const sub = row.querySelector('.subject-name').value;
+            const cls = row.querySelector('.target-classes').value;
+            const hrs = row.querySelector('.hours-per-week').value;
+            if(tName && sub) teachersTxt += `- ${tName} ასწავლის საგანს: ${sub}. კლასები: ${cls} (${hrs} საათი/კვირაში თითო კლასში).\n`;
+        });
+
+        // Collect Constraints
+        let hardConstraints = "";
+        let softConstraints = "";
+        document.querySelectorAll('#constraints-list .data-row').forEach(row => {
+            const txt = row.querySelector('.constraint-text').value;
+            const type = row.querySelector('.constraint-type').value;
+            if(txt) {
+                if(type === 'hard') hardConstraints += `- ${txt}\n`;
+                else softConstraints += `- ${txt}\n`;
+            }
+        });
+
+        // Construct P.A.R.T.S. Prompt
+        const promptTemplate = `იმოქმედე როგორც სკოლის განრიგის შემდგენელმა (Timetable Planner) და მონაცემთა ოპტიმიზაციის ექსპერტმა. 
+
+შენი ამოცანაა შეადგინო სკოლის გაკვეთილების ცხრილი ქვემოთ მოცემული მკაცრი პარამეტრების დაცვით. 
+ცხრილის ფორმატი უნდა იყოს Markdown, დაყოფილი კლასების მიხედვით (თითოეულ კლასს თავისი ცხრილი). სვეტები: დღეები. სტრიქონები: გაკვეთილის ნომერი.
+
+[ბაზისური პარამეტრები]
+- სასწავლო დღეები: ${days}
+- მაქსიმუმ გაკვეთილები დღეში ერთ კლასს: ${maxLessons}
+
+[კლასები]
+${classesTxt || "- მონაცემები არ არის შეყვანილი"}
+
+[მასწავლებლები და დატვირთვა]
+${teachersTxt || "- მონაცემები არ არის შეყვანილი"}
+
+[აუცილებელი წესები (Hard Constraints - არ დაარღვიო!)]
+- ერთსა და იმავე დროს, ერთი მასწავლებელი ორ კლასში ვერ შევა.
+- დღეში ერთ კლასს ერთი და იგივე საგანი მაქსიმუმ 2-ჯერ ზედიზედ შეიძლება ჰქონდეს.
+${hardConstraints}
+[სასურველი წესები (Soft Constraints - ეცადე გაითვალისწინო)]
+- ეცადე მასწავლებელს "ფანჯრები" (თავისუფალი საათები გაკვეთილებს შორის) მინიმუმამდე დაუყვანო.
+${softConstraints}
+
+გთხოვ, ჯერ გააანალიზო მოცემულობა (Reasoning) და შეამოწმო არის თუ არა რაიმე კონფლიქტი, შემდეგ კი დაგენერირე სრული ცხრილები.`;
+
+        document.getElementById('prompt-output').value = promptTemplate;
+        switchStep('step2', document.querySelectorAll('.nav-btn')[1]);
+    }
+
+    function copyPrompt() {
+        const textArea = document.getElementById('prompt-output');
+        textArea.select();
+        document.execCommand('copy');
+        
+        const btn = document.getElementById('copyBtn');
+        const origHtml = btn.innerHTML;
+        btn.innerHTML = '<span>✅</span> დაკოპირდა';
+        btn.classList.replace('bg-blue-600', 'bg-green-600');
+        
+        setTimeout(() => {
+            btn.innerHTML = origHtml;
+            btn.classList.replace('bg-green-600', 'bg-blue-600');
+        }, 2000);
+    }
+
+    // Markdown Table Parser (Basic Implementation)
+    function renderTable() {
+        const md = document.getElementById('md-input').value;
+        const target = document.getElementById('table-render-area');
+        
+        if (!md.trim()) {
+            target.innerHTML = '<p class="text-red-500">გთხოვთ, ჩასვათ Markdown ტექსტი.</p>';
+            return;
+        }
+
+        const lines = md.split('\n').filter(line => line.trim().startsWith('|'));
+        if (lines.length < 3) {
+            target.innerHTML = '<p class="text-red-500">ვერ მოიძებნა ვალიდური Markdown ცხრილი. დარწმუნდით, რომ იყენებთ | სიმბოლოებს.</p>';
+            return;
+        }
+
+        let html = '<table class="rendered-table"><thead><tr>';
+        
+        // Parse Header
+        const headers = lines[0].split('|').map(s => s.trim()).filter(s => s !== '');
+        headers.forEach(h => html += `<th>${h}</th>`);
+        html += '</tr></thead><tbody>';
+
+        // Skip the separator line [1], parse body
+        for (let i = 2; i < lines.length; i++) {
+            html += '<tr>';
+            const cells = lines[i].split('|').map(s => s.trim()).filter(s => s !== '');
+            cells.forEach(c => html += `<td>${c}</td>`);
+            html += '</tr>';
+        }
+        
+        html += '</tbody></table>';
+        target.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
