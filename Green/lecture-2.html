@@ -109,11 +109,11 @@
   .success-box { background: #f0fdf4; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 20px; margin: 20px 0; }
 
   ul.check-list { list-style: none; }
-  ul.check-list li { position: relative; padding-left: 25px; margin-bottom: 8px; }
+  ul.check-list li { position: relative; padding-left: 25px; margin-bottom: 8px; font-size: 16px; color: var(--text-light); }
   ul.check-list li::before { content: '✓'; position: absolute; left: 0; color: var(--green-light); font-weight: bold; }
   ul.x-list { list-style: none; }
-  ul.x-list li { position: relative; padding-left: 25px; margin-bottom: 8px; }
-  ul.x-list li::before { content: '❌'; position: absolute; left: 0; }
+  ul.x-list li { position: relative; padding-left: 25px; margin-bottom: 8px; font-size: 16px; color: var(--text-light); }
+  ul.x-list li::before { content: '❌'; position: absolute; left: 0; color: #f87171; font-weight: bold; }
 
   .prompt-blueprint {
     background: #0f1f2e; border: 1px solid rgba(82,183,136,0.4);
@@ -153,6 +153,24 @@
     min-width: 36px; height: 36px; border-radius: 50%; background: var(--green-mid);
     color: white; font-weight: 800; font-size: 16px; flex-shrink: 0;
   }
+
+  /* AI Routine Analyzer Animations */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+  .shake-element {
+    animation: shake 0.4s ease-in-out;
+  }
 </style>
 </head>
 <body>
@@ -160,6 +178,7 @@
 <button id="menuBtn" onclick="toggleMenu()">☰</button>
 <div id="overlay" onclick="toggleMenu()"></div>
 
+<!-- SIDEBAR -->
 <aside id="sidebar">
   <div class="sidebar-header">
     <h1>მწვანე სკოლა</h1>
@@ -170,43 +189,51 @@
     <a href="#agenda" class="nav-link">🎯 დღის წესრიგი</a>
 
     <div class="nav-group">ბლოკი I — მონაცემები (60 წთ)</div>
+    <a href="#prompting-booster" class="nav-link text-emerald-400">⚡ პრომპტინგის ბუსტერი</a>
     <a href="#data-intro" class="nav-link">📊 მონაცემები AI-ით</a>
+    <a href="#code-interpreter" class="nav-link">⚙️ Python-კოდის გენერაცია</a>
     <a href="#excel" class="nav-link">📈 Excel/CSV ავტომატიზაცია</a>
-    <a href="#practice1" class="nav-link">✏️ პრაქტიკა 1 (10 წთ)</a>
     <a href="#budget" class="nav-link">💰 ბიუჯეტი და პროგნოზი</a>
-    <a href="#visualization" class="nav-link">🗺️ ვიზუალიზაცია</a>
-    <a href="#practice2" class="nav-link">✏️ პრაქტიკა 2 (10 წთ)</a>
+    <a href="#visualization" class="nav-link">🗺️ ვიზუალიზაცია & Napkin</a>
+    <a href="#practice1" class="nav-link text-emerald-400">✏️ პრაქტიკა 1 (10 წთ)</a>
 
     <div class="nav-group">შესვენება (10 წთ)</div>
 
     <div class="nav-group">ბლოკი II — ასისტენტები (60 წთ)</div>
-    <a href="#notion" class="nav-link">📋 Notion AI Dashboard</a>
+    <a href="#notion" class="nav-link">📋 Notion AI არქიტექტურა</a>
+    <a href="#notion-workflows" class="nav-link">⚡ Notion AI-ს 3 რეჟიმი</a>
+    <a href="#notion-simulator" class="nav-link">🖥️ Notion AI სიმულატორი</a>
     <a href="#custom-gems" class="nav-link">💎 Custom Gems და GPTs</a>
-    <a href="#practice3" class="nav-link">✏️ პრაქტიკა 3 (10 წთ)</a>
-    <a href="#psychologist" class="nav-link">🧠 ფსიქოლოგი და ბაღი</a>
-    <a href="#kindergarten" class="nav-link">🍼 ბაღის კოორდინაცია</a>
-    <a href="#practice4" class="nav-link">✏️ პრაქტიკა 4 (5 წთ)</a>
+    <a href="#psychologist" class="nav-link">🧠 ფსიქოლოგის ასისტენტი</a>
+    <a href="#practice2" class="nav-link text-emerald-400">✏️ პრაქტიკა 2 (10 წთ)</a>
 
     <div class="nav-group">ბლოკი III — ხარისხი (60 წთ)</div>
-    <a href="#quality" class="nav-link">🏆 ხარისხის მართვა</a>
+    <a href="#quality" class="nav-link">🏆 ხარისხის მართვა & REAL</a>
     <a href="#audit" class="nav-link">📋 სტანდარტების აუდიტი</a>
     <a href="#sentiment" class="nav-link">💬 Sentiment Analysis</a>
-    <a href="#practice5" class="nav-link">✏️ პრაქტიკა 5 (10 წთ)</a>
-    <a href="#summary" class="nav-link">✅ შეჯამება</a>
+    <a href="#practice3" class="nav-link text-emerald-400">✏️ პრაქტიკა 3 (5 წთ)</a>
+    
+    <div class="nav-group">შეჯამება & კატალოგი</div>
+    <a href="#summary" class="nav-link">✅ შეჯამება & დავალება</a>
+    <a href="#directory" class="nav-link text-amber-400">🔌 AI-ინსტრუმენტების კატალოგი</a>
+
+    <div class="nav-group">ნავიგაცია</div>
+    <a href="index.html" class="nav-link text-amber-400">🌿 კურსის ჰაბი</a>
+    <a href="session-2-exercises.html" class="nav-link text-emerald-300">✏️ სესიის სავარჯიშოები</a>
   </nav>
 </aside>
 
 <main>
   <div class="container">
 
-    <!-- HEADER -->
+    <!-- HEADER / HERO -->
     <header class="hero-mini">
       <h1>სესია 2: ორგანიზაციული მართვა და სტრატეგიული მონაცემები AI-ით</h1>
-      <p>მონაცემებიდან გადაწყვეტილებამდე — Excel-ის ანალიზი, Notion Dashboard, Custom Gems და ფსიქოლოგის AI-ასისტენტი.</p>
+      <p>მწვანე სკოლის ლიდერებისთვის განკუთვნილი სესია — მონაცემებიდან გადაწყვეტილებამდე: Excel-ის ანალიზი, Notion Dashboard, Custom Gems-ის აწყობა და ხარისხის სტანდარტების აუდიტი.</p>
       <div class="meta">
         <span class="meta-tag">⏱ 180 წუთი</span>
         <span class="meta-tag">📊 3 ბლოკი + შესვენება</span>
-        <span class="meta-tag">🎯 5 პრაქტიკული დავალება</span>
+        <span class="meta-tag">🎯 3 პრაქტიკული დავალება</span>
       </div>
     </header>
 
@@ -216,280 +243,741 @@
       <h2>🎯 დღევანდელი სესიის გეგმა</h2>
 
       <div class="three-column">
+        <!-- Block I Card -->
         <div class="card" style="background: var(--green-dark); color: white; border: none;">
-          <h3 style="color: var(--green-light); margin-top: 0; font-size: 17px;">ბლოკი I · 60 წთ</h3>
-          <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 00:00 – 01:00</p>
+          <h3 style="color: var(--green-light); margin-top: 0; font-size: 17px;">ბლოკი I · მონაცემები</h3>
+          <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 00:00 – 01:00 (60 წუთი)</p>
           <ul style="list-style: none; font-size: 14px;">
-            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">25 წთ</strong> — Excel/CSV + AI ანალიზი</li>
-            <li style="margin-bottom: 8px;"><strong style="color: #ffcc00;">10 წთ</strong> — პრაქტიკა №1 (მონაცემები)</li>
-            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">15 წთ</strong> — ბიუჯეტი და ვიზუალიზაცია</li>
-            <li><strong style="color: #ffcc00;">10 წთ</strong> — პრაქტიკა №2 (სცენარები)</li>
+            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">10 წთ</strong> — ბუსტერი: XML ტეგები & CoT</li>
+            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">25 წთ</strong> — Excel/CSV ანალიზის მოდელი</li>
+            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">15 წთ</strong> — ფინანსები & ბიუჯეტის სცენარები</li>
+            <li><strong style="color: #52b788;">10 წთ</strong> — პრაქტიკა: მონაცემთა დეტექტივი</li>
           </ul>
         </div>
 
+        <!-- Block II Card -->
         <div class="card" style="background: #1e1b4b; color: white; border: none;">
-          <h3 style="color: #a78bfa; margin-top: 0; font-size: 17px;">ბლოკი II · 60 წთ</h3>
-          <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 01:10 – 02:10</p>
+          <h3 style="color: #a78bfa; margin-top: 0; font-size: 17px;">ბლოკი II · ასისტენტები</h3>
+          <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 01:10 – 02:10 (60 წუთი)</p>
           <ul style="list-style: none; font-size: 14px;">
-            <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">15 წთ</strong> — Notion AI Dashboard</li>
-            <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">15 წთ</strong> — Custom Gems & GPTs</li>
-            <li style="margin-bottom: 8px;"><strong style="color: #ffcc00;">10 წთ</strong> — პრაქტიკა №3 (Gem)</li>
-            <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">15 წთ</strong> — ფსიქოლოგი და ბაღი</li>
-            <li><strong style="color: #ffcc00;">5 წთ</strong> — პრაქტიკა №4 (კომუნიკაცია)</li>
+            <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">25 წთ</strong> — Notion AI საოპერაციო Dashboard</li>
+            <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">25 წთ</strong> — Custom Gems-ის არქიტექტურა</li>
+            <li><strong style="color: #a78bfa;">10 წთ</strong> — პრაქტიკა: როლის ასისტენტი</li>
           </ul>
         </div>
 
+        <!-- Block III Card -->
         <div class="card" style="background: #14532d; color: white; border: none;">
-          <h3 style="color: var(--green-light); margin-top: 0; font-size: 17px;">ბლოკი III · 60 წთ</h3>
-          <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 02:10 – 03:00</p>
+          <h3 style="color: var(--green-light); margin-top: 0; font-size: 17px;">ბლოკი III · ხარისხი</h3>
+          <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 02:10 – 03:00 (60 წუთი)</p>
           <ul style="list-style: none; font-size: 14px;">
-            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">20 წთ</strong> — სტანდარტების აუდიტი</li>
-            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">15 წთ</strong> — Sentiment ანალიზი</li>
-            <li style="margin-bottom: 8px;"><strong style="color: #ffcc00;">10 წთ</strong> — პრაქტიკა №5 (ემოციური ტონი)</li>
+            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">20 წთ</strong> — REAL სწავლება & ხარისხის აუდიტი</li>
+            <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">20 წთ</strong> — Perplexity & Sentiment Analysis</li>
+            <li style="margin-bottom: 8px;"><strong style="color: #52b788;">5 წთ</strong> — პრაქტიკა: მშობელთა საჩივრები</li>
             <li><strong style="color: var(--gold);">15 წთ</strong> — შეჯამება და Q&A</li>
           </ul>
         </div>
       </div>
+
+      <!-- INTERACTIVE DATA ANALYSIS ROUTINE ANALYZER -->
+      <div class="card" style="border: 2px solid var(--green-light); background: #f0fdf4; margin-top: 20px;">
+        <h4 style="font-weight: bold; margin-bottom: 12px; color: var(--green-dark); display: flex; align-items: center; gap: 8px;">
+          📊 სავარჯიშო: საორგანიზაციო რუტინის & მონაცემთა AI-ანალიზატორი
+        </h4>
+        <p style="font-size: 14px; margin-bottom: 15px; color: var(--text-light);">აირჩიეთ მონაცემთა მართვის რუტინული პრობლემა და ნახეთ, როგორ შეუძლია AI-ს მისი 90%-ით დაჩქარება!</p>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+          <select id="routine-select" style="padding: 10px; border-radius: 8px; border: 1.5px solid var(--green-light); font-family: inherit; font-size: 14px; flex: 1; min-width: 200px;" onchange="resetRoutineResult()">
+            <option value="">-- აირჩიეთ საორგანიზაციო პრობლემა --</option>
+            <option value="attendance">დასწრების ყოველთვიური უწყისების ანალიზი და რისკ-ჯგუფები</option>
+            <option value="budget">სასკოლო კამპუსის ხარჯების ოპტიმიზაციის მოდელირება</option>
+            <option value="standards">საგნის სილაბუსების აუდიტი REAL სწავლების კრიტერიუმებით</option>
+            <option value="complaints">მშობლების კომენტარების სენტიმენტ-ანალიზი და პასუხები</option>
+          </select>
+          <button class="timer-btn" style="background: var(--green-mid); color: white; padding: 10px 20px; font-size: 14px; border-radius: 8px; border: none; cursor: pointer;" onclick="analyzeRoutine()">ანალიზი ⚡</button>
+        </div>
+
+        <!-- AI Loader Spinner -->
+        <div id="routine-loader" style="display: none; background: white; border: 1px dashed var(--green-light); padding: 25px; border-radius: 8px; text-align: center; margin-top: 15px;">
+          <div style="margin: 0 auto 12px; border: 4px solid rgba(45,106,79,0.1); border-left-color: var(--green-mid); border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite;"></div>
+          <div id="routine-loader-text" style="font-size: 14px; font-weight: bold; color: var(--green-dark); animation: pulse 1.5s infinite;">კავშირი AI მოდელთან...</div>
+        </div>
+
+        <div id="routine-result" style="display: none; background: white; border: 1px dashed var(--green-light); padding: 15px; border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; margin-bottom: 10px; font-size: 14px; flex-wrap: wrap; gap: 10px;">
+            <span style="color: var(--green-dark); font-weight: bold;" id="routine-tool">რეკომენდებული AI: Claude Pro</span>
+            <span style="color: var(--gold); font-weight: bold;" id="routine-time">დაზოგილი დრო: 4-5 საათი/თვე</span>
+          </div>
+          <p style="font-size: 13px; font-weight: bold; color: var(--text-light); margin-bottom: 8px;">📋 თქვენი სამოქმედო პრომპტი:</p>
+          <div class="prompt-blueprint" style="margin: 0; background: #0f1f2e; padding: 12px; border-radius: 6px; position: relative;">
+            <div class="code-content" style="font-size: 13px; color: #cbd5e1;" id="routine-prompt">აქ გამოჩნდება პრომპტი...</div>
+            <button class="copy-btn" style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;" onclick="copyRoutinePrompt()">კოპირება</button>
+          </div>
+        </div>
+
+        <!-- DETAILED EXERCISE DESCRIPTION ACCORDION -->
+        <div style="margin-top: 15px; border-top: 1px solid rgba(82,183,136,0.2); padding-top: 12px;">
+          <details style="cursor: pointer; font-size: 14px; color: var(--green-dark);">
+            <summary style="font-weight: bold; display: flex; align-items: center; gap: 6px; outline: none; user-select: none;">
+              ℹ️ სავარჯიშოს დეტალური აღწერა და დანიშნულება
+            </summary>
+            <div style="margin-top: 10px; padding: 15px; background: white; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-light); line-height: 1.6; cursor: default;">
+              <p style="font-size: 13.5px; margin-bottom: 12px; font-weight: bold; color: var(--green-dark);">
+                ეს ინტერაქტიული სიმულატორი გვიჩვენებს, თუ როგორ შეუძლია AI ასისტენტებს ყოველდღიური საგანმანათლებლო და საორგანიზაციო საქმეების 90%-ით ავტომატიზაცია:
+              </p>
+              <ul style="list-style-type: none; padding-left: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                <li style="display: flex; align-items: flex-start; gap: 6px;">
+                  <span>🎯</span>
+                  <span><strong>მიზანი:</strong> სკოლის მონაცემთა მართვისა და ხარისხის აუდიტის რუტინული პროცესების გამარტივება კოდირებისა თუ რთული Excel-ფორმულების გარეშე.</span>
+                </li>
+                <li style="display: flex; align-items: flex-start; gap: 6px;">
+                  <span>⚙️</span>
+                  <span><strong>როგორ მუშაობს:</strong> ირჩევთ ტიპურ საორგანიზაციო გამოწვევას, ააქტიურებთ AI ანალიზს და წამებში იღებთ კონკრეტულ ამოცანაზე მორგებულ, უმაღლესი დონის საინჟინრო პრომპტს.</span>
+                </li>
+                <li style="display: flex; align-items: flex-start; gap: 6px; flex-direction: column;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>💼</span>
+                    <strong>4 პრაქტიკული საორგანიზაციო სცენარი:</strong>
+                  </div>
+                  <ul style="padding-left: 20px; margin-top: 4px; display: flex; flex-direction: column; gap: 6px; list-style-type: disc;">
+                    <li><strong>დასწრების ანალიზი და რისკ-ჯგუფები:</strong> გაცდენების ფაილიდან კრიტიკული ზღვარის მოსწავლეთა ფილტრაცია და კურატორისთვის სამოქმედო ინტერვენციის გეგმის შედგენა (ChatGPT Plus).</li>
+                    <li><strong>ხარჯების ოპტიმიზაციის მოდელირება:</strong> საოპერაციო ბიუჯეტის სიმულაცია 3 სცენარზე (Best/Worst/Most Likely) სახელფასო ფონდის ხელშეუხებლობის პირობებში (ChatGPT Plus).</li>
+                    <li><strong>სილაბუსების აკადემიური აუდიტი:</strong> ახალი კლუბების/საგნების სილაბუსების შესაბამისობის შეფასება მწვანე სკოლის <strong>REAL სწავლების</strong> ფილოსოფიასთან 5-ბალიანი სისტემით (Claude Pro).</li>
+                    <li><strong>მშობელთა საჩივრების სენტიმენტ-ანალიზი:</strong> მშობლების ტექსტური კომენტარების კატეგორიზაცია და ემპათიური პასუხის შედგენა სკოლის <strong>IRESPECT</strong> ღირებულებებზე დაფუძნებით (Claude Pro).</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
     </section>
 
-    <div class="block-header">
+    <!-- ==========================================
+         BLOCK I — DATA ANALYTICS
+         ========================================== -->
+    <div class="block-header" id="block1-header">
       <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: var(--green-light); margin-bottom: 10px;">ბლოკი I · 60 წუთი</p>
-      <h2 style="color: white; margin: 0;">📊 მონაცემები და ავტომატური ანგარიშგება</h2>
+      <h2 style="color: white; margin: 0;">📊 მონაცემები და ავტომატური ანგარიშგება (Excel/CSV)</h2>
     </div>
+
+    <!-- PROMPTING BOOSTER -->
+    <section id="prompting-booster">
+      <span class="badge badge-purple" style="background: rgba(124,58,237,0.1); color: var(--purple); border-color: rgba(124,58,237,0.3);">⚡ პრომპტინგის ბუსტერი</span>
+      <h2>⚡ მოწინავე ტექნიკა: XML ტეგები და CoT მონაცემთა მართვაში</h2>
+      <p>მონაცემების დამუშავებისა და რთული სასკოლო აუდიტის დროს, AI-სგან 100%-ით ზუსტი შედეგის მისაღებად ვიყენებთ ორ მოწინავე მეთოდს:</p>
+
+      <div class="two-column">
+        <!-- XML Tagging Card -->
+        <div class="card" style="border-top: 4px solid var(--purple); box-shadow: 0 4px 12px rgba(124,58,237,0.05); margin: 10px 0;">
+          <h4 style="color: var(--purple); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            🏷️ XML ტეგებით სტრუქტურირება
+          </h4>
+          <p style="font-size: 15px;">AI-სთვის გადასაცემი მასალების (ინსტრუქციები, წესები, საწყისი მონაცემები) მკაფიო გამოყოფა სპეციალური ტეგებით.</p>
+          <ul class="check-list" style="font-size: 14px; margin-top: 10px;">
+            <li><strong>იზოლაცია:</strong> AI არ აურევს ერთმანეთში დავალების ტექსტს და Excel-ის მონაცემებს.</li>
+            <li><strong>ნულოვანი კონფლიქტი:</strong> გამორიცხავს კონტექსტის გაფანტვას (Context Drift).</li>
+            <li><strong>მარტივი აწყობა:</strong> პრომპტი ადვილი წასაკითხია როგორც თქვენთვის, ისე AI მოდელისთვის.</li>
+          </ul>
+        </div>
+
+        <!-- CoT Card -->
+        <div class="card" style="border-top: 4px solid var(--gold); box-shadow: 0 4px 12px rgba(244,162,97,0.05); margin: 10px 0;">
+          <h4 style="color: #d97706; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            🧠 აზროვნების ჯაჭვი (Chain-of-Thought)
+          </h4>
+          <p style="font-size: 15px;">AI-ს იძულება, რომ საბოლოო პასუხის გამოტანამდე <strong>ეტაპობრივად ჩამოწეროს თავისი ლოგიკა და მათემატიკური ნაბიჯები</strong>.</p>
+          <ul class="check-list" style="font-size: 14px; margin-top: 10px;">
+            <li><strong>მათემატიკური სიზუსტე:</strong> 80%-ით ამცირებს გამოთვლით შეცდომებს Excel-ის ანალიზისას.</li>
+            <li><strong>აუდიტის ხარისხი:</strong> ჯერ ხდება კრიტერიუმების დეტალური შედარება და მხოლოდ ამის შემდეგ იწერება შეფასება.</li>
+            <li><strong>ლოგიკური გამჭვირვალობა:</strong> მარტივად ხედავთ, სად დაუშვა შეცდომა AI-მ (ასეთის არსებობისას).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BEFORE vs AFTER -->
+      <div class="card" style="background: #f8fafc; border: 1.5px solid #e2e8f0; margin-top: 20px;">
+        <h4 style="color: var(--green-dark); margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+          📊 პრაქტიკული შედარება: სილაბუსის REAL აუდიტი
+        </h4>
+        
+        <div class="two-column">
+          <!-- BEFORE -->
+          <div style="background: #fee2e2; border: 1px solid #fca5a5; padding: 15px; border-radius: 8px;">
+            <span style="color: #dc2626; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px;">❌ ცუდი პრომპტი (დამწყები)</span>
+            <div style="font-family: monospace; font-size: 13px; color: #7f1d1d; white-space: pre-wrap; line-height: 1.4;">"გააანალიზე ეს სილაბუსი REAL სწავლების მიხედვით და მითხარი ხარვეზები და შეფასება:
+[სილაბუსის ტექსტი]"</div>
+            <p style="font-size: 12px; color: #991b1b; margin-top: 8px; margin-bottom: 0; font-style: italic;">შედეგი: AI-ს ერევა კრიტერიუმები, უშვებს ზედაპირულ შეფასებას და ხშირად აჰალუცინებს.</p>
+          </div>
+
+          <!-- AFTER -->
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 15px; border-radius: 8px;">
+            <span style="color: #059669; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px;">✨ პროფესიონალური პრომპტი (ტეგები + CoT)</span>
+            <div style="font-family: monospace; font-size: 13px; color: #064e3b; white-space: pre-wrap; line-height: 1.4;">"შენ ხარ აკადემიური აუდიტორი.
+
+&lt;სტანდარტები&gt;
+REAL სწავლება = Relevant, Engaging...
+&lt;/სტანდარტები&gt;
+
+&lt;სილაბუსი&gt;
+[სილაბუსის ტექსტი]
+&lt;/სილაბუსი&gt;
+
+ინსტრუქცია:
+1. ჯერ ეტაპობრივად ჩამოწერე შენი ლოგიკური მსჯელობა და REAL სწავლების თითოეული პრინციპი შეუდარე სილაბუსს.
+2. მხოლოდ ამის შემდეგ გამოიტანე საბოლოო ქულა და რეკომენდაციები."</div>
+            <p style="font-size: 12px; color: #047857; margin-top: 8px; margin-bottom: 0; font-style: italic;">შედეგი: 100%-ით ზუსტი აუდიტი, სრულყოფილი ლოგიკური ჯაჭვი და ობიექტური შეფასება.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- DATA INTRO -->
     <section id="data-intro">
       <span class="badge badge-theory">კონცეფცია</span>
       <h2>📊 სკოლის მონაცემები — AI-ის ყველაზე ძლიერი გამოყენება</h2>
-      <p>სკოლის მენეჯმენტი ყოველდღიურად გენერირებს ათობით ცხრილს. AI-ი ამ ინფორმაციას წამებში ანალიზავს და სტრატეგიულ კითხვებზე პასუხობს.</p>
+      <p>სასკოლო მენეჯმენტი ყოველდღიურად გენერირებს ათობით ცხრილს — დასწრება, ნიშნები, ფინანსური ხარჯები, კვების მენიუები, კადრების საათობრივი დატვირთვა. ტრადიციული მეთოდებით ამ მონაცემების ანალიზი მოითხოვს Excel-ის რთული ფორმულების (VLOOKUP, Pivot Tables) ცოდნას და საათობით მექანიკურ მუშაობას.</p>
 
       <div class="two-column">
         <div class="card" style="border-top: 4px solid #f87171;">
-          <h4 style="color: #b91c1c; margin-bottom: 12px;">⏰ ადრე (ხელით)</h4>
-          <ul class="x-list" style="font-size: 14px;">
-            <li>Excel-ის ფორმულები და pivot ცხრილები — 2-3 საათი</li>
+          <h4 style="color: #b91c1c; margin-bottom: 12px;">⏰ ტრადიციული ანალიზი (Excel)</h4>
+          <ul class="x-list">
+            <li>VLOOKUP და COUNTIF ფორმულების ხელით გაწერა</li>
+            <li>Pivot-ცხრილების აწყობა — 2-3 საათი სამუშაო</li>
+            <li>გრაფიკების დიზაინზე დროის დაკარგვა</li>
+            <li>მხოლოდ მშრალი ციფრები, დასკვნებისა და რეკომენდაციების გარეშე</li>
           </ul>
         </div>
         <div class="card" style="border-top: 4px solid var(--green-light);">
-          <h4 style="color: var(--green-mid); margin-bottom: 12px;">⚡ ახლა (AI-ით)</h4>
-          <ul class="check-list" style="font-size: 14px;">
-            <li>CSV ატვირთვა → ანალიზი → შაბლონი — 3 წუთი</li>
+          <h4 style="color: var(--green-mid); margin-bottom: 12px;">⚡ ანალიზი AI-ის გამოყენებით</h4>
+          <ul class="check-list">
+            <li>ფაილის მარტივი ატვირთვა (CSV / XLSX ფორმატში)</li>
+            <li>ბუნებრივ ქართულ ენაზე კითხვების დასმა წამებში</li>
+            <li>ავტომატური Python-კოდის გაშვება ზუსტი გამოთვლებისთვის</li>
+            <li>მყისიერი 3 სტრატეგიული მიგნება და პედაგოგიური სამოქმედო გეგმა</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- EXCEL / CSV -->
+    <!-- CODE INTERPRETER / PYTHON RUNTIME -->
+    <section id="code-interpreter">
+      <span class="badge badge-theory">როგორ მუშაობს?</span>
+      <h2>⚙️ როგორ მუშაობს Advanced Data Analysis (Python Runtime)?</h2>
+      <p>როდესაც თქვენ ატვირთავთ Excel ფაილს ChatGPT Plus-ში ან Claude Pro-ში, მოდელი უბრალოდ კი არ „კითხულობს“ ციფრებს ტექსტურად, არამედ **წერს და უშვებს Python-ის კოდს** დაცულ ვირტუალურ გარემოში (Sandbox). ეს უზრუნველყოფს 100%-ით ზუსტ მათემატიკურ გამოთვლებს და გამორიცხავს ჰალუცინაციებს.</p>
+      
+      <div class="highlight-box">
+        <p class="font-bold">💡 AI-ს მუშაობის 4-ნაბიჯიანი ციკლი მონაცემებთან:</p>
+        <div class="three-column" style="margin-top: 15px;">
+          <div style="background: white; padding: 12px; border-radius: 8px; font-size: 13px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--green-dark);">1. სტრუქტურის გააზრება</strong><br>AI კითხულობს სვეტების სათაურებს და ტიპებს.
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; font-size: 13px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--green-dark);">2. Python კოდის გაწერა</strong><br>წერს Pandas/Numpy კოდს ფაილის დასამუშავებლად.
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; font-size: 13px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--green-dark);">3. კოდის შესრულება</strong><br>უშვებს კოდს, ითვლის საშუალოს, ჯამს და ტრენდებს.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXCEL / CSV AUTOMATION -->
     <section id="excel">
-      <span class="badge badge-demo">დემო</span>
-      <h2>📈 Excel/CSV ავტომატიზაცია AI-ით</h2>
-      <p>ChatGPT Plus-ის Advanced Data Analysis ან Claude-ის ფაილ-ატვირთვის ფუნქციით ნებისმიერი ცხრილი ატვირთეთ და დაუსვით კითხვები ქართულად.</p>
+      <span class="badge badge-demo">პრომპტი</span>
+      <h2>📈 Excel/CSV ავტომატიზაცია და დასწრების უწყისები</h2>
+      <p>მწვანე სკოლის კურატორებს ყოველთვიურად უწევთ მოსწავლეთა დასწრებისა და გაცდენილი საათების აღრიცხვა. AI-ის დახმარებით, შესაძლებელია 1 წუთში აღმოვაჩინოთ „რისკ-ჯგუფები“ და დავგეგმოთ კოლეგიური ინტერვენცია.</p>
 
       <div class="prompt-blueprint">
         <div class="prompt-header">
-          <span class="prompt-label">Excel ანალიზის პრომპტი</span>
+          <span class="prompt-label">დასწრების სტატისტიკის პრომპტი (კონტექსტით)</span>
           <button class="copy-btn">კოპირება</button>
         </div>
-        <div class="code-content">ატვირთული ფაილი შეიცავს მწვანე სკოლის დასწრების სტატისტიკას.
+        <div class="code-content">შენ ხარ მწვანე სკოლის უფროსი მონაცემთა ანალიტიკოსი და კურატორი.
+მოგაწვდი მე-5 კლასის დასწრებისა და მოსწრების სტატისტიკის Excel ფაილს.
+
 გთხოვ:
-1. გამოავლინე 3 მთავარი ტრენდი
-2. მონიშნე "რისკ-ჯგუფი" (>15% გაცდენა)
-3. შეადგინე ბარ-გრაფიკი</div>
+1. გააანალიზე მონაცემები და გამოავლინე 3 მთავარი ტრენდი (მაგ. კავშირი გაცდენებსა და საშუალო ქულას შორის).
+2. მონიშნე 'რისკ-ჯგუფი' (მოსწავლეები, რომელთა დასწრება &lt;80%-ზეა და აქვთ ქულების კლების ტენდენცია).
+3. შემომთავაზე კურატორის 3-პუნქტიანი სამოქმედო გეგმა ამ მოსწავლეების მხარდასაჭერად.
+4. ააგე ბარ-გრაფიკი, სადაც ნაჩვენები იქნება გაცდენილი საათები მოსწავლეების მიხედვით.</div>
+      </div>
+    </section>
+
+    <!-- BUDGET SCENARIO FORECASTING -->
+    <section id="budget">
+      <span class="badge badge-theory">ფინანსები</span>
+      <h2>💰 ბიუჯეტის პროგნოზირება და ხარჯების ოპტიმიზაცია</h2>
+      <p>ფინანსურ მონაცემებთან მუშაობისას, AI-ს შეუძლია იმოქმედოს, როგორც მაღალი დონის ბიზნეს-კონსულტანტმა. იგი აკეთებს ბიუჯეტის მოდელირებას სხვადასხვა საოპერაციო სცენარისთვის (Best Case, Worst Case, Most Likely) და გვიჩვენებს, თუ სად გვაქვს ხარჯების დაზოგვის პოტენციალი.</p>
+
+      <div class="warning-box">
+        <h4 style="color: #b91c1c; margin: 0 0 10px 0;">⚠️ ოქროს წესი ფინანსურ AI-ანალიზში:</h4>
+        <p style="font-size: 14px; margin: 0;">ყოველთვის დაუწესეთ AI-ს **მკაცრი საოპერაციო შეზღუდვები (Constraints)**. მაგალითად, მიუთითეთ, რომ ხელფასები და იჯარა ფიქსირებული ხარჯებია და მათ ოპტიმიზაცია არ უნდა შეეხოს. წინააღმდეგ შემთხვევაში, AI-მ შესაძლოა შემოგთავაზოთ პერსონალის შემცირება, რაც სკოლის აკადემიურ ხარისხს დააზიანებს.</p>
+      </div>
+
+      <div class="prompt-blueprint">
+        <div class="prompt-header">
+          <span class="prompt-label">ბიუჯეტის სცენარ-ანალიზის პრომპტი</span>
+          <button class="copy-btn">კოპირება</button>
+        </div>
+        <div class="code-content">შენ ხარ მწვანე სკოლის ფინანსური დირექტორის ასისტენტი.
+მოგაწვდი სასკოლო კამპუსის საოპერაციო ხარჯების 1 წლის ბიუჯეტს.
+
+გთხოვ, გააანალიზო 3 ფინანსური სცენარი მომავალი სასწავლო წლისთვის:
+სცენარი A (ოპტიმისტური): მოსწავლეების რაოდენობა იზრდება 12%-ით.
+სცენარი B (კრიზისული): ენერგომატარებლების და კომუნალურების ხარჯები იზრდება 20%-ით.
+სცენარი C (ინვესტიცია): ვხსნით ახალ REAL ლაბორატორიას, რომლის საწყისი ინვესტიციაა $15,000 და წლიური საოპერაციო ხარჯია $3,000. გამოთვალე ROI 3 წელიწადში, თუ ეს ლაბორატორია მოიზიდავს დამატებით 10 ახალ მოსწავლეს.
+
+შეზღუდვა: მასწავლებელთა ფიქსირებული ხელფასების ბიუჯეტი ($80,000/წელი) ხელშეუხებელია.
+პასუხი მომაწოდე შედარებითი ცხრილის სახით.</div>
+      </div>
+    </section>
+
+    <!-- VISUALIZATION & NAPKIN.AI -->
+    <section id="visualization">
+      <span class="badge badge-demo">ვიზუალიზაცია</span>
+      <h2>🗺️ სტატისტიკური შეჯამებები და ვიზუალიზაცია (Napkin.ai)</h2>
+      <p>მხოლოდ ციფრები რთული აღსაქმელია პედაგოგიური საბჭოსთვის ან მშობლებისთვის. **Napkin.ai** არის რევოლუციური AI ხელსაწყო, რომელიც ნებისმიერ ტექსტს ან სტრუქტურირებულ სიას წამებში აქცევს ულამაზეს ბიზნეს-დიაგრამებად, კავშირების რუქებად და ინფოგრაფიკად.</p>
+      
+      <div class="card" style="border-left: 4px solid var(--purple);">
+        <h4 style="color: var(--purple); margin-bottom: 10px;">⚡ ნაბიჯ-ნაბიჯ სამუშაო პროცესი:</h4>
+        <ol style="margin-left: 20px; font-size: 14px; color: var(--text-light);" class="space-y-2">
+          <li>1. სთხოვეთ Claude-ს ან ChatGPT-ს Excel-ის ანალიზი და სთხოვეთ პასუხი ჩამოაყალიბოს **სტრუქტურირებული სიის** სახით.</li>
+          <li>2. დააკოპირეთ ეს სია და ჩასვით Napkin.ai-ს სამუშაო ფანჯარაში.</li>
+          <li>3. დააწკაპუნეთ ლურჯი წრის ხატულაზე (Sparkle icon) ტექსტის გვერდით.</li>
+          <li>4. აირჩიეთ ათობით გენერირებული ვიზუალური დიაგრამიდან საუკეთესო და ჩასვით პრეზენტაციაში!</li>
+        </ol>
       </div>
     </section>
 
     <!-- PRACTICE 1 -->
     <section id="practice1">
       <span class="badge badge-practice">✏️ პრაქტიკა 1 · 10 წუთი</span>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin: 0;">მონაცემთა დეტექტივი</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+        <h2 style="margin: 0;">მონაცემთა დეტექტივი და Excel-ანალიზი</h2>
         <div class="timer-box">
           <span class="timer-display" id="timer-1">10:00</span>
-          <button class="timer-btn" onclick="startTimer('timer-1', 10)">▶ დაწყება</button>
+          <button class="timer-btn" id="timer-1-btn" onclick="startTimer('timer-1', 10)">▶ დაწყება</button>
         </div>
       </div>
-      <p>ატვირთეთ სასკოლო Excel ფაილი და ამოიღეთ 3 სტრატეგიული მიგნება.</p>
-    </section>
-
-    <!-- BUDGET -->
-    <section id="budget">
-      <span class="badge badge-theory">ფინანსები</span>
-      <h2>💰 ბიუჯეტის პროგნოზირება და ხარჯების ოპტიმიზაცია</h2>
-      <p>AI-ი სცენარების მოდელირებაში უტოლდება პროფესიონალ ანალიტიკოსს.</p>
-
-      <div class="prompt-blueprint">
-        <div class="prompt-header">
-          <span class="prompt-label">ბიუჯეტის სცენარ-ანალიზი</span>
-          <button class="copy-btn">კოპირება</button>
-        </div>
-        <div class="code-content">გაანალიზე 3 სცენარი:
-A: მოსწავლეების რ-ობა +10%
-B: ხარჯები +20%
-C: ახალი ლაბორატორიის ROI 3 წელიწადში.</div>
-      </div>
-    </section>
-
-    <!-- VISUALIZATION -->
-    <section id="visualization">
-      <span class="badge badge-demo">ვიზუალი</span>
-      <h2>🗺️ სტატისტიკური შეჯამებები და ვიზუალიზაცია</h2>
-      <p>პროფესიონალური ვიზუალი ნებისმიერი მონაცემებიდან Napkin.ai-ს დახმარებით.</p>
-    </section>
-
-    <!-- PRACTICE 2 -->
-    <section id="practice2">
-      <span class="badge badge-practice">✏️ პრაქტიკა 2 · 10 წუთი</span>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin: 0;">ბიუჯეტის სცენარების სიმულაცია</h2>
-        <div class="timer-box">
-          <span class="timer-display" id="timer-2">10:00</span>
-          <button class="timer-btn" onclick="startTimer('timer-2', 10)">▶ დაწყება</button>
-        </div>
-      </div>
-      <p>გამოიყენეთ AI (ChatGPT/Claude) და სთხოვეთ დააგენერიროს სკოლის ხარჯების 3 ალტერნატიული სცენარი მოსწავლეთა 15%-იანი ზრდის შემთხვევაში.</p>
+      <p>**დავალება:** გადადით სესიის სავარჯიშოების გვერდზე, დააკოპირეთ პრაქტიკა 1-ში მოცემული სიმულირებული სასკოლო CSV მონაცემები, ჩასვით Claude-ში ან ChatGPT-ში, გააანალიზეთ დასწრებისა და მოსწრების ტრენდები და ამოიღეთ 3 სტრატეგიული მიგნება რისკ-ჯგუფების იდენტიფიცირებისთვის.</p>
     </section>
 
     <!-- BREAK -->
     <div id="break" style="padding: 40px 0; text-align: center; background: var(--green-pale); margin: 40px 0; border-radius: 20px;">
       <div style="font-size: 50px; margin-bottom: 10px;">☕</div>
       <h2 style="justify-content: center; margin: 0; color: var(--green-dark);">10-წუთიანი შესვენება</h2>
-      <p style="margin: 0;">⏱ 01:00 – 01:10</p>
+      <p style="margin: 0; font-weight: bold; color: var(--green-mid);">დაისვენეთ, განიტვირთეთ და მოემზადეთ მეორე ბლოკისთვის.</p>
+      <p style="margin: 5px 0 0 0; font-size: 14px; color: var(--text-light);">⏱ 01:00 – 01:10</p>
     </div>
 
-    <div class="block-header" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
+    <!-- ==========================================
+         BLOCK II — ASSISTANTS & CUSTOM GEMS
+         ========================================== -->
+    <div class="block-header" style="background: linear-gradient(135deg, #1e1b4b, #312e81);" id="block2-header">
       <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #a78bfa; margin-bottom: 10px;">ბლოკი II · 60 წუთი</p>
-      <h2 style="color: white; margin: 0;">💎 Notion Dashboard, Custom Gems და ფსიქოლოგი</h2>
+      <h2 style="color: white; margin: 0;">💎 Notion AI, Custom Gems და GPTs ასისტენტები</h2>
     </div>
 
-    <!-- NOTION -->
+    <!-- NOTION AI ARCHITECTURE -->
     <section id="notion">
-      <span class="badge badge-purple">Notion AI</span>
-      <h2>📋 Notion AI — სკოლის მართვის ერთიანი პანელი</h2>
-      <p>ერთი ადგილი პროექტებისთვის, ოქმებისთვის და HR მონაცემებისთვის.</p>
+      <span class="badge badge-purple">Notion AI · არქიტექტურა</span>
+      <h2>📋 Notion-ის სასკოლო მონაცემთა ბაზების ერთიანი სტრუქტურა</h2>
+      <p>Notion-ის მთავარი სიძლიერე იმაშია, რომ ის არ არის მხოლოდ ცალკეული გვერდების კოლექცია. ის არის ურთიერთდაკავშირებული მონაცემთა ბაზების (Relational Databases) ერთიანი ქსელი, რომელიც სკოლის საორგანიზაციო მართვას სრულყოფილს ხდის.</p>
+
+      <div class="three-column" style="margin-top: 25px;">
+        <div class="card" style="border-top: 4px solid var(--purple); margin: 0;">
+          <h4 style="color: var(--purple); font-weight: bold; margin-bottom: 10px; font-size: 16px;">📋 სხდომის ოქმები (Meetings)</h4>
+          <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">ინახავს პედაგოგიური და ადმინისტრაციული საბჭოების ჩანაწერებს. **დაკავშირებულია ამოცანების (Tasks) ბაზასთან.**</p>
+          <span style="background: rgba(124,58,237,0.1); color: var(--purple); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold;">Relation: 🎯 Tasks Database</span>
+        </div>
+        
+        <div class="card" style="border-top: 4px solid var(--green-light); margin: 0;">
+          <h4 style="color: var(--green-mid); font-weight: bold; margin-bottom: 10px; font-size: 16px;">👩‍🏫 პედაგოგთა რეესტრი (Staff)</h4>
+          <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">ინახავს მასწავლებელთა პროფილებს, საათობრივ დატვირთვებსა და კურსებს. **დაკავშირებულია სილაბუსების ბაზასთან.**</p>
+          <span style="background: var(--green-pale); color: var(--green-dark); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold;">Relation: 📚 Syllabi Database</span>
+        </div>
+
+        <div class="card" style="border-top: 4px solid var(--sky); margin: 0;">
+          <h4 style="color: var(--sky); font-weight: bold; margin-bottom: 10px; font-size: 16px;">📊 მოსწავლეთა Well-being</h4>
+          <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">ინახავს ანონიმურ ყოველდღიურ რეპორტებსა და დასწრების უწყისებს. **დაკავშირებულია კლასის ჟურნალებთან.**</p>
+          <span style="background: rgba(33,150,243,0.1); color: var(--sky); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold;">Relation: 👶 Curator Logs</span>
+        </div>
+      </div>
+      
+      <div class="highlight-box">
+        <p class="font-bold">🌿 IRESPECT კავშირი:</p>
+        <p style="font-size: 14px; margin: 5px 0 0 0; color: var(--text-light);">ამგვარი არქიტექტურა უზრუნველყოფს სრულ **პასუხისმგებლობას (Responsibility)** და **გამჭვირვალობას (Transparency)**. სხდომაზე მიღებული გადაწყვეტილება (ოქმი) მყისიერად გარდაიქმნება კონკრეტული თანამშრომლის ამოცანად და აისახება მის პირად გვერდზე.</p>
+      </div>
     </section>
 
-    <!-- CUSTOM GEMS -->
+    <!-- NOTION AI WORKFLOWS -->
+    <section id="notion-workflows">
+      <span class="badge badge-purple">Notion AI · პროცესები</span>
+      <h2>⚡ Notion AI-ს 3 უმთავრესი სამუშაო რეჟიმი</h2>
+      <p>Notion AI ეხმარება სკოლის მენეჯმენტს ინფორმაციის სწრაფ ძიებაში, გენერირებასა და მექანიკური საქმეების სრულ ავტომატიზაციაში.</p>
+
+      <div class="three-column" style="margin-top: 25px;">
+        <div class="card" style="margin: 0;">
+          <h4 style="color: var(--purple); font-weight: bold; margin-bottom: 10px; font-size: 16px;">💬 Notion AI Q&A</h4>
+          <strong style="font-size: 13px; display: block; margin-bottom: 8px; color: var(--text);">ცოდნის მყისიერი მოძიება</strong>
+          <p style="font-size: 13px; color: var(--text-light); line-height: 1.5;">სთხოვეთ AI-ს მოძებნოს პასუხები მთელ სამუშაო სივრცეში. მაგალითად:<br><em style="color: var(--green-mid);">"რა დავალებები მიეცა სასწავლო ნაწილს ბოლო 3 კრების ოქმის მიხედვით?"</em> AI წამებში ამოიღებს დავალებების სიას და მიუთითებს წყარო გვერდებს.</p>
+        </div>
+
+        <div class="card" style="margin: 0;">
+          <h4 style="color: var(--green-mid); font-weight: bold; margin-bottom: 10px; font-size: 16px;">📊 Database Autofill</h4>
+          <strong style="font-size: 13px; display: block; margin-bottom: 8px; color: var(--text);">ავტომატური სვეტები</strong>
+          <p style="font-size: 13px; color: var(--text-light); line-height: 1.5;">ჩაამატეთ ბაზაში AI-სვეტი (AI Property). AI ავტომატურად გააანალიზებს გვერდის შიგთავსს და სვეტის დონეზე ჩაწერს რეზიუმეს ან სამოქმედო პუნქტებს ხელით მუშაობის გარეშე.</p>
+        </div>
+
+        <div class="card" style="margin: 0;">
+          <h4 style="color: var(--sky); font-weight: bold; margin-bottom: 10px; font-size: 16px;">✍️ ინლაინ ასისტენტი</h4>
+          <strong style="font-size: 13px; display: block; margin-bottom: 8px; color: var(--text);">Space ან /ai</strong>
+          <p style="font-size: 13px; color: var(--text-light); line-height: 1.5;">ნებისმიერ გვერდზე დააჭირეთ Space კლავიშს ან ჩაწერეთ /ai. AI დაგეხმარებათ ტექსტის გაფართოებაში, ტონის შეცვლაში, ოფიციალური წერილის შაბლონის აწყობასა და კორექტირებაში იქვე, სხვა აპლიკაციაში გადასვლის გარეშე.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTION SIMULATOR -->
+    <section id="notion-simulator">
+      <span class="badge badge-purple">Notion AI · სიმულატორი</span>
+      <h2>🖥️ მწვანე სკოლის Notion AI-ს ინტერაქტიული სიმულატორი</h2>
+      <p>დააჭირეთ სიმულირებულ AI ღილაკებს რეზიუმესა და ჩეკ-ლისტის მისაღებად, ან გამოსცადეთ ინლაინ ასისტენტი მშობელთა საინფორმაციო ბიულეტენის დასაწერად:</p>
+
+      <!-- NOTION INTERACTION WINDOW -->
+      <div class="card" style="padding: 0; border-radius: 12px; overflow: hidden; border: 2px solid #e2e8f0; display: flex; font-size: 14px; min-height: 500px; background: white; margin-top: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+        
+        <!-- Notion Sidebar -->
+        <div style="width: 220px; background: #f7f7f5; border-right: 1px solid #e2e8f0; padding: 20px 15px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0;" class="hidden sm:flex">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--green-dark); margin-bottom: 25px;">
+              <span style="font-size: 18px;">🏫</span>
+              <span>მწვანე სკოლა ჰაბი</span>
+            </div>
+            
+            <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #a1a19f; letter-spacing: 0.5px; margin-bottom: 10px;">სამუშაო გვერდები</div>
+            <div style="display: flex; flex-direction: column; gap: 8px; color: #4a4a49;">
+              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 6px; border-radius: 4px; background: #eef0ed; font-weight: bold;"><span style="font-size: 15px;">📋</span> სხდომის ოქმები</div>
+              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 6px; border-radius: 4px;"><span style="font-size: 15px;">👩‍🏫</span> კურატორების სივრცე</div>
+              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 6px; border-radius: 4px;"><span style="font-size: 15px;">📊</span> სასკოლო ბიუჯეტი</div>
+              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 6px; border-radius: 4px;"><span style="font-size: 15px;">👶</span> კლასის ჟურნალები</div>
+            </div>
+          </div>
+          <div style="font-size: 11px; color: #a1a19f;">Notion Workspace v2.6</div>
+        </div>
+
+        <!-- Notion Main Page -->
+        <div style="flex: 1; display: flex; flex-direction: column; background: white;">
+          <!-- Top bar -->
+          <div style="height: 45px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; color: #a1a19f; font-size: 12px;">
+            <div>📋 სხდომის ოქმები / <strong>პედაგოგიური საბჭო — 25 მაისი</strong></div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span>👤 ეკა კ.</span>
+              <span style="background: #eef0ed; padding: 2px 6px; border-radius: 4px; color: #4a4a49; font-weight: bold;">რედაქტირება</span>
+            </div>
+          </div>
+
+          <!-- Page Content Scroll Area -->
+          <div style="flex: 1; padding: 30px; overflow-y: auto;">
+            <!-- Title -->
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+              <span style="font-size: 36px;">🏫</span>
+              <h1 style="font-size: 26px; font-weight: 800; color: #1a1a1a; margin: 0; line-height: 1.2;">პედაგოგიური საბჭოს სხდომა — 25 მაისი</h1>
+            </div>
+
+            <!-- Page Database Properties Replica -->
+            <div style="border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 15px 0; margin-bottom: 25px; display: grid; grid-template-columns: 140px 1fr; gap: 12px 10px; font-size: 13px;">
+              <div style="color: #a1a19f;">📅 თარიღი</div>
+              <div style="color: #374151; font-weight: 500;">2026 წლის 25 მაისი</div>
+              
+              <div style="color: #a1a19f;">👥 დასწრება</div>
+              <div style="color: #374151; font-weight: 500;">ეკა კ., ნინო მ., დავით ბ., ლია ჯ.</div>
+
+              <!-- AI Property Summary -->
+              <div style="color: #a1a19f; display: flex; align-items: center; gap: 4px;">✨ AI შეჯამება</div>
+              <div id="sim-notion-summary">
+                <button onclick="runNotionSummary()" style="background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3); color: var(--purple); padding: 4px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(124,58,237,0.2)'" onmouseout="this.style.background='rgba(124,58,237,0.1)'">✨ რეზიუმეს შექმნა (Notion AI)</button>
+              </div>
+
+              <!-- AI Property Action Items -->
+              <div style="color: #a1a19f; display: flex; align-items: center; gap: 4px;">✨ AI ამოცანები</div>
+              <div id="sim-notion-tasks">
+                <button onclick="runNotionTasks()" style="background: rgba(82,183,136,0.1); border: 1px solid rgba(82,183,136,0.3); color: var(--green-dark); padding: 4px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(82,183,136,0.2)'" onmouseout="this.style.background='rgba(82,183,136,0.1)'">✨ სამოქმედო გეგმის გენერაცია (Notion AI)</button>
+              </div>
+            </div>
+
+            <!-- Page Body / Inline AI Prompt Simulator -->
+            <div style="color: #374151; font-size: 14px; margin-bottom: 20px;">
+              <p style="margin-bottom: 12px; font-weight: bold; color: #a1a19f; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">გვერდის შიგთავსი (კრების ოქმის მონახაზი):</p>
+              <p style="font-style: italic; color: #6b7280; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 3px solid #ccc; font-size: 13px;">„განვიხილეთ მე-5 კლასებში REAL სწავლების ინტეგრაცია. რობოტიქსის სილაბუსი მოსამზადებელია ეკა კ.-ს მიერ. კურატორები გადახედავენ იმ მოსწავლეების სიას, ვისაც გაცდენები აქვთ, კერძოდ ნიკა კ.-ს. ადმინისტრაციამ უნდა გადაამოწმოს კამპუსის კვების ხარისხი და ტემპერატურა მშობლების საჩივრის საფუძველზე.“</p>
+            </div>
+
+            <!-- Inline AI Block Simulator -->
+            <div style="border: 1px solid rgba(124,58,237,0.3); border-radius: 8px; background: #fafafc; padding: 15px; box-shadow: 0 4px 12px rgba(124,58,237,0.04); position: relative;">
+              <div style="position: absolute; top: -10px; right: 15px; background: var(--purple); color: white; font-size: 9px; font-weight: bold; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;">ინლაინ ასისტენტი</div>
+              
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 16px; color: var(--purple);">✨</span>
+                <input type="text" id="sim-prompt-input" value="დაწერე მშობლებისთვის საინფორმაციო ბიულეტენი REAL სწავლების მიღწევებზე..." style="flex: 1; border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 12px; color: #1a1a1a; outline: none; background: white;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='#e2e8f0'">
+                <button onclick="runInlineGeneration()" style="background: var(--purple); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">გენერაცია ✨</button>
+              </div>
+
+              <!-- Output Box -->
+              <div id="sim-prompt-output" style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; min-height: 80px; font-size: 12.5px; line-height: 1.5; color: #4a4a49; overflow-y: auto; max-height: 180px;">
+                <span style="color: #a1a19f; font-style: italic;">დააჭირეთ „გენერაციას“ საინფორმაციო ბიულეტენის მისაღებად...</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CUSTOM GEMS & GPTS ARCHITECTURE -->
     <section id="custom-gems">
       <span class="badge badge-purple">Custom Gems & GPTs</span>
-      <h2>💎 Custom Gems — სპეციალიზებული AI-ასისტენტები</h2>
-      <p>თქვენი სკოლისთვის შექმნილი AI-ასისტენტი ინსტრუქციებით და ფაილებით.</p>
+      <h2>💎 Custom Gems — სპეციალიზებული AI ასისტენტების შექმნა</h2>
+      <p>Claude-ის Gems ან ChatGPT-ის Custom GPTs გაძლევთ საშუალებას შექმნათ **პერსონალური AI-ასისტენტი**, რომელსაც წინასწარ ექნება გაწერილი კონკრეტული როლი, წესები, სასურველი ტონი და ჩატვირთული ექნება სკოლის შიდა დოკუმენტები (მაგ. სკოლის წესდება,REAL სწავლების გაიდლაინი).</p>
+
+      <div class="card" style="border-top: 4px solid var(--purple);">
+        <h4 style="color: var(--purple); font-weight: bold; margin-bottom: 15px;">🏗️ Custom Gem-ის არქიტექტურის 4 ძირითადი სვეტი:</h4>
+        
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div>
+            <strong>როლი და მიზანი (Role & Persona)</strong>
+            <p style="font-size: 14px; margin: 0; color: var(--text-light);">ზუსტად ვინ არის თქვენი Gem (მაგ. "შენ ხარ მწვანე სკოლის HR ასისტენტი, რომელიც ამოწმებს CV-ებს").</p>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div>
+            <strong>კონტექსტი და ცოდნა (Knowledge Base)</strong>
+            <p style="font-size: 14px; margin: 0; color: var(--text-light);">ატვირთეთ ფაილები, რომლებსაც AI უნდა დაეყრდნოს (მაგ. IRESPECT ღირებულებების დეკლარაცია, ვაკანსიის აღწერილობა).</p>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div>
+            <strong>მკაცრი წესები და შეზღუდვები (Guardrails)</strong>
+            <p style="font-size: 14px; margin: 0; color: var(--text-light);">რა არ უნდა გააკეთოს AI-მ (მაგ. "არასოდეს გაამჟღავნო კანდიდატის პირადი ტელეფონი ან ID. არასოდეს გამოიგონო არარსებული გამოცდილება").</p>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <div class="step-num">4</div>
+          <div>
+            <strong>გამომავალი სტილი (Output Format)</strong>
+            <p style="font-size: 14px; margin: 0; color: var(--text-light);">როგორ უნდა მოგაწოდოთ პასუხი (მაგ. "ყოველთვის გამოავლინე 3 ძლიერი მხარე, 2 სუსტი მხარე და მოამზადე 3 კითხვა გასაუბრებისთვის").</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CASE STUDY: PSYCHOLOGIST GEM -->
+    <section id="psychologist">
+      <span class="badge badge-safety">🧠 ეთიკა და ფსიქოლოგია</span>
+      <h2>🧠 Case Study: სკოლის ფსიქოლოგის AI-ასისტენტი</h2>
+      <p>სკოლის ფსიქოლოგი მუშაობს ძალიან სენსიტიურ, კონფიდენციალურ ინფორმაციასთან. AI-ის არასწორმა გამოყენებამ შესაძლოა უხეშად დაარღვიოს მოსწავლის უფლებები და პერსონალურ მონაცემთა დაცვის კანონი (GDPR).</p>
+
+      <div class="warning-box">
+        <h4 style="color: #b91c1c; margin: 0 0 10px 0;">🛡️ ეთიკური საზღვრები ფსიქოლოგისთვის:</h4>
+        <ul class="x-list" style="font-size: 14px; margin-left: 10px;">
+          <li><strong>არასოდეს</strong> ჩაწეროთ მოსწავლის რეალური სახელი, გვარი, კლასი ან დაბადების თარიღი AI-ში.</li>
+          <li><strong>არასოდეს</strong> სთხოვოთ AI-ს კლინიკური დიაგნოზის დასმა (მაგ. "აქვს თუ არა ამ ბავშვს ADHD?"). AI არ არის ლიცენზირებული ექიმი.</li>
+          <li>გამოიყენეთ AI მხოლოდ როგორც **„აზრების გამზიარებელი“ (Sounding Board)** — იდეების გენერირებისთვის, ემპათიური წერილების სტრუქტურირებისთვის და ანონიმური ქეისების ალტერნატიული ხედვებისთვის.</li>
+        </ul>
+      </div>
+
+      <div class="prompt-blueprint">
+        <div class="prompt-header">
+          <span class="prompt-label">ფსიქოლოგის Gem-ის სისტემური ინსტრუქცია (Blueprint)</span>
+          <button class="copy-btn">კოპირება</button>
+        </div>
+        <div class="code-content">შენ ხარ მწვანე სკოლის ფსიქოლოგის პროფესიონალური ასისტენტი (Sounding Board).
+შენი მიზანია დაეხმარო ფსიქოლოგს რთული სასკოლო შემთხვევების ანალიზში, ეთიკური კომუნიკაციის მომზადებასა და კურატორებისთვის რეკომენდაციების შემუშავებაში.
+
+წესები:
+1. არასოდეს დასვა კლინიკური დიაგნოზი. იმოქმედე მხოლოდ როგორც იდეებისა და პედაგოგიური სტრატეგიების გენერატორი.
+2. თუ მომხმარებელი შემთხვევით შეიყვანს რეალურ სახელს, დაუყოვნებლივ შეახსენე GDPR-ის დაცვა და სთხოვე სახელის ანონიმურობა.
+3. ყოველი რთული ქეისის განხილვისას შემომთავაზე ემპათიის 2 განსხვავებული მიდგომა და 1 პრაქტიკული სავარჯიშო კლასისთვის.
+4. იყავი უკიდურესად ემპათიური, მშვიდი და პროფესიონალური ტონის.</div>
+      </div>
+    </section>
+
+    <!-- PRACTICE 2 -->
+    <section id="practice2">
+      <span class="badge badge-practice">✏️ პრაქტიკა 2 · 10 წუთი</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+        <h2 style="margin: 0;">Custom Gem-ის დაგეგმვა და აწყობა</h2>
+        <div class="timer-box" style="background:#1e1b4b;">
+          <span class="timer-display" id="timer-2" style="color: #a78bfa;">10:00</span>
+          <button class="timer-btn" id="timer-2-btn" onclick="startTimer('timer-2', 10)" style="background:#a78bfa;color:#1e1b4b;">▶ დაწყება</button>
+        </div>
+      </div>
+      <p>**დავალება:** გადადით სესიის სავარჯიშოების გვერდზე, გამოიყენეთ **დინამიკური როლების დამგეგმავი ვიჯეტი**, შეარჩიეთ თქვენი სამუშაო როლი (დირექტორი, კურატორი, ფინანსისტი ან ფსიქოლოგი), მოახდინეთ გენერირებული სისტემური წესების კოპირება და ჩამოაყალიბეთ თქვენი პირველი პერსონალური AI ასისტენტის 3 ძირითადი ინსტრუქცია.</p>
+    </section>
+
+    <!-- ==========================================
+         BLOCK III — QUALITY CONTROL & STANDARDS
+         ========================================== -->
+    <div class="block-header" style="background: linear-gradient(135deg, #14532d, #166534);" id="block3-header">
+      <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: var(--green-light); margin-bottom: 10px;">ბლოკი III · 60 წუთი</p>
+      <h2 style="color: white; margin: 0;">🏆 ხარისხის უზრუნველყოფა, სტანდარტები და Sentiment-ანალიზი</h2>
+    </div>
+
+    <!-- QUALITY & REAL AUDIT -->
+    <section id="quality">
+      <span class="badge badge-theory">კონცეფცია</span>
+      <h2>🏆 სასწავლო პროცესის ხარისხის მონიტორინგის ავტომატიზაცია</h2>
+      <p>აკადემიური ხარისხის მართვა სკოლის ერთ-ერთი ყველაზე რთული გამოწვევაა. მწვანე სკოლა ეყრდნობა **REAL სწავლების ფილოსოფიას** (Relevant - შესაბამისი, Engaging - ჩამრთველი, Authentic - ავთენტური, Learner-centered - მოსწავლეზე ორიენტირებული). AI-ს შეუძლია წამებში შეამოწმოს ნებისმიერი ახალი საგნის ან კლუბის სილაბუსი და შეაფასოს REAL-ის კრიტერიუმებით.</p>
+
+      <div class="card" style="border-left: 4px solid var(--green-light);">
+        <h4 style="color: var(--green-mid); font-weight: bold; margin-bottom: 12px;">📐 REAL სწავლების შეფასების კრიტერიუმები AI-სთვის:</h4>
+        <div class="two-column" style="font-size: 14px;">
+          <div>
+            <p><strong>Relevant (შესაბამისი):</strong> პასუხობს თუ არა მასალა მოსწავლის რეალურ ცხოვრებასა და ინტერესებს?</p>
+            <p><strong>Engaging (ჩამრთველი):</strong> შეიცავს თუ არა გაკვეთილი აქტიურ, ინტერაქტიულ სამუშაოს მშრალი ლექციის ნაცვლად?</p>
+          </div>
+          <div>
+            <p><strong>Authentic (ავთენტური):</strong> წყვეტენ თუ არა მოსწავლეები რეალურ პრობლემებს (მაგ. ეკო-პროექტი კამპუსისთვის)?</p>
+            <p><strong>Learner-centered (მოსწავლეზე ორიენტირებული):</strong> ეძლევა თუ არა მოსწავლეს არჩევანის და ინიციატივის გამოჩენის საშუალება?</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STANDARDS AUDIT WITH PERPLEXITY AI -->
+    <section id="audit">
+      <span class="badge badge-demo">Perplexity AI</span>
+      <h2>📋 რეგულაციებისა და ავტორიზაციის სტანდარტების სწრაფი აუდიტი</h2>
+      <p>**Perplexity AI** არის „ცოცხალი“ საძიებო ძრავა, რომელიც მუშაობს რეალურ დროში ინტერნეტზე წვდომით. სკოლის ავტორიზაციისა და ეროვნული სასწავლო გეგმის სტანდარტების შეცვლისას, Perplexity წამებში პოულობს უახლეს დადგენილებებსა და სამინისტროს რეგულაციებს შესაბამისი წყაროების მითითებით.</p>
+
+      <div class="prompt-blueprint">
+        <div class="prompt-header">
+          <span class="prompt-label">Perplexity-ის საძიებო პრომპტი</span>
+          <button class="copy-btn">კოპირება</button>
+        </div>
+        <div class="code-content">მომიძებნე საქართველოს განათლების სამინისტროს უახლესი სტანდარტები სკოლების ავტორიზაციის შესახებ, კონკრეტულად სასკოლო უსაფრთხოებისა და ვიდეო-მონიტორინგის წესებთან დაკავშირებით.
+მოიყვანე ოფიციალური დადგენილების ნომრები, თარიღები და მიუთითე ბმულები ოფიციალური წყაროებიდან (მაგ. matsne.gov.ge).
+დამიჯამე 3 ძირითადი მოთხოვნა, რომელიც მწვანე სკოლამ უნდა დააკმაყოფილოს.</div>
+      </div>
+    </section>
+
+    <!-- SENTIMENT ANALYSIS -->
+    <section id="sentiment">
+      <span class="badge badge-theory">Sentiment Analysis</span>
+      <h2>💬 მშობელთა უკუკავშირის Sentiment-ანალიზი</h2>
+      <p>მშობელთა კრების ან ყოველწლიური გამოკითხვის შემდეგ, სკოლა იღებს ასობით ტექსტურ კომენტარს. ხელით მათი წაკითხვა, დაჯგუფება და პრობლემების იდენტიფიცირება კვირებს მოითხოვს. LLM მოდელებს აქვთ **ბუნებრივი ენის დამუშავების (NLP)** უნიკალური უნარი, რაც მათ საშუალებას აძლევს წამებში დააჯგუფონ კომენტარები სენტიმენტების (პოზიტიური, ნეიტრალური, ნეგატიური) მიხედვით და გამოავლინონ ყველაზე ხშირი პრობლემები (Root Causes).</p>
+
+      <div class="highlight-box">
+        <p class="font-bold">📈 Sentiment Analysis-ის 4-ნაბიჯიანი სამუშაო პროცესი:</p>
+        <div class="three-column" style="margin-top: 15px; font-size: 13px;">
+          <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--green-dark);">1. კლასიფიკაცია</strong><br>AI ყოველ კომენტარს ანიჭებს ნიშნულს: პოზიტიური, ნეიტრალური ან ნეგატიური.
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--green-dark);">2. კლასტერირება</strong><br>აჯგუფებს ნეგატიურ კომენტარებს თემებად (კვება, ტრანსპორტი, აკადემიური).
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--green-dark);">3. სამოქმედო გეგმა</strong><br>ქმნის ემპათიურ, კონსტრუქციულ პასუხებსა და გაუმჯობესების ჩეკ-ლისტებს.
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-blueprint">
+        <div class="prompt-header">
+          <span class="prompt-label">მშობელთა კომენტარების ანალიზის პრომპტი</span>
+          <button class="copy-btn">კოპირება</button>
+        </div>
+        <div class="code-content">შენ ხარ მწვანე სკოლის ხარისხის უზრუნველყოფის მენეჯერი.
+მოგაწვდი მშობელთა გამოკითხვის 50 ტექსტურ კომენტარს.
+
+გთხოვ:
+1. ჩაატარე სენტიმენტ-ანალიზი და მომაწოდე პროცენტული გადანაწილება: პოზიტიური, ნეიტრალური, ნეგატიური.
+2. ნეგატიური კომენტარებიდან გამოავლინე 2 ყველაზე მწვავე საორგანიზაციო პრობლემა (მაგ. კვების ტემპერატურა, საშინაო დავალებების მოცულობა).
+3. თითოეული პრობლემისთვის მომიყვანე 1 ავთენტური, ანონიმური ციტატა მშობლის კომენტარიდან.
+4. შეადგინე სკოლის ოფიციალური, უკიდურესად ემპათიური და კონსტრუქციული საპასუხო შეტყობინების შაბლონი მშობლებისთვის.</div>
+      </div>
     </section>
 
     <!-- PRACTICE 3 -->
     <section id="practice3">
-      <span class="badge badge-practice">✏️ პრაქტიკა 3 · 10 წუთი</span>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin: 0;">Custom Gem-ის დაგეგმვა</h2>
+      <span class="badge badge-practice">✏️ პრაქტიკა 3 · 5 წუთი</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+        <h2 style="margin: 0;">Micro-Task: მშობელთა საჩივრების მართვა და ემოციური ტონი</h2>
         <div class="timer-box">
-          <span class="timer-display" id="timer-3">10:00</span>
-          <button class="timer-btn" onclick="startTimer('timer-3', 10)">▶ დაწყება</button>
+          <span class="timer-display" id="timer-3">05:00</span>
+          <button class="timer-btn" id="timer-3-btn" onclick="startTimer('timer-3', 5)">▶ დაწყება</button>
         </div>
       </div>
-      <p>ჩამოაყალიბეთ თქვენი სამუშაო როლისთვის საჭირო Custom Gem-ის 3 მთავარი ინსტრუქცია.</p>
+      <p>**დავალება:** გადადით სესიის სავარჯიშოების გვერდზე, **პრაქტიკა 3-ის სექციაში**. აირჩიეთ და დააკოპირეთ მშობელთა 3 სიმულირებული საჩივრიდან ერთ-ერთი (მაგ. კვება, ნიშნები ან ბულინგი), გაუშვით AI-ში ანალიზის პრომპტით, შეაფასეთ ემოციური ტონი და მიღებული საუკეთესო საპასუხო წერილი ჩასვით სავარჯიშოების გვერდის შესაბამის ველში.</p>
     </section>
 
-    <!-- PSYCHOLOGIST -->
-    <section id="psychologist">
-      <span class="badge badge-safety">🧠 ეთიკა</span>
-      <h2>🧠 Custom Gem: სკოლის ფსიქოლოგის ასისტენტი</h2>
-      <p>კონფიდენციალური დოკუმენტაციის მხარდაჭერა ეთიკური წესების დაცვით.</p>
-
-      <div class="prompt-blueprint">
-        <div class="prompt-header">
-          <span class="prompt-label">კრიზისული კომუნიკაციის შაბლონი</span>
-          <button class="copy-btn">კოპირება</button>
-        </div>
-        <div class="code-content">დაწერე ემპათიური შეტყობინება მშობლისთვის (ანონიმური ქეისი).</div>
-      </div>
-    </section>
-
-    <!-- KINDERGARTEN -->
-    <section id="kindergarten">
-      <span class="badge badge-safety">🍼 ბაღის კოორდინაცია</span>
-      <h2>👶 AI ბაღის კოორდინატორებისთვის</h2>
-      <p>პრაქტიკული და ემპათიური კომუნიკაცია მშობლებთან რთულ საკითხებზე, როგორიცაა 3-6 წლის ბავშვების ქცევა, ადაპტაციის სირთულეები ან კვების პრობლემები.</p>
-
-      <div class="prompt-blueprint">
-        <div class="prompt-header">
-          <span class="prompt-label">ბაღის კომუნიკაციის შაბლონი</span>
-          <button class="copy-btn">კოპირება</button>
-        </div>
-        <div class="code-content">დაწერე პოზიტიური და თბილი შეტყობინება მშობლისთვის. აუხსენი, რომ ბავშვს ადაპტაციის პერიოდი აქვს და დღეს ცოტა იტირა, მაგრამ ახლა კარგადაა. გამოიყენე "IRESPECT" ღირებულებები და იყავი ძალიან ემპათიური.</div>
-      </div>
-    </section>
-
-    <!-- PRACTICE 4 -->
-    <section id="practice4">
-      <span class="badge badge-practice">✏️ პრაქტიკა 4 · 5 წუთი</span>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin: 0;">ბაღის კომუნიკაციის ქეისი</h2>
-        <div class="timer-box">
-          <span class="timer-display" id="timer-4">05:00</span>
-          <button class="timer-btn" onclick="startTimer('timer-4', 5)">▶ დაწყება</button>
-        </div>
-      </div>
-      <p>შეარჩიეთ ერთი ქეისი (ადაპტაცია, კვებაზე უარის თქმა ან სხვა ბავშვთან კონფლიქტი) და AI-ს დააწერინეთ მშობელთან გასაგზავნი მოკლე, ემპათიური WhatsApp შეტყობინება.</p>
-    </section>
-
-    <div class="block-header" style="background: linear-gradient(135deg, #14532d, #166534);">
-      <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: var(--green-light); margin-bottom: 10px;">ბლოკი III · 60 წუთი</p>
-      <h2 style="color: white; margin: 0;">🏆 ხარისხის უზრუნველყოფა და სტანდარტები</h2>
-    </div>
-
-    <!-- QUALITY -->
-    <section id="quality">
-      <span class="badge badge-theory">QA</span>
-      <h2>🏆 სასწავლო პროცესის მონიტორინგის ავტომატიზაცია</h2>
-      <p>სწრაფი ანალიზი და ანგარიშები სტანდარტებთან შესაბამისობაზე.</p>
-    </section>
-
-    <!-- AUDIT -->
-    <section id="audit">
-      <span class="badge badge-demo">Perplexity AI</span>
-      <h2>📋 სტანდარტებთან შესაბამისობის აუდიტი</h2>
-      <p>ავტორიზაციის სტანდარტების და კანონმდებლობის სწრაფი ძიება Perplexity-ით.</p>
-    </section>
-
-    <!-- SENTIMENT -->
-    <section id="sentiment">
-      <span class="badge badge-demo">Sentiment Analysis</span>
-      <h2>💬 მშობელთა კმაყოფილების Sentiment Analysis</h2>
-      <p>ტექსტების ემოციური ტონის ანალიზი წამებში.</p>
-
-      <div class="prompt-blueprint">
-        <div class="prompt-header">
-          <span class="prompt-label">Sentiment Analysis პრომპტი</span>
-          <button class="copy-btn">კოპირება</button>
-        </div>
-        <div class="code-content">გაანალიზე 30 მშობლის კომენტარი: პოზიტიური, ნეიტრალური, ნეგატიური.</div>
-      </div>
-    </section>
-
-    <!-- PRACTICE 5 -->
-    <section id="practice5">
-      <span class="badge badge-practice">✏️ პრაქტიკა 5 · 10 წუთი</span>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin: 0;">ემოციური ტონის ანალიზი</h2>
-        <div class="timer-box">
-          <span class="timer-display" id="timer-5">10:00</span>
-          <button class="timer-btn" onclick="startTimer('timer-5', 10)">▶ დაწყება</button>
-        </div>
-      </div>
-      <p>შეიყვანეთ მშობლის ნებისმიერი რთული კომენტარი AI-ში და სთხოვეთ: 1. ემოციური ტონის შეფასება, 2. პასუხის 3 ვარიანტი.</p>
-    </section>
-
-    <!-- SUMMARY -->
+    <!-- SUMMARY & HOMEWORK -->
     <section id="summary">
       <span class="badge badge-theory">✅ შეჯამება</span>
       <h2>✅ შეჯამება და დავალება</h2>
+      <p>დღეს ჩვენ ვისწავლეთ მონაცემებიდან გადაწყვეტილებამდე გადასვლის სრული ციკლი: Excel ცხრილების სიღრმისეული ანალიზი Python-ის დახმარებით, Notion AI-ს გამოყენება საოპერაციო Dashboard-ში, პერსონალური Custom Gem ასისტენტების აწყობა IRESPECT ღირებულებებით და მშობელთა კომენტარების სენტიმენტ-ანალიზი ხარისხის მონიტორინგისთვის.</p>
+
       <div class="homework">
-        <h3 style="margin-top: 0; color: #92400e;">🏠 სახლის დავალება</h3>
-        <p>შექმენით თქვენი პირველი Custom Gem და გააანალიზეთ ერთი Excel ფაილი.</p>
+        <h3 style="margin-top: 0; color: #92400e;">🏠 პრაქტიკული საშინაო დავალება</h3>
+        <p style="font-size: 15px; color: #78350f; margin-bottom: 12px;">კურსის წარმატებით დასასრულებლად, შეასრულეთ შემდეგი დავალებები მომდევნო სესიამდე:</p>
+        <ul style="list-style: none; font-size: 14px; color: #78350f;" class="space-y-2">
+          <li><strong>1. მონაცემთა დეტექტივი:</strong> აიღეთ თქვენი სასკოლო ცხრილი (მაგ. დასწრების ან ნიშნების ანონიმური ფაილი), ატვირთეთ AI-ში და ამოიღეთ 3 მნიშვნელოვანი საორგანიზაციო ტრენდი.</li>
+          <li><strong>2. Custom Gem:</strong> შექმენით თქვენი როლისთვის მორგებული პირველი Custom Gem სულ მცირე 3 სისტემური ინსტრუქციითა და წესით (გამოიყენეთ სავარჯიშოების გვერდის როლების დამგეგმავი).</li>
+          <li><strong>3. Notion AI:</strong> სცადეთ Notion AI-ს დახმარებით შეხვედრის ოქმის ან პროექტის ჩანაწერების ავტომატური დაჯამება.</li>
+        </ul>
       </div>
     </section>
 
+    <!-- DAY 2 TOOL DIRECTORY -->
+    <section id="directory">
+      <span class="badge badge-theory" style="background: rgba(244,162,97,0.1); color: #d97706; border-color: rgba(244,162,97,0.3);">🔌 ხელსაწყოების ბაზა</span>
+      <h2 style="color: var(--green-dark);">🔌 AI-ინსტრუმენტების კატალოგი (სესია 2)</h2>
+      <p>ამ სესიაზე განხილული ყველა წამყვანი AI პლატფორმის ოფიციალური ბმული და მათი კონკრეტული გამოყენების სფერო სასკოლო მენეჯმენტში:</p>
+      
+      <div class="two-column" style="margin-top: 25px;">
+        <!-- Card 1 -->
+        <div class="card" style="border-top: 4px solid var(--green-light);">
+          <h4 style="color: var(--green-dark); font-weight: bold; margin-bottom: 8px;">📈 ChatGPT Advanced Data Analysis</h4>
+          <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;"><strong>დანიშნულება:</strong> რიცხვითი მონაცემების, Excel-ისა და CSV ფაილების 100%-ით ზუსტი მათემატიკური ანალიზი Python კოდის გაშვებით.</p>
+          <a href="https://chatgpt.com" target="_blank" style="font-size: 12px; font-weight: bold; color: var(--green-mid); text-decoration: none;">გახსენი პლატფორმა 🔗</a>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card" style="border-top: 4px solid var(--purple);">
+          <h4 style="color: var(--purple); font-weight: bold; margin-bottom: 8px;">📋 Notion AI</h4>
+          <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;"><strong>დანიშნულება:</strong> სასკოლო ოქმების, პროექტებისა და HR დოკუმენტების მართვა, შეჯამება და კავშირების ძებნა პირდაპირ Notion-ში.</p>
+          <a href="https://notion.so" target="_blank" style="font-size: 12px; font-weight: bold; color: var(--purple); text-decoration: none;">გახსენი პლატფორმა 🔗</a>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card" style="border-top: 4px solid var(--sky);">
+          <h4 style="color: var(--sky); font-weight: bold; margin-bottom: 8px;">🔍 Perplexity Pro</h4>
+          <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;"><strong>დანიშნულება:</strong> განათლების სამინისტროს რეგულაციების, ავტორიზაციის სტანდარტებისა და კანონმდებლობის რეალურ დროში ძებნა ინტერნეტში წყაროების მითითებით.</p>
+          <a href="https://perplexity.ai" target="_blank" style="font-size: 12px; font-weight: bold; color: var(--sky); text-decoration: none;">გახსენი პლატფორმა 🔗</a>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card" style="border-top: 4px solid var(--pink);">
+          <h4 style="color: var(--pink); font-weight: bold; margin-bottom: 8px;">🎨 Napkin.ai</h4>
+          <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;"><strong>დანიშნულება:</strong> სტრუქტურირებული ტექსტების და სიების წამებში გადაქცევა ულამაზეს ბიზნეს-დიაგრამებად და კავშირების რუქებად.</p>
+          <a href="https://napkin.ai" target="_blank" style="font-size: 12px; font-weight: bold; color: var(--pink); text-decoration: none;">გახსენი პლატფორმა 🔗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
     <footer style="text-align: center; padding: 40px 0; color: var(--text-light); font-size: 14px; border-top: 1px solid var(--border-color); margin-top: 40px;">
       <p>მწვანე სკოლა · AI ტრანსფორმაციის კურსი ლიდერებისთვის · გიორგი ბასილაია · 2026</p>
+      <div style="margin-top: 10px; display: flex; justify-content: center; gap: 15px;">
+        <a href="index.html" style="color: var(--green-mid); text-decoration: none;">🌿 კურსის ჰაბი</a>
+        <a href="session-2-exercises.html" style="color: var(--green-mid); text-decoration: none;">✏️ სავარჯიშოები</a>
+      </div>
     </footer>
 
   </div>
@@ -501,33 +989,55 @@ C: ახალი ლაბორატორიის ROI 3 წელიწა
     document.getElementById('overlay').classList.toggle('show');
   }
 
+  // Practices timers
   const timers = {};
   function startTimer(id, minutes) {
-    if (timers[id]) clearInterval(timers[id]);
-    let seconds = minutes * 60;
-    const display = document.getElementById(id);
-    timers[id] = setInterval(() => {
-      seconds--;
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      display.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-      if (seconds <= 0) {
-        clearInterval(timers[id]);
-        display.textContent = "⏰ დრო!";
-      }
-    }, 1000);
+    const btn = document.getElementById(`${id}-btn`);
+    if (timers[id] && timers[id].running) {
+      // Pause
+      clearInterval(timers[id].interval);
+      timers[id].running = false;
+      btn.textContent = 'გაგრძელება ▶';
+    } else {
+      // Start / Resume
+      let seconds = timers[id] ? timers[id].seconds : minutes * 60;
+      const display = document.getElementById(id);
+      
+      timers[id] = {
+        running: true,
+        seconds: seconds,
+        interval: setInterval(() => {
+          timers[id].seconds--;
+          const m = Math.floor(timers[id].seconds / 60);
+          const s = timers[id].seconds % 60;
+          display.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+          
+          if (timers[id].seconds <= 0) {
+            clearInterval(timers[id].interval);
+            timers[id].running = false;
+            display.textContent = "⏰ დრო!";
+            btn.textContent = 'დაწყება ▶';
+            timers[id].seconds = minutes * 60;
+          }
+        }, 1000)
+      };
+      btn.textContent = 'პაუზა ⏸';
+    }
   }
 
+  // Clipboard copy functions
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const text = btn.closest('.prompt-blueprint').querySelector('.code-content').innerText;
       navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
         btn.textContent = 'დაკოპირდა';
-        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+        setTimeout(() => btn.textContent = orig, 2000);
       });
     });
   });
 
+  // Scroll active tracking for sidebar
   const sections = document.querySelectorAll('section');
   const navLinks = document.querySelectorAll('.nav-link');
   window.addEventListener('scroll', () => {
@@ -540,6 +1050,208 @@ C: ახალი ლაბორატორიის ROI 3 წელიწა
       if (link.getAttribute('href').substring(1) === current) link.classList.add('active');
     });
   });
+
+  // Interactive Data Routine Analyzer
+  const routineData = {
+    attendance: {
+      tool: "რეკომენდებული AI: ChatGPT Plus (Advanced Data Analysis)",
+      time: "დაზოგილი დრო: კვირაში 3 საათი",
+      prompt: `შენ ხარ მწვანე სკოლის კურატორთა უფროსი მონაცემთა ანალიტიკოსი.
+მოგაწვდი ჩვენი მოსწავლეების ყოველთვიურ დასწრებისა და გაცდენილი საათების ფაილს.
+1. გამოავლინე ის კლასები და მოსწავლეები, რომელთაც აქვთ >15% გაცდენები.
+2. დააჯგუფე ისინი რისკ-კატეგორიებად და მომაწოდე კურატორისთვის მზა სამოქმედო ინტერვენციის გეგმა.
+3. ააგე გაცდენების ბარ-გრაფიკი.`
+    },
+    budget: {
+      tool: "რეკომენდებული AI: ChatGPT Plus (Python Code Sandbox)",
+      time: "დაზოგილი დრო: თვეში 6 საათი",
+      prompt: `შენ ხარ ფინანსური მრჩეველი. მოგაწვდი კამპუსის საოპერაციო ბიუჯეტის მონაცემებს.
+1. მოახდინე ხარჯების მოდელირება 3 სცენარზე: Best Case (+10% მოსწავლე), Worst Case (+20% ხარჯი), Most Likely.
+2. შეზღუდვა: მასწავლებელთა და თანამშრომელთა სახელფასო ფონდი ხელშეუხებელია.
+3. გამომიყავი ხარჯების ოპტიმიზაციის 3 სავარაუდო სფერო და დაასაბუთე შენი ფინანსური დაშვებები (Assumptions).`
+    },
+    standards: {
+      tool: "რეკომენდებული AI: Claude Pro (Projects / Artifacts)",
+      time: "დაზოგილი დრო: 2-3 საათი საგანზე",
+      prompt: `შენ ხარ მწვანე სკოლის აკადემიური ხარისხის მონიტორინგის უფროსი მენეჯერი.
+მოგაწვდი ახალი კლუბის / საგნის სილაბუსის დოკუმენტს.
+1. შეამოწმე მისი შესაბამისობა მწვანე სკოლის 'REAL სწავლების' (Relevant, Engaging, Authentic, Learner-centered) ფილოსოფიასთან.
+2. თითოეულ კრიტერიუმს მიანიჭე 1-დან 5 ბალამდე და დაასაბუთე შენი შეფასება.
+3. მომეცი 3 კონკრეტული რეკომენდაცია, თუ როგორ გავხადოთ ეს საგანი უფრო მოსწავლეზე ორიენტირებული დაEngaging.`
+    },
+    complaints: {
+      tool: "რეკომენდებული AI: Claude Pro (ბუნებრივი ქართული სტილი)",
+      time: "დაზოგილი დრო: კვირაში 2 საათი",
+      prompt: `შენ ხარ მწვანე სკოლის საზოგადოებასთან ურთიერთობისა და ხარისხის მართვის უფროსი მენეჯერი.
+მოგაწვდი მშობელთა 20 ტექსტურ კომენტარს სასადილოსა და კვების ხარისხზე.
+1. ჩაატარე სენტიმენტ-ანალიზი და დააჯგუფე ისინი: პოზიტიური, ნეიტრალური, ნეგატიური.
+2. გამოავლინე 2 ყველაზე მწვავე საჩივარი და მოიყვანე ციტატა.
+3. შეადგინე უკიდურესად ემპათიური და კონსტრუქციული საპასუხო შეტყობინება მშობლებისთვის, რომელიც ასახავს მწვანე სკოლის IRESPECT ღირებულებებს.`
+    }
+  };
+
+  let isAnalyzing = false;
+  let typingTimer = null;
+
+  function resetRoutineResult() {
+    document.getElementById('routine-result').style.display = 'none';
+    document.getElementById('routine-loader').style.display = 'none';
+    if (typingTimer) {
+      clearInterval(typingTimer);
+      typingTimer = null;
+    }
+    isAnalyzing = false;
+  }
+
+  function analyzeRoutine() {
+    if (isAnalyzing) return;
+    
+    const select = document.getElementById('routine-select');
+    const val = select.value;
+    const loader = document.getElementById('routine-loader');
+    const resultBox = document.getElementById('routine-result');
+    const loaderText = document.getElementById('routine-loader-text');
+    
+    if (!val) {
+      // Shake the select box as a premium feedback loop
+      select.classList.add('shake-element');
+      select.style.borderColor = '#f87171';
+      setTimeout(() => {
+        select.classList.remove('shake-element');
+        select.style.borderColor = 'var(--green-light)';
+      }, 500);
+      return;
+    }
+    
+    isAnalyzing = true;
+    resultBox.style.display = 'none';
+    loader.style.display = 'block';
+    
+    // Clear typing timer if any
+    if (typingTimer) {
+      clearInterval(typingTimer);
+      typingTimer = null;
+    }
+    
+    // Sequence of professional Georgian AI messages
+    const steps = [
+      { text: "🌀 კავშირი AI მოდელთან...", time: 0 },
+      { text: "🧠 საორგანიზაციო რუტინის სტრუქტურირება...", time: 500 },
+      { text: "✍️ REAL სწავლების ინჟინრული პრომპტის გენერაცია...", time: 1000 }
+    ];
+    
+    steps.forEach(step => {
+      setTimeout(() => {
+        if (isAnalyzing) {
+          loaderText.textContent = step.text;
+        }
+      }, step.time);
+    });
+    
+    // After 1500ms, display result with typewriter effect
+    setTimeout(() => {
+      if (!isAnalyzing) return;
+      isAnalyzing = false;
+      loader.style.display = 'none';
+      
+      // Load data
+      document.getElementById('routine-tool').innerHTML = `🤖 ${routineData[val].tool}`;
+      document.getElementById('routine-time').innerHTML = `⏱️ ${routineData[val].time}`;
+      
+      resultBox.style.display = 'block';
+      resultBox.style.opacity = 0;
+      resultBox.style.transition = 'opacity 0.5s ease-in-out';
+      setTimeout(() => resultBox.style.opacity = 1, 50);
+      
+      // Typewriter effect on prompt content
+      const promptEl = document.getElementById('routine-prompt');
+      const fullText = routineData[val].prompt;
+      promptEl.textContent = '';
+      
+      let index = 0;
+      // Faster typing for usability (8ms per character)
+      typingTimer = setInterval(() => {
+        if (index < fullText.length) {
+          promptEl.textContent += fullText.charAt(index);
+          index++;
+        } else {
+          clearInterval(typingTimer);
+          typingTimer = null;
+        }
+      }, 8);
+      
+    }, 1500);
+  }
+
+  function copyRoutinePrompt() {
+    const select = document.getElementById('routine-select');
+    const val = select.value;
+    if (!val) return;
+    
+    const copyBtn = document.querySelector('#routine-result .copy-btn');
+    const originalText = copyBtn.textContent;
+    
+    navigator.clipboard.writeText(routineData[val].prompt).then(() => {
+      copyBtn.textContent = 'კოპირებულია! ✓';
+      copyBtn.style.background = 'var(--green-light)';
+      copyBtn.style.color = 'white';
+      copyBtn.style.borderColor = 'var(--green-light)';
+      
+      setTimeout(() => {
+        copyBtn.textContent = originalText;
+        copyBtn.style.background = 'rgba(255,255,255,0.1)';
+        copyBtn.style.color = '#94a3b8';
+        copyBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+      }, 2000);
+    });
+  }
+
+  // Notion AI Simulator Functions
+  function runNotionSummary() {
+    const container = document.getElementById('sim-notion-summary');
+    container.innerHTML = `<div style="background: #fdfdfd; border: 1px solid rgba(124,58,237,0.2); color: #374151; padding: 10px; border-radius: 6px; font-size: 12.5px; line-height: 1.5;">
+      <strong>✨ Notion AI:</strong> კრებაზე განხილულ იქნა REAL სწავლების დანერგვის დინამიკა მე-5 კლასებში, კვების ხარისხის საორგანიზაციო აუდიტი და სასწავლო სილაბუსების სტანდარტები. გამოვლინდა რობოტიქსის სილაბუსის REAL სწავლებასთან ინტეგრაციის საჭიროება.
+    </div>`;
+  }
+
+  function runNotionTasks() {
+    const container = document.getElementById('sim-notion-tasks');
+    container.innerHTML = `<div style="background: #fdfdfd; border: 1px solid rgba(82,183,136,0.2); color: #374151; padding: 10px; border-radius: 6px; font-size: 12.5px; line-height: 1.5;">
+      <strong style="color: var(--green-dark);">✨ Notion AI:</strong>
+      <ul style="list-style: none; margin-top: 5px;" class="space-y-1">
+        <li>☐ <strong>ეკა კ.</strong> მოამზადებს რობოტიქსის განახლებულ სილაბუსს REAL-ის მიხედვით.</li>
+        <li>☐ <strong>კურატორები</strong> გადახედავენ დასწრების რისკ-ჯგუფებს (ნიკა კ.).</li>
+        <li>☐ <strong>ადმინისტრაცია</strong> შეამოწმებს კამპუსის სასადილოში კერძების ტემპერატურას.</li>
+      </ul>
+    </div>`;
+  }
+
+  function runInlineGeneration() {
+    const promptInput = document.getElementById('sim-prompt-input').value;
+    const outputContainer = document.getElementById('sim-prompt-output');
+    outputContainer.innerHTML = `<div style="color: var(--purple); font-weight: bold; margin-bottom: 5px; font-size: 11px;">✨ Notion AI-ს გენერაცია...</div>`;
+    
+    const textToType = `ძვირფასო მშობლებო,\n\nმოხარული ვართ გაგიზიაროთ სასიამოვნო სიახლე: მწვანე სკოლის მე-5 კლასებში წარმატებით დაინერგა REAL სწავლების REAL-ინტეგრაცია. ჩვენი მოსწავლეები აქტიურად არიან ჩართულები რეალურ (Authentic) ეკო-პროექტებში, სადაც თეორიულ ცოდნას პრაქტიკაში იყენებენ.\n\nგანსაკუთრებით გვინდა აღვნიშნოთ რობოტიქსის კლუბის განახლებული სასწავლო პროგრამა, რომელიც სრულად მოსწავლეზე ორიენტირებულია (Learner-centered). მადლობას გიხდით თანამშრომლობისთვის!`;
+    
+    let i = 0;
+    outputContainer.innerHTML = '';
+    
+    function typeWriter() {
+      if (i < textToType.length) {
+        if (textToType.charAt(i) === '\\n') {
+          outputContainer.innerHTML += '<br>';
+        } else if (textToType.charAt(i) === '\n') {
+          outputContainer.innerHTML += '<br>';
+        } else {
+          outputContainer.innerHTML += textToType.charAt(i);
+        }
+        i++;
+        setTimeout(typeWriter, 12);
+      }
+    }
+    
+    typeWriter();
+  }
 </script>
 
 </body>
