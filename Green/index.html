@@ -375,6 +375,32 @@
     color: #92400e;
     border: 1.5px solid #fcd34d;
   }
+
+  /* COLLAPSIBLE SESSIONS */
+  .session-body {
+    max-height: 2500px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out, opacity 0.4s ease-out;
+    opacity: 1;
+  }
+  .session-card.collapsed .session-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .session-chevron {
+    transition: transform 0.3s ease;
+    margin-left: auto;
+    font-size: 20px;
+    color: rgba(255,255,255,0.7);
+    user-select: none;
+    font-weight: bold;
+  }
+  .session-card.collapsed .session-chevron {
+    transform: rotate(-90deg);
+  }
 </style>
 </head>
 <body>
@@ -434,13 +460,11 @@
 
       <!-- SESSION 1 -->
       <div class="session-card">
-        <a href="lecture-1.html" style="text-decoration: none;">
-          <div class="session-header" style="transition: filter 0.2s; cursor: pointer;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
-            <div class="session-num">1</div>
-            <div class="session-title" style="color: var(--white);">AI-ის გაგება და ადმინისტრაციული ბაზა 🔗</div>
-            <div class="session-duration" style="color: var(--white);">3 საათი</div>
-          </div>
-        </a>
+        <div class="session-header" style="transition: filter 0.2s; cursor: pointer;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
+          <div class="session-num">1</div>
+          <div class="session-title" style="color: var(--white);">AI-ის გაგება და ადმინისტრაციული ბაზა</div>
+          <div class="session-duration" style="color: var(--white);">3 საათი</div>
+        </div>
         <div class="session-body">
           <div class="block">
             <div class="block-label">ნაწილი I · 1 სთ 15 წთ</div>
@@ -551,13 +575,11 @@
 
             <!-- SESSION 2 -->
       <div class="session-card">
-        <a href="lecture-2.html" style="text-decoration: none;">
-          <div class="session-header" style="transition: filter 0.2s; cursor: pointer;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
-            <div class="session-num">2</div>
-            <div class="session-title" style="color: var(--white);">ანალიტიკა, სტრატეგია და ხარისხის მართვა 🔗</div>
-            <div class="session-duration" style="color: var(--white);">3 საათი</div>
-          </div>
-        </a>
+        <div class="session-header" style="transition: filter 0.2s; cursor: pointer;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
+          <div class="session-num">2</div>
+          <div class="session-title" style="color: var(--white);">ანალიტიკა, სტრატეგია და ხარისხის მართვა</div>
+          <div class="session-duration" style="color: var(--white);">3 საათი</div>
+        </div>
         <div class="session-body">
           <div class="block">
             <div class="block-label">ნაწილი I · 1 სთ</div>
@@ -639,13 +661,11 @@
 
       <!-- SESSION 3 -->
       <div class="session-card">
-        <a href="lecture-3.html" style="text-decoration: none;">
-          <div class="session-header" style="transition: filter 0.2s; cursor: pointer;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
-            <div class="session-num">3</div>
-            <div class="session-title" style="color: var(--white);">სკოლის ეკოსისტემა, მართვის პანელი და ცოდნის ბაზა 🔗</div>
-            <div class="session-duration" style="color: var(--white);">3 საათი</div>
-          </div>
-        </a>
+        <div class="session-header" style="transition: filter 0.2s; cursor: pointer;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
+          <div class="session-num">3</div>
+          <div class="session-title" style="color: var(--white);">სკოლის ეკოსისტემა, მართვის პანელი და ცოდნის ბაზა</div>
+          <div class="session-duration" style="color: var(--white);">3 საათი</div>
+        </div>
         <div class="session-body">
           <div class="block">
             <div class="block-label">ნაწილი I · 1 სთ 15 წთ</div>
@@ -927,5 +947,54 @@
   </div>
 </div>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll(".session-card");
+  
+  cards.forEach((card, index) => {
+    // Generate a unique storage key for each session card
+    const storageKey = `session-card-${index + 1}-collapsed`;
+    const header = card.querySelector(".session-header");
+    if (!header) return;
+    
+    // Set cursor style and transition
+    header.style.cursor = "pointer";
+    header.style.transition = "filter 0.2s";
+    header.addEventListener("mouseover", () => header.style.filter = "brightness(1.1)");
+    header.addEventListener("mouseout", () => header.style.filter = "none");
+    
+    // Add chevron if not already present
+    if (!header.querySelector(".session-chevron")) {
+      const chevron = document.createElement("div");
+      chevron.className = "session-chevron";
+      chevron.innerHTML = "▼";
+      header.appendChild(chevron);
+    }
+    
+    // Load state from localStorage (default to expanded / false)
+    const isCollapsed = localStorage.getItem(storageKey) === "true";
+    if (isCollapsed) {
+      card.classList.add("collapsed");
+    }
+    
+    // Click toggle handler
+    header.addEventListener("click", (e) => {
+      // Prevent collapse if user clicks on links or button elements inside the header (if any)
+      if (e.target.tagName === 'A' || e.target.closest('a')) {
+        return; 
+      }
+      
+      const willCollapse = !card.classList.contains("collapsed");
+      if (willCollapse) {
+        card.classList.add("collapsed");
+      } else {
+        card.classList.remove("collapsed");
+      }
+      localStorage.setItem(storageKey, willCollapse);
+    });
+  });
+});
+</script>
+
 </body>
-</html>l>
+</html>
