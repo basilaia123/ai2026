@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სესია 4: პრეზენტაცია, ავტომატიზაცია და დანერგვა — მწვანე სკოლა</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-dark: #064e3b;
+      --green-mid: #059669;
+      --green-light: #10b981;
+      --green-pale: #ecfdf5;
+      --gold: #f59e0b;
+      --gold-light: #fef3c7;
+      --white: #ffffff;
+      --border-color: #e5e7eb;
+      --text: #1f2937;
+      --text-light: #4b5563;
+      --card-bg: #ffffff;
+      --sky: #0284c7;
+      --purple: #7c3aed;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Fira GO', sans-serif; background: #f3f4f6; color: var(--text); line-height: 1.6; padding-left: 280px; }
+    @media (max-width: 1024px) { body { padding-left: 0; } }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+    
+    /* SIDEBAR */
+    #sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 280px;
+      background: linear-gradient(180deg, #022c22, #064e3b);
+      color: var(--white);
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 4px 0 16px rgba(0,0,0,0.1);
+    }
+    @media (max-width: 1024px) {
+      #sidebar { transform: translateX(-280px); transition: transform 0.3s ease; }
+      #sidebar.open { transform: translateX(0); }
+    }
+    
+    .sidebar-header { padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-header h1 { font-size: 18px; color: var(--green-light); margin-bottom: 4px; }
+    .sidebar-header p { font-size: 13px; color: rgba(255,255,255,0.7); }
+    
+    nav { padding: 20px 0; }
+    .nav-group { font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); padding: 15px 20px 5px 20px; }
+    .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; transition: background 0.2s, color 0.2s; }
+    .nav-link:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+
+    /* HEADER */
+    header { background: linear-gradient(135deg, var(--green-dark), #022c22); color: var(--white); border-radius: 20px; padding: 50px 40px; margin-bottom: 40px; box-shadow: 0 10px 25px rgba(6,78,59,0.15); position: relative; overflow: hidden; }
+    header h1 { font-size: clamp(24px, 4vw, 36px); font-weight: 900; margin-bottom: 15px; line-height: 1.2; }
+    header p { font-size: clamp(14px, 2vw, 17px); color: rgba(255,255,255,0.8); max-width: 700px; }
+    .meta-tags { display: flex; gap: 10px; margin-top: 25px; flex-wrap: wrap; }
+    .meta-tag { background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+
+    /* BLOCKS & SECTIONS */
+    .block-header { background: linear-gradient(135deg, var(--green-dark), #112d1f); color: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    section { background: var(--white); border-radius: 20px; padding: 40px; margin-bottom: 40px; border: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0,0,0,0.02); }
+    h2 { font-size: clamp(20px, 3vw, 24px); font-weight: 700; color: var(--green-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    p { font-size: 15px; color: var(--text-light); line-height: 1.7; margin-bottom: 20px; }
+
+    /* CARDS */
+    .two-column { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px; }
+    .three-column { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .card { background: #f9fafb; border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
+    .card h4 { font-size: 16px; font-weight: 700; color: var(--green-dark); margin-bottom: 12px; }
+    .card ul { list-style-type: none; }
+    .card li { font-size: 14px; color: var(--text-light); margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px; }
+    .card li::before { content: "•"; color: var(--green-light); font-weight: bold; }
+
+    /* BADGES */
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border: 1.5px solid transparent; }
+    .badge-theory { background: rgba(16,185,129,0.1); color: var(--green-mid); border-color: rgba(16,185,129,0.2); }
+    .badge-demo { background: rgba(245,158,11,0.1); color: var(--gold); border-color: rgba(245,158,11,0.2); }
+    .badge-practice { background: rgba(239,68,68,0.1); color: #ef4444; border-color: rgba(239,68,68,0.2); }
+
+    /* PROMPT BLUEPRINTS */
+    .prompt-blueprint { background: #0c1015; border: 1px solid #1f2937; border-radius: 12px; margin: 30px 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+    .prompt-header { background: #161b22; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #21262d; }
+    .prompt-label { font-size: 12px; font-weight: bold; color: #8b949e; letter-spacing: 0.5px; }
+    .copy-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+    .copy-btn:hover { background: #30363d; color: var(--white); }
+    .code-content { padding: 20px; font-family: monospace; font-size: 13.5px; color: #e6edf3; white-space: pre-wrap; line-height: 1.5; }
+    .prompt-footer { background: #161b22; padding: 10px 20px; font-size: 11.5px; color: #8b949e; border-top: 1px solid #21262d; display: flex; gap: 15px; }
+
+    /* WARNING BOX & TIMERS */
+    .warning-box { background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 8px; padding: 20px; margin: 25px 0; }
+    .warning-box h4 { color: #991b1b; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .warning-box p { font-size: 14px; margin: 0; color: #7f1d1d; }
+
+    .timer-box { display: flex; align-items: center; gap: 12px; background: var(--green-dark); padding: 8px 16px; border-radius: 30px; box-shadow: 0 4px 12px rgba(6,78,59,0.2); }
+    .timer-display { font-size: 20px; font-weight: 700; color: var(--gold); font-family: monospace; }
+    .timer-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 4px 10px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: bold; transition: background 0.2s; }
+    .timer-btn:hover { background: rgba(255,255,255,0.25); }
+
+    /* BUTTONS */
+    .action-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--green-mid); color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; cursor: pointer; border: none; transition: background 0.2s, transform 0.2s; font-size: 14px; }
+    .action-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .exercises-btn { background: var(--green-pale); color: var(--green-dark); border: 1.5px solid var(--green-light); }
+    .exercises-btn:hover { background: #d1fae5; color: var(--green-dark); }
+
+    /* MENU TOGGLE FOR MOBILE */
+    #menuBtn { display: none; position: fixed; left: 20px; top: 20px; z-index: 101; background: var(--green-dark); color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+    @media (max-width: 1024px) {
+      #menuBtn { display: block; }
+      #overlay.show { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<button id="menuBtn" onclick="toggleMenu()">☰</button>
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <a href="index.html" style="text-decoration: none; color: inherit; display: block;">
+    <div class="sidebar-header" style="cursor: pointer; transition: filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
+      <h1>მწვანე სკოლა</h1>
+      <p>AI-ტრანსფორმაციის კურსი</p>
+    </div>
+  </a>
+  <nav>
+    <div class="nav-group">შინაარსი</div>
+    <a href="#agenda" class="nav-link">🎯 დღის წესრიგი</a>
+
+    <div class="nav-group">ბლოკი I — Gamma AI (45 წთ)</div>
+    <a href="#gamma-intro" class="nav-link">🚀 AI პრეზენტაციებში</a>
+    <a href="#gamma-blueprint" class="nav-link">📋 პრომპტ-შაბლონები</a>
+    <a href="#practice1" class="nav-link text-emerald-400">✏️ პრაქტიკა 1 (10 წთ)</a>
+
+    <div class="nav-group">შესვენება (10 წთ)</div>
+
+    <div class="nav-group">ბლოკი II — ავტომატიზაცია (75 წთ)</div>
+    <a href="#automation-intro" class="nav-link">⚙️ Triggers & Actions</a>
+    <a href="#make-workflow" class="nav-link">🔀 Make.com workflow</a>
+    <a href="#practice2" class="nav-link text-emerald-400">✏️ პრაქტიკა 2 (15 წთ)</a>
+
+    <div class="nav-group">ბლოკი III — ROI & scaling (60 წთ)</div>
+    <a href="#roi-analysis" class="nav-link">📊 ლიცენზიები და ROI</a>
+    <a href="#implementation-steps" class="nav-link">📅 30-დღიანი გეგმა</a>
+    <a href="#practice3" class="nav-link text-emerald-400">✏️ პრაქტიკა 3 (10 წთ)</a>
+    
+    <div class="nav-group">ნავიგაცია</div>
+    <a href="index.html" class="nav-link text-amber-400">🌿 კურსის ჰაბი</a>
+    <a href="session-4-exercises.html" class="nav-link text-emerald-300">✏️ სესიის სავარჯიშოები</a>
+  </nav>
+</aside>
+
+<div class="container">
+  <!-- HEADER -->
+  <header>
+    <h1>სესია 4: პრეზენტაცია, ავტომატიზაცია და დანერგვა</h1>
+    <p>AI-ინსტრუმენტების სრული ეკოსისტემის იმპლემენტაცია: პრეზენტაციებისა და სლაიდების მყისიერი გენერირება, Google Workspace-ის ავტომატიზაცია Make.com-ით და ორგანიზაციაში დანერგვის 30-დღიანი ROI სამოქმედო გეგმა.</p>
+    <div class="meta-tags">
+      <span class="meta-tag">🎯 იმპლემენტაციის ეტაპი</span>
+      <span class="meta-tag">⚡ Gamma.app</span>
+      <span class="meta-tag">⚙️ Make.com</span>
+      <span class="meta-tag">📅 3 ბლოკი + პრეზენტაცია</span>
+    </div>
+  </header>
+
+  <!-- AGENDA -->
+  <section id="agenda">
+    <span class="badge badge-theory">სტრუქტურა</span>
+    <h2>🎯 დღევანდელი სესიის გეგმა</h2>
+    <div class="three-column">
+      <!-- Card 1 -->
+      <div class="card" style="background: var(--green-dark); color: white; border: none;">
+        <h4 style="color: var(--green-light); margin-top: 0; font-size: 16px;">ნაწილი I · Gamma AI</h4>
+        <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 45 წუთი</p>
+        <ul style="list-style: none; font-size: 14px; padding-left: 0;">
+          <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">კომუნიკაცია:</strong> მშობელთა კრება AI სლაიდებით</li>
+          <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">ანგარიშგება:</strong> სტრატეგიული ანგარიში საბჭოსთვის</li>
+          <li style="margin-bottom: 8px;"><strong style="color: var(--gold);">იმპულსი:</strong> პრეზენტაცია 15 წუთში</li>
+          <li><strong style="color: #52b788;">პრაქტიკა 1:</strong> Gamma სლაიდები</li>
+        </ul>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card" style="background: #14532d; color: white; border: none;">
+        <h4 style="color: var(--green-light); margin-top: 0; font-size: 16px;">ნაწილი II · ავტომატიზაცია</h4>
+        <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 1 სთ 15 წთ</p>
+        <ul style="list-style: none; font-size: 14px; padding-left: 0;">
+          <li style="margin-bottom: 8px;"><strong style="color: #a7f3d0;">ლოგიკა:</strong> Trigger & Action პრინციპები</li>
+          <li style="margin-bottom: 8px;"><strong style="color: #a7f3d0;">Workspace:</strong> Google Workspace + Make.com</li>
+          <li style="margin-bottom: 8px;"><strong style="color: #a7f3d0;">Hands-on:</strong> Forms → Make → Notion DB</li>
+          <li><strong style="color: #52b788;">პრაქტიკა 2:</strong> პირველი Workflow</li>
+        </ul>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card" style="background: #1e1b4b; color: white; border: none;">
+        <h4 style="color: #a78bfa; margin-top: 0; font-size: 16px;">ნაწილი III · იმპლემენტაცია</h4>
+        <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px;">⏱ 1 საათი</p>
+        <ul style="list-style: none; font-size: 14px; padding-left: 0;">
+          <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">ROI:</strong> უფასო vs ფასიანი & Scaling</li>
+          <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">პროცესი:</strong> ვინ, რას და როდის აკეთებს?</li>
+          <li style="margin-bottom: 8px;"><strong style="color: #c4b5fd;">Gantt:</strong> 30-დღიანი სამოქმედო გეგმა</li>
+          <li><strong style="color: #a78bfa;">პრაქტიკა 3:</strong> 30-დღიანი ROI გზამკვლევი</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       BLOCK I — GAMMA AI PRESENTATIONS
+       ========================================== -->
+  <div class="block-header" id="block1-header">
+    <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: var(--green-light); margin-bottom: 10px;">ბლოკი I · 45 წუთი</p>
+    <h2 style="color: white; margin: 0;">🚀 Gamma AI — პრეზენტაციები და ანგარიშები 15 წუთში</h2>
+  </div>
+
+  <section id="gamma-intro">
+    <span class="badge badge-theory">კონცეფცია</span>
+    <h2>🚀 მყისიერი ვიზუალური კომუნიკაცია</h2>
+    <p>სასკოლო მენეჯმენტში პრეზენტაცია ხშირად საათობით მექანიკურ მუშაობას მოითხოვს — ტექსტის გადანაწილება, ფერების შერჩევა და სლაიდების ფორმატში ჩასმა. **Gamma AI (Gamma.app)** არის წამყვანი პლატფორმა, რომელიც საშუალებას გვაძლევს მხოლოდ ერთი ტექსტური აღწერილობით (პრომპტით) ან მზა დოკუმენტის ატვირთვით 1 წუთში მივიღოთ ულამაზესი, მზა პრეზენტაცია.</p>
+    
+    <div class="two-column">
+      <div class="card" style="border-left: 4px solid var(--gold);">
+        <h4>💡 ტრადიციული პრეზენტაცია (PowerPoint)</h4>
+        <ul class="x-list">
+          <li>ტექსტების ხელით გადანაწილება სლაიდებზე</li>
+          <li>დიზაინისა და შრიფტების შეთავსება — 2-3 საათი</li>
+          <li>მშრალი ვიზუალიზაცია, ხელით საძიებო ილუსტრაციები</li>
+        </ul>
+      </div>
+      <div class="card" style="border-left: 4px solid var(--green-light);">
+        <h4>⚡ Gamma AI პრეზენტაცია</h4>
+        <ul class="check-list">
+          <li>ერთი პრომპტიდან სრული სტრუქტურის გენერაცია</li>
+          <li>ავტომატური ფერების პალიტრა და შესაბამისი სურათები</li>
+          <li>ერთი დაწკაპუნებით სტილის შეცვლა და ექსპორტი PDF/PPTX-ში</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="gamma-blueprint">
+    <span class="badge badge-demo">პრომპტინგის ბუსტერი</span>
+    <h2>📋 სტრატეგიული სლაიდ-სტრუქტურის პრომპტი (CREATE ჩარჩო)</h2>
+    <p>Gamma-სგან იდეალური პრეზენტაციის მისაღებად ვიყენებთ **CREATE ჩარჩოს** (Context, Role, Explicit instructions, Audience, Tone, Examples), რათა AI-მ სლაიდები დაყოს ლოგიკურად და მწვანე სკოლის ფილოსოფიასთან შესაბამისად.</p>
+
+    <div class="prompt-blueprint">
+      <div class="prompt-header">
+        <span class="prompt-label">სამშობლო კრების სლაიდების პრომპტი (CREATE ჩარჩო)</span>
+        <button class="copy-btn">კოპირება</button>
+      </div>
+      <div class="code-content">შენ ხარ მწვანე სკოლის დიღმის კამპუსის კურატორთა უფროსი ლიდერი.
+დამიწერე დეტალური, 8-სლაიდიანი სტრუქტურა პრეზენტაციისთვის თემაზე: „AI-ის დანერგვა და უსაფრთხოება მწვანე სკოლაში“.
+
+მოთხოვნები სტრუქტურისთვის:
+1. სლაიდი 1: სათაური და კამპუსის ხედვა AI ტრანსფორმაციაზე (IRESPECT ღირებულებები).
+2. სლაიდი 2: რატომ ვიყენებთ AI-ს? (დროის 90%-ით დაზოგვა ადმინისტრაციულ რუტინაში).
+3. სლაიდი 3: მონაცემთა დაცვის ოქროს წესი (ანონიმურობა და GDPR).
+4. სლაიდი 4: AI როგორც სააზროვნო პარტნიორი (Thinking Partner) მოსწავლეთა ხარისხის მონიტორინგში.
+5. სლაიდი 5: სასწავლო REAL აუდიტის ავტომატიზაცია.
+6. სლაიდი 6: Sentiment Analysis მშობელთა კვლევის გასაუმჯობესებლად.
+7. სლაიდი 7: Google Forms და Make.com-ის ავტომატური სერვისები მშობლებისთვის.
+8. სლაიდი 8: 30-დღიანი დანერგვის კალენდარი და კითხვა-პასუხი.
+
+გამოიყენე პროფესიონალური, ემპათიური და ინოვაციური ტონი. თითოეულ სლაიდს მიუწერე მოკლე რეკომენდაცია შესაბამისი ილუსტრაციისთვის.</div>
+      <div class="prompt-footer">
+        <span>🎯 <strong>ტექნიკა:</strong> CREATE ჩარჩო, როლური როტაცია (System Role-play), სტრუქტურირებული დაყოფა (Task Decomposition).</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRACTICE 1 -->
+  <section id="practice1">
+    <div class="card" style="background: #fff9ed; border: 2px solid #fcd34d; padding: 30px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+        <h3 style="color: #d97706; margin: 0; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 24px;">✏️</span> პრაქტიკული დავალება 1: პრეზენტაცია 15 წუთში
+        </h3>
+        <div class="timer-box" style="background: #d97706;">
+          <span class="timer-display" id="timer-1" style="color: white; font-weight: bold; font-family: monospace;">10:00</span>
+          <button class="timer-btn" id="timer-1-btn" onclick="startTimer('timer-1', 10)">▶ დაწყება</button>
+        </div>
+      </div>
+      <p style="color: #92400e; font-weight: 500; margin-bottom: 15px;">გამოიყენეთ CREATE ჩარჩოს პრომპტი, დააგენერირეთ სლაიდ-სტრუქტურა Gamma AI-ში და შექმენით მზა პრეზენტაცია.</p>
+      
+      <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <h4 style="color: var(--text); margin-bottom: 10px; font-size: 15px;">დავალების პირობა:</h4>
+        <ol style="margin-left: 20px; color: var(--text-light); font-size: 14px;">
+          <li style="margin-bottom: 8px;">დააკოპირეთ ზემოთ მოცემული პრომპტი, ჩასვით Claude/ChatGPT-ში და მიიღეთ სტრუქტურირებული ტექსტი.</li>
+          <li style="margin-bottom: 8px;">გახსენით <a href="https://gamma.app" target="_blank" style="color: var(--green-mid); font-weight: bold;">Gamma.app</a>, აირჩიეთ "Create New with AI" -> "Generate".</li>
+          <li style="margin-bottom: 8px;">ჩასვით მიღებული ტექსტი Gamma-ს სამუშაო ველში, შეარჩიეთ "მწვანე/ეკოლოგიური" თემატიკა და დააჭირეთ გენერაციას.</li>
+        </ol>
+      </div>
+      <a href="session-4-exercises.html#ex1" class="action-btn exercises-btn" style="display: inline-flex; width: auto; font-size: 14px; padding: 10px 20px; text-decoration: none;">
+        <span>გადასვლა სავარჯიშოების გვერდზე →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- BREAK -->
+  <div id="break" style="padding: 40px 0; text-align: center; background: var(--green-pale); margin: 40px 0; border-radius: 20px;">
+    <div style="font-size: 50px; margin-bottom: 10px;">☕</div>
+    <h2 style="justify-content: center; margin: 0; color: var(--green-dark);">10-წუთიანი შესვენება</h2>
+    <p style="margin: 0; font-weight: bold; color: var(--green-mid);">დაისვენეთ, განიტვირთეთ და მოემზადეთ ავტომატიზაციის ბლოკისთვის.</p>
+    <p style="margin: 5px 0 0 0; font-size: 14px; color: var(--text-light);">⏱ 01:00 – 01:10</p>
+  </div>
+
+  <!-- ==========================================
+       BLOCK II — AUTOMATION WITH MAKE.COM
+       ========================================== -->
+  <div class="block-header" style="background: linear-gradient(135deg, #14532d, #166534);" id="block2-header">
+    <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: var(--green-light); margin-bottom: 10px;">ბლოკი II · 75 წუთი</p>
+    <h2 style="color: white; margin: 0;">🔌 საოპერაციო ავტომატიზაცია: Google Workspace + Make.com</h2>
+  </div>
+
+  <section id="automation-intro">
+    <span class="badge badge-theory">კონცეფცია</span>
+    <h2>🔌 ავტომატიზაციის ფუნდამენტური ლოგიკა</h2>
+    <p>AI-ის რეალური ძალა ვლინდება მაშინ, როდესაც მას ვაკავშირებთ ჩვენს ყოველდღიურ სამუშაო იარაღებთან. ავტომატიზაცია მუშაობს **Trigger & Action** (ტრიგერი და მოქმედება) პრინციპით. Make.com არის საუკეთესო ვიზუალური პლატფორმა, რომელიც საშუალებას გვაძლევს კოდის წერის გარეშე (No-code) დავაკავშიროთ ერთმანეთს Google Forms, Notion, Gmail და Claude/ChatGPT.</p>
+    
+    <div class="two-column">
+      <div class="card" style="border-top: 4px solid var(--sky);">
+        <h4>⚡ ტრიგერი (Trigger)</h4>
+        <p style="font-size: 13.5px; color: var(--text-light);">მოვლენა, რომელიც იწყებს პროცესს. მაგალითად: <em>„როდესაც მშობელი ავსებს Google Form-ს საჩივრით/შეკითხვით“</em>.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--purple);">
+        <h4>⚙️ მოქმედება (Action)</h4>
+        <p style="font-size: 13.5px; color: var(--text-light);">რას აკეთებს სისტემა ტრიგერის პასუხად. მაგალითად: <em>„ასახე Notion-ში, გაატარე Claude-ის სენტიმენტ-ანალიზში და გააგზავნე პასუხი Gmail-ით“</em>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="make-workflow">
+    <span class="badge badge-demo">მუშაობის სქემა</span>
+    <h2>🔀 რეალური სასკოლო Workflow (Make.com-ის სცენარი)</h2>
+    <p>წარმოვიდგინოთ ყოველდღიური საორგანიზაციო რუტინა: მშობლებისგან უკუკავშირის მიღება, მისი დახარისხება და კურატორებისთვის გაზიარება. Make-ის სცენარით ამას ვაკეთებთ 1 წამში:</p>
+    
+    <div style="background: var(--green-pale); border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+      <h4 style="color: var(--green-dark); font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+        ⚙️ ავტომატიზებული ციკლის 4 ნაბიჯი:
+      </h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div style="background: white; padding: 15px; border-radius: 8px; font-size: 13px; border: 1.5px solid var(--green-light);">
+          <strong style="color: var(--green-dark);">1. Google Forms (ტრიგერი)</strong><br>მშობელი ავსებს ფორმას და წერს შეფასებას.
+        </div>
+        <div style="background: white; padding: 15px; border-radius: 8px; font-size: 13px; border: 1.5px solid var(--green-light);">
+          <strong style="color: var(--green-dark);">2. Make.com (გამტარი)</strong><br>მყისიერად იღებს მონაცემებს და გადასცემს AI-ს.
+        </div>
+        <div style="background: white; padding: 15px; border-radius: 8px; font-size: 13px; border: 1.5px solid var(--green-light);">
+          <strong style="color: var(--green-dark);">3. Claude API (ანალიზი)</strong><br>აკეთებს სენტიმენტ-ანალიზს და წერს საპასუხო წერილს.
+        </div>
+        <div style="background: white; padding: 15px; border-radius: 8px; font-size: 13px; border: 1.5px solid var(--green-light);">
+          <strong style="color: var(--green-dark);">4. Notion (ასახვა & გაგზავნა)</strong><br>ინახავს ბაზაში და ავტომატურად უგზავნის პასუხს მშობელს.
+        </div>
+      </div>
+    </div>
+
+    <!-- WARNING CARD FOR TRIGGERS -->
+    <div class="warning-box">
+      <h4>🔒 უსაფრთხოების წესი: Infinite Loop-ის თავიდან აცილება</h4>
+      <p>ავტომატიზაციისას, თუ Notion-ის განახლებაზე გაქვთ დაყენებული ტრიგერი, რომელიც Notion-შივე წერს პასუხს, შეიძლება მიიღოთ უსასრულო ციკლი (Infinite Loop). ყოველთვის დარწმუნდით, რომ ტრიგერი და აქშენი სხვადასხვა ველს ან სისტემას მიმართავს, რათა არ მოხდეს AI API-ს რესურსების გადახარჯვა!</p>
+    </div>
+  </section>
+
+  <!-- PRACTICE 2 -->
+  <section id="practice2">
+    <div class="card" style="background: #fff9ed; border: 2px solid #fcd34d; padding: 30px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+        <h3 style="color: #d97706; margin: 0; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 24px;">✏️</span> პრაქტიკული დავალება 2: ჩემი პირველი ავტომატიზაცია
+        </h3>
+        <div class="timer-box" style="background: #d97706;">
+          <span class="timer-display" id="timer-2" style="color: white; font-weight: bold; font-family: monospace;">15:00</span>
+          <button class="timer-btn" id="timer-2-btn" onclick="startTimer('timer-2', 15)">▶ დაწყება</button>
+        </div>
+      </div>
+      <p style="color: #92400e; font-weight: 500; margin-bottom: 15px;">შექმენით Google Forms-ისა და Notion-ის მარტივი დამაკავშირებელი სცენარი Make.com-ზე.</p>
+      
+      <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <h4 style="color: var(--text); margin-bottom: 10px; font-size: 15px;">დავალების პირობა:</h4>
+        <ol style="margin-left: 20px; color: var(--text-light); font-size: 14px;">
+          <li style="margin-bottom: 8px;">გახსენით <a href="https://make.com" target="_blank" style="color: var(--green-mid); font-weight: bold;">Make.com</a> და შექმენით ახალი სცენარი (Scenario).</li>
+          <li style="margin-bottom: 8px;">აირჩიეთ პირველი მოდული **Google Forms** (ტრიგერი: *Watch Responses*).</li>
+          <li style="margin-bottom: 8px;">დაამატეთ მეორე მოდული **Notion** (აქშენი: *Create a Database Item*) და დააკავშირეთ ფორმის ველები Notion-ის შესაბამის სვეტებთან.</li>
+        </ol>
+      </div>
+      <a href="session-4-exercises.html#ex2" class="action-btn exercises-btn" style="display: inline-flex; width: auto; font-size: 14px; padding: 10px 20px; text-decoration: none;">
+        <span>გადასვლა სავარჯიშოების გვერდზე →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       BLOCK III — ROI & scaling
+       ========================================== -->
+  <div class="block-header" style="background: linear-gradient(135deg, #1e1b4b, #312e81);" id="block3-header">
+    <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #c4b5fd; margin-bottom: 10px;">ბლოკი III · 60 წუთი</p>
+    <h2 style="color: white; margin: 0;">📅 იმპლემენტაცია, ROI და 30-დღიანი სამოქმედო გეგმა</h2>
+  </div>
+
+  <section id="roi-analysis">
+    <span class="badge badge-theory">ბიზნეს-ქეისი</span>
+    <h2>📊 ფასიანი vs უფასო ლიცენზიები და ROI</h2>
+    <p>AI-ინსტრუმენტების დანერგვისას, სკოლის ხელმძღვანელობამ უნდა მიიღოს სტრატეგიული გადაწყვეტილება ლიცენზიების შეძენასა და ROI-ს (Return on Investment - ინვესტიციის უკუგება) შესახებ. AI-ის გამოყენება არ არის მხოლოდ ხარჯი, ეს არის ინვესტიცია, რომელიც კვირაში ათეულობით საათს უზოგავს მენეჯმენტს.</p>
+    
+    <div class="two-column">
+      <div class="card" style="border-top: 4px solid var(--purple);">
+        <h4>💡 უფასო vs ფასიანი ლიცენზია:</h4>
+        <ul style="padding-left: 15px; font-size: 13.5px; color: var(--text-light);">
+          <li style="margin-bottom: 6px;"><strong>Claude / ChatGPT Free:</strong> კარგია საწყისი გაცნობისთვის, თუმცა აქვს ტოკენების ლიმიტი და არ აქვს Sandbox (Python) მხარდაჭერა.</li>
+          <li style="margin-bottom: 6px;"><strong>ChatGPT Plus / Claude Pro ($20/თვეში):</strong> უზრუნველყოფს 100%-ით ზუსტ ანალიზს, Python კოდის გაშვებას, API წვდომას და 5-ჯერ მეტ ტოკენს.</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--gold);">
+        <h4>📈 სასკოლო ROI გაანგარიშება:</h4>
+        <p style="font-size: 13.5px; color: var(--text-light); margin-bottom: 10px;">
+          კურატორი ხარჯავს კვირაში **8 საათს** ოქმების, ანგარიშებისა და დასწრების ხელით ანალიზში.
+        </p>
+        <div style="background: var(--gold-light); padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; color: #92400e; text-align: center;">
+          20 დოლარის ინვესტიცია $ightarrow$ ზოგავს 30+ საათს თვეში!
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="implementation-steps">
+    <span class="badge badge-demo">სტრატეგია</span>
+    <h2>📅 30-დღიანი იმპლემენტაციის Gantt-ჩარჩო</h2>
+    <p>ტრენინგის დასრულების შემდეგ, უმნიშვნელოვანესია, რომ გუნდს ჰქონდეს გაწერილი ნაბიჯები პირველი 30 დღისთვის, რათა მიღებული ცოდნა არ დაიკარგოს და წარმატებით ინტეგრირდეს ყოველდღიურ მუშაობაში:</p>
+    
+    <div class="three-column">
+      <div class="card" style="border-left: 4px solid var(--green-light);">
+        <h4 style="color: var(--green-dark);">1-10 დღე: Quick Wins</h4>
+        <ul style="padding-left: 15px; font-size: 13px; color: var(--text-light);">
+          <li>მოსწავლეთა მონაცემების ანონიმიზაციის ფაილის მომზადება.</li>
+          <li>საორგანიზაციო პრომპტების (CREATE ჩარჩო) შენახვა Notion-ში.</li>
+          <li>კვირაში 3 საათის დაზოგვის პირველი ტალღა ოქმების AI შეჯამებით.</li>
+        </ul>
+      </div>
+      
+      <div class="card" style="border-left: 4px solid var(--sky);">
+        <h4 style="color: var(--sky);">11-20 დღე: Automation</h4>
+        <ul style="padding-left: 15px; font-size: 13px; color: var(--text-light);">
+          <li>საჩივრების / უკუკავშირის Google Forms-ის Make-ით დაკავშირება Notion-თან.</li>
+          <li>ავტომატური ელ-ფოსტის სადემონსტრაციო პასუხების Claude-ით დაწერა.</li>
+          <li>გუნდის შიდა 1-საათიანი გაზიარების სესია (Peer Training).</li>
+        </ul>
+      </div>
+      
+      <div class="card" style="border-left: 4px solid var(--purple);">
+        <h4 style="color: var(--purple);">21-30 დღე: Scaling</h4>
+        <ul style="padding-left: 15px; font-size: 13px; color: var(--text-light);">
+          <li>სკოლის ხარისხის REAL აუდიტის სრული გადატანა AI ციკლში.</li>
+          <li>ფასიანი ლიცენზიების განაწილება და დეპარტამენტების ROI მონიტორინგი.</li>
+          <li>სკოლის Vision 2027 გეგმის საბოლოო პრეზენტაცია Gamma AI-ში.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRACTICE 3 -->
+  <section id="practice3">
+    <div class="card" style="background: #fff9ed; border: 2px solid #fcd34d; padding: 30px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+        <h3 style="color: #d97706; margin: 0; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 24px;">✏️</span> პრაქტიკული დავალება 3: 30-დღიანი ROI გზამკვლევი
+        </h3>
+        <div class="timer-box" style="background: #d97706;">
+          <span class="timer-display" id="timer-3" style="color: white; font-weight: bold; font-family: monospace;">10:00</span>
+          <button class="timer-btn" id="timer-3-btn" onclick="startTimer('timer-3', 10)">▶ დაწყება</button>
+        </div>
+      </div>
+      <p style="color: #92400e; font-weight: 500; margin-bottom: 15px;">შეადგინეთ თქვენი პირადი დეპარტამენტის AI-იმპლემენტაციის Gantt-სამოქმედო გეგმა.</p>
+      
+      <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <h4 style="color: var(--text); margin-bottom: 10px; font-size: 15px;">დავალების პირობა:</h4>
+        <ol style="margin-left: 20px; color: var(--text-light); font-size: 14px;">
+          <li style="margin-bottom: 8px;">აირჩიეთ თქვენი დეპარტამენტის 3 ყველაზე რუტინული პროცესი, რომლის ავტომატიზაციაც გსურთ.</li>
+          <li style="margin-bottom: 8px;">გაწერეთ 30-დღიანი იმპლემენტაციის Gantt ჩარჩო: ვინ იქნება პასუხისმგებელი და რა Quick Wins გექნებათ პირველ 10 დღეში.</li>
+          <li style="margin-bottom: 8px;">შედეგი დააკოპირეთ და გადაიტანეთ სავარჯიშოების გვერდის შესაბამის ველში.</li>
+        </ol>
+      </div>
+      <a href="session-4-exercises.html#ex3" class="action-btn exercises-btn" style="display: inline-flex; width: auto; font-size: 14px; padding: 10px 20px; text-decoration: none;">
+        <span>გადასვლა სავარჯიშოების გვერდზე →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- SUMMARY & HOMEWORK -->
+  <section id="summary">
+    <span class="badge badge-theory">✅ შეჯამება</span>
+    <h2>✅ სესიის შეჯამება და ფინალური დავალება</h2>
+    <p>დღეს ჩვენ ვისწავლეთ AI-ინსტრუმენტების საოპერაციო იმპლემენტაცია და ავტომატიზაცია: Gamma AI-ით პრეზენტაციების 15 წუთში მომზადება, Google Workspace-ისა და Notion-ის ავტომატური კავშირები Make.com-ის საშუალებით, ლიცენზიების მართვა, ROI-ს გაანგარიშება და 30-დღიანი Gantt გზამკვლევის შედგენა სკოლისთვის.</p>
+
+    <div class="card" style="background: #fffbeb; border: 1.5px solid #fcd34d; margin-top: 25px;">
+      <h3 style="color: #b45309; margin-top: 0; margin-bottom: 12px; font-size: 16px;">🏠 ფინალური პრაქტიკული საშინაო დავალება სერთიფიკატისთვის</h3>
+      <p style="font-size: 14px; color: #92400e; margin-bottom: 15px;">კურსის წარმატებით დასასრულებლად და სერთიფიკატის მისაღებად, შეასრულეთ შემდეგი ფინალური დავალება:</p>
+      <ul style="padding-left: 15px; font-size: 13.5px; color: #92400e;">
+        <li style="margin-bottom: 8px;"><strong>1. Gamma პრეზენტაცია:</strong> შექმენით და Gamma AI-ის საშუალებით გააფორმეთ მშობელთა კრების ან დეპარტამენტის წლიური ანგარიშის 6-სლაიდიანი პრეზენტაცია და გააზიარეთ ლინკი.</li>
+        <li style="margin-bottom: 8px;"><strong>2. Make.com სცენარი:</strong> ააწყვეთ Google Forms-ისა და Notion-ის დამაკავშირებელი 1 მარტივი მუშა ავტომატიზაცია და გადაიღეთ მისი სკრინშოტი.</li>
+        <li style="margin-bottom: 8px;"><strong>3. 30-დღიანი Gantt გეგმა:</strong> შეადგინეთ თქვენი დეპარტამენტის AI დანერგვის 30-დღიანი დეტალური სამოქმედო გეგმა.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Mobile menu toggle
+  function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+  }
+
+  // Timer logic
+  const timers = {};
+  function startTimer(id, minutes) {
+    const btn = document.getElementById(`${id}-btn`);
+    if (timers[id] && timers[id].running) {
+      clearInterval(timers[id].interval);
+      timers[id].running = false;
+      btn.textContent = 'გაგრძელება ▶';
+    } else {
+      let seconds = timers[id] ? timers[id].seconds : minutes * 60;
+      const display = document.getElementById(id);
+      
+      timers[id] = {
+        running: true,
+        seconds: seconds,
+        interval: setInterval(() => {
+          timers[id].seconds--;
+          const m = Math.floor(timers[id].seconds / 60);
+          const s = timers[id].seconds % 60;
+          display.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+          
+          if (timers[id].seconds <= 0) {
+            clearInterval(timers[id].interval);
+            timers[id].running = false;
+            display.textContent = "⏰ დრო!";
+            btn.textContent = 'დაწყება ▶';
+            timers[id].seconds = minutes * 60;
+          }
+        }, 1000)
+      };
+      btn.textContent = 'პაუზა ⏸';
+    }
+  }
+
+  // Copy to Clipboard
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = btn.closest('.prompt-blueprint').querySelector('.code-content').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'დაკოპირდა';
+        setTimeout(() => btn.textContent = orig, 2000);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
