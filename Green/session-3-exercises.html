@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>სესია 3: სავარჯიშოები — მწვანე სკოლა</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          green: { 950: '#0a1f14', 900: '#1a4731', 800: '#2d6a4f', 500: '#52b788', 100: '#d8f3dc' }
+        },
+        fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+      }
+    }
+  }
+</script>
+<style>
+  :root {
+    --green-dark: #1a4731; --green-mid: #2d6a4f; --green-light: #52b788;
+    --green-pale: #d8f3dc; --gold: #f4a261;
+    --bg: #f8fdf9; --surface: #ffffff;
+    --text-1: #1a1a1a; --text-2: #374151; --text-3: #6b7280;
+    --purple: #7c3aed; --purple-light: #c4b5fd;
+  }
+  html { scroll-behavior: smooth; font-size: 100%; }
+  body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; line-height: 1.7; }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  .nav-link { display: flex; align-items: flex-start; padding: 0.55rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+  .nav-link:hover { background: rgba(255,255,255,0.07); }
+  .nav-link.active { background: rgba(82,183,136,0.15); border-left-color: #52b788; color: #a7f3d0; }
+  
+  .topic-card { border-left: 4px solid var(--green-light); padding-left: 1.5rem; }
+  .topic-card-purple { border-left: 4px solid var(--purple); padding-left: 1.5rem; }
+  
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .badge-quiz { background: rgba(82,183,136,0.12); color: #2d6a4f; border: 1px solid rgba(82,183,136,0.4); }
+  .badge-ex  { background: rgba(244,162,97,0.12); color: #92400e; border: 1px solid rgba(244,162,97,0.4); }
+  .badge-practice { background: rgba(33,150,243,0.1); color: #1565c0; border: 1px solid rgba(33,150,243,0.3); }
+  .badge-bonus { background: rgba(124,58,237,0.1); color: var(--purple); border: 1px solid rgba(124,58,237,0.3); }
+  
+  .highlight-box { background: var(--green-pale); border-left: 4px solid var(--green-light); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+  .warning-box  { background: #fff5f5; border-left: 4px solid #f87171; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+  .success-box  { background: #f0fdf4; border-left: 4px solid #4caf50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+  .answer-box   { background: #f3e5f5; border-left: 4px solid #9c27b0; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; display: none; }
+  
+  .code-block { background: #0f1f2e; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.88rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+  .copy-btn:hover { background: var(--green-light); color: white; border-color: var(--green-light); }
+  
+  .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+  .two-column   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+  .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+  
+  .section-header { background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+  .section-header-purple { background: linear-gradient(135deg, var(--green-dark) 0%, var(--purple) 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+  
+  .ex-input { width: 100%; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.75rem 1rem; font-family: 'FiraGO', sans-serif; font-size: 0.9rem; line-height: 1.6; resize: vertical; min-height: 90px; background: white; color: #1f2937; transition: border-color 0.2s; }
+  .ex-input:focus { outline: none; border-color: var(--green-light); }
+  
+  .choice-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.25rem; border: 2px solid #e5e7eb; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; text-align: left; width: 100%; font-family: 'FiraGO', sans-serif; font-size: 0.85rem; }
+  .choice-btn:hover { border-color: var(--green-light); background: var(--green-pale); }
+  .choice-btn.correct { border-color: #4caf50; background: #e8f5e9; color: #1b5e20; }
+  .choice-btn.wrong   { border-color: #f44336; background: #ffebee; color: #b71c1c; }
+  
+  .ex-number { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--green-mid); color: white; font-size: 1rem; font-weight: 900; margin-right: 0.75rem; flex-shrink: 0; }
+  .ex-number-purple { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--purple); color: white; font-size: 1rem; font-weight: 900; margin-right: 0.75rem; flex-shrink: 0; }
+  
+  textarea::placeholder { color: #9ca3af; font-style: italic; }
+  section { scroll-margin-top: 2rem; }
+  @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+
+  /* Timers */
+  .timer-box { display: inline-flex; align-items: center; gap: 12px; background: var(--green-dark); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); }
+  .timer-display { font-size: 20px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .timer-btn { background: var(--gold); border: none; color: var(--green-dark); padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; transition: opacity 0.2s; }
+  .timer-btn:hover { opacity: 0.9; }
+
+  /* Progress Tracker */
+  .progress-container { position: fixed; top: 0; left: 0; right: 0; height: 5px; background: #e5e7eb; z-index: 100; }
+  .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green-light), var(--gold)); transition: width 0.3s ease; }
+</style>
+</head>
+<body>
+
+<!-- Progress Tracker Top Bar -->
+<div class="progress-container">
+  <div id="topProgressBar" class="progress-bar"></div>
+</div>
+
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 text-white p-2.5 rounded-lg shadow-lg transition-colors" style="background:var(--green-dark);">
+  <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300" style="background:var(--green-dark);">
+  <div class="px-5 py-6 border-b border-white/10">
+    <h1 class="text-lg font-bold" style="color:#52b788;">✏️ სავარჯიშოები</h1>
+    <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 3: ეკოსისტემა & ბაზა</p>
+    <div class="flex items-center justify-between text-gray-400 text-xs mt-2">
+      <span>10 სავარჯიშო · 100 ქულა</span>
+      <span id="sidebarProgressText" class="font-bold text-white bg-green-800 px-1.5 py-0.5 rounded">0%</span>
+    </div>
+  </div>
+  <nav class="py-3">
+    <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#52b788;">მიმოხილვა</div>
+    <a href="#overview" class="nav-link">📋 ქულები და სტრუქტურა</a>
+
+    <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ნაწილი I — Notion AI (სავ. 1–3)</div>
+    <a href="#ex1" class="nav-link">🗄️ სავ. 1 · სასკოლო ბაზები</a>
+    <a href="#ex2" class="nav-link">✨ სავ. 2 · Well-being Autofill</a>
+    <a href="#ex3" class="nav-link">🖥️ სავ. 3 · უკუკავშირის პანელი</a>
+
+    <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ნაწილი II — NotebookLM (სავ. 4–6)</div>
+    <a href="#ex4" class="nav-link">📚 სავ. 4 · Source-Grounded AI</a>
+    <a href="#ex5" class="nav-link">🔍 სავ. 5 · ონბორდინგის აუდიტი</a>
+    <a href="#ex6" class="nav-link">🛡️ სავ. 6 · დაცული მონაცემები</a>
+
+    <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ნაწილი III — Custom Gems (სავ. 7–10)</div>
+    <a href="#ex7" class="nav-link">💎 სავ. 7 · Gems-ის 4 საყრდენი</a>
+    <a href="#ex8" class="nav-link">🧠 სავ. 8 · ფსიქოლოგის GDPR</a>
+    <a href="#ex9" class="nav-link">🐝 სავ. 9 · კოორდინატორის Gem</a>
+    <a href="#ex10" class="nav-link">🛠️ სავ. 10 · როლების კონსტრუქტორი</a>
+
+    <div class="mt-6 mx-4 mb-4 space-y-2">
+      <a href="lecture-3.html" class="block text-center text-gray-300 text-sm py-2 rounded transition-colors" style="background:rgba(255,255,255,0.05);">← სლაიდებზე დაბრუნება</a>
+      <a href="index.html"     class="block text-center text-gray-300 text-sm py-2 rounded transition-colors" style="background:rgba(255,255,255,0.05);">← კურსის მთავარი გვერდი</a>
+    </div>
+  </nav>
+</aside>
+
+<main id="mainContent" class="min-h-screen">
+
+  <!-- HERO -->
+  <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #0a2918 0%, #1a4731 50%, #2d6a4f 100%);">
+    <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#52b788;"></div>
+    <div class="max-w-5xl relative z-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-5xl">✏️</span>
+        <div>
+          <p class="text-sm font-bold uppercase tracking-widest" style="color:#52b788;">მწვანე სკოლა · AI კოორდინატორთა ტრენინგი</p>
+          <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">სესია 3: სავარჯიშოების რვეული<br><span style="color:#a7f3d0;">ეკოსისტემა, მართვის პანელი და ცოდნის ბაზა</span></h1>
+        </div>
+      </div>
+      <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">10 პრაქტიკული დავალება Notion AI-ის სასკოლო პანელების შესაქმნელად, NotebookLM-ის ცოდნის ბაზის ასაგებად და როლებზე მორგებული Custom Gems ასისტენტების დასაპროგრამებლად.</p>
+      
+      <!-- Auto-save notification -->
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded text-gray-200" style="background:rgba(255,255,255,0.1);">📝 10 სავარჯიშო</span>
+          <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded text-gray-200" style="background:rgba(255,255,255,0.1);">🏆 100 ქულა</span>
+          <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(82,183,136,0.2);color:#a7f3d0;">🌿 REAL სწავლება</span>
+        </div>
+        <div id="autosave-status" class="text-xs text-green-300 font-semibold flex items-center gap-1.5 bg-green-900/40 px-3 py-1.5 rounded-full border border-green-800/40">
+          <span class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></span>
+          <span>ავტომატური შენახვა აქტიურია</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="py-12 border-b border-gray-200 topic-card">
+      <span class="badge badge-quiz">📋 მიმოხილვა</span>
+      <h2 class="text-3xl font-bold mb-6">სავარჯიშოების რუკა და ქულები</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <div class="p-6" style="background:#1a4731;">
+          <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#52b788;">ნაწილი I · Notion AI</div>
+          <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">📋 ციფრული ტვინი</h3>
+          <ul class="text-sm text-gray-300 space-y-2">
+            <li class="flex justify-between"><span>სავ. 1 · სასკოლო ბაზები</span><span class="font-bold text-[#52b788]">10 ქ.</span></li>
+            <li class="flex justify-between"><span>სავ. 2 · Well-being Autofill</span><span class="font-bold text-[#52b788]">10 ქ.</span></li>
+            <li class="flex justify-between"><span>სავ. 3 · უკუკავშირის პანელი</span><span class="font-bold text-[#52b788]">10 ქ.</span></li>
+          </ul>
+        </div>
+        <div class="p-6" style="background:#2d6a4f;">
+          <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#a7f3d0;">ნაწილი II · NotebookLM</div>
+          <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">📚 დოკუმენტებთან საუბარი</h3>
+          <ul class="text-sm text-gray-300 space-y-2">
+            <li class="flex justify-between"><span>სავ. 4 · Source-Grounded</span><span class="font-bold text-[#a7f3d0]">10 ქ.</span></li>
+            <li class="flex justify-between"><span>სავ. 5 · ონბორდინგის აუდიტი</span><span class="font-bold text-[#a7f3d0]">10 ქ.</span></li>
+            <li class="flex justify-between"><span>სავ. 6 · დაცული მონაცემები</span><span class="font-bold text-[#a7f3d0]">10 ქ.</span></li>
+          </ul>
+        </div>
+        <div class="p-6" style="background:#14532d;">
+          <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#86efac;">ნაწილი III · Custom Gems</div>
+          <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">💎 ასისტენტების შექმნა</h3>
+          <ul class="text-sm text-gray-300 space-y-2">
+            <li class="flex justify-between"><span>სავ. 7 · Gems-ის 4 საყრდენი</span><span class="font-bold text-[#86efac]">10 ქ.</span></li>
+            <li class="flex justify-between"><span>სავ. 8 · ფსიქოლოგის GDPR</span><span class="font-bold text-[#86efac]">10 ქ.</span></li>
+            <li class="flex justify-between"><span>სავ. 9 · კოორდინატორის Gem</span><span class="font-bold text-[#86efac]">10 ქ.</span></li>
+            <li class="flex justify-between"><span>სავ. 10 · როლების კონსტრუქტორი</span><span class="font-bold text-[#86efac]">10 ქ.</span></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="card" style="background:#fff9ed;border-left:4px solid #f4a261;">
+        <p class="font-bold mb-2">💡 გამოყენების წესი & პროგრესის შენახვა:</p>
+        <p class="text-sm text-gray-700 leading-relaxed">ყოველი სექციის დასაწყისში შეგიძლიათ ჩართოთ სპეციალური წამზომი (Timer) დროის გასაკონტროლებლად. თქვენ მიერ ჩაწერილი პრომპტები და პასუხები **მყისიერად ინახება ბრაუზერის მეხსიერებაში (Local Storage)**, რათა გვერდის გადატვირთვისას არაფერი დაგეკარგოთ. პროგრესის ზოლი კი აჩვენებს, თუ დავალებების რამდენი პროცენტი გაქვთ დასრულებული!</p>
+      </div>
+    </section>
+
+    <!-- PART I HEADER -->
+    <div class="py-8 border-b border-gray-200">
+      <div class="section-header">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <span class="text-5xl">📋</span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#a7f3d0]">ნაწილი I · სავარჯიშოები 1–3</p>
+              <h2 class="text-2xl font-bold text-white">Notion AI — სკოლის ციფრული ტვინი</h2>
+              <p class="text-gray-300 text-sm mt-1">ურთიერთდაკავშირებული სასკოლო ბაზები, სენტიმენტები და მართვის პანელი</p>
+            </div>
+          </div>
+          <div class="timer-box">
+            <span class="timer-display" id="timer-1">15:00</span>
+            <button class="timer-btn" id="timer-1-btn" onclick="startTimer('timer-1', 15)">▶ დაწყება</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 1 -->
+    <section id="ex1" class="py-12 border-b border-gray-200 topic-card">
+      <span class="badge badge-practice">🗄️ სავარჯიშო 1 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number">1</span>სასკოლო მონაცემთა ბაზების არქიტექტურა</h2>
+      <p class="text-gray-600 mb-6">მწვანე სკოლაში გადაწყვეტილებების მიღება ეფუძნება IRESPECT ღირებულებებს (პასუხისმგებლობა და ნდობა). Notion-ის რომელი არქიტექტურული მოდელი უზრუნველყოფს ამას საუკეთესოდ, როცა პედაგოგიურ სხდომაზე (Meetings) REAL აქტივობები იგეგმება?</p>
+
+      <div class="space-y-4">
+        <button class="choice-btn" data-question="q1" data-answer="wrong" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">A</span>
+          <div>
+            <span class="block text-sm text-gray-700">თითოეული სხდომის ჩანაწერის უბრალო Word ფაილად შენახვა და ელ-ფოსტით გაგზავნა ყველა მასწავლებლისთვის.</span>
+          </div>
+        </button>
+        <button class="choice-btn" data-question="q1" data-answer="correct" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">B</span>
+          <div>
+            <span class="block text-sm text-gray-700">სხდომის ოქმების ბაზის (Meetings DB) დაკავშირებება (Relation) საორგანიზაციო დავალებების ბაზასთან (Tasks DB) და AI-ს გამოყენება კონკრეტული პასუხისმგებელი პირების საოპერაციო გვერდებზე ამოცანების ავტომატურად ასასახად.</span>
+          </div>
+        </button>
+        <button class="choice-btn" data-question="q1" data-answer="wrong" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">C</span>
+          <div>
+            <span class="block text-sm text-gray-700">ცალკეულ მასწავლებლებთან დავალებების პირად ჩატებში მიმოწერა და კრების შემდეგ მათი ხელით აღრიცხვა ფურცლებზე.</span>
+          </div>
+        </button>
+      </div>
+      <div class="feedback-box hidden mt-4 transition-all duration-300"></div>
+    </section>
+
+    <!-- EX 2 -->
+    <section id="ex2" class="py-12 border-b border-gray-200 topic-card">
+      <span class="badge badge-ex">✨ სავარჯიშო 2 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number">2</span>Well-being ჟურნალის AI Autofill სვეტი</h2>
+      <p class="text-gray-600 mb-4">კურატორები ყოველდღიურად ავსებენ მოსწავლეთა Well-being ჟურნალს (რეაქციები, ემოციური მდგომარეობა REAL აქტივობების დროს). ჩვენ გვინდა შევქმნათ **Notion AI Autofill** სვეტი, რომელიც წაიკითხავს დღიურს, დაწერს 1-წინადადებიან რეზიუმეს და მიანიჭებს სენტიმენტ-თეგს ("მშვიდი", "საყურადღებო", "ჩართული").</p>
+      
+      <div class="warning-box">
+        <p class="font-bold">⚠️ GDPR & კონფიდენციალობის წესი:</p>
+        <p class="text-sm mt-1">პრომპტმა მკაცრად უნდა დაიცვას ანონიმურობა. თუ დღიურის ტექსტში შეგვხვდება მოსწავლის რეალური სახელი, AI-მ ის უნდა შეცვალოს ინიციალებით და არავითარ შემთხვევაში არ გამოიტანოს სრულად.</p>
+      </div>
+
+      <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">დაწერეთ AI Autofill-ის სისტემური ინსტრუქცია (Prompt):</h3>
+        <textarea id="save-ex2" class="ex-input" rows="5" placeholder="მაგალითად: შენ ხარ მწვანე სკოლის კურატორთა AI ასისტენტი..."></textarea>
+        
+        <div class="mt-4">
+          <button onclick="toggleAnswer('ans2')" class="text-sm font-bold text-green-700 hover:underline">საუკეთესო პასუხის (Prompt Blueprint) ნახვა</button>
+          <div id="ans2" class="answer-box">
+            <p class="font-bold text-[#9c27b0] mb-2">✨ რეკომენდებული სანიმუშო პრომპტი (Copyable):</p>
+            <div class="code-block">
+              <button class="copy-btn">კოპირება</button>
+              <code class="code-text">შენ ხარ მწვანე სკოლის Well-being ანალიტიკოსი. შენი ამოცანაა გააანალიზო კურატორის ყოველდღიური ჩანაწერი და შეავსო საოპერაციო ველები.
+წესები:
+1. მოკლედ შეაჯამე ჩანაწერი ზუსტად 1 წინადადებაში.
+2. განსაზღვრე მოსწავლის ემოციური სენტიმენტი: "ჩართული" (თუ აქტიურობს), "მშვიდი" (თუ ჩვეულებრივ რეჟიმშია), ან "საყურადღებო" (თუ გამოხატავს წუხილს/სტრესს).
+3. უსაფრთხოება (GDPR): თუ ტექსტში ნახსენებია მოსწავლის რეალური სახელი, შეცვალე ის ინიციალებით (მაგ. ნიკა კ. -> ნ.კ.) შეჯამებაში.
+გამომავალი ფორმატი:
+[შეჯამება] - [სენტიმენტი]</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EX 3 -->
+    <section id="ex3" class="py-12 border-b border-gray-200 topic-card">
+      <span class="badge badge-practice">🖥️ სავარჯიშო 3 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number">3</span>სანდბოქსი: მშობელთა უკუკავშირის & სენტიმენტების AI ანალიზატორი</h2>
+      <p class="text-gray-600 mb-4">ეს არის **ინტერაქტიული საპილოტე პანელი**. აირჩიეთ რეალური მშობლის უკუკავშირი, დაწერეთ საანალიზო პრომპტი და გაუშვით Notion AI-ის სიმულატორი, რათა იხილოთ, როგორ აჯამებს AI ტექსტს, სვამს სენტიმენტს და გთავაზობთ IRESPECT პასუხის სტრატეგიას.</p>
+
+      <div class="card border-2 border-emerald-100 p-6 bg-white rounded-xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Inputs Column -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">1. აირჩიეთ მშობლის უკუკავშირის ქეისი:</label>
+            <select id="feedback-selector" onchange="loadFeedbackText()" class="w-full border-2 border-gray-200 rounded-lg p-2.5 text-sm bg-white font-semibold text-gray-700 outline-none focus:border-green-light mb-4">
+              <option value="canteen">🍔 სასადილო და კვების ტემპერატურა (პრეტენზია)</option>
+              <option value="transport">🚌 სკოლის შატლების ფასი და რეალიზაცია (კრიზისი)</option>
+              <option value="real">🌿 REAL ეკო-პროექტი ბუნებაში (პოზიტიური/აღფრთოვანება)</option>
+            </select>
+
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 text-xs italic mb-4 text-gray-600" id="feedback-preview-box">
+              ტექსტი იტვირთება...
+            </div>
+
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">2. ჩაწერეთ ანალიზის პრომპტი:</label>
+            <textarea id="save-ex3" class="ex-input text-xs min-height-[80px]" rows="3">გააანალიზე მშობლის უკუკავშირი IRESPECT-ის Empathy პრინციპით. დამიწერე სენტიმენტის თეგი და პასუხის მითითებები.</textarea>
+
+            <button onclick="runFeedbackAnalyzer()" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+              <span>✨ AI ანალიზის გაშვება</span>
+            </button>
+          </div>
+
+          <!-- Outputs Column -->
+          <div class="bg-emerald-950/5 rounded-xl border border-emerald-900/10 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-emerald-900/10 pb-3 mb-3">
+                <span class="text-xs font-bold uppercase tracking-widest text-emerald-800">✨ Notion AI სიმულაცია</span>
+                <span id="sentiment-badge" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-200 text-gray-700">მოლოდინი</span>
+              </div>
+              <div id="analyzer-output-text" class="text-xs text-gray-600 space-y-3 leading-relaxed">
+                <p class="italic text-gray-400">ანალიზის მისაღებად დააჭირეთ მარცხენა ღილაკს...</p>
+              </div>
+            </div>
+            <div class="text-[10px] text-emerald-800/60 font-semibold border-t border-emerald-900/10 pt-3 mt-4 flex items-center justify-between">
+              <span>მოდელი: Notion AI (Opus 4.7 Engine)</span>
+              <span>100% GDPR-Safe</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART II HEADER -->
+    <div class="py-8 border-b border-gray-200">
+      <div class="section-header" style="background: linear-gradient(135deg, #14532d 0%, #166534 100%);">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <span class="text-5xl">📚</span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#a7f3d0]">ნაწილი II · სავარჯიშოები 4–6</p>
+              <h2 class="text-2xl font-bold text-white">NotebookLM — დოკუმენტებთან საუბარი</h2>
+              <p class="text-gray-300 text-sm mt-1">Source-Grounded AI, ჰალუცინაციების გარეშე მუშაობა და ინსტიტუციური ცოდნა</p>
+            </div>
+          </div>
+          <div class="timer-box">
+            <span class="timer-display" id="timer-2">10:00</span>
+            <button class="timer-btn" id="timer-2-btn" onclick="startTimer('timer-2', 10)">▶ დაწყება</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 4 -->
+    <section id="ex4" class="py-12 border-b border-gray-200 topic-card">
+      <span class="badge badge-practice">📚 სავარჯიშო 4 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number">4</span>Source-Grounded AI vs Global AI</h2>
+      <p class="text-gray-600 mb-6">რით განსხვავდება NotebookLM-ის ცოდნის ბაზა ჩვეულებრივი Claude ან GPT მოდელებისგან სკოლის შიდა დებულებებთან მუშაობისას?</p>
+
+      <div class="space-y-4">
+        <button class="choice-btn" data-question="q4" data-answer="wrong" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">A</span>
+          <div>
+            <span class="block text-sm text-gray-700">NotebookLM-ს აქვს უფრო დიდი ზოგადი ბაზა და შეუძლია ინტერნეტიდან მოიპოვოს ნებისმიერი სხვა სკოლის საიდუმლო მასალები.</span>
+          </div>
+        </button>
+        <button class="choice-btn" data-question="q4" data-answer="correct" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">B</span>
+          <div>
+            <span class="block text-sm text-gray-700">NotebookLM მუშაობს მხოლოდ თქვენ მიერ ატვირთულ ფაილებზე დაყრდნობით (Source-Grounded), არასოდეს აჰალუცინებს და ყოველი პასუხის ბოლოს გვაჩვენებს ზუსტ ციტატას და გვერდს.</span>
+          </div>
+        </button>
+        <button class="choice-btn" data-question="q4" data-answer="wrong" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">C</span>
+          <div>
+            <span class="block text-sm text-gray-700">NotebookLM ავტომატურად შლის ძველ დოკუმენტებს და მათ ადგილას ინტერნეტიდან ახალ რეგულაციებს ტვირთავს ნებართვის გარეშე.</span>
+          </div>
+        </button>
+      </div>
+      <div class="feedback-box hidden mt-4 transition-all duration-300"></div>
+    </section>
+
+    <!-- EX 5 -->
+    <section id="ex5" class="py-12 border-b border-gray-200 topic-card">
+      <span class="badge badge-ex">🔍 სავარჯიშო 5 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number">5</span>ონბორდინგის კითხვების აუდიტი</h2>
+      <p class="text-gray-600 mb-4">ახალმა მასწავლებელმა სამუშაო პირველივე დღეს უნდა აითვისოს მწვანე სკოლის შატლების განრიგი, REAL სწავლების სახელმძღვანელო და მოსწავლეთა ქცევის წესები. NotebookLM-ში ამ დოკუმენტების ატვირთვის შემდეგ, **დაწერეთ 3 კრიტიკული კითხვა**, რომელიც ახალმა თანამშრომელმა უნდა დაუსვას AI-ს, რათა მყისიერად გაერკვიოს სასკოლო რუტინაში "ძებნის" ნაცვლად.</p>
+
+      <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">ჩაწერეთ ონბორდინგის 3 კითხვა NotebookLM-ისთვის:</h3>
+        <textarea id="save-ex5" class="ex-input" rows="5" placeholder="კითხვა 1: რა არის კლასგარეშე REAL აქტივობებისას მასწავლებლის პასუხისმგებლობა?&#10;კითხვა 2:...&#10;კითხვა 3:..."></textarea>
+        
+        <div class="mt-4">
+          <button onclick="toggleAnswer('ans5')" class="text-sm font-bold text-green-700 hover:underline">საუკეთესო პასუხის (კითხვების შაბლონი) ნახვა</button>
+          <div id="ans5" class="answer-box">
+            <p class="font-bold text-[#9c27b0] mb-2">📋 რეკომენდებული ონბორდინგის კითხვები:</p>
+            <ul class="list-disc pl-5 text-sm text-gray-700 space-y-2">
+              <li><strong>კითხვა 1:</strong> "რა წესები გვაქვს შინაგანაწესის მიხედვით, თუ მასწავლებელი შატლზე აგვიანებს ან მოსწავლე არ გამოცხადდა რეისზე?"</li>
+              <li><strong>კითხვა 2:</strong> "გთხოვ REAL სწავლების სახელმძღვანელოდან გამომიყო 3 ძირითადი კრიტერიუმი, რომელიც ჩემი გაკვეთილის გეგმაში უნდა აისახოს."</li>
+              <li><strong>კითხვა 3:</strong> "მოსწავლეთა ქცევის კოდექსის მიხედვით, რა ნაბიჯები უნდა გადავდგა, თუ კლასში მოხდა აკადემიური ეთიკის დარღვევა (IRESPECT Integrity-სთან წინააღმდეგობა)?"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EX 6 -->
+    <section id="ex6" class="py-12 border-b border-gray-200 topic-card">
+      <span class="badge badge-practice">🛡️ სავარჯიშო 6 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number">6</span>წყაროების უსაფრთხოება და ლიმიტები</h2>
+      <p class="text-gray-600 mb-6">მართალია თუ მცდარი: "NotebookLM-ში ატვირთული სკოლის შიდა დოკუმენტები, როგორიცაა უსაფრთხოების პროტოკოლები ან ეროვნული სასწავლო გეგმა, გამოიყენება გუგლის გლობალური მოდელების საჯაროდ საწვრთნელად და საფრთხეს უქმნის სკოლის უსაფრთხოებას."</p>
+
+      <div class="space-y-4">
+        <button class="choice-btn" data-question="q6" data-answer="wrong" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">A</span>
+          <div>
+            <span class="block text-sm text-gray-700">მართალია — გუგლის მოდელი ავტომატურად სწავლობს ყველაფერზე, რასაც სისტემაში ვტვირთავთ.</span>
+          </div>
+        </button>
+        <button class="choice-btn" data-question="q6" data-answer="correct" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">B</span>
+          <div>
+            <span class="block text-sm text-gray-700">მცდარი — NotebookLM ინახავს მონაცემებს პირად, დაცულ გარემოში და არ იყენებს მათ მოდელების საწვრთნელად, რაც სრულად შეესაბამება სასკოლო უსაფრთხოების ნორმებს.</span>
+          </div>
+        </button>
+      </div>
+      <div class="feedback-box hidden mt-4 transition-all duration-300"></div>
+    </section>
+
+    <!-- PART III HEADER -->
+    <div class="py-8 border-b border-gray-200">
+      <div class="section-header-purple">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <span class="text-5xl">💎</span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#cbd5e1]">ნაწილი III · სავარჯიშოები 7–10</p>
+              <h2 class="text-2xl font-bold text-white">Custom Gems — სპეციალიზებული ასისტენტები</h2>
+              <p class="text-gray-300 text-sm mt-1">როლებზე მორგებული ასისტენტები, ეთიკა და IRESPECT-ის ინტეგრაცია</p>
+            </div>
+          </div>
+          <div class="timer-box" style="background:#1e1b4b;">
+            <span class="timer-display" id="timer-3" style="color:#c4b5fd;">15:00</span>
+            <button class="timer-btn" id="timer-3-btn" style="background:#c4b5fd; color:#1e1b4b;" onclick="startTimer('timer-3', 15)">▶ დაწყება</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 7 -->
+    <section id="ex7" class="py-12 border-b border-gray-200 topic-card-purple">
+      <span class="badge badge-bonus">💎 სავარჯიშო 7 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number-purple">7</span>Custom Gem-ის 4 საყრდენი სვეტი</h2>
+      <p class="text-gray-600 mb-6">Claude Gems-ის ან ChatGPT Custom GPT-ის შექმნისას, რომელი 4 ძირითადი კომპონენტი უნდა გავწეროთ სისტემურ ინსტრუქციაში, რათა მოდელმა იმუშაოს უნაკლოდ?</p>
+
+      <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">ჩამოთვალეთ 4 საყრდენი კომპონენტი მოკლე აღწერით:</h3>
+        <textarea id="save-ex7" class="ex-input" rows="4" placeholder="კომპონენტი 1: როლი & კონტექსტი (Role)&#10;კომპონენტი 2:...&#10;კომპონენტი 3:...&#10;კომპონენტი 4:..."></textarea>
+        
+        <div class="mt-4">
+          <button onclick="toggleAnswer('ans7')" class="text-sm font-bold text-purple-700 hover:underline">საუკეთესო პასუხის ნახვა</button>
+          <div id="ans7" class="answer-box">
+            <p class="font-bold text-[#9c27b0] mb-2">📋 Gem-ის 4 ძირითადი საყრდენი:</p>
+            <ol class="list-decimal pl-5 text-sm text-gray-700 space-y-2">
+              <li><strong>როლი & კონტექსტი (Role & Context):</strong> ზუსტად ვინ არის AI, რა არის მისი მისია სკოლაში.</li>
+              <li><strong>ცოდნის ბაზა (Knowledge/Documents):</strong> რა კონკრეტულ ფაილებსა და წესებს უნდა ეყრდნობოდეს.</li>
+              <li><strong>ქცევის წესები & შეზღუდვები (Guardrails):</strong> რა არ უნდა გააკეთოს (მაგ. GDPR, დიაგნოზის დასმა).</li>
+              <li><strong>გამომავალი ფორმატი (Output Format):</strong> როგორ უნდა დაწეროს პასუხი (ბულეტები, Markdown ცხრილები, ტონი).</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EX 8 -->
+    <section id="ex8" class="py-12 border-b border-gray-200 topic-card-purple">
+      <span class="badge badge-bonus">🧠 სავარჯიშო 8 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number-purple">8</span>ფსიქოლოგის Gem-ის GDPR ეთიკის ფილტრი</h2>
+      <p class="text-gray-600 mb-4">დაწერეთ კონკრეტული სისტემური ინსტრუქცია (Guardrail) სკოლის ფსიქოლოგის Gem-ისთვის, რომელიც დაიცავს ბავშვის კონფიდენციალობას. AI-ს უნდა აეკრძალოს მოსწავლის პერსონალური მონაცემების (სახელი, გვარი, კლასი) მიღება და დარღვევის შემთხვევაში უნდა გამოიტანოს მკაფიო გაფრთხილება.</p>
+
+      <div class="card bg-gray-50 border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-2">დაწერეთ GDPR უსაფრთხოების წესი:</h3>
+        <textarea id="save-ex8" class="ex-input" rows="4" placeholder="მაგალითად: თუ მომხმარებელი შეიყვანს მოსწავლის სახელს, მაშინვე..."></textarea>
+        
+        <div class="mt-4">
+          <button onclick="toggleAnswer('ans8')" class="text-sm font-bold text-purple-700 hover:underline">საუკეთესო პასუხის (Guardrail) ნახვა</button>
+          <div id="ans8" class="answer-box">
+            <p class="font-bold text-[#9c27b0] mb-2">🔒 იდეალური Guardrail ინსტრუქცია:</p>
+            <div class="code-block">
+              <code class="code-text">"GDPR-ის დაცვა და კონფიდენციალობა (კრიტიკული წესი):
+შენ ხარ სასკოლო ფსიქოლოგის ასისტენტი. შენ გეკრძალება ნებისმიერი მოსწავლის იდენტიფიცირებადი პერსონალური მონაცემების (სახელი, გვარი, პირადი ნომერი, კლასი) მიღება და დამუშავება.
+თუ შეამჩნევ, რომ მომხმარებელმა შემოყვანილ ქეისში მიუთითა მოსწავლის სახელი ან გვარი, დაუყოვნებლივ შეწყვიტე ქეისის განხილვა, გამოიტანე გაფრთხილება: 'უსაფრთხოების წესი: გთხოვთ მოახდინოთ ქეისის ანონიმიზაცია და ჩაანაცვლოთ სახელი ინიციალებით' და დაელოდე მომხმარებლის მიერ გასუფთავებული ტექსტის შემოყვანას."</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EX 9 -->
+    <section id="ex9" class="py-12 border-b border-gray-200 topic-card-purple">
+      <span class="badge badge-bonus">🐝 სავარჯიშო 9 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number-purple">9</span>ბაღის კოორდინატორის Gem-ის კომუნიკაცია</h2>
+      <p class="text-gray-600 mb-6">კურატორის/ბაღის კოორდინატორის Gem-ისთვის IRESPECT (Empathy & Respect) პრინციპების დასანერგად, რომელია საუკეთესო სისტემური წესი, რათა AI-მ დაწეროს იდეალური პასუხი მშობლის საჩივარზე?</p>
+
+      <div class="space-y-4">
+        <button class="choice-btn" data-question="q9" data-answer="wrong" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">A</span>
+          <div>
+            <span class="block text-sm text-gray-700">"პასუხი ყოველთვის დაიწყე სკოლის იურიდიული წესებით და აუხსენი მშობელს, რომ მისი პრეტენზია უსაფუძვლოა."</span>
+          </div>
+        </button>
+        <button class="choice-btn" data-question="q9" data-answer="correct" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">B</span>
+          <div>
+            <span class="block text-sm text-gray-700">"ნებისმიერი საჩივრის მიღებისას, ჯერ გამოხატე გულწრფელი ემპათია (Empathy), აღიარე მშობლის წუხილი და დაადასტურე, რომ მისი ემოცია ჩვენთვის მნიშვნელოვანია. ამის შემდეგ შესთავაზე პრობლემის გადაჭრის REAL გზა მწვანე სკოლის წესების ფარგლებში."</span>
+          </div>
+        </button>
+        <button class="choice-btn" data-question="q9" data-answer="wrong" onclick="selectChoice(this)">
+          <span class="text-lg font-bold">C</span>
+          <div>
+            <span class="block text-sm text-gray-700">"გამოიყენე ძალიან ცივი, ბიუროკრატიული და ოფიციალური იურიდიული ენა, რათა თავიდან აიცილო ემოციური ჩართულობა."</span>
+          </div>
+        </button>
+      </div>
+      <div class="feedback-box hidden mt-4 transition-all duration-300"></div>
+    </section>
+
+    <!-- EX 10 -->
+    <section id="ex10" class="py-12 border-b border-gray-200 topic-card-purple">
+      <span class="badge badge-bonus">🛠️ სავარჯიშო 10 · 10 ქულა</span>
+      <h2 class="text-2xl font-bold mb-3 flex items-center gap-3"><span class="ex-number-purple">10</span>სანდბოქსი: როლების პერსონალური Custom Gem კონსტრუქტორი</h2>
+      <p class="text-gray-600 mb-4">ეს არის **დინამიკური პრომპტინგის ლაბორატორია**. აირჩიეთ სასკოლო როლი, მიუთითეთ ძირითადი მისია და დააჭირეთ „როლის ინსტრუქციის სინთეზს“. სისტემა ავტომატურად დაგიგენერირებთ მზა, ულტრა-პროფესიონალურ Gem-ის სისტემურ ინსტრუქციას IRESPECT-ის ინტეგრაციით, რომლის კოპირებაც შეგიძლიათ Gemini-ში ან Claude-ში ჩასასმელად!</p>
+
+      <div class="card border-2 border-purple-200 p-6 bg-white rounded-xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- User Controls -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">1. აირჩიეთ სასკოლო როლი:</label>
+            <select id="role-selector" class="w-full border-2 border-gray-200 rounded-lg p-2.5 text-sm bg-white font-semibold text-gray-700 outline-none focus:border-purple mb-4">
+              <option value="curator">👩‍🏫 კლასის კურატორი (Class Curator)</option>
+              <option value="psychologist">🧠 სკოლის ფსიქოლოგი (School Psychologist)</option>
+              <option value="director">🏫 კამპუსის დირექტორი (Campus Director)</option>
+              <option value="teacher">🍎 საგნის პედაგოგი (Subject Teacher)</option>
+            </select>
+
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">2. ჩაწერეთ AI-ის მთავარი საორგანიზაციო მისია:</label>
+            <textarea id="save-ex10" class="ex-input text-xs min-height-[80px]" rows="3" placeholder="მაგალითად: დამეხმარე მშობლებთან REAL პროექტების შეჯამებაში..."></textarea>
+
+            <button onclick="synthesizeRolePrompt()" class="mt-3 w-full bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+              <span>💎 როლის ინსტრუქციის სინთეზი</span>
+            </button>
+          </div>
+
+          <!-- Generated Prompt Container -->
+          <div class="bg-purple-950/5 rounded-xl border border-purple-900/10 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-purple-900/10 pb-3 mb-3">
+                <span class="text-xs font-bold uppercase tracking-widest text-purple-800">💎 სინთეზირებული Gem ინსტრუქცია</span>
+                <span id="role-status-badge" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-200 text-gray-700">მზადყოფნა</span>
+              </div>
+              <div id="role-output-text" class="text-xs text-gray-600 space-y-3 leading-relaxed">
+                <p class="italic text-gray-400">აირჩიეთ როლი, ჩაწერეთ მისია და დააჭირეთ „სინთეზს“...</p>
+              </div>
+            </div>
+            <div class="text-[10px] text-purple-800/60 font-semibold border-t border-purple-900/10 pt-3 mt-4 flex items-center justify-between">
+              <span>Gems Engine v4.6 (Claude Compatible)</span>
+              <span>100% G-Suite Integrable</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  // Sidebar Toggle
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+    menuIcon.classList.toggle('hidden');
+    closeIcon.classList.toggle('hidden');
+  }
+
+  // Answer Toggle for Blueprints
+  function toggleAnswer(id) {
+    const el = document.getElementById(id);
+    if (el.style.display === 'block') {
+      el.style.display = 'none';
+    } else {
+      el.style.display = 'block';
+    }
+    updateProgress();
+  }
+
+  // Active Link ScrollSpy
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      if (scrollY >= section.offsetTop - 150) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href').substring(1) === current) {
+        link.classList.add('active');
+      }
+    });
+  });
+
+  // Countdown Timers
+  let activeTimers = {};
+  function startTimer(id, minutes) {
+    if (activeTimers[id]) return;
+    
+    let time = minutes * 60;
+    const display = document.getElementById(id);
+    const btn = document.getElementById(id + '-btn');
+    btn.textContent = '⏱ მიმდინარეობს';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    activeTimers[id] = setInterval(() => {
+      let mins = Math.floor(time / 60);
+      let secs = time % 60;
+      secs = secs < 10 ? '0' + secs : secs;
+      mins = mins < 10 ? '0' + mins : mins;
+      
+      display.textContent = `${mins}:${secs}`;
+      
+      if (--time < 0) {
+        clearInterval(activeTimers[id]);
+        display.textContent = "ამოიწურა!";
+        display.style.color = '#ef4444';
+        btn.textContent = '✓ მზადაა';
+        btn.style.background = '#4CAF50';
+        btn.style.color = 'white';
+        delete activeTimers[id];
+      }
+    }, 1000);
+  }
+
+  // Multiple Choice Select Interactions
+  function selectChoice(btn) {
+    const question = btn.getAttribute('data-question');
+    const answer = btn.getAttribute('data-answer');
+    const section = btn.closest('section');
+    const feedbackBox = section.querySelector('.feedback-box');
+    
+    // Clear other choices in this question
+    section.querySelectorAll('.choice-btn').forEach(b => {
+      b.classList.remove('correct', 'wrong');
+    });
+
+    if (answer === 'correct') {
+      btn.classList.add('correct');
+      feedbackBox.innerHTML = `<div class="success-box text-sm font-bold text-emerald-800 flex items-center gap-2">✓ სწორია! მწვანე სკოლის IRESPECT პრინციპები და REAL სწავლება სწორედ ამ მეთოდით ხორციელდება სრულყოფილად. (+10 ქულა)</div>`;
+      btn.setAttribute('data-completed', 'true');
+    } else {
+      btn.classList.add('wrong');
+      feedbackBox.innerHTML = `<div class="warning-box text-sm font-bold text-red-800 flex items-center gap-2">✗ არასწორია. ეს მიდგომა არ შეესაბამება IRESPECT/REAL სტანდარტებს ან იწვევს მონაცემთა გაჟონვას. სცადეთ სხვა ვარიანტი!</div>`;
+      btn.removeAttribute('data-completed');
+    }
+    feedbackBox.classList.remove('hidden');
+    updateProgress();
+  }
+
+  // Copy Prompt Blueprints
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('copy-btn')) {
+      const btn = e.target;
+      const codeText = btn.nextElementSibling.innerText;
+      navigator.clipboard.writeText(codeText).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'კოპირებულია!';
+        btn.classList.add('bg-green-500', 'text-white', 'border-green-500');
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.classList.remove('bg-green-500', 'text-white', 'border-green-500');
+        }, 2000);
+      });
+    }
+  });
+
+  // Notion AI Sandbox: Load Sample Feedback
+  const sampleFeedbacks = {
+    canteen: `„გამარჯობა, მინდა გაგიზიაროთ ჩემი შეშფოთება. ჩემმა შვილმა, ნიკა კუპატაძემ მითხრა, რომ სასადილოში საკვები ხშირად ცივია. ბავშვი უარს ამბობს ჭამაზე და მშიერი რჩება. გთხოვთ მიიღოთ ზომები კვების ტემპერატურის კონტროლზე. მწვანე სკოლაში კვების ხარისხი ყოველთვის მაღალი იყო და იმედია ასეც დარჩება.“`,
+    transport: `„მოგესალმებით, ძალიან შეშფოთებული ვარ იმის გამო, რომ სკოლის ავტობუსის ფასი 15%-ით გაიზარდა მომავალი თვიდან. ეს მძიმე ტვირთია ჩვენი ბიუჯეტისთვის. თუ ფასი არ გადაიხედება, მოგვიწევს შატლზე უარის თქმა, რაც ბავშვის დროულ მოყვანას კითხვის ნიშნის ქვეშ დააყენებს.“`,
+    real: `„გამარჯობა, მინდა უღრმესი მადლობა გადავუხადო კოორდინატორს და მასწავლებლებს! ბოლო REAL ეკო-პროექტი ბუნებაში იყო უბრალოდ ფანტასტიკური. ჩემმა შვილმა, ლიკა მ.-მ ისეთი ენთუზიაზმით ააშენა მინი-სათბური, რომ მთელი დღე ამაზე მელაპარაკებოდა. აი, ეს არის ნამდვილი სწავლა!“`
+  };
+
+  function loadFeedbackText() {
+    const val = document.getElementById('feedback-selector').value;
+    document.getElementById('feedback-preview-box').innerText = sampleFeedbacks[val];
+  }
+
+  // Run Sandbox feedback analysis
+  function runFeedbackAnalyzer() {
+    const selector = document.getElementById('feedback-selector');
+    const val = selector.value;
+    const prompt = document.getElementById('save-ex3').value;
+    const output = document.getElementById('analyzer-output-text');
+    const badge = document.getElementById('sentiment-badge');
+
+    badge.className = "text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-purple-200 text-purple-700 animate-pulse";
+    badge.innerText = "ანალიზი...";
+
+    output.innerHTML = `<div class="flex items-center gap-2 text-xs text-purple-800"><span class="animate-spin">🌀</span> AI ამუშავებს მონაცემებს...</div>`;
+
+    setTimeout(() => {
+      let sentiment = "ნეიტრალური";
+      let colorClass = "bg-yellow-100 text-yellow-800";
+      let summaryText = "";
+      let replyGuidelines = "";
+
+      if (val === 'canteen') {
+        sentiment = "საყურადღებო";
+        colorClass = "bg-red-100 text-red-800 border border-red-200";
+        summaryText = `მოსწავლე ნ.კ.-ს მშობელი შეშფოთებულია სასადილოში საკვების ტემპერატურის გამო (ცივი კერძები).`;
+        replyGuidelines = `1. **ემპათიის აღიარება:** „სრულიად გვესმის თქვენი წუხილი, ბავშვის სრულფასოვანი კვება ჩვენი უმთავრესი პრიორიტეტია...“ (Empathy).<br>2. **რეალური ნაბიჯი (Responsibility):** სკოლის ადმინისტრაცია დღესვე დაიწყებს კვების ბლოკის ტემპერატურულ მონიტორინგს.<br>3. **GDPR დაცულია:** მოსწავლის სრული სახელი (ნიკა კუპატაძე) ანონიმიზებულია შეჯამებაში.`;
+      } else if (val === 'transport') {
+        sentiment = "საყურადღებო";
+        colorClass = "bg-red-100 text-red-800 border border-red-200";
+        summaryText = `მშობელი გამოხატავს მწვავე წუხილს სასკოლო შატლების ტარიფის 15%-იანი ზრდის გამო.`;
+        replyGuidelines = `1. **ემპათია:** „გვესმის ფინანსური დაგეგმვის სირთულე და ვაფასებთ თქვენს გულახდილობას...“ (Trust & Respect).<br>2. **სკოლის პოზიცია:** მიაწოდეთ ეკონომიკური დასაბუთება (საწვავის და უსაფრთხოების ხარჯები).<br>3. **შეთავაზება:** შესთავაზეთ ალტერნატიული თანაგადახდის ან მწვანე კამპუსის შიდა კოორდინაციის სქემები.`;
+      } else {
+        sentiment = "ჩართული";
+        colorClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+        summaryText = `მშობელი აღფრთოვანებულია REAL ეკო-პროექტით (სათბურის მშენებლობა) მოსწავლე ლ.მ.-ს მიერ.`;
+        replyGuidelines = `1. **აღიარება:** „უღრმესი მადლობა ასეთი თბილი სიტყვებისთვის! REAL სწავლება სწორედ ამ ემოციით საზრდოობს...“ (Community).<br>2. **გაზიარება:** სთხოვეთ მშობელს ნებართვა, რომ სათბურის ფოტოები ანონიმურად გამოვიყენოთ სკოლის REAL ბიულეტენში.`;
+      }
+
+      badge.className = `text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${colorClass}`;
+      badge.innerText = sentiment;
+
+      output.innerHTML = `
+        <div class="space-y-3 animation-fadeIn">
+          <div>
+            <strong class="text-emerald-900 block text-xs">✨ GDPR-ანონიმური რეზიუმე:</strong>
+            <p class="text-gray-700 bg-white p-2.5 rounded border border-emerald-900/10 mt-1">${summaryText}</p>
+          </div>
+          <div>
+            <strong class="text-emerald-900 block text-xs">💡 IRESPECT პასუხის გაიდლაინი:</strong>
+            <div class="text-gray-700 bg-white p-2.5 rounded border border-emerald-900/10 mt-1 space-y-1">${replyGuidelines}</div>
+          </div>
+        </div>
+      `;
+      
+      // Mark sandbox as completed
+      document.getElementById('save-ex3').setAttribute('data-completed', 'true');
+      updateProgress();
+    }, 1000);
+  }
+
+  // Custom Gems Sandbox: Synthesize instruction
+  function synthesizeRolePrompt() {
+    const role = document.getElementById('role-selector').value;
+    const mission = document.getElementById('save-ex10').value;
+    const output = document.getElementById('role-output-text');
+    const badge = document.getElementById('role-status-badge');
+
+    if (!mission.trim()) {
+      alert("გთხოვთ, ჯერ ჩაწეროთ AI-ის მთავარი საორგანიზაციო მისია!");
+      return;
+    }
+
+    badge.className = "text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-purple-200 text-purple-700 animate-pulse";
+    badge.innerText = "სინთეზი...";
+    output.innerHTML = `<div class="flex items-center gap-2 text-xs text-purple-800"><span class="animate-spin">🌀</span> არქიტექტურული სვეტების აწყობა...</div>`;
+
+    setTimeout(() => {
+      let roleTitle = "კურატორი";
+      let systemPrompt = "";
+
+      if (role === 'curator') {
+        roleTitle = "მწვანე სკოლის უფროსი კურატორის Gem ასისტენტი";
+        systemPrompt = `შენ ხარ მწვანე სკოლის უფროსი კურატორის პირადი Gem ასისტენტი.
+შენი მისიაა: ${mission}
+
+სისტემური წესები და Guardrails (IRESPECT):
+1. **ემპათია & პატივისცემა:** მშობლებთან კომუნიკაციისას ყოველი პასუხი უნდა იწყებოდეს მათი ემოციური მდგომარეობის აღიარებით (Empathy).
+2. **REAL სწავლება:** დაეხმარე კურატორს შეადგინოს აქტივობები, რომლებიც არის Relevant (აქტუალური) და Engaging (ჩამთრევი).
+3. **GDPR დაცვა:** თუ ტექსტში აღმოაჩენ მოსწავლის სრულ სახელს, ჩაანაცვლე ინიციალებით.
+
+გამომავალი ფორმატი:
+- მოკლედ ჩამოაყალიბე საორგანიზაციო გეგმა ბულეტებად.
+- შესთავაზე მშობელთან მყისიერი ჩატის პასუხი (მოკლე) და ოფიციალური მეილის პროექტი.`;
+      } else if (role === 'psychologist') {
+        roleTitle = "სკოლის ფსიქოლოგის ეთიკური Gem ასისტენტი";
+        systemPrompt = `შენ ხარ მწვანე სკოლის ფსიქოლოგის კონფიდენციალური Sounding Board.
+შენი მისიაა: ${mission}
+
+ეთიკური Guardrails და შეზღუდვები:
+1. **GDPR და კონფიდენციალობა:** არ მიიღო და არ დაამუშაო რეალური სახელები. თუ დაინახავ სახელს, შეაჩერე პასუხი და მოითხოვე ანონიმიზაცია.
+2. **აკრძალვა:** არასოდეს დასვა კლინიკური დიაგნოზი. შესთავაზე მხოლოდ პედაგოგიური და ქცევითი სტრატეგიები კლასისთვის.
+3. **IRESPECT:** დაეფუძნე ნდობის (Trust) და თანასწორობის (Equity) პრინციპებს.`;
+      } else if (role === 'director') {
+        roleTitle = "კამპუსის დირექტორის სტრატეგიული Gem მრჩეველი";
+        systemPrompt = `შენ ხარ მწვანე სკოლის კამპუსის დირექტორის პერსონალური AI მრჩეველი.
+შენი მისიაა: ${mission}
+
+სტრატეგიული წესები:
+1. **სცენარების მოდელირება:** ყოველი საორგანიზაციო გადაწყვეტილებისას მოამზადე 3 სცენარი: Best Case, Worst Case, Most Likely.
+2. **IRESPECT და მდგრადობა:** ნებისმიერი საოპერაციო გეგმა შეამოწმე სასკოლო საზოგადოების (Community) და ეკოლოგიური მდგრადობის (Sustainability) ჭრილში.
+3. **ROI:** შესთავაზე ფასების და რესურსების ოპტიმიზაციის მკაფიო Markdown ცხრილი.`;
+      } else {
+        roleTitle = "REAL საგნის პედაგოგის Gem კოორდინატორი";
+        systemPrompt = `შენ ხარ მწვანე სკოლის საგნის პედაგოგის REAL კოორდინატორი.
+შენი მისიაა: ${mission}
+
+სასწავლო ინსტრუქცია:
+1. **REAL სწავლება:** ყოველი გაკვეთილის გეგმა უნდა შეიცავდეს 4 საყრდენს: Relevant (კავშირი რეალურ ცხოვრებასთან), Engaging (ინტერაქციული თამაში), Authentic (ნამდვილი კვლევა), Learner-centered (მოსწავლის არჩევანი).
+2. **IRESPECT:** გაკვეთილზე ინტეგრირებული უნდა იყოს თანამშრომლობა (Collaboration) და მშვიდობა (Peace).
+3. **შეფასება:** შესთავაზე განმავითარებელი შეფასების კრიტერიუმები 100-ქულიანი სასკოლო სისტემით.`;
+      }
+
+      badge.className = "text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200";
+      badge.innerText = "სინთეზირებულია";
+
+      output.innerHTML = `
+        <div class="space-y-3 animation-fadeIn">
+          <div class="text-xs font-bold text-purple-900">${roleTitle}</div>
+          <div class="code-block text-[11px] relative max-h-[220px] overflow-y-auto">
+            <button class="copy-btn">კოპირება</button>
+            <code class="code-text">${systemPrompt}</code>
+          </div>
+          <div class="bg-emerald-50 text-emerald-800 p-2.5 rounded border border-emerald-200 text-[11px] font-semibold flex items-center gap-1.5">
+            <span>✓</span>
+            <span>პრომპტი ოპტიმიზირებულია Claude Opus და Gemini 3.1 Pro-სთვის.</span>
+          </div>
+        </div>
+      `;
+      
+      // Mark sandbox as completed
+      document.getElementById('save-ex10').setAttribute('data-completed', 'true');
+      updateProgress();
+    }, 1000);
+  }
+
+  // Local Storage and Progress Logic
+  const inputsToSave = ['save-ex2', 'save-ex5', 'save-ex7', 'save-ex8', 'save-ex10', 'save-ex3'];
+  
+  // Load initial data
+  window.addEventListener('DOMContentLoaded', () => {
+    inputsToSave.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const saved = localStorage.getItem('green-session-3-' + id);
+      if (saved) {
+        el.value = saved;
+        el.setAttribute('data-completed', 'true');
+      }
+    });
+    
+    loadFeedbackText();
+    updateProgress();
+  });
+
+  // Track keystrokes to auto-save and update progress
+  inputsToSave.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      localStorage.setItem('green-session-3-' + id, el.value);
+      
+      if (el.value.trim().length > 5) {
+        el.setAttribute('data-completed', 'true');
+      } else {
+        el.removeAttribute('data-completed');
+      }
+
+      // Flash auto-save status bar indicator
+      const status = document.getElementById('autosave-status');
+      status.innerHTML = `<span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span><span>შენახულია ბრაუზერში</span>`;
+      setTimeout(() => {
+        status.innerHTML = `<span class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></span><span>ავტომატური შენახვა აქტიურია</span>`;
+      }, 1500);
+
+      updateProgress();
+    });
+  });
+
+  // Calculate Progress Percentages
+  function updateProgress() {
+    // Total items to complete: 10
+    // Questions 1, 4, 6, 9 are Multiple Choice (have correct button chosen)
+    // Questions 2, 5, 7, 8, 10 are textareas (have data-completed = true)
+    // Question 3 is the Feedback Sandbox (has run at least once)
+    let completedCount = 0;
+    
+    // Check multiple choices
+    const questions = ['q1', 'q4', 'q6', 'q9'];
+    questions.forEach(q => {
+      const correctBtn = document.querySelector(`button[data-question="${q}"].correct`);
+      if (correctBtn) completedCount++;
+    });
+
+    // Check saved inputs
+    const textareas = ['save-ex2', 'save-ex5', 'save-ex7', 'save-ex8', 'save-ex10', 'save-ex3'];
+    textareas.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.getAttribute('data-completed') === 'true') {
+        completedCount++;
+      }
+    });
+
+    const percent = Math.min(Math.round((completedCount / 10) * 100), 100);
+    
+    // Update progress bars
+    document.getElementById('topProgressBar').style.width = percent + '%';
+    document.getElementById('sidebarProgressText').textContent = percent + '%';
+  }
+</script>
+
+</body>
+</html>
