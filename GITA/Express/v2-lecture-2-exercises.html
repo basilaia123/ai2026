@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ლექცია 2: Prompt Engineering და კვლევა — სავარჯიშოები | AI EXPRESS</title>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet"/>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+        --primary-color: #f59e0b;
+        --secondary-color: #d97706;
+        --accent-color: #ef4444;
+        --dark-bg: #0f172a;
+        --card-bg: #1e293b;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --success-color: #10b981;
+    }
+
+    body {
+        font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--dark-bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding-bottom: 3rem;
+    }
+
+    body.light {
+        --dark-bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .hero {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 40%, #1c1107 100%);
+        border-bottom: 3px solid var(--primary-color);
+        padding: 3rem 1rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-radius: 0 0 20px 20px;
+        margin-bottom: 2rem;
+    }
+
+    body.light .hero {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 40%, #fbbf24 100%);
+        border-bottom-color: var(--secondary-color);
+    }
+
+    .express-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        padding: 0.3rem 1rem;
+        border-radius: 30px;
+        margin-bottom: 0.8rem;
+        text-transform: uppercase;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero h1 span {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    body.light .hero h1 { color: #1e293b; }
+
+    .navigation {
+        background: var(--card-bg);
+        border: 1px solid rgba(245,158,11,0.2);
+        border-radius: 15px;
+        padding: 0.8rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: var(--primary-color);
+        background: rgba(245, 158, 11, 0.1);
+    }
+
+    .nav-link.current {
+        background: var(--primary-color);
+        color: #0f172a;
+    }
+
+    .section {
+        background: var(--card-bg);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        border-bottom: 1px dashed rgba(245,158,11,0.3);
+        padding-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .exercise-card {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding-bottom: 0.5rem;
+    }
+
+    .exercise-title {
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .exercise-time {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        background: rgba(245,158,11,0.1);
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+    }
+
+    .prompt-box {
+        background: rgba(245,158,11,0.04);
+        border: 1px solid rgba(245,158,11,0.15);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: 'Courier New', Courier, monospace;
+        color: var(--text-primary);
+        position: relative;
+    }
+
+    .copy-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(245,158,11,0.15);
+        border: 1px solid rgba(245,158,11,0.3);
+        color: var(--primary-color);
+        padding: 0.2rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: 'FiraGO', sans-serif;
+    }
+
+    .copy-btn:hover {
+        background: var(--primary-color);
+        color: #0f172a;
+    }
+
+    .timer-widget {
+        background: rgba(245,158,11,0.03);
+        border: 1px solid rgba(245,158,11,0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .timer-display {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin: 0.5rem 0;
+        font-family: monospace;
+    }
+
+    .timer-btn {
+        background: var(--primary-color);
+        color: #0f172a;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 0 0.3rem;
+        transition: all 0.3s ease;
+    }
+
+    .timer-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .checklist {
+        background: rgba(245,158,11,0.03);
+        border: 1px solid rgba(245,158,11,0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.6rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        cursor: pointer;
+    }
+
+    .checklist-item:last-child { border-bottom: none; }
+
+    .checklist-item input[type="checkbox"] {
+        accent-color: var(--primary-color);
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .progress-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(245,158,11,0.2);
+    }
+
+    .progress-bar {
+        flex-grow: 1;
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        margin: 0 1rem;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--primary-color);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    .reflection-area {
+        margin-top: 1rem;
+    }
+
+    .reflection-input {
+        width: 100%;
+        min-height: 80px;
+        background: rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        color: var(--text-primary);
+        padding: 0.8rem;
+        font-family: inherit;
+        resize: vertical;
+        margin-top: 0.5rem;
+    }
+
+    .reflection-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .theme-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        background: rgba(245,158,11,0.15);
+        backdrop-filter: blur(10px);
+        color: var(--primary-color);
+        border: 2px solid rgba(245,158,11,0.3);
+        padding: 0.4rem 0.9rem;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-family: 'FiraGO', sans-serif;
+    }
+
+    .theme-toggle:hover { background: rgba(245, 158, 11, 0.25); }
+</style>
+<script>
+    const COURSE_PASSWORD = 'ai2026';
+    function checkAuth() {
+        if (sessionStorage.getItem('aiExpressAuth') !== 'true') {
+            const userPassword = prompt('გთხოვთ შეიყვანოთ პაროლი მასალებზე წვდომისთვის:\n\nPlease enter password to access course materials:');
+            if (userPassword === COURSE_PASSWORD) {
+                sessionStorage.setItem('aiExpressAuth', 'true');
+            } else {
+                alert('არასწორი პაროლი! / Incorrect password!');
+                window.location.href = 'index.html';
+            }
+        }
+    }
+    checkAuth();
+</script>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">Theme</button>
+<div class="container">
+    <div class="hero">
+        <div class="express-badge">⚡ EXPRESS</div>
+        <h1>ლექცია 2: <span>პრაქტიკული სავარჯიშოები</span></h1>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Prompt Engineering და AI კვლევები — AI კურსი</p>
+    </div>
+
+    <nav class="navigation">
+        <a href="index.html" class="nav-link">🏠 მთავარი</a>
+        <a href="v2-lecture-2-slides.html" class="nav-link">📊 სლაიდები</a>
+        <a href="v2-lecture-2-summary.html" class="nav-link">📚 შეჯამება</a>
+        <a href="v2-lecture-2-exercises.html" class="nav-link current">💪 სავარჯიშოები</a>
+    </nav>
+
+    <!-- Timer Widget -->
+    <div class="timer-widget">
+        <h3>⏱️ სავარჯიშოების ტაიმერი</h3>
+        <div class="timer-display" id="timerDisplay">30:00</div>
+        <button class="timer-btn" onclick="startTimer(1800)">სტარტი (30წთ)</button>
+        <button class="timer-btn" onclick="startTimer(900)">სტარტი (15წთ)</button>
+        <button class="timer-btn" onclick="pauseTimer()">პაუზა</button>
+        <button class="timer-btn" onclick="resetTimer()">რესეტი</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">💪 სავარჯიშო 1: CLEAR სტრუქტურის აგება</div>
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-title">დავალება 1.1: პროფესიონალური CLEAR პრომპტი</span>
+                <span class="exercise-time">⏱️ 10 წუთი</span>
+            </div>
+            <p>შექმენით და გაუშვით CLEAR ჩარჩოზე დაფუძნებული პრომპტი, რომელიც AI-ს ავალებს სარეკლამო მეილის დაწერას. კოპირება გაუკეთეთ ამ მაგალითს და გაუშვით მოდელში:</p>
+            
+            <div class="prompt-box">
+                <button class="copy-btn" onclick="copyText(this)">Copy</button>
+                <span class="prompt-text">შენ ხარ გამოცდილი B2B მარკეტინგის მენეჯერი (Actor). ჩვენ ვყიდით AI ავტომატიზაციის სერვისებს მცირე კომპანიებისთვის (Context). დამიწერე მოკლე, 120-სიტყვიანი ცივი მეილი (Limit) ახალი კლიენტების მოსაზიდად. მეილში ნათლად გამოკვეთე 3 ძირითადი უპირატესობა და ბოლოს დაურთე CTA შეხვედრის ჩასანიშნად (Result). დაწერე მეგობრული, მაგრამ პროფესიონალური ტონით, გამოიყენე შემდეგი მაგალითი სტილისთვის: 'გამარჯობა [სახელი], შევამჩნიე რომ თქვენს სფეროში...' (Examples).</span>
+            </div>
+
+            <div class="reflection-area">
+                <label><strong>რამდენად ზუსტად დაიცვა AI-მ სიტყვების ლიმიტი და სტრუქტურა?</strong></label>
+                <textarea class="reflection-input" placeholder="გაანალიზეთ შედეგი..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🧠 სავარჯიშო 2: Chain-of-Thought (CoT) ტესტირება</div>
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-title">დავალება 2.1: ეტაპობრივი ლოგიკური ამოცანა</span>
+                <span class="exercise-time">⏱️ 10 წუთი</span>
+            </div>
+            <p>მიეცით AI-ს რთული ლოგიკური დავალება და აიძულეთ იფიქროს ეტაპობრივად:</p>
+
+            <div class="prompt-box">
+                <button class="copy-btn" onclick="copyText(this)">Copy</button>
+                <span class="prompt-text">დამიგეგმე კვირის ბიუჯეტი და გაანაწილე ეტაპობრივად (Think step-by-step). ჩემი ყოველთვიური შემოსავალია 2400 ლარი. აქედან 800 ლარი მიდის ქირაში, 200 ლარი კომუნალურებში, ხოლო 300 ლარი დანაზოგში. დანარჩენი თანხა გაანაწილე კვირებზე კვების, ტრანსპორტისა და გართობის კატეგორიებში. დეტალურად აღწერე თითოეული ნაბიჯის გამოთვლის ლოგიკა.</span>
+            </div>
+
+            <div class="reflection-area">
+                <label><strong>შეაფასეთ გამოთვლების სიზუსტე და ნაბიჯების თანმიმდევრობა:</strong></label>
+                <textarea class="reflection-input" placeholder="ჩაწერეთ თქვენი კომენტარი..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">📊 პრაქტიკული პროგრესის ტრეკერი</div>
+        <div class="checklist" id="exerciseChecklist">
+            <div class="checklist-item" onclick="toggleCheck(0)">
+                <input type="checkbox" id="check0"/>
+                <label for="check0">შევქმენი პრომპტი CLEAR ჩარჩოს 5-ივე კომპონენტის გათვალისწინებით</label>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(1)">
+                <input type="checkbox" id="check1"/>
+                <label for="check1">წარმატებით გამოვიყენე Chain-of-Thought ტექნიკა რთული ბიუჯეტირებისთვის</label>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(2)">
+                <input type="checkbox" id="check2"/>
+                <label for="check2">გავხსენი Perplexity AI და მოვიძიე 2026 წლის უახლესი ბიზნეს სტატისტიკა წყაროებით</label>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(3)">
+                <input type="checkbox" id="check3"/>
+                <label for="check3">შევქმენი ახალი ნოუთბუქი NotebookLM-ში და წარმატებით ავტვირთე სატესტო PDF ფაილი</label>
+            </div>
+
+            <div class="progress-container">
+                <span>პროგრესი:</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="progressPercent">0%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleTheme() {
+        document.body.classList.toggle('light');
+        const isLight = document.body.classList.contains('light');
+        localStorage.setItem('expressTheme', isLight ? 'light' : 'dark');
+        document.getElementById('themeToggle').textContent = isLight ? 'Dark' : 'Light';
+    }
+
+    let timerInterval;
+    let totalSeconds = 1800;
+
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        totalSeconds = seconds;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            if (totalSeconds > 0) {
+                totalSeconds--;
+                updateTimerDisplay();
+            } else {
+                clearInterval(timerInterval);
+                alert('დრო ამოიწურა!');
+            }
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        totalSeconds = 1800;
+        updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        document.getElementById('timerDisplay').textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function copyText(btn) {
+        const textSpan = btn.nextElementSibling;
+        navigator.clipboard.writeText(textSpan.textContent).then(() => {
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = originalText, 1500);
+        });
+    }
+
+    const checklistKey = 'express_exercise_2';
+    let checklistState = JSON.parse(localStorage.getItem(checklistKey) || '[false, false, false, false]');
+
+    function updateChecklistUI() {
+        let checkedCount = 0;
+        checklistState.forEach((state, index) => {
+            const checkbox = document.getElementById(`check${index}`);
+            if (checkbox) {
+                checkbox.checked = state;
+                if (state) checkedCount++;
+            }
+        });
+        const percent = Math.round((checkedCount / checklistState.length) * 100);
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressPercent').textContent = percent + '%';
+    }
+
+    function toggleCheck(index) {
+        checklistState[index] = !checklistState[index];
+        localStorage.setItem(checklistKey, JSON.stringify(checklistState));
+        updateChecklistUI();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('expressTheme') === 'light') {
+            document.body.classList.add('light');
+            document.getElementById('themeToggle').textContent = 'Dark';
+        }
+        updateChecklistUI();
+
+        const labels = document.querySelectorAll('.checklist-item label');
+        labels.forEach(label => {
+            label.addEventListener('click', (e) => e.preventDefault());
+        });
+    });
+</script>
+</body>
+</html>
