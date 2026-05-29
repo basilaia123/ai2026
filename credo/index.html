@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSC Credo Bank — AI ტრენინგისა და დანერგვის პროგრამა</title>
+  <meta name="description" content="ხელოვნური ინტელექტის პრაქტიკული დანერგვის, ოპერაციული ტრანსფორმაციისა და მართვის პროგრამა სს კრედო ბანკის მენეჯერებისა და ოპერაციული გუნდისთვის.">
+  <meta name="theme-color" content="#0C1E36">
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <style>
+    :root {
+      /* Credo Banking Theme Colors */
+      --navy: #0A1C30;
+      --navy-light: #142F4F;
+      --navy-deep: #050E18;
+      --orange: #FF5E14;
+      --orange-light: #FF824A;
+      --orange-deep: #D64300;
+      --teal: #10B981;
+      --teal-light: #34D399;
+      --white: #ffffff;
+      --off-white: #F8FAFC;
+      --gray-light: #E2E8F0;
+      --gray-medium: #64748B;
+      --text: #1E293B;
+      --text-muted: #475569;
+      --border: #E2E8F0;
+      --card-bg: #ffffff;
+      
+      /* Alerts & System */
+      --success: #10b981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      
+      /* Animation & Shadows */
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 4px 6px -1px rgba(10, 28, 48, 0.05), 0 2px 4px -1px rgba(10, 28, 48, 0.03);
+      --shadow-md: 0 10px 15px -3px rgba(10, 28, 48, 0.08), 0 4px 6px -2px rgba(10, 28, 48, 0.04);
+      --shadow-lg: 0 20px 25px -5px rgba(10, 28, 48, 0.1), 0 10px 10px -5px rgba(10, 28, 48, 0.04);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Light Theme Base Override */
+    body.light {
+      --navy: #0F172A;
+      --navy-light: #1E293B;
+      --navy-deep: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --off-white: #F1F5F9;
+      --text: #0F172A;
+      --text-muted: #475569;
+      --border: #E2E8F0;
+    }
+
+    /* Dark Theme Base Override (Default Theme) */
+    body.dark {
+      --navy: #FFFFFF;
+      --navy-light: #F1F5F9;
+      --navy-deep: #0B132B;
+      --card-bg: #1C2541;
+      --off-white: #0B132B;
+      --text: #F1F5F9;
+      --text-muted: #8D99AE;
+      --border: #3A506B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--off-white);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ─── PROGRESS BAR ─── */
+    #progress-bar {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 1000;
+      background: rgba(255,255,255,0.05);
+    }
+    #progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--orange), var(--orange-light));
+      transition: width 0.1s linear;
+    }
+
+    /* ─── NAVIGATION BAR ─── */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      z-index: 999;
+      background: rgba(10, 28, 48, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+    }
+    #navbar.scrolled {
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      background: rgba(5, 14, 24, 0.98);
+    }
+    .nav-inner {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--white);
+      font-weight: 800;
+      font-size: 18px;
+    }
+    .nav-logo-badge {
+      background: var(--orange);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span {
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      font-weight: 500;
+      border-left: 1px solid rgba(255,255,255,0.2);
+      padding-left: 12px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--white);
+      background: rgba(255,255,255,0.06);
+    }
+    .nav-links a.cta-btn {
+      background: var(--orange);
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(255, 94, 20, 0.3);
+    }
+    .nav-links a.cta-btn:hover {
+      background: var(--orange-light);
+      transform: translateY(-1px);
+    }
+
+    /* Mobile Menu Drawer Toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: rgba(10, 28, 48, 0.98);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 24px;
+      z-index: 998;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .mobile-menu a {
+      color: rgba(255,255,255,0.85);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      display: block;
+    }
+    .mobile-menu a:last-child {
+      background: rgba(255, 94, 20, 0.15);
+      color: var(--orange-light);
+      border: 1px solid rgba(255, 94, 20, 0.3);
+    }
+
+    /* ─── HERO SECTION ─── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy-deep) 0%, #0c1c2e 50%, #05162a 100%);
+      color: var(--white);
+      padding: 120px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 94, 20, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 94, 20, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(circle, black, transparent 80%);
+      -webkit-mask-image: radial-gradient(circle, black, transparent 80%);
+      z-index: 0;
+    }
+    .hero-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      -webkit-filter: blur(120px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-orange {
+      width: 500px;
+      height: 500px;
+      background: var(--orange);
+      top: -100px;
+      right: -100px;
+    }
+    .glow-teal {
+      width: 400px;
+      height: 400px;
+      background: var(--teal);
+      bottom: -100px;
+      left: -100px;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 94, 20, 0.12);
+      border: 1px solid rgba(255, 94, 20, 0.35);
+      color: var(--orange-light);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 18px;
+      border-radius: 50px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--orange-light);
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 10px var(--orange-light);
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5.5vw, 54px);
+      font-weight: 900;
+      line-height: 1.18;
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .hero h1 span.accent {
+      color: var(--orange);
+      background: linear-gradient(135deg, var(--orange-light), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(15px, 2vw, 19px);
+      color: rgba(255,255,255,0.8);
+      font-weight: 300;
+      max-width: 800px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+    
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 12px 28px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition);
+    }
+    .stat-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .stat-num {
+      font-size: clamp(24px, 3.5vw, 32px);
+      font-weight: 900;
+      color: var(--orange-light);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: left;
+      line-height: 1.3;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* Wave Border Transition */
+    .hero-wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+    }
+    .hero-wave svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 40px;
+    }
+    .hero-wave .shape-fill {
+      fill: var(--off-white);
+    }
+
+    /* ─── SECTION STYLING ─── */
+    section {
+      padding: 80px 0;
+      scroll-margin-top: 64px;
+    }
+    section.alt-bg {
+      background-color: var(--card-bg);
+    }
+
+    .section-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--orange);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-kicker::before {
+      content: '';
+      width: 24px;
+      height: 2px;
+      background: var(--orange);
+      display: inline-block;
+    }
+    .section-title {
+      font-size: clamp(24px, 3.5vw, 36px);
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin-bottom: 48px;
+    }
+
+    /* ─── OBJECTIVES GRID ─── */
+    .objectives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .obj-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .obj-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--orange);
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .obj-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-5px);
+      border-color: rgba(255, 94, 20, 0.2);
+    }
+    .obj-card:hover::before {
+      opacity: 1;
+    }
+    .obj-icon {
+      font-size: 32px;
+      margin-bottom: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 94, 20, 0.08);
+      border-radius: 12px;
+      color: var(--orange);
+    }
+    .obj-card h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .obj-card p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─── CURRICULUM SYLLABUS ─── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+    .day-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .day-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+    .day-header {
+      background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy) 100%);
+      color: var(--white);
+      padding: 28px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+    }
+    .day-header:hover {
+      filter: brightness(1.08);
+    }
+    .day-header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .day-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--orange);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 900;
+      box-shadow: 0 4px 10px rgba(255, 94, 20, 0.3);
+      flex-shrink: 0;
+    }
+    .day-title-wrap h3 {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .day-title-wrap span {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .day-duration {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--white);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .day-duration::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--teal-light);
+      border-radius: 50%;
+    }
+
+    .day-body {
+      padding: 36px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 36px;
+      transition: max-height 0.4s ease-out, padding 0.4s ease-out, opacity 0.4s ease-out;
+      overflow: hidden;
+      opacity: 1;
+      max-height: 3000px;
+    }
+    
+    .day-card.collapsed .day-body {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-top-width: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .day-chevron {
+      font-size: 18px;
+      font-weight: bold;
+      color: rgba(255,255,255,0.6);
+      transition: transform 0.3s ease;
+      margin-left: 20px;
+    }
+    .day-card.collapsed .day-chevron {
+      transform: rotate(-90deg);
+    }
+
+    /* Syllabus Blocks */
+    .syllabus-blocks {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .syllabus-block {
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      border-top: 4px solid var(--orange);
+    }
+    .syllabus-block-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--orange-deep);
+      margin-bottom: 8px;
+    }
+    .syllabus-block-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .syllabus-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .syllabus-list li {
+      padding-left: 24px;
+      position: relative;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+    .syllabus-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--orange);
+      font-weight: bold;
+    }
+    .syllabus-list li strong {
+      color: var(--text);
+    }
+
+    /* Day Sidebar (Lab & Exercises Preview) */
+    .day-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .sidebar-widget {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+    }
+    .widget-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--navy);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 8px;
+    }
+    .widget-title svg {
+      color: var(--orange);
+    }
+    
+    .exercise-mini-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ex-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ex-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .ex-num {
+      width: 24px;
+      height: 24px;
+      background: var(--navy-light);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .ex-content {
+      flex: 1;
+    }
+    .ex-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .ex-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .ex-duration {
+      font-size: 10px;
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 2px 6px;
+      border-radius: 20px;
+      font-weight: 700;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    /* Expandable Agenda Panels */
+    .day-details {
+      padding: 0 36px 36px 36px;
+      margin-top: -16px;
+    }
+    .day-details summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--orange);
+      font-weight: 700;
+      font-size: 13.5px;
+      list-style: none;
+      padding: 8px 20px;
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      user-select: none;
+    }
+    .day-details summary::-webkit-details-marker {
+      display: none;
+    }
+    .day-details summary:hover {
+      background: var(--border);
+      color: var(--orange-deep);
+    }
+    .day-details summary::after {
+      content: "▼";
+      font-size: 9px;
+      transition: transform 0.3s ease;
+    }
+    .day-details[open] summary::after {
+      transform: rotate(180deg);
+    }
+    .day-details[open] summary {
+      margin-bottom: 24px;
+    }
+    
+    .detailed-agenda-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: var(--card-bg);
+      border-left: 3px solid var(--orange);
+      padding: 0 0 0 20px;
+    }
+    .agenda-hour-block {
+      display: flex;
+      gap: 16px;
+    }
+    .agenda-time {
+      background: var(--navy-light);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      height: fit-content;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .agenda-text b {
+      display: block;
+      font-size: 14px;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .agenda-text p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .agenda-break {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 94, 20, 0.05);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px dashed rgba(255, 94, 20, 0.2);
+    }
+
+    /* ─── TRAINING METHODOLOGY ─── */
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .method-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .method-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+      border-color: rgba(255,94,20,0.15);
+    }
+    .method-icon {
+      font-size: 24px;
+      margin-bottom: 16px;
+      width: 48px;
+      height: 48px;
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--teal);
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .method-card h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .method-card p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ─── BESPOKE BANKING CASES ─── */
+    .cases-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .case-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+      position: relative;
+    }
+    .case-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+    .case-tag {
+      background: var(--navy-light);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      position: absolute;
+      top: 32px;
+      right: 32px;
+    }
+    .case-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 12px;
+      max-width: 75%;
+    }
+    .case-scenario {
+      background: var(--off-white);
+      border-left: 3px solid var(--orange);
+      padding: 12px 16px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .case-action-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--orange-deep);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .case-action-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .case-action-list li {
+      padding-left: 20px;
+      position: relative;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+    .case-action-list li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: var(--teal);
+      font-size: 11px;
+    }
+
+    /* ─── PRIORITIZATION FRAMEWORK ─── */
+    .framework-container {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .framework-desc-box h4 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    .framework-desc-box p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .framework-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .framework-bullets li {
+      padding-left: 28px;
+      position: relative;
+      font-size: 13.5px;
+      color: var(--text);
+    }
+    .framework-bullets li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: var(--orange);
+      font-size: 16px;
+    }
+    .matrix-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      position: relative;
+    }
+    .matrix-quadrant {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+    .matrix-quadrant:hover {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(255, 94, 20, 0.15);
+    }
+    .q-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .q-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .q-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      align-self: flex-start;
+      text-transform: uppercase;
+    }
+    
+    .q1 { background: rgba(16, 185, 129, 0.03); border-top: 4px solid var(--teal); }
+    .q1 .q-title { color: var(--teal); }
+    .q1 .q-tag { background: rgba(16, 185, 129, 0.1); color: var(--teal); }
+
+    .q2 { background: rgba(59, 130, 246, 0.03); border-top: 4px solid var(--orange); }
+    .q2 .q-title { color: var(--orange); }
+    .q2 .q-tag { background: rgba(255, 94, 20, 0.1); color: var(--orange); }
+
+    .q3 { background: rgba(245, 158, 11, 0.03); border-top: 4px solid var(--warning); }
+    .q3 .q-title { color: var(--warning); }
+    .q3 .q-tag { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+    .q4 { background: rgba(239, 68, 68, 0.03); border-top: 4px solid var(--danger); }
+    .q4 .q-title { color: var(--danger); }
+    .q4 .q-tag { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+    /* ─── ABOUT THE TRAINER ─── */
+    .trainer-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 32px;
+      align-items: flex-start;
+    }
+    .trainer-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy) 100%);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 900;
+      box-shadow: 0 4px 15px rgba(10, 28, 48, 0.2);
+    }
+    .trainer-info h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .trainer-role {
+      font-size: 13.5px;
+      color: var(--orange);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .trainer-bio {
+      font-size: 13.8px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .trainer-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .tr-tag {
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    /* ─── REQUIRED DOCUMENTATION ─── */
+    .docs-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .doc-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .doc-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-color: rgba(255, 94, 20, 0.15);
+    }
+    .doc-icon {
+      font-size: 28px;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+    .doc-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .doc-status {
+      font-size: 11px;
+      color: var(--success);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* ─── EVALUATION METHODOLOGY ─── */
+    .eval-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .eval-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .eval-value {
+      font-size: 40px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .eval-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .eval-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ─── FAQ / GLOSSARY ACCORDIONS ─── */
+    .faq-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .faq-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .faq-header {
+      padding: 20px 24px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .faq-header:hover {
+      background: var(--off-white);
+    }
+    .faq-chevron {
+      transition: transform 0.3s ease;
+      color: var(--orange);
+    }
+    .faq-body {
+      padding: 0 24px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      opacity: 0;
+      border-top: 0 solid var(--border);
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .faq-item.open .faq-body {
+      padding: 20px 24px;
+      max-height: 500px;
+      opacity: 1;
+      border-top-width: 1px;
+    }
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* ─── CONTACT SECTION & FOOTER ─── */
+    .contact-banner {
+      background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-light) 100%);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 60px 48px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+    .contact-left h3 {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .contact-left p {
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+    }
+    .contact-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.05);
+      padding: 14px 24px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .c-icon {
+      font-size: 20px;
+      color: var(--orange-light);
+    }
+    .c-details p {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .c-details b {
+      font-size: 14px;
+      color: var(--white);
+    }
+
+    footer {
+      background: var(--navy-deep);
+      color: rgba(255,255,255,0.4);
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-logo {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .footer-logo span {
+      color: var(--orange);
+    }
+    .footer-text {
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+    .footer-divider {
+      width: 40px;
+      height: 2px;
+      background: var(--orange);
+      margin: 16px auto;
+    }
+
+    /* ─── BUTTONS ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      font-size: 13.5px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      gap: 8px;
+    }
+    .btn-orange {
+      background: var(--orange);
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(255, 94, 20, 0.35);
+    }
+    .btn-orange:hover {
+      background: var(--orange-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 94, 20, 0.45);
+    }
+    .btn-navy {
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-navy:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--orange);
+      color: var(--orange);
+    }
+    .btn-outline:hover {
+      background: var(--orange);
+      color: var(--white);
+    }
+
+    /* ─── THEME TOGGLE ─── */
+    .theme-toggle-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      border: none;
+      z-index: 1001;
+      transition: var(--transition);
+    }
+    .theme-toggle-btn:hover {
+      transform: scale(1.1) rotate(15deg);
+    }
+
+    /* ─── RESPONSIVE DESIGN ─── */
+    @media (max-width: 1024px) {
+      .day-body {
+        grid-template-columns: 1fr;
+      }
+      .framework-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 768px) {
+      #navbar {
+        padding: 0;
+      }
+      .nav-links {
+        display: none;
+      }
+      .menu-toggle {
+        display: block;
+      }
+      .hero {
+        padding: 100px 16px 60px;
+      }
+      .hero-stats {
+        gap: 12px;
+      }
+      .stat-pill {
+        padding: 10px 18px;
+      }
+      .stat-num {
+        font-size: 20px;
+      }
+      section {
+        padding: 60px 0;
+      }
+      .day-header {
+        padding: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .day-body {
+        padding: 20px;
+      }
+      .day-details {
+        padding: 0 20px 20px 20px;
+      }
+      .cases-grid {
+        grid-template-columns: 1fr;
+      }
+      .trainer-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        justify-items: center;
+      }
+      .eval-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="light" id="top">
+
+  <!-- THEME TOGGLE BUTTON -->
+  <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="თემის შეცვლა / Switch Theme">🌗</button>
+
+  <!-- PROGRESS BAR -->
+  <div id="progress-bar"><div id="progress-bar-fill"></div></div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#top">
+        <div class="nav-logo-badge">CREDO</div>
+        <span>AI დანერგვის ტენდერი</span>
+      </a>
+      <div class="nav-links">
+        <a href="#about">პროგრამა</a>
+        <a href="#syllabus">სილაბუსი</a>
+        <a href="#methodology">მეთოდოლოგია</a>
+        <a href="#cases">ქეისები</a>
+        <a href="#portfolio">პორტფოლიო</a>
+        <a href="#contact" class="cta-btn">დაგვიკავშირდით</a>
+      </div>
+      <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="მენიუს გახსნა">☰</button>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" onclick="toggleMobileMenu()">პროგრამა</a>
+    <a href="#syllabus" onclick="toggleMobileMenu()">სილაბუსი</a>
+    <a href="#methodology" onclick="toggleMobileMenu()">მეთოდოლოგია</a>
+    <a href="#cases" onclick="toggleMobileMenu()">ქეისები</a>
+    <a href="#portfolio" onclick="toggleMobileMenu()">პორტფოლიო</a>
+    <a href="#contact" onclick="toggleMobileMenu()">დაგვიკავშირდით</a>
+  </div>
+
+  <!-- HERO SECTION -->
+  <header class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow glow-orange"></div>
+    <div class="hero-glow glow-teal"></div>
+    <div class="hero-content">
+      <div class="hero-badge">სატენდერო წინადადება · TENDER PROPOSAL 2026</div>
+      <h1>
+        AI-ტრანსფორმაცია და ოპერაციული ეფექტურობა<br>
+        <span class="accent">სს კრედო ბანკის</span> მენეჯერებისთვის
+      </h1>
+      <p class="hero-sub">
+        ინტენსიური, ვორქშოფებზე დაფუძნებული კორპორატიული AI სასწავლო პროგრამა, რომელიც მორგებულია საბანკო გარემოზე, 
+        ოპერაციულ ეფექტურობაზე, ავტომატიზაციასა და მართვის თანამედროვე პრინციპებზე.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <div class="stat-num">3</div>
+          <div class="stat-label">ინტენსიური დღე<br>Training Days</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num">18</div>
+          <div class="stat-label">პრაქტიკული საათი<br>Hands-on Hours</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num">12+</div>
+          <div class="stat-label">საბანკო ქეისი<br>Banking Cases</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">შედეგზე ორიენტირებული<br>adoption-ready</div>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#syllabus" class="btn btn-orange">📜 პროგრამის სილაბუსი</a>
+        <a href="#cases" class="btn btn-navy">⚙️ პრაქტიკული ქეისები</a>
+      </div>
+    </div>
+    <div class="hero-wave">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+      </svg>
+    </div>
+  </header>
+
+  <!-- WELCOME & OVERVIEW -->
+  <section class="alt-bg" id="about">
+    <div class="container">
+      <span class="section-kicker">პროგრამის მიმოხილვა</span>
+      <h2 class="section-title">AI დანერგვა როგორც საბანკო ზრდის დრაივერი</h2>
+      <p class="section-desc">
+        სს კრედო ბანკის სპეციფიკაზე მორგებული AI პროგრამა ორიენტირებულია არა ზოგად თეორიაზე, არამედ რეალურ სამუშაო გარემოში 
+        <strong>ოპერაციული ეფექტურობის გაზრდაზე</strong>, <strong>პროცესების ავტომატიზაციასა</strong> და 
+        <strong>მართვითი გადაწყვეტილებების მხარდაჭერაზე</strong>.
+      </p>
+
+      <div class="objectives-grid">
+        <!-- Card 1 -->
+        <div class="obj-card">
+          <div class="obj-icon">📈</div>
+          <h3>ოპერაციული ეფექტურობა</h3>
+          <p>რუტინული ამოცანების, B2B/B2C კომუნიკაციის, დოკუმენტების ანალიზისა და ყოველდღიური რეპორტინგის პროცესების 10-ჯერ დაჩქარება პრაქტიკული AI ინსტრუმენტების დახმარებით.</p>
+        </div>
+        <!-- Card 2 -->
+        <div class="obj-card">
+          <div class="obj-icon">🤖</div>
+          <h3>მულტიაგენტური ეკოსისტემა</h3>
+          <p>Gemini Gems, Custom GPTs და ავტომატიზაციის (n8n/Make) ინტეგრაცია, რათა შეიქმნას პერსონალური, სპეციალიზებული AI ასისტენტები კრედო ბანკის დეპარტამენტებისთვის.</p>
+        </div>
+        <!-- Card 3 -->
+        <div class="obj-card">
+          <div class="obj-icon">🛡️</div>
+          <h3>AI რისკები და რეგულაციები</h3>
+          <p>ევროკავშირის AI აქტის (EU AI Act), მონაცემთა უსაფრთხოების (GDPR/კონფიდენციალობა) და Shadow AI პრევენციის პრინციპების სიღრმისეული გააზრება ფინანსურ სექტორში.</p>
+        </div>
+        <!-- Card 4 -->
+        <div class="obj-card">
+          <div class="obj-icon">🔄</div>
+          <h3>Adoption & Change Management</h3>
+          <p>Prioritization მატრიცის, AI ROI-ის და 90-დღიანი იმპლემენტაციის გეგმის შედგენა, რაც უზრუნველყოფს ტრენინგის შემდეგ ცოდნის გუნდებში წარმატებულ დანერგვას.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-DAY SYLLABUS -->
+  <section id="syllabus">
+    <div class="container">
+      <span class="section-kicker">სასწავლო პროგრამა</span>
+      <h2 class="section-title">AI-ის პრაქტიკული გამოყენებისა და დანერგვის სილაბუსი</h2>
+      <p class="section-desc">
+        3-დღიანი ინტენსიური კურიკულუმი, რომელიც აერთიანებს მოწინავე AI ტექნოლოგიებს, პრაქტიკულ სავარჯიშოებსა და კრედო ბანკის რეალურ ამოცანებს.
+      </p>
+
+      <div class="timeline">
+        
+        <!-- DAY 1 CARD -->
+        <article class="day-card" id="day1">
+          <div class="day-header" onclick="toggleDay('day1')">
+            <div class="day-header-left">
+              <div class="day-num">1</div>
+              <div class="day-title-wrap">
+                <h3>AI საფუძვლები, პრომპტ-ინჟინერია და მართვითი კომუნიკაცია</h3>
+                <span>AI Foundations, Prompting & Managerial Communication</span>
+              </div>
+            </div>
+            <div class="day-duration">6 საათი (360 წთ)</div>
+            <span class="day-chevron">▼</span>
+          </div>
+          
+          <div class="day-body">
+            <div class="syllabus-blocks">
+              
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 1 · 120 წუთი</div>
+                <div class="syllabus-block-title">თანამედროვე AI ლანდშაფტი 2026 და საბანკო უსაფრთხოება</div>
+                <ul class="syllabus-list">
+                  <li><strong>LLM ევოლუცია:</strong> როგორ მუშაობენ თანამედროვე მსჯელობაზე ორიენტირებული (Reasoning) მოდელები.</li>
+                  <li><strong>2026 წლის ლანდშაფტი:</strong> GPT-5.4, Claude 4.6, Gemini 3.1 და DeepSeek V3.2 მოდელების შედარება.</li>
+                  <li><strong>უსაფრთხოება და კონფიდენციალობა:</strong> GDPR, ეროვნული ბანკის რეგულაციები და მონაცემთა დაცვა.</li>
+                  <li><strong>ფაქტების გადამოწმება:</strong> AI ჰალუცინაციების მექანიზმები და მათი მინიმუმამდე შემცირების მეთოდები ფინანსურ რეპორტებში.</li>
+                </ul>
+              </div>
+
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 2 · 120 წუთი</div>
+                <div class="syllabus-block-title">პრომპტების დიზაინის C.R.E.A.T.E ჩარჩო მენეჯერებისთვის</div>
+                <ul class="syllabus-list">
+                  <li><strong>C.R.E.A.T.E:</strong> Context (კონტექსტი), Role (როლი), Explicit Details (დეტალები), Adjectives (ზომა/ტონი), Templates (შაბლონი), Evaluation (შეფასება).</li>
+                  <li><strong>Advanced Prompt Engineering:</strong> Few-Shot learning, Structured Reasoning და Role Prompting პრაქტიკაში.</li>
+                  <li><strong>Thinking Partner:</strong> AI-ს გამოყენება სტრატეგიული გადაწყვეტილებების ბრეინშტორმინგისთვის.</li>
+                  <li><strong>კრიზისული კომუნიკაცია:</strong> საბანკო სცენარების, ემპათიური წერილების და ოფიციალური პრეს-რელიზების გენერირება.</li>
+                </ul>
+              </div>
+
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 3 · 120 წუთი</div>
+                <div class="syllabus-block-title">ინფორმაციის მართვა და კვლევა</div>
+                <ul class="syllabus-list">
+                  <li><strong>Perplexity Deep Research:</strong> საბანკო ბაზრის ანალიზი, კონკურენტების კვლევა და ტრენდები 2026.</li>
+                  <li><strong>Google NotebookLM Studio:</strong> შიდა საბანკო რეგულაციების, JCI გაიდლაინების და რთული გაიდლაინების გაანალიზება.</li>
+                  <li><strong>AI დეტექტორები:</strong> მათი მუშაობის ხარვეზები და AI-Resistant დავალებებისა და სამუშაოების დიზაინი.</li>
+                </ul>
+              </div>
+
+            </div>
+            
+            <div class="day-sidebar">
+              <div class="sidebar-widget">
+                <div class="widget-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                  პრაქტიკული ლაბი (დღე 1)
+                </div>
+                <div class="exercise-mini-list">
+                  <div class="ex-item">
+                    <div class="ex-num">1</div>
+                    <div class="ex-content">
+                      <div class="ex-name">CREATE საბანკო პრომპტი</div>
+                      <div class="ex-desc">კლიენტებისთვის რთული ფინანსური გადაწყვეტილების შესახებ ემპათიური და იურიდიულად გამართული შეტყობინების გენერირება.</div>
+                    </div>
+                    <div class="ex-duration">20 წთ</div>
+                  </div>
+                  <div class="ex-item">
+                    <div class="ex-num">2</div>
+                    <div class="ex-content">
+                      <div class="ex-name">NotebookLM ცოდნის ბაზა</div>
+                      <div class="ex-desc">შიდა საბანკო ინსტრუქციების ჩატვირთვა და კრედო ბანკის ახალი თანამშრომლების ონბორდინგის გზამკვლევის შექმნა.</div>
+                    </div>
+                    <div class="ex-duration">30 წთ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <details class="day-details">
+            <summary>საათობრივი განრიგის ნახვა (Hourly Agenda)</summary>
+            <div class="detailed-agenda-timeline">
+              <div class="agenda-hour-block">
+                <div class="agenda-time">10:00 - 11:30</div>
+                <div class="agenda-text">
+                  <b>AI ლოგიკა და 2026 წლის მოდელები</b>
+                  <p>გენერაციული AI ფინანსურ სექტორში: შესაძლებლობები, ლიმიტები და მოდელების (GPT-5.4 vs. Claude 4.6) შედარება.</p>
+                </div>
+              </div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">11:30 - 12:00</div>
+                <div class="agenda-text">
+                  <b>საბანკო GDPR და მონაცემთა უსაფრთხოება</b>
+                  <p>მონაცემთა ანონიმიზაცია და უსაფრთხოების ოქროს წესები AI-სთან მუშაობისას კრედო ბანკში.</p>
+                </div>
+              </div>
+              <div class="agenda-break">☕ ყავის შესვენება — 15 წუთი</div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">12:15 - 14:00</div>
+                <div class="agenda-text">
+                  <b>CREATE ჩარჩო და Prompt Engineering</b>
+                  <p>კრედო ბანკის მენეჯერებისთვის მორგებული პრომპტინგის ჩარჩო. Few-Shot და როლური პრომპტინგი პრაქტიკაში.</p>
+                </div>
+              </div>
+              <div class="agenda-break">🥪 სადილის შესვენება — 45 წუთი</div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">14:45 - 16:15</div>
+                <div class="agenda-text">
+                  <b>Perplexity & NotebookLM</b>
+                  <p>ბაზრის ღრმა კვლევა, კონკურენტების ანალიზი და საბანკო რეგულაციების ანალიტიკური დამუშავება NotebookLM-ში.</p>
+                </div>
+              </div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">16:15 - 17:00</div>
+                <div class="agenda-text">
+                  <b>პრაქტიკული ვორქშოფი და შეჯამება</b>
+                  <p>მონაწილეების მიერ შექმნილი პრომპტების შეფასება და დღე 1-ის შეჯამება.</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        </article>
+
+        <!-- DAY 2 CARD -->
+        <article class="day-card collapsed" id="day2">
+          <div class="day-header" onclick="toggleDay('day2')">
+            <div class="day-header-left">
+              <div class="day-num">2</div>
+              <div class="day-title-wrap">
+                <h3>მონაცემებზე დაფუძნებული ანალიტიკა და No-Code ავტომატიზაცია</h3>
+                <span>Data Analytics & No-Code Workflow Automation</span>
+              </div>
+            </div>
+            <div class="day-duration">6 საათი (360 წთ)</div>
+            <span class="day-chevron">▼</span>
+          </div>
+          
+          <div class="day-body">
+            <div class="syllabus-blocks">
+              
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 1 · 120 წუთი</div>
+                <div class="syllabus-block-title">მონაცემთა ანალიზი და რეპორტინგი AI-ს დახმარებით</div>
+                <ul class="syllabus-list">
+                  <li><strong>Claude Excel & Python:</strong> ფინანსური ცხრილების, Excel-ის და CSV მონაცემების სწრაფი დამუშავება.</li>
+                  <li><strong>Rows AI:</strong> ავტომატური ფორმულები, ჩარტები და მონაცემთა ვიზუალიზაცია 2 წუთში.</li>
+                  <li><strong>Sentiment Analysis:</strong> კრედო ბანკის კლიენტთა კმაყოფილების და უკუკავშირის მასობრივი კლასიფიკაცია.</li>
+                  <li><strong>Chain-of-Thought (CoT):</strong> ლოგიკურად თანმიმდევრული პრომპტინგი ფინანსური რისკების გამოსავლენად.</li>
+                </ul>
+              </div>
+
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 2 · 120 წუთი</div>
+                <div class="syllabus-block-title">პერსონალური AI ასისტენტების (Gems/GPTs) შექმნა</div>
+                <ul class="syllabus-list">
+                  <li><strong>Gemini Gems & Custom GPTs:</strong> საკუთარი ამოცანებისთვის მორგებული ასისტენტის აწყობა.</li>
+                  <li><strong>System Instructions:</strong> Identity (იდენტობა), Constraints (შეზღუდვები), Tone (ტონი), Target Output.</li>
+                  <li><strong>Knowledge Files:</strong> კრედო ბანკის სპეციფიკური ფაილების ჩატვირთვა ასისტენტის მეხსიერებაში.</li>
+                  <li><strong>Case Study:</strong> „საკრედიტო რისკების შეფასების ასისტენტის“ დაპროგრამება.</li>
+                </ul>
+              </div>
+
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 3 · 120 წუთი</div>
+                <div class="syllabus-block-title">No-Code ავტომატიზაცია (n8n და Make.com)</div>
+                <ul class="syllabus-list">
+                  <li><strong>Trigger & Action:</strong> მონაცემების ავტომატური გადაცემა საბანკო ფორმებიდან AI-ში და შემდეგ Excel-ში.</li>
+                  <li><strong>Workspace Integration:</strong> Google Sheets, MS Office და Slack/Teams არხების დაკავშირება AI-სთან.</li>
+                  <li><strong>SOP-ების ავტომატიზაცია:</strong> სტანდარტული ოპერაციული პროცედურების გაციფრულება და ავტომატიზებული კონტროლი.</li>
+                </ul>
+              </div>
+
+            </div>
+            
+            <div class="day-sidebar">
+              <div class="sidebar-widget">
+                <div class="widget-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                  პრაქტიკული ლაბი (დღე 2)
+                </div>
+                <div class="exercise-mini-list">
+                  <div class="ex-item">
+                    <div class="ex-num">1</div>
+                    <div class="ex-content">
+                      <div class="ex-name">Custom Gem-ის შექმნა</div>
+                      <div class="ex-desc">კრედო ბანკის „ფილიალის მენეჯერის ასისტენტის“ აწყობა Gemini Gems პლატფორმაზე.</div>
+                    </div>
+                    <div class="ex-duration">30 წთ</div>
+                  </div>
+                  <div class="ex-item">
+                    <div class="ex-num">2</div>
+                    <div class="ex-content">
+                      <div class="ex-name">CRM Feedback Classifier</div>
+                      <div class="ex-desc">კლიენტთა კვლევის Excel ფაილის დამუშავება და AI-სენტიმენტის ავტომატური მინიჭება.</div>
+                    </div>
+                    <div class="ex-duration">25 წთ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <details class="day-details">
+            <summary>საათობრივი განრიგის ნახვა (Hourly Agenda)</summary>
+            <div class="detailed-agenda-timeline">
+              <div class="agenda-hour-block">
+                <div class="agenda-time">10:00 - 11:30</div>
+                <div class="agenda-text">
+                  <b>Excel & Rows AI ფინანსური ანალიტიკა</b>
+                  <p>მონაცემთა დამუშავების ავტომატიზაცია, ფორმულების გენერირება და სენტიმენტ-ანალიზი კრედო ბანკის რეპორტებისთვის.</p>
+                </div>
+              </div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">11:30 - 12:00</div>
+                <div class="agenda-text">
+                  <b>Chain-of-Thought პრომპტინგი</b>
+                  <p>ლოგიკური მსჯელობის მეთოდები რთული საკრედიტო და ფინანსური რისკების ანალიზისთვის.</p>
+                </div>
+              </div>
+              <div class="agenda-break">☕ ყავის შესვენება — 15 წუთი</div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">12:15 - 14:00</div>
+                <div class="agenda-text">
+                  <b>Custom GPTs და Gemini Gems-ის აწყობა</b>
+                  <p>ლაივ ვორქშოფი: პერსონალური საბანკო ასისტენტის დაპროგრამება სისტემური ინსტრუქციებითა და ფაილებით.</p>
+                </div>
+              </div>
+              <div class="agenda-break">🥪 სადილის შესვენება — 45 წუთი</div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">14:45 - 16:15</div>
+                <div class="agenda-text">
+                  <b>ავტომატიზაციის საფუძვლები n8n / Make</b>
+                  <p>სამუშაო პროცესების ავტომატიზაცია (Trigger & Action) და Notion AI SOP-ების მენეჯმენტი.</p>
+                </div>
+              </div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">16:15 - 17:00</div>
+                <div class="agenda-text">
+                  <b>დავალებების ტესტირება</b>
+                  <p>მონაწილეთა მიერ შექმნილი პერსონალური ასისტენტების ტესტირება და დღის შეჯამება.</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        </article>
+
+        <!-- DAY 3 CARD -->
+        <article class="day-card collapsed" id="day3">
+          <div class="day-header" onclick="toggleDay('day3')">
+            <div class="day-header-left">
+              <div class="day-num">3</div>
+              <div class="day-title-wrap">
+                <h3>Agentic Workflows, AI Governance და დანერგვის სტრატეგია</h3>
+                <span>AI Agents, Data Governance & Adoption Roadmap</span>
+              </div>
+            </div>
+            <div class="day-duration">6 საათი (360 წთ)</div>
+            <span class="day-chevron">▼</span>
+          </div>
+          
+          <div class="day-body">
+            <div class="syllabus-blocks">
+              
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 1 · 120 წუთი</div>
+                <div class="syllabus-block-title">AI აგენტების მულტიაგენტური ეკოსისტემები (Multi-Agent Systems)</div>
+                <ul class="syllabus-list">
+                  <li><strong>AI Agents:</strong> აგენტების როლი 2026 წლის ბიზნეს-პროცესებში. ავტონომიური ამოცანების მართვა.</li>
+                  <li><strong>Microsoft Copilot Studio & Custom Agents:</strong> კრედო ბანკის შიდა პროცესებისთვის აგენტების დაპროგრამება.</li>
+                  <li><strong>Human-in-the-Loop (HITL):</strong> როდის სჭირდება აგენტს ადამიანის დასტური (Approval) ფინანსურ ტრანზაქციებში.</li>
+                </ul>
+              </div>
+
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 2 · 120 წუთი</div>
+                <div class="syllabus-block-title">AI პოლიტიკა (Data Governance) და რისკები ბანკში</div>
+                <ul class="syllabus-list">
+                  <li><strong>EU AI Act 2026:</strong> ევროკავშირის ხელოვნური ინტელექტის აქტი და მისი გავლენა ქართულ ფინანსურ სექტორზე.</li>
+                  <li><strong>Shadow AI პრევენცია:</strong> როგორ ავიცილოთ თავიდან თანამშრომლების მიერ არაავტორიზებული AI ხელსაწყოების გამოყენება.</li>
+                  <li><strong>Prompt Injection & Cyber Security:</strong> AI უსაფრთხოება, პრომპტების მანიპულაციისგან დაცვა და მონაცემთა გაჟონვის პრევენცია.</li>
+                </ul>
+              </div>
+
+              <div class="syllabus-block">
+                <div class="syllabus-block-label">მოდული 3 · 120 წუთი</div>
+                <div class="syllabus-block-title">იმპლემენტაციის 90-დღიანი გზამკვლევი და ROI</div>
+                <ul class="syllabus-list">
+                  <li><strong>Prioritization Matrix:</strong> Impact vs. Feasibility ჩარჩო კრედო ბანკისთვის შესაბამისი Use Case-ების შესარჩევად.</li>
+                  <li><strong>ROI ანალიზი:</strong> AI ლიცენზიების ხარჯებისა და მიღებული დროითი/ფინანსური ეფექტის შედარება.</li>
+                  <li><strong>Change Management:</strong> თანამშრომელთა მზაობა AI-ის მისაღებად და შიდა გადამზადების კულტურის შექმნა.</li>
+                </ul>
+              </div>
+
+            </div>
+            
+            <div class="day-sidebar">
+              <div class="sidebar-widget">
+                <div class="widget-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                  პრაქტიკული ლაბი (დღე 3)
+                </div>
+                <div class="exercise-mini-list">
+                  <div class="ex-item">
+                    <div class="ex-num">1</div>
+                    <div class="ex-content">
+                      <div class="ex-name">Adoption Roadmap</div>
+                      <div class="ex-desc">საკუთარი დეპარტამენტისთვის AI დანერგვის 90-დღიანი სამოქმედო გეგმისა და პრიორიტეტების მატრიცის აგება.</div>
+                    </div>
+                    <div class="ex-duration">30 წთ</div>
+                  </div>
+                  <div class="ex-item">
+                    <div class="ex-num">2</div>
+                    <div class="ex-content">
+                      <div class="ex-name">AI Risk Assessment</div>
+                      <div class="ex-desc">კრედო ბანკის სპეციფიკური Use Case-ის რისკების აუდიტი და უსაფრთხოების პროტოკოლის შემუშავება.</div>
+                    </div>
+                    <div class="ex-duration">20 წთ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <details class="day-details">
+            <summary>საათობრივი განრიგის ნახვა (Hourly Agenda)</summary>
+            <div class="detailed-agenda-timeline">
+              <div class="agenda-hour-block">
+                <div class="agenda-time">10:00 - 11:30</div>
+                <div class="agenda-text">
+                  <b>Multi-Agent Ecosystems & AI Agents</b>
+                  <p>ავტონომიური AI აგენტების კონცეფცია და მათი გამოყენება საბანკო ოპერაციებში. Microsoft Copilot-ის პრაქტიკული დემო.</p>
+                </div>
+              </div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">11:30 - 12:00</div>
+                <div class="agenda-text">
+                  <b>Human-in-the-Loop (HITL) კონტროლი</b>
+                  <p>ადამიანისა და AI-ის კოლაბორაციული მოდელები და გადაწყვეტილებების დამტკიცების იერარქია.</p>
+                </div>
+              </div>
+              <div class="agenda-break">☕ ყავის შესვენება — 15 წუთი</div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">12:15 - 14:00</div>
+                <div class="agenda-text">
+                  <b>AI Governance & EU AI Act</b>
+                  <p>ფინანსური უსაფრთხოება, AI პოლიტიკის ნორმები, Shadow AI პრევენცია და კიბერუსაფრთხოების გაიდლაინები.</p>
+                </div>
+              </div>
+              <div class="agenda-break">🥪 სადილის შესვენება — 45 წუთი</div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">14:45 - 16:15</div>
+                <div class="agenda-text">
+                  <b>Adoption & Prioritization Framework</b>
+                  <p>Use Case-ების პრიორიტეტიზაცია, 90-დღიანი Roadmap, Change Management და ROI-ს გამოთვლა კრედო ბანკისთვის.</p>
+                </div>
+              </div>
+              <div class="agenda-hour-block">
+                <div class="agenda-time">16:15 - 17:00</div>
+                <div class="agenda-text">
+                  <b>პრეზენტაცია, შეფასება და დახურვა</b>
+                  <p>სტუდენტების მიერ მომზადებული იმპლემენტაციის გეგმების პრეზენტაცია, შეფასება და სერტიფიკატების გადაცემა.</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAINING METHODOLOGY -->
+  <section class="alt-bg" id="methodology">
+    <div class="container">
+      <span class="section-kicker">სწავლების მეთოდოლოგია</span>
+      <h2 class="section-title">პრაქტიკული, ინტერაქტიული და ბიზნესზე ორიენტირებული მიდგომა</h2>
+      <p class="section-desc">
+        ჩვენი ტრენინგის მიდგომა ფოკუსირებულია მონაწილეთა მაქსიმალურ ჩართულობაზე, სადაც თეორიული მასალა დაუყოვნებლივ გარდაიქმნება პრაქტიკულ უნარებად.
+      </p>
+
+      <div class="method-grid">
+        <div class="method-card">
+          <div class="method-icon">🛠️</div>
+          <h4>ინტერაქტიული ვორქშოფები</h4>
+          <p>ყოველი თეორიული მოდული სრულდება live დემონსტრაციით და მონაწილეების მიერ საკუთარ ლეპტოპებში დავალებების შესრულებით.</p>
+        </div>
+        <div class="method-card">
+          <div class="method-icon">📊</div>
+          <h4>საბანკო ქეისების ანალიზი</h4>
+          <p>გამოიყენება საერთაშორისო და ლოკალური ფინანსური ინსტიტუტების რეალური მაგალითები, რომლებიც კავშირშია კრედო ბანკის ამოცანებთან.</p>
+        </div>
+        <div class="method-card">
+          <div class="method-icon">🧠</div>
+          <h4>კოლაბორაციული მუშაობა</h4>
+          <p>მონაწილეები ჯგუფურად მუშაობენ AI-ის დანერგვისა და ოპერაციული პრობლემების გადაჭრის (Problem-Solving) სცენარებზე.</p>
+        </div>
+        <div class="method-card">
+          <div class="method-icon">🔄</div>
+          <h4>გამოცდილების გაზიარება</h4>
+          <p>ინტერაქტიული დისკუსიები და peer review სესიები, სადაც მენეჯერები ერთმანეთს უზიარებენ AI-სთან მუშაობის საუკეთესო პრაქტიკას.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BESPOKE BANKING USE CASES -->
+  <section id="cases">
+    <div class="container">
+      <span class="section-kicker">საბანკო ქეისები</span>
+      <h2 class="section-title">კრედო ბანკისთვის მორგებული პრაქტიკული სავარჯიშოები</h2>
+      <p class="section-desc">
+        სასწავლო პროგრამაში ინტეგრირებული რეალური ბიზნეს-სცენარები, რომლებსაც მენეჯერები ტრენინგის მსვლელობისას გადაჭრიან.
+      </p>
+
+      <div class="cases-grid">
+        <!-- Case 1 -->
+        <div class="case-card">
+          <div class="case-tag">CREDIT RISK AUDIT</div>
+          <h3 class="case-title">საკრედიტო რისკების ანალიტიკოსის ასისტენტი</h3>
+          <div class="case-scenario">
+            <strong>სცენარი:</strong> მსესხებლის ფინანსური ანგარიშებისა და საკრედიტო ისტორიის PDF დოკუმენტებიდან 
+            რისკ-ფაქტორების სწრაფი იდენტიფიცირება და რეკომენდაციების მომზადება.
+          </div>
+          <div class="case-action-title">პრაქტიკული შესრულება AI-ით:</div>
+          <ul class="case-action-list">
+            <li>დოკუმენტების ატვირთვა <strong>NotebookLM Studio</strong>-ში ჰალუცინაციების თავიდან ასაცილებლად.</li>
+            <li><strong>Few-Shot Prompting</strong>-ის საშუალებით რისკების შეფასების სტრუქტურირებული ფორმატის დაპროგრამება.</li>
+            <li>შედეგების ექსპორტი და Executive Summary-ის მომზადება ბორდისთვის.</li>
+          </ul>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="case-card">
+          <div class="case-tag">CUSTOMER SERVICE</div>
+          <h3 class="case-title">კლიენტთა უკუკავშირის მასობრივი კლასიფიკატორი</h3>
+          <div class="case-scenario">
+            <strong>სცენარი:</strong> კრედო ბანკის ფილიალებში მიღებული კლიენტთა საჩივრებისა და 
+            უკუკავშირის Excel ბაზის ავტომატური დამუშავება და კატეგორიზაცია.
+          </div>
+          <div class="case-action-title">პრაქტიკული შესრულება AI-ით:</div>
+          <ul class="case-action-list">
+            <li>ბაზის ატვირთვა <strong>Rows AI</strong> ან <strong>Claude Excel Plugin</strong>-ში.</li>
+            <li><strong>Sentiment Analysis</strong>-ით პოზიტიური, ნეიტრალური და ნეგატიური უკუკავშირის გამოყოფა.</li>
+            <li>ავტომატური რეპორტის მომზადება: 3 მთავარი პრობლემური მიმართულების გამოვლენა.</li>
+          </ul>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="case-card">
+          <div class="case-tag">BRANCH MANAGEMENT</div>
+          <h3 class="case-title">ფილიალის მენეჯერის პერსონალური Gem ასისტენტი</h3>
+          <div class="case-scenario">
+            <strong>სცენარი:</strong> ფილიალის მენეჯერის ყოველდღიური რუტინული ამოცანების მართვა, 
+            HR ონბორდინგი და ბრენდული კომუნიკაციის მხარდაჭერა.
+          </div>
+          <div class="case-action-title">პრაქტიკული შესრულება AI-ით:</div>
+          <ul class="case-action-list">
+            <li><strong>Gemini Gems</strong> პლატფორმაზე ფილიალის ასისტენტის შექმნა.</li>
+            <li>System Instructions-ში კრედო ბანკის ბრენდის ხმის (Tone of Voice) და JCI სტანდარტების გაწერა.</li>
+            <li>ინფორმაციული დახმარება: ფილიალის თანამშრომლებისთვის დავალებების განაწილების შაბლონი.</li>
+          </ul>
+        </div>
+
+        <!-- Case 4 -->
+        <div class="case-card">
+          <div class="case-tag">FINTECH AUTOMATION</div>
+          <h3 class="case-title">განაცხადების ავტომატური დამუშავების Workflow</h3>
+          <div class="case-scenario">
+            <strong>სცენარი:</strong> ონლაინ განაცხადის მიღებიდან, მონაცემების ავტომატური დამუშავება 
+            და შესაბამისი ფილიალის მენეჯერისთვის შეტყობინების გაგზავნა.
+          </div>
+          <div class="case-action-title">პრაქტიკული შესრულება AI-ით:</div>
+          <ul class="case-action-list">
+            <li>სატესტო Workflow-ს აწყობა <strong>n8n</strong> ან <strong>Make.com</strong> პლატფორმაზე.</li>
+            <li>Google Forms-ის Trigger-ის შექმნა განაცხადის მიღებაზე.</li>
+            <li>AI Action-ის დამატება: განაცხადის ტექსტის შეჯამება და კლასიფიკაცია 30 წამში.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIORITIZATION FRAMEWORK -->
+  <section class="alt-bg">
+    <div class="container">
+      <span class="section-kicker">დანერგვის ჩარჩო</span>
+      <h2 class="section-title">Use Case-ების პრიორიტეტიზაციის მატრიცა</h2>
+      <p class="section-desc">
+        მეთოდოლოგია, რომელიც ეხმარება კრედო ბანკის მენეჯერებს შეარჩიონ სწორი AI პროექტები დანერგვისთვის მაქსიმალური ROI-ის მისაღებად.
+      </p>
+
+      <div class="framework-container">
+        <div class="framework-desc-box">
+          <h4>Impact vs. Feasibility ჩარჩო</h4>
+          <p>
+            AI-ის ეფექტური ინტეგრაცია მოითხოვს არა ყველაფრის ერთდროულად დაწყებას, არამედ მაღალი ზეგავლენისა (Impact) და 
+            მარტივად განხორციელებადი (Feasibility) პროექტების იდენტიფიცირებას.
+          </p>
+          <ul class="framework-bullets">
+            <li><strong>Quick Wins:</strong> მაღალი გავლენა, მარტივი განხორციელება (მაგ. დოკუმენტების შეჯამება, მომხმარებელთა კომუნიკაციის შაბლონები).</li>
+            <li><strong>Strategic Bets:</strong> მაღალი გავლენა, რთული განხორციელება (მაგ. საკრედიტო რისკების ავტომატური აგენტური მოდელირება).</li>
+            <li><strong>Fill-ins:</strong> დაბალი გავლენა, მარტივი განხორციელება (მაგ. შიდა კალენდრების ოპტიმიზაცია).</li>
+            <li><strong>Thankless Tasks:</strong> დაბალი გავლენა, რთული განხორციელება (თავიდან ასაცილებელი პროექტები).</li>
+          </ul>
+        </div>
+
+        <div class="matrix-box">
+          <div class="matrix-grid">
+            <!-- Q1 -->
+            <div class="matrix-quadrant q1">
+              <span class="q-tag">Q1 · Focus First</span>
+              <div class="q-title">Quick Wins</div>
+              <div class="q-desc">მაღალი გავლენა, მარტივი შესრულება. იძლევა მყისიერ დროით და ფინანსურ ROI-ს გუნდებში.</div>
+            </div>
+            <!-- Q2 -->
+            <div class="matrix-quadrant q2">
+              <span class="q-tag">Q2 · Plan Next</span>
+              <div class="q-title">Strategic Bets</div>
+              <div class="q-desc">მაღალი გავლენა, რთული შესრულება. საჭიროებს IT და უსაფრთხოების გუნდის ჩართულობას.</div>
+            </div>
+            <!-- Q3 -->
+            <div class="matrix-quadrant q3">
+              <span class="q-tag">Q3 · Optional</span>
+              <div class="q-title">Fill-ins</div>
+              <div class="q-desc">დაბალი გავლენა, მარტივი შესრულება. კეთდება რესურსების თავისუფალ დროს.</div>
+            </div>
+            <!-- Q4 -->
+            <div class="matrix-quadrant q4">
+              <span class="q-tag">Q4 · Avoid</span>
+              <div class="q-title">Thankless Tasks</div>
+              <div class="q-desc">დაბალი გავლენა, რთული შესრულება. პროექტები, რომლებიც არ უნდა დაიწყოს ბანკმა.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVALUATION METHODOLOGY -->
+  <section>
+    <div class="container">
+      <span class="section-kicker">შეფასების სისტემა</span>
+      <h2 class="section-title">სასწავლო პროგრესისა და ხარისხის შეფასება</h2>
+      <p class="section-desc">
+        მონაწილეთა მიღებული ცოდნისა და პრაქტიკული უნარების ობიექტური შეფასების მეთოდოლოგია, რომელიც დაფუძნებულია 100-ქულიან სისტემაზე.
+      </p>
+
+      <div class="eval-grid">
+        <div class="eval-card">
+          <div class="eval-value">30%</div>
+          <div class="eval-title">პრაქტიკული ქვიზები (Quizzes)</div>
+          <div class="eval-desc">ყოველდღიური მოკლე ტესტები და თეორიული მასალის ათვისების შემოწმება (3 ქვიზი).</div>
+        </div>
+        <div class="eval-card">
+          <div class="eval-value">40%</div>
+          <div class="eval-title">საშინაო დავალებები (Homework)</div>
+          <div class="eval-desc">ინდივიდუალური პრაქტიკული ამოცანების შესრულება რეალურ საბანკო ქეისებზე (3 დავალება).</div>
+        </div>
+        <div class="eval-card">
+          <div class="eval-value">30%</div>
+          <div class="eval-title">ფინალური პროექტი (Capstone Project)</div>
+          <div class="eval-desc">საკუთარი დეპარტამენტისთვის AI დანერგვის მოდელის, პრომპტების Stack-ისა და 90-დღიანი გეგმის პრეზენტაცია.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REQUIRED DOCUMENTATION CHECKLIST -->
+  <section class="alt-bg">
+    <div class="container">
+      <span class="section-kicker">სატენდერო დოკუმენტაცია</span>
+      <h2 class="section-title">მოთხოვნილი დოკუმენტების სრული პაკეტი</h2>
+      <p class="section-desc">
+        ტენდერის მოთხოვნების შესაბამისად მომზადებული და წარმოდგენილი დოკუმენტაცია.
+      </p>
+
+      <div class="docs-list">
+        <div class="doc-card">
+          <div class="doc-icon">📄</div>
+          <div class="doc-name">ტრენერის რეზიუმე (CV)</div>
+          <div class="doc-status">✓ წარმოდგენილია</div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">🗺️</div>
+          <div class="doc-name">პროგრამის სილაბუსი</div>
+          <div class="doc-status">✓ წარმოდგენილია</div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">🏢</div>
+          <div class="doc-name">კომპანიის პრეზენტაცია</div>
+          <div class="doc-status">✓ წარმოდგენილია</div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">💼</div>
+          <div class="doc-name">შესაბამისი გამოცდილება</div>
+          <div class="doc-status">✓ წარმოდგენილია</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAINER PROFILE -->
+  <section id="portfolio">
+    <div class="container">
+      <span class="section-kicker">ინსტრუქტორის პროფილი</span>
+      <h2 class="section-title">ტრენერი და L&D ექსპერტი</h2>
+      <p class="section-desc">
+        ხელოვნური ინტელექტის პრაქტიკული დანერგვის, ციფრული ტრანსფორმაციისა და მენეჯერული უნარების განვითარების მრავალწლიანი გამოცდილება.
+      </p>
+
+      <div class="trainer-card">
+        <div class="trainer-avatar">გბ</div>
+        <div class="trainer-info">
+          <h3>გიორგი ბასილაია</h3>
+          <div class="trainer-role">Google Certified Educator Level 2 & Gemini Certified Faculty · Anthropic Certified</div>
+          <p class="trainer-bio">
+            25+ წლის გამოცდილება ტექნოლოგიებში, უნივერსიტეტის პროფესორი, 14 სამეცნიერო ნაშრომისა (3388 ციტირებით) და 18 საერთაშორისო კვლევითი 
+            პროექტის მონაწილე (NATO, USAID, ERASMUS). 
+            გიორგი ხელმძღვანელობს AI პრაქტიკულ ტრენინგებს Smart Academy-ში, GIPA-ში, OPPA.ge-ში, Tempo Holding-ში და მწვანე სკოლაში.
+            იგი სპეციალიზებულია კორპორატიული AI დანერგვის სტრატეგიებში, უსაფრთხოებასა და მონაცემთა მართვაში (Governance).
+          </p>
+          <div class="trainer-tags">
+            <span class="tr-tag">Google Certified Educator</span>
+            <span class="tr-tag">Gemini Certified Faculty</span>
+            <span class="tr-tag">Anthropic AI Fluency</span>
+            <span class="tr-tag">Change Management Expert</span>
+            <span class="tr-tag">25+ Y Technology Experience</span>
+          </div>
+          <div class="trainer-actions">
+            <a href="../lectures/CV Basilaia 2026.pdf" target="_blank" class="btn btn-outline" style="border-radius: var(--radius-sm); font-size: 12px; padding: 10px 20px;">
+              📁 იხილეთ რეზიუმე (Download CV PDF)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ / GLOSSARY SECTION -->
+  <section class="alt-bg">
+    <div class="container">
+      <span class="section-kicker">კითხვა-პასუხი და ტერმინოლოგია</span>
+      <h2 class="section-title">ხშირად დასმული კითხვები (FAQ)</h2>
+      <p class="section-desc">
+        ინფორმაცია ტრენინგის ორგანიზაციული მხარის, ხელსაწყოებისა და მონაცემთა უსაფრთხოების შესახებ კრედო ბანკის კონტექსტში.
+      </p>
+
+      <div class="faq-wrapper">
+        <!-- Item 1 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="toggleFaq(this)">
+            <span>რა AI ინსტრუმენტებს შევისწავლით ტრენინგის განმავლობაში?</span>
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-body">
+            ჩვენ შევისწავლით 2026 წლის წამყვან ტექსტურ და ანალიტიკურ AI მოდელებს: ChatGPT (OpenAI GPT-5.4), Claude.ai (Anthropic Claude 4.6), Gemini.google (Gemini 3.1), Perplexity.ai Deep Research, Google NotebookLM Studio, Rows AI, და No-Code პლატფორმებს (n8n და Make.com).
+          </div>
+        </div>
+        <!-- Item 2 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="toggleFaq(this)">
+            <span>როგორ იქნება დაცული კრედო ბანკის მონაცემთა კონფიდენციალობა?</span>
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-body">
+            ეს არის ტრენინგის ერთ-ერთი ყველაზე მნიშვნელოვანი ნაწილი. პირველივე დღეს მონაწილეები შეისწავლიან მონაცემთა ანონიმიზაციის წესებს, JCI და GDPR შესაბამისობას. პრაქტიკული სამუშაოებისას არ მოხდება რეალური კლიენტების პერსონალური მონაცემების ან სენსიტიური ფინანსური ინფორმაციის გაზიარება AI პლატფორმებთან. გამოყენებული იქნება სინთეზური/სატესტო მონაცემთა ნაკრები.
+          </div>
+        </div>
+        <!-- Item 3 -->
+        <div class="faq-item">
+          <div class="faq-header" onclick="toggleFaq(this)">
+            <span>საჭიროა თუ არა მონაწილეებს ჰქონდეთ ტექნიკური/პროგრამირების განათლება?</span>
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-body">
+            არა, პროგრამა სპეციალურად შექმნილია მენეჯერებისა და ოპერაციული გუნდისთვის. იგი ფოკუსირებულია ბიზნეს-ამოცანებზე, No-Code პლატფორმებსა და პრომპტინგის გამართულ სტრუქტურებზე, რაც არ საჭიროებს კოდის წერას ან პროგრამირების ცოდნას.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT BANNER & CONTACT DETAILS -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-banner">
+        <div class="contact-left">
+          <h3>საკონტაქტო ინფორმაცია</h3>
+          <p>სს კრედო ბანკის ტენდერთან დაკავშირებული საკონტაქტო პირი და დეტალები:</p>
+          <div class="footer-divider" style="margin: 20px 0 0 0;"></div>
+        </div>
+        <div class="contact-info-list">
+          <div class="contact-item">
+            <div class="c-icon">👤</div>
+            <div class="c-details">
+              <p>კონტაქტი (Contact Person)</p>
+              <b>ანა კობახიძე (Ana Kobakhidze)</b>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="c-icon">✉️</div>
+            <div class="c-details">
+              <p>ელფოსტა (Email)</p>
+              <b>akobakhidze@credo.ge</b>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="c-icon">📞</div>
+            <div class="c-details">
+              <p>ტელეფონი (Phone Number)</p>
+              <b>591543042</b>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-logo">JSC <span>CREDO BANK</span> AI PROGRAM</div>
+      <div class="footer-divider"></div>
+      <p class="footer-text">ოპერაციული ეფექტურობა, უსაფრთხოება და მულტიაგენტური ეკოსისტემები.</p>
+      <p class="footer-text" style="font-size: 11px;">© 2026 Giorgi Basilaia. All Rights Reserved. Georgian UTF-8 Safe.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme Toggle Functionality
+    function toggleTheme() {
+      const body = document.body;
+      const toggleBtn = document.getElementById('themeToggleBtn');
+      if (body.classList.contains('light')) {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        body.classList.remove('dark');
+        body.classList.add('light');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // Initialize Theme
+    window.onload = function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.className = savedTheme;
+      
+      // Setup progress bar fill tracking
+      window.onscroll = function() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("progress-bar-fill").style.width = scrolled + "%";
+        
+        // Header shadow control
+        const navbar = document.getElementById('navbar');
+        if (winScroll > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      };
+    };
+
+    // Toggle Syllabus Day Body Collapse/Expand
+    function toggleDay(dayId) {
+      const card = document.getElementById(dayId);
+      if (card.classList.contains('collapsed')) {
+        card.classList.remove('collapsed');
+      } else {
+        card.classList.add('collapsed');
+      }
+    }
+
+    // Toggle Mobile Menu Drawer
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      if (menu.style.display === 'flex') {
+        menu.style.display = 'none';
+      } else {
+        menu.style.display = 'flex';
+      }
+    }
+
+    // Toggle FAQ item collapse/expand
+    function toggleFaq(headerElement) {
+      const item = headerElement.parentElement;
+      if (item.classList.contains('open')) {
+        item.classList.remove('open');
+      } else {
+        // Close other open faq items
+        const openItems = document.querySelectorAll('.faq-item.open');
+        openItems.forEach(i => i.classList.remove('open'));
+        item.classList.add('open');
+      }
+    }
+  </script>
+</body>
+</html>
