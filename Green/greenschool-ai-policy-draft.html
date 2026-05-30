@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>მწვანე სკოლა — დიღმის კამპუსი: AI-პოლიტიკა (სამუშაო დრაფტი)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-dark: #022c22;
+      --green-deep: #064e3b;
+      --green-mid: #059669;
+      --green-light: #10b981;
+      --green-pale: #ecfdf5;
+      --gold: #f59e0b;
+      --gold-light: #fef3c7;
+      --white: #ffffff;
+      --border-color: #e5e7eb;
+      --text: #1f2937;
+      --text-light: #4b5563;
+      --card-bg: #ffffff;
+      --red-light: #fef2f2;
+      --red-border: #fecaca;
+      --red-text: #991b1b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Fira GO', sans-serif;
+      background: #f3f4f6;
+      color: var(--text);
+      line-height: 1.6;
+      padding-left: 300px;
+    }
+    @media (max-width: 1024px) { body { padding-left: 0; } }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+    /* SIDEBAR */
+    #sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 300px;
+      background: linear-gradient(180deg, #022c22, #064e3b);
+      color: var(--white);
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 4px 0 16px rgba(0,0,0,0.1);
+      padding: 20px 0;
+    }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+    .sidebar-header h1 { font-size: 17px; color: var(--green-light); font-weight: 700; }
+    .sidebar-header p { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 13.5px;
+      transition: background 0.2s, color 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .nav-link.active { background: rgba(16,185,129,0.15); border-left-color: var(--green-light); color: var(--white); }
+    .nav-group { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); padding: 15px 20px 5px 20px; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--green-deep), #022c22);
+      color: var(--white);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 25px rgba(6,78,59,0.15);
+    }
+    header h2 { font-size: clamp(22px, 3.5vw, 30px); font-weight: 900; margin-bottom: 10px; }
+    header p { font-size: 15px; color: rgba(255,255,255,0.8); max-width: 800px; }
+    .campus-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* CARDS & SECTIONS */
+    .policy-section {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+      scroll-margin-top: 20px;
+      position: relative;
+    }
+    .policy-section h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green-deep);
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--green-pale);
+      padding-bottom: 10px;
+    }
+    .editable-paragraph {
+      background: #fafafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      font-size: 14.5px;
+      color: var(--text-light);
+      position: relative;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .editable-paragraph:hover {
+      background: #f5f5f9;
+      border-color: var(--green-light);
+    }
+    .edit-btn {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: var(--green-light);
+      border: none;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .edit-btn:hover { background: var(--green-mid); }
+    .clause-num {
+      font-weight: bold;
+      color: var(--green-deep);
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    /* INTERACTIVE REVIEW BOX */
+    .review-action-box {
+      background: #fefefe;
+      border: 2px dashed var(--green-light);
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 40px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+    }
+    .review-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--green-deep);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .live-notes-area {
+      width: 100%;
+      height: 120px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      margin-bottom: 15px;
+    }
+    .action-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+      font-size: 14px;
+      border: none;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-approve { background: var(--green-mid); color: white; }
+    .btn-approve:hover { background: var(--green-dark); }
+    .btn-export { background: var(--gold); color: var(--green-dark); }
+    .btn-export:hover { background: #d97706; }
+    .btn-reset { background: #f3f4f6; color: var(--text-light); }
+    .btn-reset:hover { background: #e5e7eb; }
+
+    /* CHECKBOX STYLING */
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .check-box {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .check-item.checked .check-box {
+      background: var(--green-mid);
+      border-color: var(--green-mid);
+    }
+    .check-item.checked .check-box::after {
+      content: "✓";
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .check-text {
+      font-size: 14.5px;
+      color: var(--text);
+    }
+    .check-item.checked .check-text {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+
+    .alert-box {
+      background: var(--green-pale);
+      border-left: 4px solid var(--green-light);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .alert-box strong { color: var(--green-dark); }
+
+    .warning-box {
+      background: var(--red-light);
+      border-left: 4px solid #ef4444;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--red-text);
+      margin-bottom: 20px;
+    }
+    .warning-box strong { color: #7f1d1d; }
+
+    /* COMMENTS PANEL */
+    #comments-panel {
+      background: #fafafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 25px;
+    }
+    .comment-list { list-style: none; }
+    .comment-item {
+      background: white;
+      border: 1px solid var(--border-color);
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-comment {
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <h1>მწვანე სკოლა</h1>
+      <p>დიღმის კამპუსი · AI-პოლიტიკა</p>
+    </div>
+    <nav>
+      <div class="nav-group">სარჩევი</div>
+      <a href="#preamble" class="nav-link active">📜 1. პრეამბულა და მიზანი</a>
+      <a href="#principles" class="nav-link">⚖️ 2. ეთიკური პრინციპები</a>
+      <a href="#admin" class="nav-link">🏢 3. საორგანიზაციო გამოყენება</a>
+      <a href="#academic" class="nav-link">🎓 4. სასწავლო პროცესი</a>
+      <a href="#security" class="nav-link">🔒 5. GDPR და უსაფრთხოება</a>
+      <a href="#prohibited" class="nav-link">🚫 6. აკრძალული ქმედებები</a>
+      <a href="#incident" class="nav-link">🚨 7. რეაგირება და დარღვევები</a>
+      <a href="#review" class="nav-link">🔄 8. განხილვა და დამტკიცება</a>
+      
+      <div class="nav-group">ნავიგაცია</div>
+      <a href="lecture-5.html" class="nav-link">📖 სესია 5 სლაიდები</a>
+      <a href="index.html" class="nav-link">🌿 კურსის ჰაბი</a>
+    </nav>
+  </aside>
+
+  <div class="container">
+    
+    <header>
+      <div class="campus-badge">დიღმის კამპუსი · Dighomi Campus</div>
+      <h2>AI-ტექნოლოგიების გამოყენების პოლიტიკა და ეთიკის წესდება</h2>
+      <p>მწვანე სკოლის დიღმის კამპუსის საოპერაციო, ადმინისტრაციული და აკადემიური AI-ტრანსფორმაციის გაფართოებული სამუშაო ვერსია. დოკუმენტი განკუთვნილია სესია 5-ზე ერთობლივი განხილვის, რედაქტირებისა და ფინალური დამტკიცებისთვის.</p>
+    </header>
+
+    <main>
+      
+      <!-- 1. PREAMBLE -->
+      <section id="preamble" class="policy-section">
+        <h3>📜 1. პრეამბულა და მიზანი</h3>
+        <div class="alert-box">
+          <strong>სამუშაო შენიშვნა:</strong> ამ სექციაში განვსაზღვრავთ, თუ რატომ ნერგავს მწვანე სკოლა დიღმის კამპუსში ხელოვნურ ინტელექტს და ვისზე ვრცელდება ეს წესები.
+        </div>
+        
+        <div class="editable-paragraph" id="clause-1-1">
+          <span class="clause-num">1.1.</span>
+          <span class="text-content">მწვანე სკოლა დიღმის კამპუსი აღიარებს ხელოვნური ინტელექტის (AI) ტექნოლოგიების როლს თანამედროვე განათლებისა და საოპერაციო მენეჯმენტის ოპტიმიზაციაში. პოლიტიკის მიზანია შექმნას უსაფრთხო, ეთიკური და ეფექტური ჩარჩო AI ინსტრუმენტების გამოსაყენებლად.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-1-1')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-1-2">
+          <span class="clause-num">1.2.</span>
+          <span class="text-content">დანერგილი ინოვაციები მიზნად ისახავს რუტინული, ადმინისტრაციული და საორგანიზაციო დატვირთვის შემცირებას მენეჯერებისა და პედაგოგებისთვის, რათა მეტი რესურსი მიემართოს მოსწავლის ინდივიდუალურ განვითარებასა და REAL სტანდარტების დანერგვას.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-1-2')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-1-3">
+          <span class="clause-num">1.3.</span>
+          <span class="text-content"><strong>მოქმედების სფერო:</strong> ეს წესდება სავალდებულოა შესასრულებლად დიღმის კამპუსის ყველა ადმინისტრაციული თანამშრომლისთვის, კოორდინატორისთვის, სრულ განაკვეთზე დასაქმებული პედაგოგისთვის, მოწვეული სპეციალისტისთვის და მოსწავლისთვის.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-1-3')">რედაქტირება</button>
+        </div>
+      </section>
+
+      <!-- 2. CORE PRINCIPLES -->
+      <section id="principles" class="policy-section">
+        <h3>⚖️ 2. ძირითადი ეთიკური პრინციპები</h3>
+        
+        <div class="editable-paragraph" id="clause-2-1">
+          <span class="clause-num">2.1.</span>
+          <span class="text-content"><strong>ადამიანური კონტროლი (Human-in-the-loop):</strong> ხელოვნური ინტელექტის მიერ გენერირებული ნებისმიერი დოკუმენტი, საპასუხო შეტყობინება თუ ანგარიში სკოლის სახელით გაგზავნამდე უნდა გადამოწმდეს და დადასტურდეს პასუხისმგებელი პირის მიერ. AI არის დამხმარე და არა გადაწყვეტილების მიმღები.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-2-1')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-2-2">
+          <span class="clause-num">2.2.</span>
+          <span class="text-content"><strong>IRESPECT ღირებულებები:</strong> AI-ს გამოყენებით მომზადებული ნებისმიერი კომუნიკაცია (წერილები მშობლებთან, მიმართვები) უნდა შეესაბამებოდეს სკოლის ღირებულებებს — ემპათიას, ურთიერთპატივისცემასა და ეთიკას. ენა უნდა იყოს პოზიტიური, მხარდამჭერი და თანამშრომლობაზე ორიენტირებული.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-2-2')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-2-3">
+          <span class="clause-num">2.3.</span>
+          <span class="text-content"><strong>გამჭვირვალობა:</strong> სკოლა ღიად აცხადებს იმ საოპერაციო პროცესების შესახებ, სადაც გამოიყენება ხელოვნური ინტელექტი. მშობელსა და ვიზიტორს უნდა ჰქონდეს მკაფიო მინიშნება, რომ ვებ-გვერდზე განთავსებული Chatbase ვიჯეტი არის AI-ასისტენტი.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-2-3')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-2-4">
+          <span class="clause-num">2.4.</span>
+          <span class="text-content"><strong>ეკოლოგიური პასუხისმგებლობა და ციფრული მდგრადობა:</strong> როგორც „მწვანე სკოლა“, დიღმის კამპუსი ითვალისწინებს AI მოდელების მუშაობისას მოხმარებულ ენერგიას. პერსონალს ეძლევა რეკომენდაცია, მოერიდოს ზედმეტ, გიგანტურ გენერაციებს, გამოიყენოს ოპტიმალური და მსუბუქი მოდელები იქ, სადაც ეს საკმარისია, და ხელი შეუწყოს ციფრულ ეკო-მეგობრობას.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-2-4')">რედაქტირება</button>
+        </div>
+      </section>
+
+      <!-- 3. ADMINISTRATIVE USE -->
+      <section id="admin" class="policy-section">
+        <h3>🏢 3. საორგანიზაციო და ადმინისტრაციული გამოყენება</h3>
+        
+        <div class="editable-paragraph" id="clause-3-1">
+          <span class="clause-num">3.1.</span>
+          <span class="text-content"><strong>Notion ეკოსისტემა:</strong> დიღმის კამპუსის მართვის პანელი (Dashboard) გამოიყენება დოკუმენტების ცენტრალიზებული შენახვისა და მონიტორინგისთვის. Notion AI გამოიყენება მხოლოდ შეჯამებების, ტენდენციების ძებნისა და ანგარიშების სტრუქტურირებისთვის.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-3-1')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-3-2">
+          <span class="clause-num">3.2.</span>
+          <span class="text-content"><strong>Make.com ავტომატიზაციები:</strong> სამუშაო პროცესების ავტომატიზაცია (მაგ: Google Forms-დან მონაცემების Notion-ში გადატანა) ხორციელდება Make.com-ის უსაფრთხო სცენარებით. დაუშვებელია Make-ით პერსონალური ფინანსური მონაცემების ავტომატური გაგზავნა მექანიკური შემოწმების გარეშე.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-3-2')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-3-3">
+          <span class="clause-num">3.3.</span>
+          <span class="text-content"><strong>Custom Gems:</strong> დეპარტამენტის ლიდერები და კოორდინატორები იყენებენ სპეციალიზებულ Custom Gems-ებს (მაგ: ბაღის კოორდინატორის Gem, ფსიქოლოგის დამხმარე Gem) ყოველდღიური სამუშაო გეგმებისა და წერილების შაბლონების მოსამზადებლად.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-3-3')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-3-4">
+          <span class="clause-num">3.4.</span>
+          <span class="text-content"><strong>კომუნიკაციის კლასიფიკაცია:</strong> დაშვებულია AI-ს მიერ ზოგადი განცხადებების, საინფორმაციო ბიულეტენებისა და ტექნიკური შეტყობინებების დრაფტების მომზადება. მკაცრად იკრძალება სენსიტიური, კონფიდენციალური საკითხების (დისციპლინური ქმედებები, თანამშრომლებს შორის დავა, ინდივიდუალური ფინანსური შეთანხმებები) ავტომატური გენერაცია.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-3-4')">რედაქტირება</button>
+        </div>
+      </section>
+
+      <!-- 4. ACADEMIC USE -->
+      <section id="academic" class="policy-section">
+        <h3>🎓 4. სასწავლო პროცესი და პედაგოგები</h3>
+        
+        <div class="editable-paragraph" id="clause-4-1">
+          <span class="clause-num">4.1.</span>
+          <span class="text-content"><strong>გაკვეთილის მომზადება:</strong> მასწავლებლებს ეძლევათ რეკომენდაცია გამოიყენონ AI გაკვეთილის სცენარების, აქტივობების იდეებისა და დიფერენცირებული მასალების შესაქმნელად სხვადასხვა დონის მოსწავლეებისთვის, რათა უზრუნველყონ REAL სწავლების სტანდარტების შესრულება.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-4-1')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-4-2">
+          <span class="clause-num">4.2.</span>
+          <span class="text-content"><strong>შეფასება და უკუკავშირი:</strong> დაშვებულია AI-ის გამოყენება მოსწავლეთა ნაშრომების შეფასების დრაფტების მოსამზადებლად წინასწარ გაწერილი რუბრიკების მიხედვით. საბოლოო ნიშანი და კომენტარი ყოველთვის განისაზღვრება მასწავლებლის მიერ.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-4-2')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-4-3">
+          <span class="clause-num">4.3.</span>
+          <span class="text-content"><strong>მოსწავლეთა აკადემიური კეთილსინდისიერება:</strong> მოსწავლეების მიერ AI-ს გამოყენება წახალისებულია როგორც დამხმარე „ტუტორი“ ან კვლევის პარტნიორი. დაუშვებელია AI-გენერირებული ტექსტის პირდაპირი კოპირება (პლაგიატი) საკლასო ან საშინაო დავალებების ჩაბარებისას.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-4-3')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-4-4">
+          <span class="clause-num">4.4.</span>
+          <span class="text-content"><strong>მასწავლებელთა მენტორობა:</strong> კურსდამთავრებული მენეჯერები იღებენ ვალდებულებას, იმოქმედონ როგორც „AI მენტორებმა“ თავიანთ კათედრებზე. ისინი დაეხმარებიან მასწავლებლებს ტექნოლოგიების ათვისებაში, რათა თავიდან იქნეს აცილებული ციფრული გადაღლა (digital fatigue).</span>
+          <button class="edit-btn" onclick="editParagraph('clause-4-4')">რედაქტირება</button>
+        </div>
+      </section>
+
+      <!-- 5. GDPR & SECURITY -->
+      <section id="security" class="policy-section">
+        <h3>🔒 5. GDPR, უსაფრთხოება და კონფიდენციალობა</h3>
+        
+        <div class="editable-paragraph" id="clause-5-1">
+          <span class="clause-num">5.1.</span>
+          <span class="text-content"><strong>პერსონალური მონაცემების დაცვა (GDPR):</strong> მკაცრად იკრძალება მოსწავლეების, მშობლების ან თანამშრომლების პერსონალური მონაცემების (სრული სახელი, პირადი ნომერი, ტელეფონი, მისამართი, ფინანსური ინფორმაცია) შეყვანა საჯარო AI სისტემებში (Chatbase, Gemini, Claude, Lovable და ა.შ.).</span>
+          <button class="edit-btn" onclick="editParagraph('clause-5-1')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-5-2">
+          <span class="clause-num">5.2.</span>
+          <span class="text-content"><strong>ანონიმიზაციის წესი:</strong> ნებისმიერი მონაცემი, რომელიც მუშავდება AI-ის მიერ (მაგ: მშობელთა კომენტარების სენტიმენტ-ანალიზი), უნდა იყოს წინასწარ ანონიმიზებული. ნებისმიერი იდენტიფიკატორი უნდა შეიცვალოს აბრევიატურით ან ზოგადი კოდით.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-5-2')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-5-3">
+          <span class="clause-num">5.3.</span>
+          <span class="text-content"><strong>მონაცემთა წაშლა და შენახვის ლიმიტი:</strong> პერსონალმა რეგულარულად (მინიმუმ თვეში ერთხელ) უნდა გაასუფთაოს საჯარო AI ხელსაწყოების ჩატის ისტორიები. Chatbase-ის ბაზაში ატვირთული FAQ და დოკუმენტები უნდა გადამოწმდეს ყოველ სემესტრში, რათა არ მოხდეს მოძველებული ან კონფიდენციალური მასალების საჯაროდ შენახვა.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-5-3')">რედაქტირება</button>
+        </div>
+      </section>
+
+      <!-- 6. PROHIBITED ACTIVITIES -->
+      <section id="prohibited" class="policy-section">
+        <h3>🚫 6. მკაცრად აკრძალული ქმედებები</h3>
+        <div class="warning-box">
+          <strong>მნიშვნელოვანია:</strong> ამ სექციაში გაწერილი წესების დარღვევა იწვევს უსაფრთხოებისა და აკადემიური ეთიკის სტანდარტების კოლაფსს.
+        </div>
+
+        <div class="editable-paragraph" id="clause-6-1">
+          <span class="clause-num">6.1.</span>
+          <span class="text-content"><strong>აკადემიური გაყალბება მოსწავლეთა მიერ:</strong> კატეგორიულად იკრძალება მოსწავლეების მიერ AI-ის გამოყენება შემაჯამებელი წერების, ოფიციალური გამოცდების, პროექტების ან ესეების სრულად გენერირებისთვის საკუთარი კვლევისა და გააზრების გარეშე. მსგავსი ფაქტი განიხილება როგორც აკადემიური პლაგიატი.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-6-1')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-6-2">
+          <span class="clause-num">6.2.</span>
+          <span class="text-content"><strong>ავტომატური გადაწყვეტილების მიღება:</strong> იკრძალება AI-ს გამოყენება მოსწავლეთა მიღების, კლასიდან კლასში გადაყვანის, ქცევის ქულების დაკლების, ან თანამშრომელთა შეფასებისა და სამსახურიდან გათავისუფლების შესახებ ავტომატური გადაწყვეტილებების მისაღებად.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-6-2')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-6-3">
+          <span class="clause-num">6.3.</span>
+          <span class="text-content"><strong>არაავტორიზებული ხელსაწყოები:</strong> სკოლის საორგანიზაციო და აკადემიურ პროცესებში დასაშვებია მხოლოდ ადმინისტრაციის მიერ ავტორიზებული AI სისტემების გამოყენება (Notion AI, Make.com, Gemini, Claude, Chatbase, Lovable.dev). სხვა არაავტორიზებული პლატფორმების გამოყენება სამუშაო მიზნებისთვის აკრძალულია.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-6-3')">რედაქტირება</button>
+        </div>
+      </section>
+
+      <!-- 7. INCIDENTS -->
+      <section id="incident" class="policy-section">
+        <h3>🚨 7. პოლიტიკის დარღვევა და ინციდენტებზე რეაგირება</h3>
+        
+        <div class="editable-paragraph" id="clause-7-1">
+          <span class="clause-num">7.1.</span>
+          <span class="text-content"><strong>მონაცემთა გაჟონვის ინციდენტი:</strong> ნებისმიერი თანამშრომელი, რომელიც შემთხვევით შეიყვანს პერსონალურ ან კონფიდენციალურ მონაცემებს საჯარო AI ხელსაწყოში, ვალდებულია დაუყოვნებლივ (არაუგვიანეს 2 საათისა) აცნობოს კამპუსის IT უსაფრთხოების ჯგუფს და ადმინისტრაციას, რათა მოხდეს მონაცემთა წაშლის მოთხოვნის გაგზავნა პლატფორმაზე.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-7-1')">რედაქტირება</button>
+        </div>
+
+        <div class="editable-paragraph" id="clause-7-2">
+          <span class="clause-num">7.2.</span>
+          <span class="text-content"><strong>პასუხისმგებლობა და სანქციები:</strong> წინამდებარე პოლიტიკის განზრახ ან განმეორებითი დარღვევა თანამშრომელთა მხრიდან განიხილება როგორც სამუშაო დისციპლინის დარღვევა და დაექვემდებარება შიდა განხილვას დიღმის კამპუსის ადმინისტრაციის მიერ, სკოლის შინაგანაწესისა და შრომის კოდექსის შესაბამისად.</span>
+          <button class="edit-btn" onclick="editParagraph('clause-7-2')">რედაქტირება</button>
+        </div>
+      </section>
+
+      <!-- 8. LIVE REVIEW & APPROVAL -->
+      <section id="review" class="policy-section">
+        <h3>🔄 8. განხილვა და დამტკიცება (ლექციის ინტერაქციული პანელი)</h3>
+        
+        <div class="alert-box">
+          <strong>ინსტრუქცია ტრენერისთვის:</strong> ქვემოთ მოცემულია გაფართოებული მუხლების ჩეკლისტი. განიხილეთ თითოეული მუხლი მონაწილეებთან ერთად დიღმის კამპუსის სპეციფიკის გათვალისწინებით. თუ მუხლი მისაღებია, მონიშნეთ იგი. დაამატეთ მონაწილეების შენიშვნები კომენტარების ველში.
+        </div>
+
+        <div class="check-item" onclick="toggleCheck(this, 'clause-1-1')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 1.1: AI-ს როლი საოპერაციო მენეჯმენტში</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-1-2')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 1.2: ადმინისტრაციული დატვირთვის შემცირება და REAL სტანდარტები</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-1-3')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 1.3: წესდების მოქმედების სფერო (სავალდებულოობა)</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-2-1')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 2.1: ადამიანური კონტროლის (Human-in-the-loop) პრინციპი</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-2-2')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 2.2: IRESPECT ეთიკური ღირებულებების დაცვა კომუნიკაციაში</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-2-3')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 2.3: საჯარო გამოყენების გამჭვირვალობა</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-2-4')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 2.4: ეკოლოგიური პასუხისმგებლობა და ციფრული ეკო-მეგობრობა</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-3-1')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 3.1: Notion-ის გამოყენება საორგანიზაციოდ</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-3-2')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 3.2: Make.com-ის უსაფრთხო სცენარები</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-3-4')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 3.4: კომუნიკაციის კლასიფიკაცია (დაშვებული vs აკრძალული თემები)</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-4-3')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 4.3: მოსწავლეთა მიერ AI-ს აკადემიური კეთილსინდისიერებით გამოყენება</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-4-4')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 4.4: მასწავლებელთა შიდა AI მენტორობის ვალდებულება</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-5-1')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 5.1: GDPR პერსონალურ მონაცემთა მკაცრი დაცვა</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-5-3')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 5.3: მონაცემთა წაშლა და ჩატის ისტორიების წმენდა</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-6-2')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 6.2: ავტომატური საბოლოო გადაწყვეტილების მიღების აკრძალვა</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, 'clause-7-1')">
+          <div class="check-box"></div>
+          <div class="check-text">მუხლი 7.1: მონაცემთა გაჟონვის ინციდენტზე მყისიერი რეაგირება</div>
+        </div>
+
+        <!-- COMMENT ADDER -->
+        <div class="review-action-box">
+          <div class="review-title">📝 ლექციის ცოცხალი ჩანაწერები და შენიშვნები</div>
+          <textarea class="live-notes-area" id="new-comment" placeholder="ჩაწერეთ მონაწილეების მიერ ლექციისას გამოთქმული მოსაზრება, დამატება ან შესწორება..."></textarea>
+          
+          <div class="action-row">
+            <button class="btn btn-approve" onclick="addComment()">📝 ჩანაწერის დამატება</button>
+            <button class="btn btn-export" onclick="approveAndDownload()">📥 დრაფტის ექსპორტი (TXT)</button>
+            <button class="btn btn-reset" onclick="resetAll()">🔄 განულება</button>
+          </div>
+        </div>
+
+        <div id="comments-panel" style="display:none;">
+          <h4 style="margin-bottom:10px; color: var(--green-deep);">ლექციაზე შეტანილი შენიშვნების სია:</h4>
+          <ul class="comment-list" id="comments-list"></ul>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Toggle check
+    function toggleCheck(element, clauseId) {
+      element.classList.toggle('checked');
+      const textNode = document.getElementById(clauseId);
+      if (element.classList.contains('checked')) {
+        if (textNode) textNode.style.borderLeft = "4px solid var(--green-mid)";
+      } else {
+        if (textNode) textNode.style.borderLeft = "";
+      }
+    }
+
+    // Edit paragraph live
+    function editParagraph(clauseId) {
+      const container = document.getElementById(clauseId);
+      const textSpan = container.querySelector('.text-content');
+      const editBtn = container.querySelector('.edit-btn');
+      
+      if (editBtn.innerText === "რედაქტირება") {
+        const currentText = textSpan.innerText.replace(/^\d\.\d\.\s?/, '');
+        const textarea = document.createElement('textarea');
+        textarea.value = currentText;
+        textarea.style.width = "100%";
+        textarea.style.height = "80px";
+        textarea.style.fontFamily = "inherit";
+        textarea.style.fontSize = "14.5px";
+        textarea.style.padding = "10px";
+        textarea.style.borderRadius = "6px";
+        textarea.style.border = "1px solid var(--green-light)";
+        textarea.className = "temp-textarea";
+        
+        textSpan.style.display = "none";
+        container.appendChild(textarea);
+        editBtn.innerText = "შენახვა";
+        editBtn.style.background = "var(--gold)";
+      } else {
+        const textarea = container.querySelector('.temp-textarea');
+        const newText = textarea.value;
+        const clauseNum = container.querySelector('.clause-num').innerText;
+        
+        textSpan.innerText = newText;
+        textSpan.style.display = "inline";
+        textarea.remove();
+        editBtn.innerText = "რედაქტირება";
+        editBtn.style.background = "var(--green-light)";
+      }
+    }
+
+    // Add comment
+    function addComment() {
+      const txtArea = document.getElementById('new-comment');
+      const commentText = txtArea.value.trim();
+      if (!commentText) return;
+
+      const panel = document.getElementById('comments-panel');
+      panel.style.display = "block";
+
+      const list = document.getElementById('comments-list');
+      const li = document.createElement('li');
+      li.className = "comment-item";
+      li.innerHTML = `
+        <span>${commentText}</span>
+        <span class="delete-comment" onclick="deleteComment(this)">წაშლა</span>
+      `;
+      list.appendChild(li);
+      txtArea.value = '';
+    }
+
+    function deleteComment(btn) {
+      btn.parentElement.remove();
+      const list = document.getElementById('comments-list');
+      if (list.children.length === 0) {
+        document.getElementById('comments-panel').style.display = "none";
+      }
+    }
+
+    // Reset all changes
+    function resetAll() {
+      if (confirm("დარწმუნებული ხართ, რომ გსურთ ყველა ცვლილების განულება?")) {
+        window.location.reload();
+      }
+    }
+
+    // Approve and export
+    function approveAndDownload() {
+      let text = "მწვანე სკოლა - დიღმის კამპუსი: AI-პოლიტიკის დოკუმენტი\n";
+      text += "====================================================\n\n";
+      
+      const sections = document.querySelectorAll('.policy-section');
+      sections.forEach(sec => {
+        const title = sec.querySelector('h3').innerText;
+        text += `\n${title}\n`;
+        text += "-".repeat(title.length) + "\n";
+        
+        const paragraphs = sec.querySelectorAll('.editable-paragraph');
+        paragraphs.forEach(p => {
+          const num = p.querySelector('.clause-num').innerText;
+          const content = p.querySelector('.text-content').innerText;
+          text += `${num} ${content}\n\n`;
+        });
+      });
+
+      // Add comments if any
+      const comments = document.querySelectorAll('.comment-item');
+      if (comments.length > 0) {
+        text += "\n\nლექციისას შეტანილი შენიშვნები და დამატებები:\n";
+        text += "========================================\n";
+        comments.forEach((c, idx) => {
+          const cText = c.querySelector('span').innerText;
+          text += `${idx + 1}. ${cText}\n`;
+        });
+      }
+
+      // Trigger download
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "greenschool_ai_policy_dighomi_final.txt";
+      link.click();
+    }
+
+    // Active link highlighting on scroll
+    window.addEventListener('scroll', () => {
+      let current = '';
+      const sections = document.querySelectorAll('.policy-section');
+      const scrollPosition = window.scrollY + 100;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollPosition >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').substring(1) === current) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
