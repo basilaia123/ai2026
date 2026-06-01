@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სერტიფიკატების მართვის პანელი</title>
+  
+  <!-- Font and Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Alex+Brush&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CDNs for functionality -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --secondary: #8b5cf6;
+      --accent: #ec4899;
+      --dark-bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border-color: rgba(99, 102, 241, 0.15);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --success: #10b981;
+      --danger: #ef4444;
+      --gold: #c5a880;
+      --gold-dark: #8c6d3f;
+      --gold-light: #e5dbcc;
+      --navy: #0d1b2a;
+      --ivory: #faf7f2;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'FiraGO', 'Outfit', sans-serif;
+      background: #0b0f19;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Admin View Layout */
+    .admin-container {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Sidebar controls */
+    .sidebar {
+      background: #111827;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .brand i {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand h2 {
+      font-family: 'Cormorant Garamond', 'FiraGO', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-primary);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-control {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Main Workspace Workspace */
+    .workspace {
+      padding: 40px;
+      overflow-y: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .section-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 16px;
+    }
+
+    .section-title-bar h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    /* Certificate Canvas Container */
+    .cert-preview-outer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0f172a;
+      border-radius: 20px;
+      border: 1px dashed var(--border-color);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      min-height: 300px;
+    }
+
+    .cert-scale-wrapper {
+      position: relative;
+      width: 1123px;
+      height: 794px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    /* Target A4 Dimensions: 1123px x 794px */
+    .cert-container {
+      width: 1123px;
+      height: 794px;
+      background: var(--ivory);
+      color: var(--navy);
+      position: absolute;
+      top: 0;
+      left: 0;
+      box-sizing: border-box;
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+      transform-origin: top left;
+      flex-shrink: 0;
+      margin: 0;
+    }
+
+    /* Premium Double Gold Frame Styling */
+    .cert-border-outer {
+      position: absolute;
+      top: 16px; left: 16px; right: 16px; bottom: 16px;
+      border: 3px solid var(--gold);
+      pointer-events: none;
+    }
+
+    .cert-border-inner {
+      position: absolute;
+      top: 24px; left: 24px; right: 24px; bottom: 24px;
+      border: 1px solid var(--gold-dark);
+      pointer-events: none;
+    }
+
+    /* Corner ornamental vector boxes */
+    .cert-corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--gold-dark);
+      pointer-events: none;
+    }
+
+    .cert-corner-tl { top: 24px; left: 24px; border-right: none; border-bottom: none; }
+    .cert-corner-tr { top: 24px; right: 24px; border-left: none; border-bottom: none; }
+    .cert-corner-bl { bottom: 24px; left: 24px; border-right: none; border-top: none; }
+    .cert-corner-br { bottom: 24px; right: 24px; border-left: none; border-top: none; }
+
+    /* Decorative background textures */
+    .cert-bg-graphic {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: 
+        radial-gradient(circle at 10% 10%, rgba(197, 168, 128, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(197, 168, 128, 0.03) 0%, transparent 40%),
+        url('data:image/svg+xml,<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="none"/><path d="M 0 0 L 40 40 M 40 0 L 0 40" stroke="rgba(197,168,128,0.01)" stroke-width="0.5"/></svg>');
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .cert-header {
+      text-align: center;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cert-academy-logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 4px;
+      font-family: 'Outfit', sans-serif;
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+    }
+
+    .cert-badge-text {
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--gold-dark);
+    }
+
+    .cert-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.2rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+
+    .cert-body {
+      text-align: center;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .cert-subtitle {
+      font-size: 0.95rem;
+      color: #555;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .cert-name {
+      font-family: 'Cormorant Garamond', 'FiraGO', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--navy);
+      border-bottom: 1.5px solid rgba(197, 168, 128, 0.4);
+      padding: 0 40px 10px 40px;
+      min-width: 450px;
+      display: inline-block;
+      letter-spacing: 0.5px;
+    }
+
+    .cert-name-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 500;
+      font-style: italic;
+      color: #666;
+      margin-top: -6px;
+    }
+
+    .cert-description {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 800px;
+      color: #333;
+    }
+
+    .cert-description strong {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .cert-footer {
+      display: grid;
+      grid-template-columns: 1fr 180px 1fr;
+      align-items: flex-end;
+      z-index: 2;
+    }
+
+    .cert-sign-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .cert-date-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .cert-meta-label {
+      font-size: 0.75rem;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .cert-meta-val {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .cert-signature-art {
+      font-family: 'Alex Brush', cursive;
+      font-size: 2.6rem;
+      color: #2b4c7e;
+      height: 48px;
+      line-height: 1.1;
+      user-select: none;
+      transform: rotate(-3deg) translateX(10px);
+    }
+
+    .cert-sign-line {
+      width: 200px;
+      height: 1px;
+      background: #ccc;
+      margin-top: 4px;
+    }
+
+    /* Central Validation Seal & QR */
+    .cert-seal-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .cert-qr-holder {
+      background: white;
+      border: 1px solid rgba(197, 168, 128, 0.4);
+      padding: 6px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .cert-qr-holder canvas {
+      width: 115px;
+      height: 115px;
+    }
+
+    .cert-qr-id {
+      font-size: 0.7rem;
+      font-family: monospace;
+      color: #888;
+      margin-top: 6px;
+      font-weight: bold;
+    }
+
+    /* Registry Table Styles */
+    .history-card {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 30px;
+    }
+
+    .history-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .history-card-header h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .search-bar {
+      flex: 1;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .registry-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .registry-table th {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .registry-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .registry-table tr:hover td {
+      background: rgba(99, 102, 241, 0.03);
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      border-radius: 6px;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: #111827;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      padding: 32px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      transform: translateY(-20px);
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      color: white;
+    }
+
+    .bulk-textarea {
+      width: 100%;
+      height: 180px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px;
+      color: white;
+      font-family: monospace;
+      font-size: 0.85rem;
+      resize: none;
+      outline: none;
+    }
+
+    .bulk-textarea:focus {
+      border-color: var(--primary);
+    }
+
+    /* ======================================================== */
+    /* STUDENT RENDER VIEW MODE (?view=1)                       */
+    /* ======================================================== */
+    body.student-view-mode {
+      background: #0f172a;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    body.student-view-mode .admin-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: auto;
+      width: auto;
+    }
+
+    body.student-view-mode .sidebar,
+    body.student-view-mode .section-title-bar,
+    body.student-view-mode .history-card {
+      display: none !important;
+    }
+
+    body.student-view-mode .workspace {
+      padding: 0;
+      height: auto;
+      width: auto;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    body.student-view-mode .cert-preview-outer {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      overflow: visible;
+    }
+
+    /* Floating Toolbar in student view */
+    .student-toolbar {
+      display: none;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+      padding: 14px 24px;
+      border-radius: 50px;
+      justify-content: center;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 100;
+      margin-bottom: 10px;
+      animation: fadeInDown 0.6s ease;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    body.student-view-mode .student-toolbar {
+      display: flex;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      
+      .admin-container,
+      .sidebar,
+      .workspace,
+      .cert-preview-outer,
+      .student-toolbar,
+      .history-card {
+        display: none !important;
+      }
+
+      .cert-preview-outer {
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+      /* Elevate certificate for printing */
+      #printableCertArea {
+        display: block !important;
+        position: absolute;
+        top: 0; left: 0;
+        width: 1123px;
+        height: 794px;
+        transform: none !important;
+        box-shadow: none !important;
+        background: var(--ivory) !important;
+        page-break-inside: avoid;
+        page-break-after: avoid;
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+    }
+
+    #printableCertArea {
+      display: none;
+    }
+
+    /* Fallback display for printing */
+    @media screen {
+      .printable-wrapper {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ADMIN VIEW CONTAINER -->
+  <div class="admin-container" id="adminContainer">
+    
+    <!-- Sidebar Control Panel -->
+    <aside class="sidebar">
+      <div class="brand">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h2>სერტიფიკატები</h2>
+      </div>
+      <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: -16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">სერტიფიკატების მართვის პანელი v1.2</p>
+
+      <!-- Input Form -->
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label for="certId">სერტიფიკატის ID</label>
+          <span style="font-size: 0.75rem; color: var(--success);"><i class="fa-solid fa-lock" style="color:var(--success)"></i> დაცული ID</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="certId" class="form-control" placeholder="SA-AI-xxxx" style="flex: 1;">
+          <button onclick="document.getElementById('certId').value = generateSecureId(); updateCertificatePreview();" class="btn btn-secondary" style="padding: 0 14px;" title="ახალი დაცული ID-ის გენერაცია"><i class="fa-solid fa-arrows-rotate"></i></button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="qrType">QR კოდის ბმულის ტიპი</label>
+        <select id="qrType" class="form-control" style="cursor: pointer;">
+          <option value="simple">მარტივი (ID-ით, საჭიროებს registry.json-ს)</option>
+          <option value="full">სრული (თვითკმარი, უფრო მკვრივი QR)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="studentNameKa">სახელი, გვარი (ქართულად)</label>
+        <input type="text" id="studentNameKa" class="form-control" placeholder="გიორგი ბასილაია">
+      </div>
+
+      <div class="form-group">
+        <label for="studentNameEn">Name, Surname (English)</label>
+        <input type="text" id="studentNameEn" class="form-control" placeholder="Giorgi Basilaia">
+      </div>
+
+      <div class="form-group">
+        <label for="courseName">ტრენინგის დასახელება</label>
+        <input type="text" id="courseName" class="form-control" value="AI - ხელოვნური ინტელექტი პრაქტიკაში">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="courseHours">საათების რაოდენობა</label>
+          <input type="number" id="courseHours" class="form-control" value="25">
+        </div>
+        <div class="form-group">
+          <label for="courseGrade">შეფასება (ქულა)</label>
+          <input type="number" id="courseGrade" class="form-control" value="95" min="0" max="100">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="issueDate">გაცემის თარიღი</label>
+        <input type="date" id="issueDate" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="secretSalt">უსაფრთხოების გასაღები (Salt Key)</label>
+        <input type="password" id="secretSalt" class="form-control" value="AI2026_GiorgiBasilaia_SecKey">
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="btn-group">
+        <button onclick="saveCurrentCertificate()" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> გენერირება და შენახვა</button>
+        <div class="form-row">
+          <button onclick="downloadAsPDF()" class="btn btn-secondary" style="font-size:0.8rem;"><i class="fa-solid fa-file-pdf" style="color:var(--danger)"></i> PDF ბეჭდვა</button>
+          <button onclick="downloadAsPNG()" class="btn btn-secondary" style="font-size:0.8rem;"><i class="fa-solid fa-file-image" style="color:var(--success)"></i> PNG სურათი</button>
+        </div>
+        <button onclick="openBulkModal()" class="btn btn-secondary"><i class="fa-solid fa-file-csv"></i> მონაცემების იმპორტი (Bulk)</button>
+        <button onclick="downloadRegistryFile()" class="btn btn-success" style="background:#059669; margin-top: 4px;"><i class="fa-solid fa-file-arrow-down"></i> ჩამოტვირთე registry.json</button>
+      </div>
+    </aside>
+
+    <!-- Workspace -->
+    <main class="workspace">
+      
+      <!-- Toolbar (Only visible in Student view, but HTML sits here) -->
+      <div class="student-toolbar">
+        <button onclick="downloadAsPDF()" class="btn btn-primary"><i class="fa-solid fa-file-pdf"></i> ჩამოტვირთვა PDF (ბეჭდვა)</button>
+        <button onclick="downloadAsPNG()" class="btn btn-success"><i class="fa-solid fa-file-image"></i> ჩამოტვირთვა PNG სურათად</button>
+        <button onclick="closeStudentView()" id="closeStudentBtn" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i> დახურვა</button>
+      </div>
+
+      <!-- Top Title Bar -->
+      <div class="section-title-bar">
+        <h1>ინტერაქტიული დიზაინის პრევალუაცია</h1>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+          ზომა: <strong>1123 x 794 (A4 Landscape)</strong>
+        </div>
+      </div>
+
+      <!-- Live Certificate preview outer -->
+      <div class="cert-preview-outer">
+        <div class="cert-scale-wrapper" id="certScaleWrapper">
+          <!-- Live Certificate Canvas -->
+          <div class="cert-container" id="certificateCanvas">
+            <!-- Double gold borders -->
+            <div class="cert-border-outer"></div>
+            <div class="cert-border-inner"></div>
+            
+            <!-- Ornamental Corners -->
+            <div class="cert-corner cert-corner-tl"></div>
+            <div class="cert-corner cert-corner-tr"></div>
+            <div class="cert-corner cert-corner-bl"></div>
+            <div class="cert-corner cert-corner-br"></div>
+            
+            <!-- Graphic backgrounds -->
+            <div class="cert-bg-graphic"></div>
+  
+            <!-- Header -->
+            <div class="cert-header">
+              <div class="cert-academy-logo" style="letter-spacing: 2px;">ხელოვნური ინტელექტი პრაქტიკაში</div>
+              <h2 class="cert-title" style="margin-top: 5px;">სერტიფიკატი</h2>
+              <div class="cert-subtitle">Certificate of Completion</div>
+            </div>
+  
+            <!-- Body -->
+            <div class="cert-body">
+              <span class="cert-subtitle" style="font-size: 0.8rem; letter-spacing: 2px;">გადაეცემა / This is awarded to</span>
+              <div>
+                <h3 class="cert-name" id="certNameKa">გიორგი ბასილაია</h3>
+                <div class="cert-name-en" id="certNameEn">Giorgi Basilaia</div>
+              </div>
+              <p class="cert-description">
+                რომელმაც წარმატებით დაასრულა პრაქტიკული კურსი:<br>
+                <strong id="certCourseName">AI - ხელოვნური ინტელექტი პრაქტიკაში</strong><br>
+                მოცულობით <strong id="certHours">25</strong> საათი.
+              </p>
+            </div>
+  
+            <!-- Footer -->
+            <div class="cert-footer">
+              <!-- Left Signature -->
+              <div class="cert-sign-block">
+                <div class="cert-signature-art">Giorgi Basilaia</div>
+                <div class="cert-sign-line"></div>
+                <span class="cert-meta-label">კურსის ავტორი და ლექტორი</span>
+                <span class="cert-meta-val" style="font-size:0.85rem; color:#444;">გიორგი ბასილაია</span>
+              </div>
+  
+              <!-- Central Verification QR -->
+              <div class="cert-seal-block">
+                <div class="cert-qr-holder" title="დაასკანირეთ ვალიდურობისთვის">
+                  <canvas id="qrCanvas"></canvas>
+                </div>
+                <span class="cert-qr-id" id="certIdText">SA-AI-01-001</span>
+              </div>
+  
+              <!-- Right Date -->
+              <div class="cert-date-block">
+                <span class="cert-meta-label" style="margin-bottom: 24px;">გაცემის თარიღი / Date</span>
+                <div class="cert-sign-line" style="width: 150px; margin-bottom: 4px;"></div>
+                <span class="cert-meta-val" id="certDateText">02 ივნისი 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+
+      <!-- Certificate registry list -->
+      <div class="history-card">
+        <div class="history-card-header">
+          <h3>სერტიფიკატების რეესტრი (History)</h3>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="exportRegistry()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-file-export"></i> ექსპორტი (JSON)</button>
+            <button onclick="triggerImportRegistry()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-file-import"></i> იმპორტი (JSON)</button>
+            <input type="file" id="registryImportFile" style="display:none;" onchange="importRegistry(event)">
+          </div>
+        </div>
+
+        <div class="search-row">
+          <input type="text" id="registrySearch" class="form-control search-bar" placeholder="ძებნა მონაწილის სახელით ან სერტიფიკატის ID-ით..." oninput="renderRegistryTable()">
+        </div>
+
+        <div class="table-container">
+          <table class="registry-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>მონაწილე (ქართ / EN)</th>
+                <th>კურსი და საათები</th>
+                <th>ქულა</th>
+                <th>თარიღი</th>
+                <th>მოქმედება</th>
+              </tr>
+            </thead>
+            <tbody id="registryTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- BULK IMPORT MODAL -->
+  <div class="modal-overlay" id="bulkModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>მონაცემების მასობრივი იმპორტი (CSV/TSV)</h3>
+        <button onclick="closeBulkModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5;">
+        ჩასვით მონაცემები შემდეგი ფორმატით (მძიმით ან Tab-ით გამოყოფილი):<br>
+        <code style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; color:var(--accent);">ID, სახელი ქართულად, სახელი ინგლისურად, ქულა</code> (კურსი და საათები აიღება ფორმიდან).<br>
+        მაგალითი:<br>
+        <code style="color:#bbb; font-size:0.75rem;">SA-AI-01-002, დავით კაპანაძე, David Kapanadze, 98<br>SA-AI-01-003, ნინო მეგრელიშვილი, Nino Megrelishvili, 88</code>
+      </p>
+      <textarea id="bulkImportText" class="bulk-textarea" placeholder="SA-AI-01-002, სახელი გვარი, Name Surname, 90"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+        <button onclick="closeBulkModal()" class="btn btn-secondary">გაუქმება</button>
+        <button onclick="processBulkImport()" class="btn btn-primary"><i class="fa-solid fa-file-import"></i> იმპორტირება</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT DUPLICATE AREA -->
+  <div id="printableCertArea">
+    <!-- This container will duplicate the certificate layout for pixel-perfect printing -->
+  </div>
+
+  <script>
+    // Config
+    const DEFAULT_SALT = "AI2026_GiorgiBasilaia_SecKey";
+    let certificateRegistry = [];
+
+    // On Load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set today's date in form
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('issueDate').value = today;
+
+      // Generate secure default ID
+      document.getElementById('certId').value = generateSecureId();
+
+      // Load Registry from LocalStorage
+      loadRegistry();
+
+      // Listen for input changes in form to update preview in real-time
+      const liveInputs = ['certId', 'studentNameKa', 'studentNameEn', 'courseName', 'courseHours', 'courseGrade', 'issueDate', 'secretSalt', 'qrType'];
+      liveInputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', updateCertificatePreview);
+      });
+
+      // Check URL parameters for Student Render Mode (?view=1)
+      checkUrlParams();
+
+      // Initial scaling and resize hooks
+      scaleCertificatePreview();
+      window.addEventListener('resize', scaleCertificatePreview);
+    });
+
+    // Check URL parameters
+    function checkUrlParams() {
+      const params = {};
+      const search = window.location.search.substring(1);
+      if (!search) return;
+
+      const pairs = search.split('&');
+      for (let i = 0; i < pairs.length; i++) {
+        const pair = pairs[i].split('=');
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+      }
+
+      if (params.view === '1') {
+        // Switch body style to student layout
+        document.body.className = 'student-view-mode';
+
+        // Load values into the certificate layout from URL params
+        document.getElementById('studentNameKa').value = params.n_ka || '';
+        document.getElementById('studentNameEn').value = params.n_en || '';
+        document.getElementById('courseName').value = params.course || '';
+        document.getElementById('courseHours').value = params.hours || '25';
+        document.getElementById('courseGrade').value = params.grade || '';
+        document.getElementById('certId').value = params.id || '';
+        document.getElementById('issueDate').value = params.date || '';
+
+        // Configure dynamic close button to go back to verification page
+        const closeBtn = document.getElementById('closeStudentBtn');
+        closeBtn.onclick = () => {
+          // Go back to validator page with same params (excluding view)
+          const cleanQuery = window.location.search.replace('view=1', '').replace('&&', '&');
+          window.location.href = 'verify.html' + cleanQuery;
+        };
+
+        // Render A4 certificate preview immediately
+        updateCertificatePreview();
+      }
+    }
+
+    // Convert Date to Georgian Format
+    function formatGeorgianDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      
+      const months = [
+        'იანვარი', 'თებერვალი', 'მარტი', 'აპრილი', 'მაისი', 'ივნისი',
+        'ივლისი', 'აგვისტო', 'სექტემბერი', 'ოქტომბერი', 'ნოემბერი', 'დეკემბერი'
+      ];
+      
+      const day = parseInt(parts[2], 10);
+      const monthIndex = parseInt(parts[1], 10) - 1;
+      const year = parts[0];
+      
+      return `${day} ${months[monthIndex]} ${year}`;
+    }
+
+    // Auto-scale the fixed A4 template to fit the screen container nicely
+    function scaleCertificatePreview() {
+      const outer = document.querySelector('.cert-preview-outer');
+      const cert = document.getElementById('certificateCanvas');
+      const wrapper = document.getElementById('certScaleWrapper');
+      if (!outer || !cert || !wrapper) return;
+
+      // Do not apply scale when printing
+      if (window.matchMedia('print').matches) {
+        cert.style.transform = 'none';
+        wrapper.style.width = '1123px';
+        wrapper.style.height = '794px';
+        return;
+      }
+
+      const padding = 40; // 20px padding left/right
+      const outerWidth = outer.clientWidth - padding;
+      const targetWidth = 1123;
+      
+      let scale = outerWidth / targetWidth;
+      
+      // Cap scale
+      if (scale > 1) scale = 1;
+      if (scale < 0.1) scale = 0.1;
+
+      // Apply scale using CSS transform
+      cert.style.transform = `scale(${scale})`;
+      
+      // Update wrapper physical space
+      wrapper.style.width = (1123 * scale) + 'px';
+      wrapper.style.height = (794 * scale) + 'px';
+    }
+
+    // Real-time Update of preview
+    function updateCertificatePreview() {
+      const certId = document.getElementById('certId').value.trim();
+      const studentNameKa = document.getElementById('studentNameKa').value.trim() || 'მონაწილის სახელი';
+      const studentNameEn = document.getElementById('studentNameEn').value.trim() || 'Participant Name';
+      const courseName = document.getElementById('courseName').value.trim() || 'AI - ხელოვნური ინტელექტი პრაქტიკაში';
+      const courseHours = document.getElementById('courseHours').value || '25';
+      const courseGrade = document.getElementById('courseGrade').value || '0';
+      const issueDate = document.getElementById('issueDate').value;
+      const secretSalt = document.getElementById('secretSalt').value.trim() || DEFAULT_SALT;
+
+      // Update Texts
+      document.getElementById('certNameKa').textContent = studentNameKa;
+      document.getElementById('certNameEn').textContent = studentNameEn;
+      document.getElementById('certCourseName').textContent = courseName;
+      document.getElementById('certHours').textContent = courseHours;
+      document.getElementById('certIdText').textContent = certId;
+      document.getElementById('certDateText').textContent = formatGeorgianDate(issueDate) || issueDate;
+
+      // Calculate cryptographic signature
+      // Fields: id + n_ka + n_en + course + hours + grade + date + salt
+      const rawText = certId + studentNameKa + studentNameEn + courseName + courseHours + courseGrade + issueDate + secretSalt;
+      const signature = CryptoJS.SHA256(rawText).toString();
+
+      // Create Verification Link based on selected QR type
+      const productionBase = "http://chatgpt.ge/certificate/";
+      const qrType = document.getElementById('qrType').value;
+      let verificationUrl = '';
+
+      if (qrType === 'simple') {
+        // Point ONLY to the ID for maximum QR simplicity and scanning speed
+        verificationUrl = `${productionBase}verify.html?id=${encodeURIComponent(certId)}`;
+      } else {
+        // Self-contained full parameters fallback
+        let queryParts = [];
+        queryParts.push(`id=${encodeURIComponent(certId)}`);
+        queryParts.push(`k=${encodeURIComponent(studentNameKa)}`);
+        queryParts.push(`e=${encodeURIComponent(studentNameEn)}`);
+        if (courseName !== 'AI - ხელოვნური ინტელექტი პრაქტიკაში') {
+          queryParts.push(`c=${encodeURIComponent(courseName)}`);
+        }
+        if (courseHours !== '25') {
+          queryParts.push(`h=${encodeURIComponent(courseHours)}`);
+        }
+        queryParts.push(`g=${encodeURIComponent(courseGrade)}`);
+        queryParts.push(`d=${encodeURIComponent(issueDate)}`);
+        queryParts.push(`s=${encodeURIComponent(signature)}`);
+        verificationUrl = `${productionBase}verify.html?` + queryParts.join('&');
+      }
+
+      // Re-generate QR Code canvas
+      const qrCanvas = document.getElementById('qrCanvas');
+      qrCanvas.getContext('2d').clearRect(0, 0, qrCanvas.width, qrCanvas.height);
+      
+      new QRious({
+        element: qrCanvas,
+        value: verificationUrl,
+        size: 300, // Higher resolution for crisp pixels
+        level: 'M' // Medium level: larger block sizes, significantly higher scan speed
+      });
+
+      // Update printable duplicate
+      document.getElementById('printableCertArea').innerHTML = document.getElementById('certificateCanvas').outerHTML;
+      
+      // Scale preview
+      scaleCertificatePreview();
+    }
+
+    // Local Storage Registry Operations
+    function loadRegistry() {
+      const stored = localStorage.getItem('sa_certificate_registry');
+      if (stored) {
+        try {
+          certificateRegistry = JSON.parse(stored);
+        } catch(e) {
+          certificateRegistry = [];
+        }
+      }
+      renderRegistryTable();
+    }
+
+    function saveRegistry() {
+      localStorage.setItem('sa_certificate_registry', JSON.stringify(certificateRegistry));
+      renderRegistryTable();
+    }
+
+    function saveCurrentCertificate() {
+      const certId = document.getElementById('certId').value.trim();
+      const nameKa = document.getElementById('studentNameKa').value.trim();
+      const nameEn = document.getElementById('studentNameEn').value.trim();
+      const course = document.getElementById('courseName').value.trim();
+      const hours = document.getElementById('courseHours').value;
+      const grade = document.getElementById('courseGrade').value;
+      const date = document.getElementById('issueDate').value;
+      const salt = document.getElementById('secretSalt').value.trim();
+
+      if (!certId || !nameKa || !nameEn) {
+        alert("გთხოვთ შეავსოთ სავალდებულო ველები: ID, სახელი (KA), სახელი (EN)!");
+        return;
+      }
+
+      // Check if duplicate ID exists
+      const existingIndex = certificateRegistry.findIndex(c => c.id === certId);
+
+      const record = { id: certId, nameKa, nameEn, course, hours, grade, date, salt };
+
+      if (existingIndex > -1) {
+        if (confirm(`სერტიფიკატი ID-ით ${certId} უკვე არსებობს. გსურთ მისი განახლება?`)) {
+          certificateRegistry[existingIndex] = record;
+        } else {
+          return;
+        }
+      } else {
+        certificateRegistry.push(record);
+      }
+
+      saveRegistry();
+      alert("სერტიფიკატი წარმატებით შეინახა რეესტრში!");
+      
+      // Auto increment ID for next entry
+      incrementCertId();
+    }
+
+    // Generate secure high-entropy random ID to prevent sequential guessing/enumeration
+    function generateSecureId() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let secureToken = '';
+      if (window.crypto && window.crypto.getRandomValues) {
+        const array = new Uint8Array(12);
+        window.crypto.getRandomValues(array);
+        for (let i = 0; i < array.length; i++) {
+          secureToken += chars[array[i] % chars.length];
+        }
+      } else {
+        for (let i = 0; i < 12; i++) {
+          secureToken += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+      }
+      return `SA-AI-${secureToken}`;
+    }
+
+    function incrementCertId() {
+      document.getElementById('certId').value = generateSecureId();
+      updateCertificatePreview();
+    }
+
+    function renderRegistryTable() {
+      const search = document.getElementById('registrySearch').value.toLowerCase().trim();
+      const tbody = document.getElementById('registryTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = certificateRegistry.filter(c => 
+        c.id.toLowerCase().includes(search) || 
+        c.nameKa.toLowerCase().includes(search) || 
+        c.nameEn.toLowerCase().includes(search)
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">ისტორია ცარიელია ან ჩანაწერი ვერ მოიძებნა.</td></tr>`;
+        return;
+      }
+
+      // Sort descending by id
+      filtered.sort((a,b) => b.id.localeCompare(a.id));
+
+      filtered.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-family:monospace; font-weight:700; color:var(--primary);">${c.id}</td>
+          <td>
+            <div style="font-weight:600;">${c.nameKa}</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary);">${c.nameEn}</div>
+          </td>
+          <td>
+            <div>${c.course}</div>
+            <span style="font-size:0.75rem; background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px;">${c.hours} სთ</span>
+          </td>
+          <td><span style="font-weight:700; color:var(--gold);">${c.grade}/100</span></td>
+          <td style="font-size:0.8rem;">${c.date}</td>
+          <td class="actions-cell">
+            <button onclick="loadRecord('${c.id}')" class="btn btn-secondary btn-sm" title="რედაქტირება"><i class="fa-solid fa-edit"></i></button>
+            <button onclick="copyVerUrl('${c.id}')" class="btn btn-secondary btn-sm" title="ბმულის კოპირება"><i class="fa-solid fa-link"></i></button>
+            <button onclick="deleteRecord('${c.id}')" class="btn btn-danger btn-sm" title="წაშლა"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function loadRecord(id) {
+      const record = certificateRegistry.find(c => c.id === id);
+      if (!record) return;
+
+      document.getElementById('certId').value = record.id;
+      document.getElementById('studentNameKa').value = record.nameKa;
+      document.getElementById('studentNameEn').value = record.nameEn;
+      document.getElementById('courseName').value = record.course;
+      document.getElementById('courseHours').value = record.hours;
+      document.getElementById('courseGrade').value = record.grade;
+      document.getElementById('issueDate').value = record.date;
+      if (record.salt) document.getElementById('secretSalt').value = record.salt;
+
+      updateCertificatePreview();
+      // Scroll to top of sidebar
+      document.querySelector('.sidebar').scrollTop = 0;
+    }
+
+    function deleteRecord(id) {
+      if (confirm(`დარწმუნებული ხართ, რომ გსურთ ${id} სერტიფიკატის წაშლა რეესტრიდან?`)) {
+        certificateRegistry = certificateRegistry.filter(c => c.id !== id);
+        saveRegistry();
+      }
+    }
+
+    function copyVerUrl(id) {
+      const record = certificateRegistry.find(c => c.id === id);
+      if (!record) return;
+
+      const rawText = record.id + record.nameKa + record.nameEn + record.course + record.hours + record.grade + record.date + (record.salt || DEFAULT_SALT);
+      const signature = CryptoJS.SHA256(rawText).toString();
+
+      const productionBase = "http://chatgpt.ge/certificate/";
+      
+      let queryParts = [];
+      queryParts.push(`id=${encodeURIComponent(record.id)}`);
+      queryParts.push(`k=${encodeURIComponent(record.nameKa)}`);
+      queryParts.push(`e=${encodeURIComponent(record.nameEn)}`);
+      
+      if (record.course !== 'AI - ხელოვნური ინტელექტი პრაქტიკაში') {
+        queryParts.push(`c=${encodeURIComponent(record.course)}`);
+      }
+      if (record.hours !== '25') {
+        queryParts.push(`h=${encodeURIComponent(record.hours)}`);
+      }
+      
+      queryParts.push(`g=${encodeURIComponent(record.grade)}`);
+      queryParts.push(`d=${encodeURIComponent(record.date)}`);
+      queryParts.push(`s=${encodeURIComponent(signature)}`);
+
+      const verificationUrl = `${productionBase}verify.html?` + queryParts.join('&');
+
+      navigator.clipboard.writeText(verificationUrl)
+        .then(() => alert("ვალიდაციის ბმული კოპირებულია!"))
+        .catch(err => alert("კოპირება ვერ მოხერხდა: " + err));
+    }
+
+    // Export JSON
+    function exportRegistry() {
+      if (certificateRegistry.length === 0) {
+        alert("ექსპორტისთვის მონაცემები არ არის!");
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(certificateRegistry, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `smart_academy_registry_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    // Download registry database specifically as 'registry.json' for server validation
+    function downloadRegistryFile() {
+      if (certificateRegistry.length === 0) {
+        alert("რეესტრი ცარიელია! ჩაწერეთ სერტიფიკატები და შეინახეთ.");
+        return;
+      }
+      // Prepare clean data array
+      const cleanData = certificateRegistry.map(c => ({
+        id: c.id,
+        nameKa: c.nameKa,
+        nameEn: c.nameEn,
+        course: c.course,
+        hours: c.hours,
+        grade: c.grade,
+        date: c.date
+      }));
+      
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cleanData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "registry.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      alert("registry.json ფაილი წარმატებით ჩამოიტვირთა! ატვირთეთ იგი სერვერზე /certificate საქაღალდეში.");
+    }
+
+    // Import JSON
+    function triggerImportRegistry() {
+      document.getElementById('registryImportFile').click();
+    }
+
+    function importRegistry(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed)) {
+            if (confirm(`ნამდვილად გსურთ შემოიტანოთ ${parsed.length} სერტიფიკატი? არსებული დუბლირებული ID-ები ჩანაცვლდება.`)) {
+              parsed.forEach(importedRecord => {
+                const exIndex = certificateRegistry.findIndex(c => c.id === importedRecord.id);
+                if (exIndex > -1) {
+                  certificateRegistry[exIndex] = importedRecord;
+                } else {
+                  certificateRegistry.push(importedRecord);
+                }
+              });
+              saveRegistry();
+              alert("იმპორტი წარმატებით დასრულდა!");
+            }
+          } else {
+            alert("შეცდომა: ფაილი არ შეიცავს მასივის სტრუქტურას!");
+          }
+        } catch(err) {
+          alert("ფაილის წაკითხვისას მოხდა შეცდომა: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Modal Control
+    function openBulkModal() {
+      document.getElementById('bulkModal').classList.add('active');
+    }
+
+    function closeBulkModal() {
+      document.getElementById('bulkModal').classList.remove('active');
+      document.getElementById('bulkImportText').value = '';
+    }
+
+    // Process Bulk Import
+    function processBulkImport() {
+      const text = document.getElementById('bulkImportText').value.trim();
+      if (!text) {
+        alert("გთხოვთ ჩაწეროთ მონაცემები!");
+        return;
+      }
+
+      const courseName = document.getElementById('courseName').value.trim();
+      const courseHours = document.getElementById('courseHours').value;
+      const issueDate = document.getElementById('issueDate').value;
+      const secretSalt = document.getElementById('secretSalt').value.trim() || DEFAULT_SALT;
+
+      const lines = text.split('\n');
+      let count = 0;
+
+      lines.forEach(line => {
+        if (!line.trim()) return;
+        // Parse CSV or TSV (split by comma or tab)
+        const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+        if (parts.length >= 3) {
+          const id = parts[0].trim();
+          const nameKa = parts[1].trim();
+          const nameEn = parts[2].trim();
+          const grade = parts[3] ? parts[3].trim() : '95';
+
+          const record = {
+            id, nameKa, nameEn,
+            course: courseName,
+            hours: courseHours,
+            grade,
+            date: issueDate,
+            salt: secretSalt
+          };
+
+          const exIndex = certificateRegistry.findIndex(c => c.id === id);
+          if (exIndex > -1) {
+            certificateRegistry[exIndex] = record;
+          } else {
+            certificateRegistry.push(record);
+          }
+          count++;
+        }
+      });
+
+      if (count > 0) {
+        saveRegistry();
+        alert(`წარმატებით შემოვიდა და დამუშავდა ${count} სერტიფიკატი!`);
+        closeBulkModal();
+      } else {
+        alert("მონაცემები ვერ დამუშავდა. გთხოვთ, შეამოწმოთ ფორმატის სისწორე.");
+      }
+    }
+
+    // DOWNLOAD OPTIONS
+    // 1. High-Resolution PNG download using html2canvas
+    function downloadAsPNG() {
+      const cert = document.getElementById('certificateCanvas');
+      const studentNameKa = document.getElementById('studentNameKa').value.trim() || 'Certificate';
+      
+      // Temporary CSS tweaks to ensure 100% scale rendering
+      const originalTransform = cert.style.transform;
+      cert.style.transform = 'none';
+
+      // Options for high quality image
+      const options = {
+        scale: 2, // Double resolution (Retina quality)
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#faf7f2',
+        logging: false
+      };
+
+      html2canvas(cert, options).then(canvas => {
+        // Restore styling
+        cert.style.transform = originalTransform;
+
+        // Trigger download
+        const imgData = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `Certificate_${studentNameKa.replace(/\s+/g, '_')}.png`;
+        link.href = imgData;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }).catch(err => {
+        cert.style.transform = originalTransform;
+        alert("სურათის ექსპორტისას მოხდა შეცდომა: " + err);
+      });
+    }
+
+    // 2. Standard A4 Landscape PDF download utilizing browser print styling
+    function downloadAsPDF() {
+      // Refresh print duplication
+      document.getElementById('printableCertArea').innerHTML = document.getElementById('certificateCanvas').outerHTML;
+      window.print();
+    }
+
+    // Student close view
+    function closeStudentView() {
+      // Default fallback
+      window.location.href = '../index.html';
+    }
+  </script>
+</body>
+</html>

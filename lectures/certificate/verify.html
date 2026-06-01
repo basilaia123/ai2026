@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სერტიფიკატის ვალიდაცია | AI ხელოვნური ინტელექტი პრაქტიკაში</title>
+  
+  <!-- Font and Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Cryptography and Animations CDNs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --secondary: #8b5cf6;
+      --accent: #ec4899;
+      --dark-bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border-color: rgba(99, 102, 241, 0.15);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --success: #10b981;
+      --danger: #ef4444;
+      --gold: #dfb15b;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'FiraGO', 'Outfit', sans-serif;
+      background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, var(--dark-bg) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glows */
+    .glow-sphere {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 100%);
+      filter: blur(40px);
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .glow-sphere-1 {
+      top: -100px;
+      left: -100px;
+    }
+
+    .glow-sphere-2 {
+      bottom: -100px;
+      right: -100px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      z-index: 2;
+    }
+
+    /* Logo header */
+    .logo-header {
+      text-align: center;
+      margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .logo-header i {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .logo-header h1 {
+      font-family: 'Cormorant Garamond', 'FiraGO', serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, var(--text-primary) 50%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Verification Card */
+    .verify-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: var(--transition);
+    }
+
+    .verify-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    }
+
+    /* Status Header */
+    .status-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .status-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .status-icon::after {
+      content: '';
+      position: absolute;
+      top: -6px; left: -6px; right: -6px; bottom: -6px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      animation: rotate 20s linear infinite;
+    }
+
+    .success-state .status-icon {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 2px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .success-state .status-icon::after {
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .error-state .status-icon {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .error-state .status-icon::after {
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .status-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .success-state .status-title {
+      color: var(--success);
+    }
+
+    .error-state .status-title {
+      color: var(--danger);
+    }
+
+    .status-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Details Panel */
+    .details-list {
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .detail-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .detail-value {
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .student-name-ka {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .student-name-en {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .grade-badge {
+      background: linear-gradient(135deg, rgba(223, 177, 91, 0.15) 0%, rgba(223, 177, 91, 0.03) 100%);
+      border: 1px solid rgba(223, 177, 91, 0.3);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    /* Secret Salt Input Form (hidden by default, shown if validation fails) */
+    .salt-verify-box {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 16px;
+      border: 1px dashed rgba(239, 68, 68, 0.3);
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .salt-verify-box h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .salt-verify-box h4 i {
+      color: var(--gold);
+    }
+
+    .salt-verify-box p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .salt-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .salt-input {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: white;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .salt-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .salt-btn {
+      background: var(--primary);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .salt-btn:hover {
+      background: var(--secondary);
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.8rem;
+      z-index: 2;
+    }
+
+    footer a {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    footer a:hover {
+      color: var(--primary);
+    }
+
+    /* Animations */
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 500px) {
+      .verify-card {
+        padding: 24px;
+      }
+      .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .detail-value {
+        text-align: left;
+      }
+      .status-title {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Effects -->
+  <div class="glow-sphere glow-sphere-1"></div>
+  <div class="glow-sphere glow-sphere-2"></div>
+
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="logo-header">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <h1>სერტიფიკატის ვალიდაცია</h1>
+    </div>
+
+    <!-- Main Verification Panel -->
+    <div class="verify-card success-state" id="statusCard">
+      
+      <!-- Dynamic verification state contents populated by JS -->
+      <div id="cardContent">
+        <div style="text-align: center; padding: 40px 0;">
+          <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary);"></i>
+          <p style="margin-top: 16px; color: var(--text-secondary);">მიმდინარეობს სერტიფიკატის შემოწმება...</p>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="actions">
+        <!-- Will be populated dynamically based on success/error -->
+        <a href="../index.html" class="btn btn-secondary"><i class="fa-solid fa-house"></i> მთავარ გვერდზე გადასვლა</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026. ყველა უფლება დაცულია.</p>
+    <p>ინსტრუქტორი: გიორგი ბასილაია</p>
+  </footer>
+
+  <script>
+    // Configuration
+    const DEFAULT_SALT = "AI2026_GiorgiBasilaia_SecKey";
+
+    // Extract query parameters
+    function getQueryParams() {
+      const params = {};
+      const search = window.location.search.substring(1);
+      if (!search) return params;
+      
+      const pairs = search.split('&');
+      for (let i = 0; i < pairs.length; i++) {
+        const pair = pairs[i].split('=');
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+      }
+      return params;
+    }
+
+    // Extract query parameters and normalize short keys for readability
+    function getNormalizedParams() {
+      const raw = getQueryParams();
+      const normalized = {};
+      
+      normalized.id = raw.id || '';
+      normalized.n_ka = raw.k || raw.n_ka || '';
+      normalized.n_en = raw.e || raw.n_en || '';
+      normalized.course = raw.c || raw.course || 'AI - ხელოვნური ინტელექტი პრაქტიკაში';
+      normalized.hours = raw.h || raw.hours || '25';
+      normalized.grade = raw.g || raw.grade || '0';
+      normalized.date = raw.d || raw.date || '';
+      normalized.sig = raw.s || raw.sig || '';
+      
+      return normalized;
+    }
+
+    // Format ISO date (YYYY-MM-DD) to Georgian readable date
+    function formatGeorgianDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      
+      const months = [
+        'იანვარი', 'თებერვალი', 'მარტი', 'აპრილი', 'მაისი', 'ივნისი',
+        'ივლისი', 'აგვისტო', 'სექტემბერი', 'ოქტომბერი', 'ნოემბერი', 'დეკემბერი'
+      ];
+      
+      const day = parseInt(parts[2], 10);
+      const monthIndex = parseInt(parts[1], 10) - 1;
+      const year = parts[0];
+      
+      return `${day} ${months[monthIndex]} ${year}`;
+    }
+
+    // Verify signature integrity
+    function verifyCertificate(params, salt) {
+      if (!params.id || !params.sig) return false;
+      
+      // Fields used to create signature: id + name_ka + name_en + course + hours + grade + date + salt
+      const nameKa = params.n_ka || '';
+      const nameEn = params.n_en || '';
+      const course = params.course || '';
+      const hours = params.hours || '';
+      const grade = params.grade || '';
+      const date = params.date || '';
+      
+      const rawText = params.id + nameKa + nameEn + course + hours + grade + date + salt;
+      const calculatedHash = CryptoJS.SHA256(rawText).toString();
+      
+      return calculatedHash === params.sig;
+    }
+
+    // Main execution
+    function runVerification() {
+      const params = getNormalizedParams();
+      const statusCard = document.getElementById('statusCard');
+      const cardContent = document.getElementById('cardContent');
+      const actionsDiv = document.querySelector('.actions');
+
+      // Check if critical validation parameters are present (at least ID is required)
+      if (!params.id) {
+        renderErrorState("არასრული მონაცემები", "სერტიფიკატის ID ვერ მოიძებნა. გთხოვთ, შეამოწმოთ QR კოდის ლინკი.");
+        return;
+      }
+
+      // Try fetching the registry.json first (Server-side Registry verification)
+      fetch('registry.json')
+        .then(response => {
+          if (!response.ok) throw new Error('Registry file not found on server');
+          return response.json();
+        })
+        .then(data => {
+          // Search for the ID in the loaded registry array
+          const record = data.find(c => c.id === params.id);
+          if (record) {
+            // Found! Normalize record parameters to render success
+            const normalizedRecord = {
+              id: record.id,
+              n_ka: record.nameKa,
+              n_en: record.nameEn,
+              course: record.course,
+              hours: record.hours,
+              grade: record.grade,
+              date: record.date,
+              // Calculate dynamic sig just to let viewOriginal redirect work smoothly
+              sig: CryptoJS.SHA256(record.id + record.nameKa + record.nameEn + record.course + record.hours + record.grade + record.date + (record.salt || DEFAULT_SALT)).toString()
+            };
+            renderSuccessState(normalizedRecord);
+          } else {
+            // Not found in registry
+            renderErrorState("სერტიფიკატი ვერ მოიძებნა", `ჩანაწერი ID-ით <strong>${params.id}</strong> ოფიციალურ რეესტრში ვერ მოიძებნა.`);
+          }
+        })
+        .catch(err => {
+          // Fallback 1: Try checking localStorage (helps during local testing/development)
+          try {
+            const stored = localStorage.getItem('sa_certificate_registry');
+            if (stored) {
+              const localRegistry = JSON.parse(stored);
+              const record = localRegistry.find(c => c.id === params.id);
+              if (record) {
+                // Found in localStorage! Normalize record parameters to render success
+                const normalizedRecord = {
+                  id: record.id,
+                  n_ka: record.nameKa,
+                  n_en: record.nameEn,
+                  course: record.course,
+                  hours: record.hours,
+                  grade: record.grade,
+                  date: record.date,
+                  sig: CryptoJS.SHA256(record.id + record.nameKa + record.nameEn + record.course + record.hours + record.grade + record.date + (record.salt || DEFAULT_SALT)).toString()
+                };
+                renderSuccessState(normalizedRecord);
+                return; // successfully handled!
+              }
+            }
+          } catch (e) {
+            console.warn('LocalStorage registry access failed:', e);
+          }
+
+          // Fallback 2: If registry.json fails to load (and not found in local browser registry),
+          // check if full parameters (Georgian/English names, and signature) are in the URL!
+          if (params.sig) {
+            // Try with default salt first
+            let isValid = verifyCertificate(params, DEFAULT_SALT);
+            
+            if (isValid) {
+              renderSuccessState(params);
+            } else {
+              // Try custom key if saved in localStorage
+              const lastSavedSalt = localStorage.getItem('custom_cert_salt');
+              if (lastSavedSalt && verifyCertificate(params, lastSavedSalt)) {
+                renderSuccessState(params);
+              } else {
+                renderErrorState("არავალიდური სერტიფიკატი", "სერტიფიკატის კრიპტოგრაფიული ხელმოწერა არასწორია. მონაცემები შესაძლოა შეცვლილია.", true);
+              }
+            }
+          } else {
+            // Simple QR code was used but registry.json could not be loaded and not found in localStorage
+            renderErrorState("რეესტრი ვერ ჩაიტვირთა", "ვერიფიკაცია ვერ მოხერხდა, რადგან რეესტრის ფაილი (registry.json) არ არის ატვირთული სერვერზე და ბმული არ შეიცავს სრულ მონაცემებს. (მინიშნება: თუ ლოკალურად ტესტავთ, ჯერ შეინახეთ სერტიფიკატი გენერატორში).");
+          }
+        });
+    }
+
+    function renderSuccessState(params) {
+      const statusCard = document.getElementById('statusCard');
+      statusCard.className = 'verify-card success-state';
+
+      // Parse grade label
+      const score = parseInt(params.grade, 10);
+      let gradeLabel = params.grade ? `${params.grade}/100` : '-';
+      if (!isNaN(score)) {
+        if (score >= 90) gradeLabel += " (ფრიადი / Excellent)";
+        else if (score >= 75) gradeLabel += " (ძალიან კარგი / Very Good)";
+        else if (score >= 61) gradeLabel += " (კარგი / Good)";
+      }
+
+      const nameKa = params.n_ka || '';
+      const nameEn = params.n_en || '';
+      const course = params.course || 'AI - ხელოვნური ინტელექტი პრაქტიკაში';
+      const hours = params.hours || '25';
+      const issueDate = formatGeorgianDate(params.date) || params.date;
+
+      document.getElementById('cardContent').innerHTML = `
+        <div class="status-badge">
+          <div class="status-icon">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h2 class="status-title">სერტიფიკატი ნამდვილია</h2>
+          <p class="status-subtitle">✓ ნამდვილობა დადასტურებულია</p>
+        </div>
+
+        <div class="details-list">
+          <div class="detail-item">
+            <span class="detail-label">მონაწილე / Student</span>
+            <div class="detail-value">
+              <div class="student-name-ka">${nameKa}</div>
+              <div class="student-name-en">${nameEn}</div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">კურსი / Course</span>
+            <span class="detail-value" style="color: var(--primary); font-weight: 700;">${course}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">საათები / Duration</span>
+            <span class="detail-value">${hours} საათი / Hours</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">სერტიფიკატის ID</span>
+            <span class="detail-value" style="font-family: monospace; font-weight: 700; color: var(--accent);">${params.id}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">თარიღი / Date</span>
+            <span class="detail-value">${issueDate}</span>
+          </div>
+        </div>
+      `;
+
+      // Update actions with PDF print action (which will display full certificate)
+      document.querySelector('.actions').innerHTML = `
+        <button onclick="viewFullCertificate()" class="btn btn-primary"><i class="fa-solid fa-award"></i> ორიგინალი სერტიფიკატის ნახვა</button>
+        <a href="../index.html" class="btn btn-secondary"><i class="fa-solid fa-house"></i> მთავარ გვერდზე გადასვლა</a>
+      `;
+
+      // Launch gorgeous success confetti!
+      triggerConfetti();
+    }
+
+    function renderErrorState(title, message, showSaltOption = false) {
+      const statusCard = document.getElementById('statusCard');
+      statusCard.className = 'verify-card error-state';
+
+      document.getElementById('cardContent').innerHTML = `
+        <div class="status-badge">
+          <div class="status-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h2 class="status-title">${title}</h2>
+          <p class="status-subtitle">✗ სერტიფიკატის ვალიდაცია ვერ მოხერხდა</p>
+        </div>
+
+        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); padding: 20px; border-radius: 16px; text-align: center; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+          ${message}
+        </div>
+
+        <div class="salt-verify-box" id="saltVerifyBox">
+          <h4><i class="fa-solid fa-key"></i> მორგებული გასაღებით ვალიდაცია</h4>
+          <p>თუ სერტიფიკატი გენერირებულია სხვა გასაღებით (Private Custom Salt), ჩაწერეთ ის აქ ხელახალი გადამოწმებისთვის:</p>
+          <div class="salt-input-group">
+            <input type="password" id="customSaltInput" placeholder="შეიყვანეთ გასაღები..." class="salt-input">
+            <button onclick="verifyWithCustomSalt()" class="salt-btn"><i class="fa-solid fa-rotate"></i> გადამოწმება</button>
+          </div>
+          <div id="customSaltError" style="color: var(--danger); font-size: 0.8rem; margin-top: 8px; display: none;">არასწორი გასაღები! ხელმოწერა ვერ დადასტურდა.</div>
+        </div>
+      `;
+
+      if (showSaltOption) {
+        document.getElementById('saltVerifyBox').style.display = 'block';
+      }
+    }
+
+    // Verify using custom key
+    function verifyWithCustomSalt() {
+      const saltInput = document.getElementById('customSaltInput').value.trim();
+      const customSaltError = document.getElementById('customSaltError');
+      
+      if (!saltInput) return;
+      
+      const params = getNormalizedParams();
+      const isValid = verifyCertificate(params, saltInput);
+      
+      if (isValid) {
+        // Save to local storage for future visits
+        localStorage.setItem('custom_cert_salt', saltInput);
+        customSaltError.style.display = 'none';
+        renderSuccessState(params);
+      } else {
+        customSaltError.style.display = 'block';
+        customSaltError.textContent = "არასწორი გასაღები! ხელმოწერა კვლავ ვერ დადასტურდა.";
+      }
+    }
+
+    // Redirect to the generator to view the full design or render it locally in print layout
+    function viewFullCertificate() {
+      const params = getNormalizedParams();
+      // Build redirection to generator page with auto-open and auto-print trigger
+      const redirectUrl = `generator.html?view=1&id=${encodeURIComponent(params.id)}` + 
+        `&n_ka=${encodeURIComponent(params.n_ka || '')}` + 
+        `&n_en=${encodeURIComponent(params.n_en || '')}` + 
+        `&course=${encodeURIComponent(params.course || '')}` + 
+        `&hours=${encodeURIComponent(params.hours || '')}` + 
+        `&grade=${encodeURIComponent(params.grade || '')}` + 
+        `&date=${encodeURIComponent(params.date || '')}` + 
+        `&sig=${encodeURIComponent(params.sig)}`;
+        
+      window.location.href = redirectUrl;
+    }
+
+    // Celebration Confetti
+    function triggerConfetti() {
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        // since particles fall down, animate a bit higher than random
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+    }
+
+    // Initialize Page
+    window.addEventListener('DOMContentLoaded', runVerification);
+  </script>
+</body>
+</html>
