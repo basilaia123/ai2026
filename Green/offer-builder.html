@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI სასწავლო შემოთავაზების გენერატორი — Smart Academy</title>
+  
+  <!-- Font and Icon Imports -->
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ── DASHBOARD CORE SYSTEM ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* ── CONFIGURATION SIDEBAR ── */
+    #sidebar {
+      width: 420px;
+      background-color: #1e293b;
+      border-right: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .sidebar-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #334155;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+    }
+
+    .sidebar-header h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header p {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .sidebar-tabs {
+      display: flex;
+      background-color: #0f172a;
+      border-bottom: 1px solid #334155;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tab-btn:hover {
+      color: #f8fafc;
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+      color: #38bdf8;
+      border-bottom-color: #38bdf8;
+      background-color: #1e293b;
+    }
+
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-pane.active {
+      display: flex;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-control {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 13.5px;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+    }
+
+    select.form-control {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 0;
+    }
+
+    .checkbox-group input {
+      margin-top: 3.5px;
+      cursor: pointer;
+    }
+
+    .checkbox-label {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    /* ── BRAND THEME PICKER ── */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .theme-card {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .theme-card:hover {
+      border-color: #475569;
+      transform: translateY(-1px);
+    }
+
+    .theme-card.active {
+      border-color: #38bdf8;
+      background-color: rgba(56, 189, 248, 0.05);
+    }
+
+    .theme-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .theme-preview {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .tp-color {
+      flex: 1;
+    }
+
+    /* ── ACTION FOOTER ── */
+    .sidebar-footer {
+      padding: 20px 24px;
+      border-top: 1px solid #334155;
+      background-color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: #38bdf8;
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
+    }
+
+    .btn-primary:hover {
+      background-color: #7dd3fc;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+    }
+
+    .btn-secondary:hover {
+      background-color: #334155;
+      color: #f8fafc;
+    }
+
+    /* ── PREVIEW CANVAS AREA ── */
+    #preview-area {
+      flex: 1;
+      background-color: #0f172a;
+      overflow-y: auto;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* The actual document container mimicking printed output */
+    #proposal-canvas {
+      width: 100%;
+      max-width: 900px;
+      background-color: var(--p-bg, #ffffff);
+      color: var(--p-text, #1e293b);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+      min-height: 1200px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* HSL variables driven by Javascript branding selections */
+    #proposal-canvas {
+      --primary-dark: #1b3a4b;
+      --primary-mid: #212f45;
+      --primary-light: #38bdf8;
+      --accent: #ff5e14;
+      --accent-light: #ff824a;
+      --bg-light: #f8fafc;
+      --border-color: rgba(15, 23, 42, 0.08);
+      --font-title: 'Playfair Display', serif;
+    }
+
+    /* ── PROPOSAL DESIGN THEME IMPLEMENTATIONS ── */
+    #proposal-canvas.eco-green {
+      --primary-dark: #1a4731;
+      --primary-mid: #2d6a4f;
+      --primary-light: #52b788;
+      --accent: #f4a261;
+      --accent-light: #ffb703;
+      --bg-light: #f4fbf7;
+      --border-color: rgba(26, 71, 49, 0.08);
+      --font-title: 'FiraGO', sans-serif;
+    }
+
+    #proposal-canvas.luxury-gold {
+      --primary-dark: #1a1a1a;
+      --primary-mid: #2c2c2c;
+      --primary-light: #c5a059;
+      --accent: #c5a059;
+      --accent-light: #e6d5b3;
+      --bg-light: #fafafa;
+      --border-color: rgba(26, 26, 26, 0.1);
+      --font-title: 'Playfair Display', serif;
+    }
+
+    #proposal-canvas.credo-bank {
+      --primary-dark: #0a1c30;
+      --primary-mid: #142f4f;
+      --primary-light: #ff5e14;
+      --accent: #ff5e14;
+      --accent-light: #ff824a;
+      --bg-light: #f8fafc;
+      --border-color: rgba(10, 28, 48, 0.08);
+      --font-title: 'FiraGO', sans-serif;
+    }
+
+    #proposal-canvas.elt-group {
+      --primary-dark: #0c1221;
+      --primary-mid: #1a2332;
+      --primary-light: #b49b65;
+      --accent: #b49b65;
+      --accent-light: #d4c49a;
+      --bg-light: #fafaf8;
+      --border-color: rgba(12, 18, 33, 0.1);
+      --font-title: 'Playfair Display', serif;
+    }
+
+    #proposal-canvas.tech-indigo {
+      --primary-dark: #0f172a;
+      --primary-mid: #1e293b;
+      --primary-light: #4f46e5;
+      --accent: #818cf8;
+      --accent-light: #a5b4fc;
+      --bg-light: #f8fafc;
+      --border-color: rgba(15, 23, 42, 0.08);
+      --font-title: 'FiraGO', sans-serif;
+    }
+
+    #proposal-canvas.creative-coral {
+      --primary-dark: #2b2d42;
+      --primary-mid: #1d3557;
+      --primary-light: #e63946;
+      --accent: #e63946;
+      --accent-light: #f1faee;
+      --bg-light: #fdfafb;
+      --border-color: rgba(43, 45, 66, 0.08);
+      --font-title: 'Playfair Display', serif;
+    }
+
+    #proposal-canvas.corporate-navy {
+      --primary-dark: #1b3a4b;
+      --primary-mid: #212f45;
+      --primary-light: #0077b6;
+      --accent: #00b4d8;
+      --accent-light: #90e0ef;
+      --bg-light: #f4faff;
+      --border-color: rgba(27, 58, 75, 0.08);
+      --font-title: 'FiraGO', sans-serif;
+    }
+
+    /* ── LIVE PREVIEW CONTENT STYLING ── */
+    #proposal-canvas .hero-banner {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 60%, #1e293b 100%);
+      color: #ffffff;
+      padding: 60px 50px 45px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #proposal-canvas .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 60%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    #proposal-canvas .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: var(--accent-light, #ffffff);
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    #proposal-canvas h1 {
+      font-family: var(--font-title);
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    #proposal-canvas h1 span {
+      color: var(--primary-light);
+    }
+
+    #proposal-canvas .hero-sub {
+      font-size: 17px;
+      opacity: 0.88;
+      max-width: 720px;
+      margin: 0 auto 28px;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    #proposal-canvas .stats-grid {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    #proposal-canvas .stat-box {
+      text-align: center;
+      min-width: 100px;
+    }
+
+    #proposal-canvas .stat-val {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--primary-light);
+      display: block;
+      line-height: 1.1;
+    }
+
+    #proposal-canvas .stat-lbl {
+      font-size: 11px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    /* ── SECTIONS ── */
+    #proposal-canvas section {
+      padding: 45px 50px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    #proposal-canvas section:nth-child(even) {
+      background-color: var(--bg-light);
+    }
+
+    #proposal-canvas .section-header {
+      margin-bottom: 30px;
+    }
+
+    #proposal-canvas .section-badge {
+      display: inline-block;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      color: var(--primary-dark);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    #proposal-canvas .section-title {
+      font-family: var(--font-title);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    #proposal-canvas .section-sub {
+      font-size: 14px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* WYSIWYG highlight placeholder */
+    #proposal-canvas [contenteditable="true"]:focus {
+      outline: 2px dashed var(--primary-light);
+      outline-offset: 4px;
+      border-radius: 4px;
+      background-color: rgba(56, 189, 248, 0.02);
+    }
+
+    /* ── ALIGNMENT MATCH BOX ── */
+    .match-container {
+      background: var(--bg-light);
+      border-left: 5px solid var(--primary-light);
+      border-radius: 12px;
+      padding: 24px 28px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .match-container p {
+      font-size: 17px;
+      color: var(--primary-dark);
+      line-height: 1.65;
+      font-weight: 500;
+    }
+
+    /* ── MODULE CARDS ── */
+    .preview-modules {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .preview-module-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    .pm-header {
+      background: linear-gradient(90deg, var(--primary-dark), var(--primary-mid));
+      color: #ffffff;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .pm-num {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .pm-title {
+      font-size: 16.5px;
+      font-weight: 800;
+      flex: 1;
+    }
+
+    .pm-duration {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pm-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pm-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pm-bullets li {
+      padding-left: 24px;
+      position: relative;
+      font-size: 14.5px;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .pm-bullets li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary-light);
+      font-weight: 900;
+    }
+
+    .pm-bullets li strong {
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .pm-homework {
+      background-color: var(--bg-light);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 13.5px;
+      color: var(--primary-dark);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── GRID LAYOUT FOR PRINCIPLES & RESULTS ── */
+    .preview-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .preview-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .grid-box-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+    }
+
+    .gb-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .gb-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .gb-desc {
+      font-size: 12.5px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    /* ── PRICING SECTION ── */
+    .price-box {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-mid));
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .price-box h3 {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .price-box p {
+      font-size: 14.5px;
+      opacity: 0.8;
+      max-width: 500px;
+      margin: 0 auto 20px;
+    }
+
+    .price-amount-wrap {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 30px;
+      border-radius: 50px;
+    }
+
+    .price-val {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--primary-light);
+    }
+
+    .price-currency {
+      font-size: 18px;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    /* ── TRAINER CARD ── */
+    .trainer-card {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .trainer-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .trainer-info h4 {
+      font-family: var(--font-title);
+      font-size: 18px;
+      font-weight: 850;
+      color: var(--primary-dark);
+      margin-bottom: 2px;
+    }
+
+    .trainer-info .role {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .trainer-info .bio {
+      font-size: 13.5px;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    /* ── PROPOSAL FOOTER ── */
+    .proposal-footer {
+      background-color: var(--primary-dark);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 30px;
+      text-align: center;
+      font-size: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: auto;
+    }
+
+    /* ── PRINT-SPECIFIC CSS STYLING ── */
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+
+      #sidebar {
+        display: none !important;
+      }
+
+      #preview-area {
+        padding: 0 !important;
+        background-color: #ffffff !important;
+        overflow: visible !important;
+      }
+
+      #proposal-canvas {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        background-color: #ffffff !important;
+      }
+
+      .preview-module-card, .grid-box-card, .trainer-card, .price-box {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── SIDEBAR PANEL (LEFT) ── -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <h2>📁 Offer Builder</h2>
+      <p>პრაქტიკული AI ტრენინგის შეთავაზება</p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="sidebar-tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-general')">პარამეტრები</button>
+      <button class="tab-btn" onclick="switchTab('tab-modules')">მოდულები</button>
+      <button class="tab-btn" onclick="switchTab('tab-outcomes')">პრინციპები</button>
+    </div>
+
+    <!-- Tab Contents Container -->
+    <div class="tab-content">
+      
+      <!-- TAB 1: GENERAL PARAMS -->
+      <div id="tab-general" class="tab-pane active">
+        
+        <!-- Theme Selector -->
+        <div class="form-group">
+          <label>ბრენდის ვიზუალური თემა</label>
+          <div class="theme-grid">
+            <div class="theme-card active" onclick="selectTheme('credo-bank', this)">
+              <div class="theme-title">Credo Bank (Navy & Orange)</div>
+              <div class="theme-preview">
+                <div class="tp-color" style="background-color: #0a1c30;"></div>
+                <div class="tp-color" style="background-color: #ff5e14;"></div>
+              </div>
+            </div>
+            <div class="theme-card" onclick="selectTheme('eco-green', this)">
+              <div class="theme-title">Green School (Eco Green)</div>
+              <div class="theme-preview">
+                <div class="tp-color" style="background-color: #1a4731;"></div>
+                <div class="tp-color" style="background-color: #52b788;"></div>
+              </div>
+            </div>
+            <div class="theme-card" onclick="selectTheme('luxury-gold', this)">
+              <div class="theme-title">Tempo (Luxury Gold)</div>
+              <div class="theme-preview">
+                <div class="tp-color" style="background-color: #1a1a1a;"></div>
+                <div class="tp-color" style="background-color: #c5a059;"></div>
+              </div>
+            </div>
+            <div class="theme-card" onclick="selectTheme('elt-group', this)">
+              <div class="theme-title">ELT Group (Gold & Navy)</div>
+              <div class="theme-preview">
+                <div class="tp-color" style="background-color: #0c1221;"></div>
+                <div class="tp-color" style="background-color: #b49b65;"></div>
+              </div>
+            </div>
+            <div class="theme-card" onclick="selectTheme('tech-indigo', this)">
+              <div class="theme-title">Smart Acad (Tech Indigo)</div>
+              <div class="theme-preview">
+                <div class="tp-color" style="background-color: #0f172a;"></div>
+                <div class="tp-color" style="background-color: #4f46e5;"></div>
+              </div>
+            </div>
+            <div class="theme-card" onclick="selectTheme('creative-coral', this)">
+              <div class="theme-title">Creative (Coral & Dark)</div>
+              <div class="theme-preview">
+                <div class="tp-color" style="background-color: #2b2d42;"></div>
+                <div class="tp-color" style="background-color: #e63946;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inp-client">კლიენტი კომპანია</label>
+          <input type="text" id="inp-client" class="form-control" value="Credo Bank" oninput="updatePreviewText('client-name', this.value); syncClientSubtitle(this.value)">
+        </div>
+
+        <div class="form-group">
+          <label for="inp-audience">მიზნობრივი აუდიტორია</label>
+          <input type="text" id="inp-audience" class="form-control" value="მენეჯერები და საოპერაციო გუნდი" oninput="updatePreviewText('target-audience', this.value)">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="inp-sessions">სესიების რაოდენობა</label>
+            <input type="number" id="inp-sessions" class="form-control" value="6" min="1" max="24" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="inp-hours">ხანგრძლივობა (სთ/სესია)</label>
+            <input type="number" id="inp-hours" class="form-control" value="2.5" step="0.5" min="1" max="8" oninput="updateCalculations()">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="inp-rate">საათობრივი ტარიფი (GEL)</label>
+            <input type="number" id="inp-rate" class="form-control" value="500" step="50" min="100" oninput="updateCalculations()">
+          </div>
+          <div class="form-group" style="justify-content: flex-end; padding-bottom: 8px;">
+            <label class="checkbox-group">
+              <input type="checkbox" id="inp-show-price" checked onchange="togglePriceSection(this.checked)">
+              <span class="checkbox-label">ფასის ჩვენება</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inp-location">მდებარეობა</label>
+          <input type="text" id="inp-location" class="form-control" value="Credo Bank-ის სათაო ოფისი / ონლაინ" oninput="updatePreviewText('location-text', this.value)">
+        </div>
+      </div>
+
+      <!-- TAB 2: MODULE SELECTOR -->
+      <div id="tab-modules" class="tab-pane">
+        <div class="form-group">
+          <label>აირჩიეთ სასწავლო მოდულები</label>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-core" checked onchange="toggleModuleVisibility('core', this.checked)">
+              <span class="checkbox-label">მოდული 1: AI საფუძვლები და ქართული ენა</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-comm" checked onchange="toggleModuleVisibility('comm', this.checked)">
+              <span class="checkbox-label">მოდული 2: ელფოსტა და ბიზნეს-კომუნიკაცია</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-sop" checked onchange="toggleModuleVisibility('sop', this.checked)">
+              <span class="checkbox-label">მოდული 3: საოპერაციო SOP დოკუმენტაცია</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-sales" checked onchange="toggleModuleVisibility('sales', this.checked)">
+              <span class="checkbox-label">მოდული 4: გაყიდვები და კლიენტური სკრიპტები</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-excel" checked onchange="toggleModuleVisibility('excel', this.checked)">
+              <span class="checkbox-label">მოდული 5: Excel და მონაცემთა ანალიზი</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-research" checked onchange="toggleModuleVisibility('research', this.checked)">
+              <span class="checkbox-label">მოდული 6: პერსონალური AI ასისტენტები</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-auto" checked onchange="toggleModuleVisibility('auto', this.checked)">
+              <span class="checkbox-label">მოდული 7: Make.com/n8n ავტომატიზაციები</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" data-mod="mod-policy" checked onchange="toggleModuleVisibility('policy', this.checked)">
+              <span class="checkbox-label">მოდული 8: კომპანიის AI პოლიტიკა და ეთიკა</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: ETHICS, PRINCIPLES & OUTCOMES -->
+      <div id="tab-outcomes" class="tab-pane">
+        <div class="form-group">
+          <label>კორპორატიული AI-გამძლე პრინციპები</label>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-pr-1" checked onchange="toggleGridItem('pr-1', this.checked)">
+              <span class="checkbox-label">1. პრაქტიკული გამოცდილება (Real execution)</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-pr-2" checked onchange="toggleGridItem('pr-2', this.checked)">
+              <span class="checkbox-label">2. პროცესის ჩვენება (SOP track)</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-pr-3" checked onchange="toggleGridItem('pr-3', this.checked)">
+              <span class="checkbox-label">3. ლოკალური კვლევა (Audit & analysis)</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-pr-4" checked onchange="toggleGridItem('pr-4', this.checked)">
+              <span class="checkbox-label">4. AI-ს კრიტიკული ვალიდაცია</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-pr-5" checked onchange="toggleGridItem('pr-5', this.checked)">
+              <span class="checkbox-label">5. კოლაბორაციული დიზაინი (Human loop)</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-pr-6" checked onchange="toggleGridItem('pr-6', this.checked)">
+              <span class="checkbox-label">6. მეტაკოგნიტური რეფლექსია (Self adaptation)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>კურსის ხელშესახები შედეგები</label>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-out-1" checked onchange="toggleGridItem('out-1', this.checked)">
+              <span class="checkbox-label">1. Make.com / n8n workflows</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-out-2" checked onchange="toggleGridItem('out-2', this.checked)">
+              <span class="checkbox-label">2. პერსონალური AI აგენტები</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-out-3" checked onchange="toggleGridItem('out-3', this.checked)">
+              <span class="checkbox-label">3. კომპანიის მზა AI პოლიტიკა</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-out-4" checked onchange="toggleGridItem('out-4', this.checked)">
+              <span class="checkbox-label">4. No-Code პროტოტიპები (Lovable)</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-out-5" checked onchange="toggleGridItem('out-5', this.checked)">
+              <span class="checkbox-label">5. Excel/Sheets Dashboard-ები</span>
+            </label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="chk-out-6" checked onchange="toggleGridItem('out-6', this.checked)">
+              <span class="checkbox-label">6. 30-დღიანი სამოქმედო გეგმა</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Actions Panel (Bottom Fixed) -->
+    <div class="sidebar-footer">
+      <button class="btn btn-primary" onclick="downloadHTML()">
+        <span>💾 ჩამოტვირთვა (.HTML)</span>
+      </button>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button class="btn btn-secondary" onclick="copyHTML()">
+          <span>📋 კოპირება</span>
+        </button>
+        <button class="btn btn-secondary" onclick="printProposal()">
+          <span>🖨️ PDF ბეჭდვა</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── PREVIEW PANEL CANVAS (RIGHT) ── -->
+  <main id="preview-area">
+    
+    <!-- Paper Canvas Page -->
+    <div id="proposal-canvas" class="credo-bank">
+      
+      <!-- HERO BANNER -->
+      <div class="hero-banner">
+        <div class="hero-badge">Smart Academy · 2026 წელი</div>
+        <h1>AI პრაქტიკული ტრენინგი და დანერგვა<br><span id="val-client-title">Credo Bank-ის</span> გუნდისთვის</h1>
+        <p class="hero-sub" id="val-hero-desc" contenteditable="true">ოპერაციული ეფექტურობის გაზრდა, ავტომატიზაციები, custom AI აგენტები და ბანკის AI პოლიტიკის შემუშავება</p>
+        
+        <!-- Interactive Stats Counter -->
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="stat-val" id="lbl-sessions-stat">6</span>
+            <span class="stat-label">სესია</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val" id="lbl-hours-stat">15</span>
+            <span class="stat-label">საათი</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val">100%</span>
+            <span class="stat-label">პრაქტიკული</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALIGNMENT MATCH SECTION -->
+      <section>
+        <div class="match-container">
+          <p id="val-alignment-intro" contenteditable="true">
+            ეს სასწავლო პროგრამა სპეციალურად ადაპტირებულია <strong>Credo Bank-ის</strong> სპეციფიკაზე. ტრენინგის განმავლობაში ჩვენ არ ვისწავლით მხოლოდ მშრალ თეორიას, არამედ AI-ს ინტეგრირებას მოვახდენთ ყოველდღიურ საბანკო და საოპერაციო ამოცანებში: მომხმარებელთა მომსახურების სცენარების ოპტიმიზაცია, რთული ფინანსური Excel ფორმულები, B2B და B2C კომუნიკაციის ავტომატიზაცია, და ბანკის შიდა უსაფრთხო AI პოლიტიკის შედგენა.
+          </p>
+        </div>
+      </section>
+
+      <!-- COURSE MODULES SECTION -->
+      <section>
+        <div class="section-header">
+          <span class="section-badge">სასწავლო გეგმა</span>
+          <h2 class="section-title">პროგრამის სტრუქტურა სესიების მიხედვით</h2>
+          <p class="section-sub" id="val-target-audience" contenteditable="true">მიზნობრივი აუდიტორია: მენეჯერები და საოპერაციო გუნდი</p>
+        </div>
+
+        <div class="preview-modules" id="modules-list-container">
+          
+          <!-- MODULE 1 -->
+          <div class="preview-module-card" id="mod-core">
+            <div class="pm-header">
+              <div class="pm-num">1</div>
+              <div class="pm-title" contenteditable="true">AI-ს არსი, ქართული ენა და აგენტური ეფექტურობა</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>2026 წლის ფლაგმანები:</strong> GPT-5.5-ისა და Claude 4.7-ის შესაძლებლობები</li>
+                <li><strong>ქართული სინტაქსი:</strong> რატომ არის Claude ლიდერი ქართულენოვან წერაში</li>
+                <li><strong>პრომპტის 5-ელემენტიანი ფორმულა:</strong> CREATE (Role, Context, Task, Format, Constraints)</li>
+                <li><strong>Agentic AI:</strong> ხელოვნური ინტელექტი, რომელიც დამოუკიდებლად ასრულებს კომპლექსურ workflows</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: 3 ტიპური დოკუმენტის/წერილის მომზადება CREATE ფორმულით
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULE 2 -->
+          <div class="preview-module-card" id="mod-comm">
+            <div class="pm-header">
+              <div class="pm-num">2</div>
+              <div class="pm-title" contenteditable="true">ბიზნეს-კომუნიკაცია და ელფოსტის ავტომატიზაცია</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>Smart Compose:</strong> კორპორატიული წერილების წერის ტემპის 4x-ით აჩქარება</li>
+                <li><strong>დიპლომატიური ტონი:</strong> სენსიტიური თემებისა და რთული მოლაპარაკებების გაწერა AI-ით</li>
+                <li><strong>Meeting Minutes:</strong> raw ჩანაწერებისა და სხდომის აუდიო ოქმების ავტომატური სინთეზი</li>
+                <li><strong>ბრენდის ხმა:</strong> ბანკის/კომპანიის Tone-of-Voice-ის ადაპტირება და შენარჩუნება</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: Difficult client email thread-ის წარმატებულად გადაჭრა AI დახმარებით
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULE 3 -->
+          <div class="preview-module-card" id="mod-sop">
+            <div class="pm-header">
+              <div class="pm-num">3</div>
+              <div class="pm-title" contenteditable="true">საოპერაციო SOP-ები და ვიზუალური პრეზენტაციები</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>SOP Generation:</strong> სტანდარტული სამუშაო პროცედურების სწრაფი დოკუმენტირება AI-ით</li>
+                <li><strong>Gamma & Canva AI 2026:</strong> პრეზენტაციებისა და მასალების მყისიერი გენერაცია</li>
+                <li><strong>დოკუმენტაციის სტრუქტურა:</strong> რთული SOP დოკუმენტების AI-თარგმანი მარტივ გაიდლაინებად</li>
+                <li><strong>ვიზუალური Brief:</strong> ილუსტრაციებისა და სქემების გენერაცია Canva AI-ით</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: ერთი დეპარტამენტის სრული SOP გაიდლაინის და პრეზენტაციის მომზადება
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULE 4 -->
+          <div class="preview-module-card" id="mod-sales">
+            <div class="pm-header">
+              <div class="pm-num">4</div>
+              <div class="pm-title" contenteditable="true">გაყიდვები, Objection Handling და კლიენტის სკრიპტები</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>Persona Analysis:</strong> სხვადასხვა ტიპის კლიენტის ფსიქოლოგიური პროფილის დადგენა</li>
+                <li><strong>Objection Playbook:</strong> 10 ყველაზე გავრცელებული უარყოფის/პრეტენზიის AI-სკრიპტები</li>
+                <li><strong>Upselling Techniques:</strong> გაყიდვების დიალოგების და follow-up კომუნიკაციის გეგმები</li>
+                <li><strong>ბრენდის სერვისი:</strong> Wyndham, Barceló და საერთაშორისო პრემიუმ სერვისის ინტეგრაცია</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: 10 common objections playbook-ის გენერირება და live ტესტირება
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULE 5 -->
+          <div class="preview-module-card" id="mod-excel">
+            <div class="pm-header">
+              <div class="pm-num">5</div>
+              <div class="pm-title" contenteditable="true">Excel და მონაცემთა ანალიზი AI-ის დახმარებით</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>Smart Sheets:</strong> Excel და Google Sheets რთული ფორმულების ავტომატური წერა</li>
+                <li><strong>Dashboard Design:</strong> გაყიდვებისა და მარაგების Dashboard-ების სტრუქტურის აწყობა</li>
+                <li><strong>Reorder & Logistics:</strong> მარაგების შევსების წერტილის (ROP) და EOQ კალკულაციები</li>
+                <li><strong>Route Optimization:</strong> ლოგისტიკური მარშრუტების და სატრანსპორტო ხარჯების მინიმიზაცია</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: raw data-დან სრულყოფილი dynamic dashboard-ის აწყობა
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULE 6 -->
+          <div class="preview-module-card" id="mod-research">
+            <div class="pm-header">
+              <div class="pm-num">6</div>
+              <div class="pm-title" contenteditable="true">პერსონალური AI ასისტენტები და Deep Research</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>Custom GPTs & Gems:</strong> საკუთარი როლური AI თანაშემწის Setup კოდის გარეშე</li>
+                <li><strong>Claude Projects:</strong> კომპანიის შიდა დოკუმენტების ბაზაზე დაფუძნებული პროექტი</li>
+                <li><strong>Perplexity Deep Research:</strong> მონაცემთა სიღრმისეული და სანდო ძიება და რეპორტები</li>
+                <li><strong>NotebookLM:</strong> სასწავლო და საინფორმაციო მასალების პერსონალიზებული აუდიო-ანალიზი</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: ერთი სრულყოფილი Custom GPT-ის ან Claude Project-ის შექმნა სამუშაო ამოცანისთვის
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULE 7 -->
+          <div class="preview-module-card" id="mod-auto">
+            <div class="pm-header">
+              <div class="pm-num">7</div>
+              <div class="pm-title" contenteditable="true">n8n / Make.com ავტომატიზაციები და No-Code აპლიკაციები</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>n8n & Make:</strong> რუტინული პროცესების (e.g. Email-to-CRM, Social Auto-post) workflows</li>
+                <li><strong>Lovable.app:</strong> კომპანიის შიდა ინსტრუმენტების და პატარა აპების აწყობა კოდის გარეშე</li>
+                <li><strong>ავტომატიზაციის მატრიცა:</strong> როდის სჯობს Make და როდის Lovable-ის No-Code გარემო</li>
+                <li><strong>CRM Integration:</strong> მონაცემთა ავტომატური გაცვლა პლატფორმებს შორის</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: 1 მარტივი Make.com ავტომატური workflow-ის წარმატებული ტესტირება
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULE 8 -->
+          <div class="preview-module-card" id="mod-policy">
+            <div class="pm-header">
+              <div class="pm-num">8</div>
+              <div class="pm-title" contenteditable="true">კომპანიის AI პოლიტიკა, GDPR და მონაცემთა უსაფრთხოება</div>
+              <div class="pm-duration">2.5 სთ</div>
+            </div>
+            <div class="pm-body">
+              <ul class="pm-bullets" contenteditable="true">
+                <li><strong>Data Protection 2026:</strong> GDPR რეგულაციები და აგენტური უსაფრთხოება საბანკო სექტორში</li>
+                <li><strong>AI Policy Framework:</strong> რა წესები უნდა ჰქონდეს კომპანიას თანამშრომლებისთვის</li>
+                <li><strong>კლიენტის კომუნიკაცია:</strong> როგორ ველაპარაკოთ კლიენტებს/მშობლებს აგენტური AI-ის გამოყენებაზე</li>
+                <li><strong>30-დღიანი გეგმა:</strong> კურსის შემდგომი დანერგვისა და შიდა ტრენინგების სამოქმედო გეგმა</li>
+              </ul>
+              <div class="pm-homework" contenteditable="true">
+                📋 საშინაო დავალება: შიდა დეპარტამენტის AI პოლიტიკის წესების პირველი მონახაზის შექმნა
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- AI-PROOF PRINCIPLES SECTION -->
+      <section>
+        <div class="section-header">
+          <span class="section-badge">პრინციპები</span>
+          <h2 class="section-title">კორპორატიული AI-გამძლე მეთოდოლოგია</h2>
+          <p class="section-sub">მიდგომები, რომელთა ავტომატურად ჩანაცვლება AI-ს მიერ შეუძლებელია</p>
+        </div>
+
+        <div class="preview-grid-3" id="principles-grid-container">
+          
+          <div class="grid-box-card" id="card-pr-1">
+            <span class="gb-icon">📝</span>
+            <h4 class="gb-title" contenteditable="true">პრაქტიკული გამოცდილება</h4>
+            <p class="gb-desc" contenteditable="true">სამუშაოს შესრულება რეალურ დროში, რომლის დროსაც ფასდება პროცესი და არა მხოლოდ საბოლოო ტექსტი.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-pr-2">
+            <span class="gb-icon">⚙️</span>
+            <h4 class="gb-title" contenteditable="true">პროცესის დოკუმენტირება</h4>
+            <p class="gb-desc" contenteditable="true">მონახაზებიდან SOP-ის შექმნამდე ყველა შუალედური ეტაპის ჩვენება და ხელით რედაქტირება.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-pr-3">
+            <span class="gb-icon">🔍</span>
+            <h4 class="gb-title" contenteditable="true">ლოკალური აუდიტი</h4>
+            <p class="gb-desc" contenteditable="true">კონკრეტული ფილიალის ან განყოფილების რეალური მონაცემების აუდიტი, რომელიც მოითხოვს ადგილზე მუშაობას.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-pr-4">
+            <span class="gb-icon">🧠</span>
+            <h4 class="gb-title" contenteditable="true">კრიტიკული ვალიდაცია</h4>
+            <p class="gb-desc" contenteditable="true">AI-ს მიერ გენერირებულ რეპორტებში შეცდომების, ჰალუცინაციების და ფაქტების გადამოწმება.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-pr-5">
+            <span class="gb-icon">👥</span>
+            <h4 class="gb-title" contenteditable="true">კოლაბორაცია</h4>
+            <p class="gb-desc" contenteditable="true">ადამიანური ფაქტორი: გუნდური განხილვები, მოლაპარაკება და სტრატეგიული გადაწყვეტილების მიღება.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-pr-6">
+            <span class="gb-icon">❤️</span>
+            <h4 class="gb-title" contenteditable="true">საკუთარი გამოცდილება</h4>
+            <p class="gb-desc" contenteditable="true">პირადი დაგროვილი გამოცდილებისა და ინტუიციის ინტეგრირება საოპერაციო გადაწყვეტილებებში.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- RESULTS SECTION -->
+      <section>
+        <div class="section-header">
+          <span class="section-badge">შედეგები</span>
+          <h2 class="section-title">კურსის ხელშესახები შედეგები</h2>
+          <p class="section-sub">ტრენინგის დასრულების შემდეგ კომპანიას ექნება მზა აქტივები</p>
+        </div>
+
+        <div class="preview-grid-3" id="outcomes-grid-container">
+          
+          <div class="grid-box-card" id="card-out-1">
+            <span class="gb-icon">⚡</span>
+            <h4 class="gb-title" contenteditable="true">Make.com workflows</h4>
+            <p class="gb-desc" contenteditable="true">ავტომატიზებული სამუშაო პროცესები ყოველდღიური რუტინული ამოცანების შესამცირებლად.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-out-2">
+            <span class="gb-icon">🤖</span>
+            <h4 class="gb-title" contenteditable="true">შიდა AI ასისტენტები</h4>
+            <p class="gb-desc" contenteditable="true">მომზადებული Custom GPTs და Claude Projects, რომლებიც მორგებულია დეპარტამენტის დავალებებს.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-out-3">
+            <span class="gb-icon">📋</span>
+            <h4 class="gb-title" contenteditable="true">კომპანიის AI პოლიტიკა</h4>
+            <p class="gb-desc" contenteditable="true">მზა, გაწერილი უსაფრთხოების დოკუმენტი თანამშრომლებისთვის და კლიენტებთან კომუნიკაციისთვის.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-out-4">
+            <span class="gb-icon">🛠️</span>
+            <h4 class="gb-title" contenteditable="true">No-Code პროტოტიპები</h4>
+            <p class="gb-desc" contenteditable="true">Lovable.app-ით შექმნილი შიდა გამოყენების პატარა ვებ-აპლიკაციების მონახაზები.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-out-5">
+            <span class="gb-icon">📊</span>
+            <h4 class="gb-title" contenteditable="true">Smart Dashboards</h4>
+            <p class="gb-desc" contenteditable="true">ავტომატურად განახლებადი dynamic Excel რეპორტები და KPI ვიზუალიზაციები.</p>
+          </div>
+
+          <div class="grid-box-card" id="card-out-6">
+            <span class="gb-icon">🎯</span>
+            <h4 class="gb-title" contenteditable="true">30-დღიანი Roadmap</h4>
+            <p class="gb-desc" contenteditable="true">კონკრეტული სამოქმედო გეგმა: თუ ვინ, რომელ ინსტრუმენტს და როდის ნერგავს კურსის მერე.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- DYNAMIC PRICING SECTION -->
+      <section id="section-pricing">
+        <div class="price-box">
+          <h3 contenteditable="true">სასწავლო პროგრამის საინვესტიციო ღირებულება</h3>
+          <p contenteditable="true">ფასი მოიცავს სასწავლო მასალებს, ცალკეულ სავარჯიშოებს, შიდა პერსონალურ ვებ-გვერდსა და სერტიფიკატებს.</p>
+          <div class="price-amount-wrap">
+            <span class="price-val" id="lbl-total-price">7,500</span>
+            <span class="price-currency">GEL</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRAINER BIOGRAPHY SECTION -->
+      <section>
+        <div class="section-header">
+          <span class="section-badge">ტრენერი</span>
+          <h2 class="section-title">ინსტრუქტორის ბიოგრაფია</h2>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-avatar">GB</div>
+          <div class="trainer-info">
+            <h4 id="val-trainer-name" contenteditable="true">გიორგი ბასილაია</h4>
+            <p class="role" contenteditable="true">Smart Academy-ის უფროსი ინსტრუქტორი</p>
+            <p class="bio" contenteditable="true">
+              25 წელზე მეტი ტექნოლოგიური გამოცდილება, უნივერსიტეტის პროფესორი, 14 სამეცნიერო ნაშრომისა (3300+ ციტირება) და 18 საერთაშორისო კვლევითი პროექტის (NATO, USAID, ERASMUS) მონაწილე. სპეციალიზებულია ხელოვნური ინტელექტის პრაქტიკულ დანერგვასა და საოპერაციო ავტომატიზაციებში კორპორატიული სექტორისთვის.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROPOSAL FOOTER -->
+      <div class="proposal-footer" contenteditable="true">
+        საკონტაქტო: Giorgi Basilaia · Smart Academy · georgi@basilaia.ge · © 2026 წელი
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── CONTROL SCRIPTS ── -->
+  <script>
+    // Current Active Tab State
+    let activeTabId = 'tab-general';
+
+    function switchTab(tabId) {
+      document.getElementById(activeTabId).classList.remove('active');
+      document.querySelector(`[onclick="switchTab('${activeTabId}')"]`).classList.remove('active');
+      
+      activeTabId = tabId;
+      
+      document.getElementById(activeTabId).classList.add('active');
+      document.querySelector(`[onclick="switchTab('${activeTabId}')"]`).classList.add('active');
+    }
+
+    // Dynamic Theme Selector
+    function selectTheme(themeName, element) {
+      // Remove active from all theme cards
+      document.querySelectorAll('.theme-card').forEach(card => card.classList.remove('active'));
+      element.classList.add('active');
+
+      // Update proposal canvas theme classes
+      const canvas = document.getElementById('proposal-canvas');
+      canvas.className = ''; // Reset
+      canvas.classList.add(themeName);
+    }
+
+    // Synchronize company input with title text
+    function syncClientSubtitle(clientName) {
+      document.getElementById('val-client-title').textContent = clientName + 'ის';
+    }
+
+    // Live Text Input Synchronization
+    function updatePreviewText(elementId, value) {
+      if (elementId === 'client-name') {
+        // Handled by special sync
+      } else if (elementId === 'target-audience') {
+        document.getElementById('val-target-audience').textContent = 'მიზნობრივი აუდიტორია: ' + value;
+      } else if (elementId === 'location-text') {
+        // Can be added to footer/CTA if needed
+      }
+    }
+
+    // Dynamic hour and pricing calculations
+    function updateCalculations() {
+      const sessions = parseFloat(document.getElementById('inp-sessions').value) || 0;
+      const hours = parseFloat(document.getElementById('inp-hours').value) || 0;
+      const rate = parseFloat(document.getElementById('inp-rate').value) || 0;
+
+      const totalHours = sessions * hours;
+      const totalPrice = totalHours * rate;
+
+      // Update Preview Stats
+      document.getElementById('lbl-sessions-stat').textContent = sessions;
+      document.getElementById('lbl-hours-stat').textContent = totalHours;
+
+      // Update Pricing section
+      document.getElementById('lbl-total-price').textContent = totalPrice.toLocaleString('en-US');
+    }
+
+    // Toggle Price Section display
+    function togglePriceSection(visible) {
+      const priceSec = document.getElementById('section-pricing');
+      if (visible) {
+        priceSec.style.display = 'block';
+      } else {
+        priceSec.style.display = 'none';
+      }
+    }
+
+    // Toggle module visibility by ID
+    function toggleModuleVisibility(moduleId, visible) {
+      const card = document.getElementById('mod-' + moduleId);
+      if (card) {
+        card.style.display = visible ? 'block' : 'none';
+      }
+      
+      // Recalculate module indices dynamically in the preview
+      let activeIndex = 1;
+      document.querySelectorAll('.preview-module-card').forEach(c => {
+        if (c.style.display !== 'none') {
+          c.querySelector('.pm-num').textContent = activeIndex++;
+        }
+      });
+    }
+
+    // Toggle items in the Grid boxes (Principles or Outcomes)
+    function toggleGridItem(itemId, visible) {
+      const card = document.getElementById('card-' + itemId);
+      if (card) {
+        card.style.display = visible ? 'block' : 'none';
+      }
+    }
+
+    // Copy entire finalized HTML page to clipboard
+    function copyHTML() {
+      const htmlContent = generateCleanHTML();
+      navigator.clipboard.writeText(htmlContent).then(() => {
+        alert('HTML კოდი წარმატებით დაკოპირდა ბუფერში!');
+      }).catch(err => {
+        console.error('Copy failed:', err);
+      });
+    }
+
+    // Print to PDF
+    function printProposal() {
+      window.print();
+    }
+
+    // Generate a standalone clean version of the generated HTML (stripping editing dashboards)
+    function generateCleanHTML() {
+      const canvas = document.getElementById('proposal-canvas');
+      const activeTheme = canvas.className;
+      
+      // Clone canvas and clean editing properties
+      const cloned = canvas.cloneNode(true);
+      cloned.removeAttribute('id');
+      cloned.querySelectorAll('[contenteditable]').forEach(el => {
+        el.removeAttribute('contenteditable');
+      });
+
+      // Get styles and construct complete standalone webpage
+      const headStyles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+        .map(el => el.outerHTML)
+        .join('\n');
+
+      return `<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI სასწავლო პროგრამის შემოთავაზება</title>
+  ${headStyles}
+  <style>
+    body {
+      background-color: var(--bg-light, #fafafa) !important;
+      overflow-y: auto !important;
+      height: auto !important;
+      display: block !important;
+      padding: 30px 15px !important;
+    }
+    #proposal-canvas {
+      margin: 0 auto !important;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
+      min-height: auto !important;
+    }
+  </style>
+</head>
+<body>
+  ${cloned.outerHTML}
+</body>
+</html>`;
+    }
+
+    // Download standalone file
+    function downloadHTML() {
+      const htmlContent = generateCleanHTML();
+      const clientName = document.getElementById('inp-client').value.trim() || 'Client';
+      
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `AI-Proposal-${clientName}.html`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Trigger initial calculation check
+    updateCalculations();
+  </script>
+</body>
+</html>
