@@ -207,3 +207,12 @@
 
 ### 👨‍🏫 ტრენერის ბიოგრაფია
 **გიორგი ბასილაია** — უფროსი ინსტრუქტორი. გიორგი არის ხელოვნური ინტელექტის (AI) ექსპერტი, ასოცირებული პროფესორი თბილისის თავისუფალ უნივერსიტეტში, IT ხელმძღვანელი და Google Gemini Certified Educator. მას აქვს 25 წელზე მეტი ტექნოლოგიური გამოცდილება, არის 14 სამეცნიერო ნაშრომის (3 388 ციტირება Google Scholar-ზე) და 18 საერთაშორისო კვლევითი პროექტის (NATO, USAID, ERASMUS) მონაწილე.
+
+#### 🏅 სერტიფიკატები და კვალიფიკაცია:
+- 🎓 **Google Certified Educator Level 2** — Google for Education · მაი 2026 – მაი 2029
+- 💎 **Gemini Certified Faculty** — Google for Education · მარ 2026 – მარ 2029
+- ✨ **Gemini Certified Educator** — Google · თებ 2026 – თებ 2029
+- 🤖 **AI Capabilities and Limitations** — Anthropic · აპრ 2026
+- ⚡ **Claude Code in Action** — Anthropic · მარ 2026
+- 🧠 **Teaching the AI Fluency Framework** — Anthropic · მარ 2026
+- 📚 **AI Fluency for Educators** — Anthropic
