@@ -2833,9 +2833,53 @@
   <!-- ========================================== -->
   <!-- NIKORA AI RETAIL SIMULATOR GAME SECTION -->
   <!-- ========================================== -->
+  
+  <!-- ========================================== -->
+  <!-- NIKORA AI PLAYGROUND SECTION (DUAL GAME) -->
+  <!-- ========================================== -->
   <section id="simulator" class="alt-bg" style="padding: 80px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; overflow: hidden;">
     <style>
-      /* Game CSS - Premium & Self-contained */
+      /* Unified Playground Styles */
+      .play-tabs-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .play-tab-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 14px 28px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .play-tab-btn:hover {
+        background: rgba(227, 30, 36, 0.05);
+        border-color: var(--primary);
+      }
+      .play-tab-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 4px 15px rgba(227, 30, 36, 0.3);
+      }
+      .play-pane {
+        display: none;
+      }
+      .play-pane.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+      }
+
+      /* Game Card Styling */
       .sim-card {
         background: var(--card-bg);
         border: 1px solid var(--border);
@@ -2889,6 +2933,8 @@
         background: rgba(255, 255, 255, 0.1);
         border-color: var(--primary);
       }
+      
+      /* HUD Stats */
       .sim-hud {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -2916,15 +2962,9 @@
         font-weight: 800;
         color: var(--text);
       }
-      .sim-hud-val.sales {
-        color: var(--primary-light);
-      }
-      .sim-hud-val.satisfaction {
-        color: var(--teal);
-      }
-      .sim-hud-val.waste {
-        color: var(--orange);
-      }
+      .sim-hud-val.sales { color: var(--primary-light); }
+      .sim-hud-val.satisfaction { color: var(--teal); }
+      .sim-hud-val.waste { color: var(--orange); }
       .sim-progress-bg {
         height: 6px;
         background: rgba(255, 255, 255, 0.05);
@@ -2988,7 +3028,6 @@
         font-size: 13.5px;
         line-height: 1.5;
         color: var(--text-muted);
-        animation: slideIn 0.3s ease;
         display: none;
       }
       
@@ -3029,7 +3068,7 @@
       }
       .sim-choice-prompt {
         font-family: 'Courier New', Courier, monospace;
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text-muted);
         background: rgba(0, 0, 0, 0.2);
         padding: 8px 12px;
@@ -3038,7 +3077,7 @@
         white-space: pre-wrap;
       }
       
-      /* Win / Lose States */
+      /* Overlays */
       .sim-overlay {
         position: absolute;
         inset: 0;
@@ -3051,7 +3090,6 @@
         text-align: center;
         padding: 40px;
         z-index: 10;
-        animation: fadeIn 0.4s ease;
       }
       .sim-overlay-title {
         font-size: 32px;
@@ -3063,9 +3101,7 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
-      .sim-overlay-title.lose {
-        color: var(--primary);
-      }
+      .sim-overlay-title.lose { color: var(--primary); }
       .sim-overlay-desc {
         font-size: 15.5px;
         color: var(--text-muted);
@@ -3089,7 +3125,7 @@
         box-shadow: 0 0 15px rgba(227, 30, 36, 0.4);
       }
       
-      /* Certificate Style */
+      /* Certificate */
       .sim-cert-card {
         border: 4px double var(--orange);
         border-radius: 12px;
@@ -3125,115 +3161,276 @@
         margin-top: 15px;
       }
       
-      @keyframes slideIn {
-        from { transform: translateY(10px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+      /* Fairy Tale Escape Game Custom HUD & Styles */
+      .sim-hud-val.devi { color: var(--primary-light); }
+      .sim-hud-val.nico { color: var(--teal); }
+      .sim-hud-val.obstacle { color: var(--orange); }
+      
+      .tale-status-badge {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid var(--orange);
+        color: var(--orange);
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 13.5px;
+        display: inline-block;
+        margin-top: 15px;
       }
+      .tale-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.2);
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid var(--border);
+        margin-top: 20px;
+        gap: 15px;
+      }
+      .tale-avatar-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .tale-avatar-svg {
+        width: 50px;
+        height: 50px;
+        background: var(--navy-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        border: 2px solid var(--border);
+      }
+      
       @keyframes fadeIn {
         from { opacity: 0; }
-        to { opacity: 0.98; }
+        to { opacity: 1; }
       }
     </style>
 
     <div class="container">
       <div class="section-header-wrap" style="text-align: center; margin: 0 auto 48px;">
-        <div class="section-kicker" style="justify-content: center;">ინტერაქტიული სიმულატორი</div>
-        <h2 class="section-title">ნიკორა AI საცალო ვაჭრობის სიმულატორი</h2>
-        <p class="section-desc">გამოსცადე საკუთარი თავი ნიკორას მაღაზიის მენეჯერის როლში. გამოიყენე ხელოვნური ინტელექტის გადაწყვეტილებები, რათა მართო გაყიდვები, კმაყოფილება და აიცილო თავიდან საკვების ნარჩენები.</p>
+        <div class="section-kicker" style="justify-content: center;">ნიკორას სათამაშო მოედანი</div>
+        <h2 class="section-title">ინტერაქტიული გასართობი პანელი</h2>
+        <p class="section-desc">გამოსცადე საკუთარი თავი ნიკორას ორ განსხვავებულ სამყაროში: მართე თანამედროვე სუპერმარკეტების ქსელი ან დაეხმარე ზღაპრის გმირებს დევისგან გაქცევაში.</p>
       </div>
 
-      <div class="sim-card" id="sim-root">
-        <!-- Win Overlay -->
-        <div class="sim-overlay" id="sim-win-overlay">
-          <div class="sim-cert-card" id="sim-cert">
-            <div class="sim-cert-title">სერტიფიკატი</div>
-            <div class="sim-cert-name">AI Retail Master</div>
-            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 15px;">გადაეცემა საუკეთესო AI მენეჯერს</p>
-            <p style="color: white; font-size: 13.5px; line-height: 1.5;">სააქციო საზოგადოება „ნიკორა ტრეიდის“ საოპერაციო ეფექტიანობისა და ცივი ჯაჭვის AI ინსტრუმენტებით წარმატებული მართვისთვის.</p>
-            <div class="sim-cert-sig">ინსტრუქტორი: გიორგი ბასილაია</div>
-          </div>
-          <h3 class="sim-overlay-title win">გილოცავთ! თქვენ გაიმარჯვეთ</h3>
-          <p class="sim-overlay-desc" id="sim-win-stats"></p>
-          <button class="sim-btn-primary" onclick="resetGame()">თავიდან დაწყება</button>
-        </div>
+      <!-- Playground Switch Tabs -->
+      <div class="play-tabs-wrap">
+        <button class="play-tab-btn active" id="btn-play-retail" onclick="switchPlayground('retail')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+          AI საცალო სიმულატორი
+        </button>
+        <button class="play-tab-btn" id="btn-play-fairytale" onclick="switchPlayground('fairytale')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 22h20L12 2z"/><path d="M12 6v6"/><path d="M12 16h.01"/></svg>
+          ნიკო და ნიკორა (ზღაპარი)
+        </button>
+      </div>
 
-        <!-- Lose Overlay -->
-        <div class="sim-overlay" id="sim-lose-overlay">
-          <h3 class="sim-overlay-title lose">სიმულაცია დასრულდა</h3>
-          <p class="sim-overlay-desc" id="sim-lose-stats"></p>
-          <button class="sim-btn-primary" onclick="resetGame()">სცადეთ ხელახლა</button>
-        </div>
-
-        <div class="sim-header">
-          <div class="sim-title-wrap">
-            <span class="sim-badge">Day <span id="sim-day-num">1</span> / 5</span>
-            <h4 style="margin: 0; font-size: 16px; font-weight: 700;">AI მენეჯერის მართვის პანელი</h4>
-          </div>
-          <button class="sim-audio-btn" id="sim-audio-btn" onclick="toggleAudio()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-            ხმა: ჩართული
-          </button>
-        </div>
-
-        <!-- Status Metrics HUD -->
-        <div class="sim-hud">
-          <!-- Sales -->
-          <div class="sim-hud-item">
-            <span class="sim-hud-label">გაყიდვები (მიზანი: 15,000 ₾)</span>
-            <div class="sim-hud-val sales"><span id="sim-val-sales">5,000</span> ₾</div>
-            <div class="sim-progress-bg">
-              <div class="sim-progress-fill" id="sim-fill-sales" style="width: 33.3%; background: var(--primary);"></div>
+      <!-- PANE 1: RETAIL SIMULATOR -->
+      <div class="play-pane active" id="pane-play-retail">
+        <div class="sim-card" id="sim-root">
+          <!-- Win Overlay -->
+          <div class="sim-overlay" id="sim-win-overlay">
+            <div class="sim-cert-card" id="sim-cert">
+              <div class="sim-cert-title">სერტიფიკატი</div>
+              <div class="sim-cert-name">AI Retail Master</div>
+              <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 15px;">გადაეცემა საუკეთესო AI მენეჯერს</p>
+              <p style="color: white; font-size: 13.5px; line-height: 1.5;">სააქციო საზოგადოება „ნიკორა ტრეიდის“ საოპერაციო ეფექტიანობისა და ცივი ჯაჭვის AI ინსტრუმენტებით წარმატებული მართვისთვის.</p>
+              <div class="sim-cert-sig">ინსტრუქტორი: გიორგი ბასილაია</div>
             </div>
-          </div>
-          <!-- Customer Satisfaction -->
-          <div class="sim-hud-item">
-            <span class="sim-hud-label">კლიენტთა კმაყოფილება</span>
-            <div class="sim-hud-val satisfaction"><span id="sim-val-satisfaction">75</span>%</div>
-            <div class="sim-progress-bg">
-              <div class="sim-progress-fill satisfaction" id="sim-fill-satisfaction" style="width: 75%;"></div>
-            </div>
-          </div>
-          <!-- Waste -->
-          <div class="sim-hud-item">
-            <span class="sim-hud-label">ნარჩენები (ლიმიტი: 100%)</span>
-            <div class="sim-hud-val waste"><span id="sim-val-waste">20</span>%</div>
-            <div class="sim-progress-bg">
-              <div class="sim-progress-fill waste" id="sim-fill-waste" style="width: 20%;"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Gameplay Screen -->
-        <div class="sim-gameplay">
-          <!-- Event area -->
-          <div class="sim-event-card">
-            <div>
-              <div class="sim-day-title" id="sim-event-day">დღე 1: შაბათ-კვირის BBQ Rush</div>
-              <p class="sim-event-desc" id="sim-event-desc">თბილისში პიკნიკების სეზონი იხსნება. ნიკორას სოსისებსა და შაშლიკებზე მოთხოვნა იზრდება. როგორ მოვახდინოთ საწყობის მარაგების ოპტიმიზაცია?</p>
-            </div>
-            
-            <div class="sim-feedback" id="sim-feedback-box">
-              შედეგის აღწერა
-            </div>
+            <h3 class="sim-overlay-title win">გილოცავთ! თქვენ გაიმარჯვეთ</h3>
+            <p class="sim-overlay-desc" id="sim-win-stats"></p>
+            <button class="sim-btn-primary" onclick="resetGame()">თავიდან დაწყება</button>
           </div>
 
-          <!-- Choices Area -->
-          <div class="sim-choices">
-            <button class="sim-choice-btn" id="sim-choice-0" onclick="makeChoice(0)">
-              <span class="sim-choice-title" id="sim-choice-title-0">არჩევანი A</span>
-              <span class="sim-choice-prompt" id="sim-choice-prompt-0">პრომპტის კოდი</span>
+          <!-- Lose Overlay -->
+          <div class="sim-overlay" id="sim-lose-overlay">
+            <h3 class="sim-overlay-title lose">სიმულაცია დასრულდა</h3>
+            <p class="sim-overlay-desc" id="sim-lose-stats"></p>
+            <button class="sim-btn-primary" onclick="resetGame()">სცადეთ ხელახლა</button>
+          </div>
+
+          <div class="sim-header">
+            <div class="sim-title-wrap">
+              <span class="sim-badge">Day <span id="sim-day-num">1</span> / 5</span>
+              <h4 style="margin: 0; font-size: 16px; font-weight: 700;">AI მენეჯერის მართვის პანელი</h4>
+            </div>
+            <button class="sim-audio-btn" id="sim-audio-btn" onclick="toggleAudio()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              ხმა: ჩართული
             </button>
-            <button class="sim-choice-btn" id="sim-choice-1" onclick="makeChoice(1)">
-              <span class="sim-choice-title" id="sim-choice-title-1">არჩევანი B</span>
-              <span class="sim-choice-prompt" id="sim-choice-prompt-1">პრომპტის კოდი</span>
+          </div>
+
+          <!-- Status Metrics HUD -->
+          <div class="sim-hud">
+            <!-- Sales -->
+            <div class="sim-hud-item">
+              <span class="sim-hud-label">გაყიდვები (მიზანი: 15,000 ₾)</span>
+              <div class="sim-hud-val sales"><span id="sim-val-sales">5,000</span> ₾</div>
+              <div class="sim-progress-bg">
+                <div class="sim-progress-fill" id="sim-fill-sales" style="width: 33.3%; background: var(--primary);"></div>
+              </div>
+            </div>
+            <!-- Customer Satisfaction -->
+            <div class="sim-hud-item">
+              <span class="sim-hud-label">კლიენტთა კმაყოფილება</span>
+              <div class="sim-hud-val satisfaction"><span id="sim-val-satisfaction">75</span>%</div>
+              <div class="sim-progress-bg">
+                <div class="sim-progress-fill satisfaction" id="sim-fill-satisfaction" style="width: 75%;"></div>
+              </div>
+            </div>
+            <!-- Waste -->
+            <div class="sim-hud-item">
+              <span class="sim-hud-label">ნარჩენები (ლიმიტი: 100%)</span>
+              <div class="sim-hud-val waste"><span id="sim-val-waste">20</span>%</div>
+              <div class="sim-progress-bg">
+                <div class="sim-progress-fill waste" id="sim-fill-waste" style="width: 20%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gameplay Screen -->
+          <div class="sim-gameplay">
+            <div class="sim-event-card">
+              <div>
+                <div class="sim-day-title" id="sim-event-day">დღე 1: შაბათ-კვირის BBQ Rush</div>
+                <p class="sim-event-desc" id="sim-event-desc">თბილისში პიკნიკების სეზონი იხსნება. ნიკორას სოსისებსა და შაშლიკებზე მოთხოვნა იზრდება. როგორ მოვახდინოთ საწყობის მარაგების ოპტიმიზაცია?</p>
+              </div>
+              <div class="sim-feedback" id="sim-feedback-box">შედეგის აღწერა</div>
+            </div>
+
+            <!-- Choices Area -->
+            <div class="sim-choices">
+              <button class="sim-choice-btn" id="sim-choice-0" onclick="makeChoice(0)">
+                <span class="sim-choice-title" id="sim-choice-title-0">არჩევანი A</span>
+                <span class="sim-choice-prompt" id="sim-choice-prompt-0">პრომპტის კოდი</span>
+              </button>
+              <button class="sim-choice-btn" id="sim-choice-1" onclick="makeChoice(1)">
+                <span class="sim-choice-title" id="sim-choice-title-1">არჩევანი B</span>
+                <span class="sim-choice-prompt" id="sim-choice-prompt-1">პრომპტის კოდი</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 2: FAIRY TALE ESCAPE GAME -->
+      <div class="play-pane" id="pane-play-fairytale">
+        <div class="sim-card" id="tale-root">
+          <!-- Tale Win Overlay -->
+          <div class="sim-overlay" id="tale-win-overlay">
+            <div class="sim-cert-card" id="tale-cert" style="display: block; border-color: var(--teal);">
+              <div class="sim-cert-title" style="color: var(--teal);">გამარჯვება</div>
+              <div class="sim-cert-name">Fairy Tale Hero</div>
+              <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 15px;">გადაეცემა ნიკოსა და ნიკორას მხსნელს</p>
+              <p style="color: white; font-size: 13.5px; line-height: 1.5;">ხალხური ზღაპრის „წიქარას“ მოტივებზე შექმნილ გამოწვევაში დევის წარმატებით დამარცხებისა და სამშვიდობოს მიღწევისთვის.</p>
+              <div class="sim-cert-sig">ინსტრუქტორი: გიორგი ბასილაია</div>
+            </div>
+            <h3 class="sim-overlay-title win" style="color: var(--teal);">თქვენ სამშვიდობოს მიაღწიეთ!</h3>
+            <p class="sim-overlay-desc" id="tale-win-stats"></p>
+            <button class="sim-btn-primary" onclick="resetTaleGame()">თავიდან დაწყება</button>
+          </div>
+
+          <!-- Tale Lose Overlay -->
+          <div class="sim-overlay" id="tale-lose-overlay">
+            <h3 class="sim-overlay-title lose">დევი დაგეწიათ!</h3>
+            <p class="sim-overlay-desc" id="tale-lose-stats"></p>
+            <button class="sim-btn-primary" onclick="resetTaleGame()">სცადეთ ხელახლა</button>
+          </div>
+
+          <div class="sim-header">
+            <div class="sim-title-wrap">
+              <span class="sim-badge" style="background: var(--teal);">რაუნდი <span id="tale-round-num">1</span></span>
+              <h4 style="margin: 0; font-size: 16px; font-weight: 700;">ნიკო და ნიკორა: გაქცევა დევისგან</h4>
+            </div>
+            <button class="sim-audio-btn" id="tale-audio-btn" onclick="toggleAudio()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              ხმა: ჩართული
             </button>
+          </div>
+
+          <!-- Tale HUD Stats -->
+          <div class="sim-hud">
+            <!-- Niko & Nikora Distance -->
+            <div class="sim-hud-item">
+              <span class="sim-hud-label">მანძილი სოფლამდე (მიზანი: 500მ)</span>
+              <div class="sim-hud-val nico"><span id="tale-val-nico">0</span> მ</div>
+              <div class="sim-progress-bg">
+                <div class="sim-progress-fill" id="tale-fill-nico" style="width: 0%; background: var(--teal);"></div>
+              </div>
+            </div>
+            <!-- Devi Distance behind Niko -->
+            <div class="sim-hud-item">
+              <span class="sim-hud-label">მანძილი დევამდე (ლიმიტი: >0მ)</span>
+              <div class="sim-hud-val devi"><span id="tale-val-devi">50</span> მ</div>
+              <div class="sim-progress-bg">
+                <div class="sim-progress-fill" id="tale-fill-devi" style="width: 100%; background: var(--primary);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gameplay Screen -->
+          <div class="sim-gameplay">
+            <div class="sim-event-card" style="border-color: rgba(16, 185, 129, 0.2);">
+              <div>
+                <div class="sim-day-title" id="tale-event-round" style="color: var(--teal);">რაუნდი 1: დევის დევნა</div>
+                <p class="sim-event-desc" id="tale-event-desc" style="font-size: 15.5px;">დევი საშინელი სისწრაფით მოგდევთ! ნიკორა (ჯადოსნური ხარი) გირჩევთ, რომ უკან მოიხედოთ და დევის მდგომარეობის შესაბამისი ნივთი გადააგდოთ, რათა დაბრკოლება შეუქმნათ.</p>
+                <div class="tale-status-badge" id="tale-devi-status">დევის მდგომარეობა: უჭირავს ნაჯახი</div>
+              </div>
+              <div class="sim-feedback" id="tale-feedback-box" style="border-left-color: var(--teal);">შედეგი</div>
+            </div>
+
+            <!-- Fairy Tale Magical Choices Area -->
+            <div class="sim-choices" id="tale-choices-box">
+              <!-- Choice 0: Comb -->
+              <button class="sim-choice-btn" style="padding: 18px;" onclick="makeTaleChoice('comb')">
+                <span class="sim-choice-title" style="color: var(--teal);">1. ჯადოსნური სავარცხელი</span>
+                <span class="sim-choice-prompt">გადააგდე სავარცხელი, რომელიც გადაიქცევა უღრან, გაუვალ ტყედ.</span>
+              </button>
+              <!-- Choice 1: Whetstone -->
+              <button class="sim-choice-btn" style="padding: 18px;" onclick="makeTaleChoice('whetstone')">
+                <span class="sim-choice-title" style="color: var(--teal);">2. სასლესი ქვა</span>
+                <span class="sim-choice-prompt">გადააგდე სასლესი ქვა, რომელიც გადაიქცევა მაღალ, კლდოვან მთად.</span>
+              </button>
+              <!-- Choice 2: Mirror -->
+              <button class="sim-choice-btn" style="padding: 18px;" onclick="makeTaleChoice('mirror')">
+                <span class="sim-choice-title" style="color: var(--teal);">3. ჯადოსნური სარკე</span>
+                <span class="sim-choice-prompt">გადააგდე სარკე, რომელიც გადაიქცევა უძირო, ღრმა ტბად.</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      // Game Variables & State
+      // Switch Playground Tabs
+      function switchPlayground(paneId) {
+        playSound('click');
+        document.getElementById('btn-play-retail').classList.remove('active');
+        document.getElementById('btn-play-fairytale').classList.remove('active');
+        document.getElementById('pane-play-retail').classList.remove('active');
+        document.getElementById('pane-play-fairytale').classList.remove('active');
+
+        if (paneId === 'retail') {
+          document.getElementById('btn-play-retail').classList.add('active');
+          document.getElementById('pane-play-retail').classList.add('active');
+        } else {
+          document.getElementById('btn-play-fairytale').classList.add('active');
+          document.getElementById('pane-play-fairytale').classList.add('active');
+          resetTaleGame();
+        }
+      }
+
+      // ==========================================
+      // GAME 1: RETAIL SIMULATOR LOGIC
+      // ==========================================
       let sales = 5000;
       let satisfaction = 75;
       let waste = 20;
@@ -3241,7 +3438,7 @@
       let soundEnabled = true;
       let canChoose = true;
 
-      // Web Audio API Sound Synthesizer
+      // Web Audio Synth
       let audioCtx = null;
       function initAudio() {
         if (!audioCtx) {
@@ -3285,22 +3482,23 @@
             osc.stop(audioCtx.currentTime + 0.05);
           }
         } catch (e) {
-          // Audio not supported or blocked
+          // Audio blocked or not supported
         }
       }
 
       function toggleAudio() {
         soundEnabled = !soundEnabled;
         const btn = document.getElementById('sim-audio-btn');
-        if (soundEnabled) {
-          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> ხმა: ჩართული`;
-        } else {
-          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg> ხმა: გამორთული`;
-        }
+        const btnTale = document.getElementById('tale-audio-btn');
+        const iconSvg = soundEnabled 
+          ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> ხმა: ჩართული`
+          : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg> ხმა: გამორთული`;
+        
+        btn.innerHTML = iconSvg;
+        btnTale.innerHTML = iconSvg;
         playSound('click');
       }
 
-      // Game Events & Prompt Structures
       const gameEvents = [
         {
           day: 1,
@@ -3425,13 +3623,11 @@
         document.getElementById('sim-val-waste').innerText = waste;
         document.getElementById('sim-day-num').innerText = currentDay;
 
-        // Progress Fill Widths
         const salesPct = Math.min((sales / 15000) * 100, 100);
         document.getElementById('sim-fill-sales').style.width = salesPct + '%';
         document.getElementById('sim-fill-satisfaction').style.width = satisfaction + '%';
         document.getElementById('sim-fill-waste').style.width = waste + '%';
 
-        // Check lose conditions
         if (satisfaction <= 0) {
           endGame('lose', "თქვენი კლიენტების კმაყოფილება 0%-მდე დაეცა. ნიკორას მომხმარებლებმა Libre-სა და სხვა მაღაზიებს მიაშურეს. საოპერაციო მართვა არაეფექტური აღმოჩნდა.");
         } else if (waste >= 100) {
@@ -3452,12 +3648,8 @@
         const ev = gameEvents[currentDay - 1];
         document.getElementById('sim-event-day').innerText = ev.title;
         document.getElementById('sim-event-desc').innerText = ev.desc;
+        document.getElementById('sim-feedback-box').style.display = 'none';
 
-        // Reset feedback box
-        const feedbackBox = document.getElementById('sim-feedback-box');
-        feedbackBox.style.display = 'none';
-
-        // Set choices
         for (let i = 0; i < 2; i++) {
           const choice = ev.choices[i];
           document.getElementById('sim-choice-title-' + i).innerText = choice.title;
@@ -3473,27 +3665,22 @@
         const ev = gameEvents[currentDay - 1];
         const choice = ev.choices[index];
 
-        // Apply modifiers
         sales += choice.salesMod;
         satisfaction = Math.max(0, Math.min(100, satisfaction + choice.satisfactionMod));
         waste = Math.max(0, Math.min(100, waste + choice.wasteMod));
 
-        // Play feedback sounds
         if (choice.salesMod > 0 && choice.satisfactionMod >= 0) {
           playSound('success');
         } else {
           playSound('fail');
         }
 
-        // Show feedback
         const feedbackBox = document.getElementById('sim-feedback-box');
         feedbackBox.innerText = choice.feedback;
         feedbackBox.style.display = 'block';
 
-        // Update indicators
         updateHUD();
 
-        // Wait and advance to next day
         if (satisfaction > 0 && waste < 100) {
           setTimeout(() => {
             currentDay++;
@@ -3532,10 +3719,199 @@
         loadEvent();
       }
 
-      // Initialize Game on Load
+      // ==========================================
+      // GAME 2: NIKO & NIKORA FAIRY TALE LOGIC
+      // ==========================================
+      let nicoDist = 0;
+      let deviDist = 50;
+      let roundNum = 1;
+      let taleCanChoose = true;
+      let deviStatus = "axe"; // States: axe, tired, thirsty, fast
+
+      const taleStates = {
+        axe: {
+          desc: "დევის ხელში უჭირავს მჭრელი ნაჯახი და ხეებს ადვილად ჩეხავს.",
+          comb: {
+            text: "უაზრო დაბრკოლება! დევმა ნაჯახით წამებში გაჩეხა თქვენ მიერ შექმნილი ტყე. (+20მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 20,
+            nicoDist: 80
+          },
+          whetstone: {
+            text: "დიდებული გადაწყვეტილება! დევს ნაჯახი ხელიდან გაუვარდა მთაზე ცოცვისას. (+70მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 70,
+            nicoDist: 80
+          },
+          mirror: {
+            text: "კარგი არჩევანია! დევი მძიმე ნაჯახით ძლივს გადაცურა თქვენ მიერ შექმნილი ტბა. (+60მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 60,
+            nicoDist: 80
+          }
+        },
+        tired: {
+          desc: "დევი ძალიან დაიღალა, სირბილისგან მუხლები ეკვეთება და ძლივს სუნთქავს.",
+          comb: {
+            text: "ტყემ ოდნავ შეაფერხა ისედაც დაღლილი დევი. (+60მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 60,
+            nicoDist: 80
+          },
+          whetstone: {
+            text: "გენიალურია! დაღლილ დევს ძალა საერთოდ არ ეყო უზარმაზარ კლდოვან მთაზე ასასვლელად. (+120მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 120,
+            nicoDist: 80
+          },
+          mirror: {
+            text: "ტბამ დაღლილი დევი შეაყოვნა, მაგრამ წყალმა მას ძალები აღუდგინა. (+50მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 50,
+            nicoDist: 80
+          }
+        },
+        thirsty: {
+          desc: "დევს საშინლად სწყურია, მზის სიცხეში ენა ეწვება და წყალს ეძებს.",
+          comb: {
+            text: "ტყის ჩრდილმა დევს ოდნავ შეუმსუბუქა სიცხე. (+60მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 60,
+            nicoDist: 80
+          },
+          whetstone: {
+            text: "მშრალმა კლდოვანმა მთამ დევი კიდევ უფრო მეტად დაღალა და მოსწყურა. (+80მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 80,
+            nicoDist: 80
+          },
+          mirror: {
+            text: "უხეში შეცდომა! დევმა მომენტალურად დალია მთელი ტბა, წყურვილი მოიკლა და ახალი ენერგიით გამოგეკიდათ. (+10მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 10,
+            nicoDist: 80
+          }
+        },
+        fast: {
+          desc: "დევი ძალებითაა სავსე და წარმოუდგენელი სისწრაფით მორბის თქვენკენ.",
+          comb: {
+            text: "უღრანმა ტყემ სწრაფად მორბენალი დევი საგრძნობლად შეაფერხა. (+80მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 80,
+            nicoDist: 80
+          },
+          whetstone: {
+            text: "მთამ შეაფერხა სწრაფი დევი, თუმცა მან მაინც სწრაფად გადმოიარა იგი. (+60მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 60,
+            nicoDist: 80
+          },
+          mirror: {
+            text: "შესანიშნავია! სწრაფად მორბენალი დევი უცაბედად ჩავარდა ღრმა ტბაში და ცურვით ბევრი დრო დაკარგა. (+90მ მანძილი დევამდე, +80მ სოფლამდე)",
+            deviDist: 90,
+            nicoDist: 80
+          }
+        }
+      };
+
+      const taleStatesList = ["axe", "tired", "thirsty", "fast"];
+
+      function updateTaleHUD() {
+        document.getElementById('tale-val-nico').innerText = nicoDist;
+        document.getElementById('tale-val-devi').innerText = deviDist;
+        document.getElementById('tale-round-num').innerText = roundNum;
+
+        // Progress Calculations
+        const nicoPct = Math.min((nicoDist / 500) * 100, 100);
+        document.getElementById('tale-fill-nico').style.width = nicoPct + '%';
+        
+        // Devi proximity visual representation
+        const safetyPct = Math.max(0, Math.min((deviDist / 120) * 100, 100));
+        document.getElementById('tale-fill-devi').style.width = safetyPct + '%';
+
+        if (deviDist <= 0) {
+          endTaleGame('lose', "დევმა ნაბიჯი დაგიჩქარათ, ნიკორას რქებში ხელი ჩაავლო და ნიკო შეიპყრო. თქვენ ვერ შეძელით გაქცევა.");
+        } else if (nicoDist >= 500) {
+          endTaleGame('win', `ბრწყინვალე გამარჯვებაა! თქვენ მიაღწიეთ მშობლიურ სოფელს. ნიკორამ ჯადოსნური რქებით დევი შორს გადაისროლა, სოფლის მაცხოვრებლებმა კი ნიკო გადაარჩინეს.`);
+        }
+      }
+
+      function loadTaleRound() {
+        if (nicoDist >= 500) return;
+
+        // Randomize Devi State
+        const randomStateIdx = Math.floor(Math.random() * taleStatesList.length);
+        deviStatus = taleStatesList[randomStateIdx];
+
+        const stateObj = taleStates[deviStatus];
+        document.getElementById('tale-event-round').innerText = `რაუნდი ${roundNum}: დევის დევნა`;
+        document.getElementById('tale-devi-status').innerText = `დევის მდგომარეობა: ${stateObj.desc}`;
+
+        document.getElementById('tale-feedback-box').style.display = 'none';
+        taleCanChoose = true;
+      }
+
+      function makeTaleChoice(itemType) {
+        if (!taleCanChoose) return;
+        taleCanChoose = false;
+
+        const stateObj = taleStates[deviStatus];
+        const choiceResult = stateObj[itemType];
+
+        // Apply distance updates
+        // Base mechanics: Niko runs forward, Devi runs forward. The choice modulates the gap.
+        nicoDist += choiceResult.nicoDist;
+        
+        // Devi base speed closes the gap by 100m, but the item delays him by choiceResult.deviDist
+        const netDeviApproach = 100 - choiceResult.deviDist;
+        deviDist = Math.max(0, deviDist - netDeviApproach);
+
+        // Play sounds
+        if (choiceResult.deviDist >= 70) {
+          playSound('success');
+        } else {
+          playSound('fail');
+        }
+
+        // Show feedback
+        const feedbackBox = document.getElementById('tale-feedback-box');
+        feedbackBox.innerText = choiceResult.text;
+        feedbackBox.style.display = 'block';
+
+        updateTaleHUD();
+
+        if (deviDist > 0 && nicoDist < 500) {
+          setTimeout(() => {
+            roundNum++;
+            loadTaleRound();
+          }, 3800);
+        }
+      }
+
+      function endTaleGame(state, message) {
+        taleCanChoose = false;
+        if (state === 'win') {
+          playSound('success');
+          document.getElementById('tale-win-stats').innerText = message;
+          document.getElementById('tale-win-overlay').style.display = 'flex';
+        } else {
+          playSound('fail');
+          document.getElementById('tale-lose-stats').innerText = message;
+          document.getElementById('tale-lose-overlay').style.display = 'flex';
+        }
+      }
+
+      function resetTaleGame() {
+        nicoDist = 0;
+        deviDist = 50;
+        roundNum = 1;
+        taleCanChoose = true;
+
+        document.getElementById('tale-win-overlay').style.display = 'none';
+        document.getElementById('tale-lose-overlay').style.display = 'none';
+
+        playSound('click');
+        updateTaleHUD();
+        loadTaleRound();
+      }
+
+      // Initialize all on DOM load
       document.addEventListener("DOMContentLoaded", function() {
+        // Init Game 1
         updateHUD();
         loadEvent();
+
+        // Init Game 2
+        updateTaleHUD();
       });
     </script>
   </section>
