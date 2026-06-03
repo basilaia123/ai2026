@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI მასტერკლასის შემოთავაზება და საპარტნიორო ინვოისი - LAB Technologies</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#5cf2e9',
+              dark: '#14b8a6',
+              light: '#99f6e4',
+              glow: 'rgba(92, 242, 233, 0.15)'
+            },
+            space: {
+              950: '#060a13',
+              900: '#0b111e',
+              800: '#111b2d',
+              700: '#1d2a44',
+              600: '#2d3f5e',
+              200: '#cbd5e1',
+              100: '#f1f5f9'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+    html { scroll-behavior: smooth; }
+    
+    /* Screen styling: Dark Glassmorphic Theme */
+    .sheet-screen {
+      background: #0b111e;
+      border: 1px solid rgba(92, 242, 233, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      border-radius: 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sheet-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #5cf2e9, #14b8a6);
+    }
+
+    /* Print Stylesheet Overrides */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-layout {
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+      }
+      .sheet-screen {
+        background: white !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        color: black !important;
+      }
+      .sheet-screen::before {
+        display: none !important;
+      }
+      /* Reset dark elements for printing */
+      .tech-bg-reset {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #e5e7eb !important;
+        box-shadow: none !important;
+      }
+      .tech-text-reset {
+        color: #111827 !important;
+      }
+      .tech-border-reset {
+        border-color: #e5e7eb !important;
+      }
+      /* Set specific colors for key print elements */
+      .print-brand-text {
+        color: #0d9488 !important;
+      }
+      .print-badge {
+        background: #f3f4f6 !important;
+        border: 1px solid #d1d5db !important;
+        color: #1f2937 !important;
+      }
+      @page {
+        size: A4;
+        margin: 1.5cm;
+      }
+    }
+  </style>
+</head>
+<body class="bg-space-950 text-slate-200 min-h-screen flex flex-col antialiased">
+
+  <!-- Top Navigation (no-print) -->
+  <nav class="no-print sticky top-0 z-50 bg-space-950/90 border-b border-space-800 backdrop-blur-md shadow-lg">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center font-black text-space-950 text-lg shadow-lg shadow-brand/20">
+          S
+        </div>
+        <div>
+          <span class="text-[10px] font-bold text-brand uppercase tracking-widest block leading-none">Smart Academy</span>
+          <span class="text-sm font-extrabold text-white">AI სასწავლო პორტალი</span>
+        </div>
+      </div>
+      
+      <!-- Tab Switcher -->
+      <div class="bg-space-900 border border-space-800 p-1.5 rounded-xl flex gap-1">
+        <button onclick="switchTab('proposal')" id="tab-btn-proposal" class="tab-btn active px-4 py-2.5 rounded-lg text-xs font-extrabold uppercase transition-all duration-200 bg-brand text-space-950 shadow-md shadow-brand/20">
+          📄 მასტერკლასის შემოთავაზება
+        </button>
+        <button onclick="switchTab('invoice')" id="tab-btn-invoice" class="tab-btn px-4 py-2.5 rounded-lg text-xs font-extrabold uppercase transition-all duration-200 text-slate-400 hover:text-white">
+          🧾 საპარტნიორო ინვოისი
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="bg-space-800 hover:bg-space-700 border border-space-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center gap-2">
+          🖨️ ბეჭდვა / PDF
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main View Container -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 md:py-12 print-layout">
+    
+    <!-- ========================================== -->
+    <!-- TAB 1: COMMERCIAL PROPOSAL (შემოთავაზება)  -->
+    <!-- ========================================== -->
+    <div id="view-proposal" class="tab-view block space-y-12">
+      
+      <!-- Hero Banner Segment -->
+      <div class="bg-gradient-to-br from-space-900 via-space-800 to-space-950 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-2xl border border-space-800 tech-bg-reset">
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><defs><pattern id=&quot;g&quot; width=&quot;60&quot; height=&quot;60&quot; patternUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M60 0L0 60M-15 15L15-15M45 75L75 45&quot; stroke=&quot;%235cf2e9&quot; stroke-width=&quot;1&quot; fill=&quot;none&quot;/></pattern></defs><rect fill=&quot;url(%23g)&quot; width=&quot;60&quot; height=&quot;60&quot;/></svg>');"></div>
+        
+        <div class="relative z-10 space-y-6">
+          <div class="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 rounded-full px-4 py-1.5 shadow-inner print-badge">
+            <span class="w-2 h-2 bg-brand rounded-full animate-pulse"></span>
+            <span class="text-xs font-bold text-brand uppercase tracking-widest print-brand-text">ორმხრივი B2B პარტნიორობა</span>
+          </div>
+          
+          <h1 class="text-3xl md:text-5xl font-black leading-tight tracking-tight text-white max-w-4xl tech-text-reset">
+            ხელოვნური ინტელექტის (AI) პრაქტიკული მასტერკლასი
+          </h1>
+          
+          <p class="text-base md:text-lg text-slate-300 max-w-3xl font-light leading-relaxed tech-text-reset">
+            სპეციალურად მორგებული საგანმანათლებლო პროგრამა საინფორმაციო ტექნოლოგიების ინტეგრატორი კომპანია LAB Technologies-ის გუნდისთვის. მასტერკლასი ფოკუსირებულია B2B სამუშაო პროცესების, სისტემური ინჟინერიისა და ადმინისტრაციული ეფექტურობის AI ტექნოლოგიებით ოპტიმიზაციაზე.
+          </p>
+
+          <div class="h-0.5 bg-gradient-to-r from-brand via-brand-dark to-transparent max-w-xl"></div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-left max-w-3xl">
+            <div class="bg-space-950/60 border border-space-800 rounded-2xl p-4 backdrop-blur-sm tech-bg-reset tech-border-reset">
+              <span class="text-xs text-slate-400 block mb-1 tech-text-reset">სწავლების ფორმატი</span>
+              <strong class="text-base text-brand font-extrabold block print-brand-text">1-დღიანი მასტერკლასი</strong>
+              <span class="text-[11px] text-slate-400 tech-text-reset">ხანგრძლივობა: 3 საათი</span>
+            </div>
+            <div class="bg-space-950/60 border border-space-800 rounded-2xl p-4 backdrop-blur-sm tech-bg-reset tech-border-reset">
+              <span class="text-xs text-slate-400 block mb-1 tech-text-reset">მონაწილე გუნდები</span>
+              <strong class="text-base text-white font-extrabold block tech-text-reset">ინჟინერია, გაყიდვები & IT</strong>
+              <span class="text-[11px] text-slate-400 tech-text-reset">B2B სპეციფიკაზე მორგებული</span>
+            </div>
+            <div class="bg-space-950/60 border border-space-800 rounded-2xl p-4 backdrop-blur-sm tech-bg-reset tech-border-reset">
+              <span class="text-xs text-slate-400 block mb-1 tech-text-reset">ფინანსური პირობა</span>
+              <strong class="text-base text-brand font-extrabold block print-brand-text">უფასო (0.00 GEL)</strong>
+              <span class="text-[11px] text-slate-400 tech-text-reset">საპარტნიორო შეთანხმება</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategic Match Section -->
+      <section class="sheet-screen p-6 md:p-10 space-y-8 tech-bg-reset tech-border-reset">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-space-800 pb-6 tech-border-reset">
+          <div>
+            <span class="text-xs font-extrabold text-brand uppercase tracking-widest block mb-1 print-brand-text">სტრატეგიული თავსებადობა</span>
+            <h2 class="text-2xl font-black text-white tech-text-reset">LAB Technologies და ხელოვნური ინტელექტი</h2>
+          </div>
+          <span class="text-xs bg-brand/10 border border-brand/20 text-brand px-4 py-2 rounded-xl font-bold print-badge print-brand-text">
+            ყოველდღიური პროდუქტიულობის 40-50%-იანი ზრდა
+          </span>
+        </div>
+
+        <p class="text-slate-300 leading-relaxed text-sm md:text-base tech-text-reset">
+          როგორც წამყვანი ქართული B2B საინფორმაციო ტექნოლოგიების ინტეგრატორი, რომელიც მჭიდროდ თანამშრომლობს გლობალურ ბრენდებთან (მაგალითად: Hewlett Packard Enterprise, Dell, Cisco, Lenovo), LAB Technologies მუდმივად საჭიროებს კომერციული და ტექნიკური პროცესების მაქსიმალურ სიზუსტესა და სისწრაფეს. ეს მასტერკლასი შექმნილია იმისათვის, რომ კომპანიის ინჟინრებმა, გაყიდვების სპეციალისტებმა და მენეჯმენტმა მიიღონ პრაქტიკული უნარები გენერაციული ხელოვნური ინტელექტის უსაფრთხო და ეფექტური გამოყენებისთვის.
+        </p>
+
+        <!-- Tailored Workflows Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-space-900/50 border border-space-800 rounded-2xl p-6 space-y-4 tech-bg-reset tech-border-reset">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">💼</span>
+              <h3 class="text-base font-bold text-white tech-text-reset">B2B გაყიდვები და წინა-საგაყიდვო (Pre-Sales) მომზადება</h3>
+            </div>
+            <p class="text-xs text-slate-400 tech-text-reset">სატენდერო წინადადებების, კომერციული ბრიფებისა და პარტნიორული სპეციფიკაციების ოპტიმიზაცია.</p>
+            <ul class="text-xs text-slate-300 space-y-2 pt-2 tech-text-reset">
+              <li class="flex items-start gap-2">
+                <span class="text-brand mt-0.5 print-brand-text">▸</span>
+                <span>სატენდერო და საპროექტო მოთხოვნებიდან ტექნიკური წინადადებების გენერაცია.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand mt-0.5 print-brand-text">▸</span>
+                <span>პარტნიორი ბრენდების ტექნიკური დოკუმენტაციებიდან კლიენტისთვის მორგებული პრეზენტაციების შედგენა.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand mt-0.5 print-brand-text">▸</span>
+                <span>ოფიციალური B2B კორესპონდენციის ავტომატიზაცია ქართულ და ინგლისურ ენებზე.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-space-900/50 border border-space-800 rounded-2xl p-6 space-y-4 tech-bg-reset tech-border-reset">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">⚙️</span>
+              <h3 class="text-base font-bold text-white tech-text-reset">სისტემური ინჟინერია და ტექნიკური ოპერაციები</h3>
+            </div>
+            <p class="text-xs text-slate-400 tech-text-reset">სკრიპტების ოპტიმიზაცია, კონფიგურაციების აუდიტი და სტანდარტული დოკუმენტაციის მომზადება.</p>
+            <ul class="text-xs text-slate-300 space-y-2 pt-2 tech-text-reset">
+              <li class="flex items-start gap-2">
+                <span class="text-brand mt-0.5 print-brand-text">▸</span>
+                <span>ადმინისტრირების სკრიპტების (Bash, PowerShell, Python) გენერაცია და ოპტიმიზაცია AI მოდელების გამოყენებით.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand mt-0.5 print-brand-text">▸</span>
+                <span>სერვერული და ქსელური კონფიგურაციის ფაილების კიბერუსაფრთხოების აუდიტი.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand mt-0.5 print-brand-text">▸</span>
+                <span>სტანდარტული საოპერაციო პროცედურებისა (SOP) და ინსტალაციის გაიდლაინების წამებში შედგენა.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Detailed Syllabus (სილაბუსი) -->
+      <section class="sheet-screen p-6 md:p-10 space-y-8 tech-bg-reset tech-border-reset">
+        <div class="border-b border-space-800 pb-6 tech-border-reset">
+          <span class="text-xs font-extrabold text-brand uppercase tracking-widest block mb-1 print-brand-text">სასწავლო გეგმა</span>
+          <h2 class="text-2xl font-black text-white tech-text-reset">მასტერკლასის დეტალური განრიგი (3 საათი)</h2>
+          <p class="text-xs text-slate-400 mt-1 tech-text-reset">პრაქტიკული ვორქშოფი დაფუძნებულია რეალურ ქეისებსა და კოლაბორაციულ რეჟიმზე</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Hour 1 -->
+          <div class="border border-space-800 rounded-2xl overflow-hidden tech-border-reset">
+            <div class="bg-space-900 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 tech-bg-reset tech-border-reset">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center font-bold text-brand text-xs print-badge print-brand-text">1</span>
+                <h3 class="text-sm font-bold text-white tech-text-reset">ნაწილი 1: AI B2B გაყიდვებსა და ტექნიკურ წინადადებებში</h3>
+              </div>
+              <span class="bg-brand/10 border border-brand/20 text-brand text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider print-badge print-brand-text">60 წუთი</span>
+            </div>
+            <div class="p-6 bg-space-900/20 space-y-4 tech-bg-reset">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-300 tech-text-reset">
+                <div class="space-y-2">
+                  <p class="font-extrabold text-brand uppercase tracking-wider text-[10px] print-brand-text">თეორია და სტრატეგია</p>
+                  <ul class="space-y-1.5 list-disc list-inside">
+                    <li>2026 წლის ფლაგმანი მოდელების (GPT-5, Claude 4, Gemini 3) შესაძლებლობები B2B გაყიდვებში.</li>
+                    <li><strong>Universal Prompt-ის ფორმულა:</strong> როლის, კონტექსტის, დავალებისა და ფორმატის ოპტიმალური განსაზღვრა.</li>
+                    <li>ტექნიკური სპეციფიკაციებისა და სატენდერო მოთხოვნების სწრაფი ანალიზი.</li>
+                  </ul>
+                </div>
+                <div class="space-y-2">
+                  <p class="font-extrabold text-brand uppercase tracking-wider text-[10px] print-brand-text">პრაქტიკული ვარჯიშები</p>
+                  <ul class="space-y-1.5 list-disc list-inside">
+                    <li>RFP (ტენდერის მოთხოვნა) დოკუმენტის საფუძველზე კომერციული და ტექნიკური წინადადების ნულიდან შექმნა.</li>
+                    <li>გლობალური პარტნიორების მასალებიდან კლიენტისთვის მორგებული Value Proposition-ის გენერირება.</li>
+                    <li>კლიენტის Tone of Voice-ზე ადაპტირებული ოფიციალური შეთავაზებების მომზადება ქართულად და ინგლისურად.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hour 2 -->
+          <div class="border border-space-800 rounded-2xl overflow-hidden tech-border-reset">
+            <div class="bg-space-900 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 tech-bg-reset tech-border-reset">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center font-bold text-brand text-xs print-badge print-brand-text">2</span>
+                <h3 class="text-sm font-bold text-white tech-text-reset">ნაწილი 2: AI სისტემურ ინჟინერიასა და IT ოპერაციებში</h3>
+              </div>
+              <span class="bg-brand/10 border border-brand/20 text-brand text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider print-badge print-brand-text">60 წუთი</span>
+            </div>
+            <div class="p-6 bg-space-900/20 space-y-4 tech-bg-reset">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-300 tech-text-reset">
+                <div class="space-y-2">
+                  <p class="font-extrabold text-brand uppercase tracking-wider text-[10px] print-brand-text">ტექნიკური ავტომატიზაცია</p>
+                  <ul class="space-y-1.5 list-disc list-inside">
+                    <li>სისტემური სკრიპტების (PowerShell, Bash, Python) გენერაცია, გამართვა და ოპტიმიზაცია AI მოდელებით.</li>
+                    <li>რთული ლოგების ფაილების ანალიზი და პრობლემების გადაჭრის (Troubleshooting) სქემების შედგენა.</li>
+                    <li>ტექნიკური დოკუმენტაციისა და ქსელური ტოპოლოგიის აღწერილობების ავტომატური მომზადება.</li>
+                  </ul>
+                </div>
+                <div class="space-y-2">
+                  <p class="font-extrabold text-brand uppercase tracking-wider text-[10px] print-brand-text">კვლევა და კიბერუსაფრთხოება</p>
+                  <ul class="space-y-1.5 list-disc list-inside">
+                    <li>ქსელური და სერვერული კონფიგურაციების ფაილების შემოწმება უსაფრთხოების რისკებზე.</li>
+                    <li>Perplexity Deep Research-ის გამოყენება ტექნოლოგიური რეფერენსების მოსაძიებლად.</li>
+                    <li>Notion AI-ის გამოყენება SOP-ების და შიდა ტექნიკური ცოდნის ბაზების სტრუქტურირებისთვის.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hour 3 -->
+          <div class="border border-space-800 rounded-2xl overflow-hidden tech-border-reset">
+            <div class="bg-space-900 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 tech-bg-reset tech-border-reset">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center font-bold text-brand text-xs print-badge print-brand-text">3</span>
+                <h3 class="text-sm font-bold text-white tech-text-reset">ნაწილი 3: კორპორატიული მართვა, SLA ანალიზი და უსაფრთხოება</h3>
+              </div>
+              <span class="bg-brand/10 border border-brand/20 text-brand text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider print-badge print-brand-text">60 წუთი</span>
+            </div>
+            <div class="p-6 bg-space-900/20 space-y-4 tech-bg-reset">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-300 tech-text-reset">
+                <div class="space-y-2">
+                  <p class="font-extrabold text-brand uppercase tracking-wider text-[10px] print-brand-text">დოკუმენტების ანალიზი</p>
+                  <ul class="space-y-1.5 list-disc list-inside">
+                    <li>NotebookLM-ის გამოყენება ასობით გვერდიანი SLA ხელშეკრულებებისა და JCI/ISO სტანდარტების ანალიზისთვის.</li>
+                    <li>ტექნიკური აუდიტის ანგარიშებიდან კრიტიკული რისკებისა და ვალდებულებების ავტომატური ექსტრაქცია.</li>
+                    <li>Meeting Minutes - ონლაინ შეხვედრების ხმოვანი ჩანაწერებიდან სამოქმედო გეგმების სინთეზი.</li>
+                  </ul>
+                </div>
+                <div class="space-y-2">
+                  <p class="font-extrabold text-brand uppercase tracking-wider text-[10px] print-brand-text">უსაფრთხოება და პოლიტიკა</p>
+                  <ul class="space-y-1.5 list-disc list-inside">
+                    <li>კორპორატიული მონაცემების დაცვა: GDPR-ისა და ISO 27001-ის შესაბამისობა ხელოვნური ინტელექტის გამოყენებისას.</li>
+                    <li>პერსონალური და საიდუმლო ინფორმაციის გაჟონვის პრევენციის 4 ოქროს წესი.</li>
+                    <li>კომპანიის შიდა AI სახელმძღვანელოსა და უსაფრთხო გამოყენების პოლიტიკის შედგენა.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Pricing / Partnership Benefit -->
+      <section class="sheet-screen p-6 md:p-10 space-y-6 tech-bg-reset tech-border-reset">
+        <div class="border-b border-space-800 pb-6 tech-border-reset">
+          <span class="text-xs font-extrabold text-brand uppercase tracking-widest block mb-1 print-brand-text">ფინანსური შემოთავაზება</span>
+          <h2 class="text-2xl font-black text-white tech-text-reset">სასწავლო პროგრამის ღირებულება</h2>
+        </div>
+        
+        <div class="bg-gradient-to-br from-space-900 to-space-800 border border-brand/30 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 tech-bg-reset tech-border-reset">
+          <div class="space-y-3 text-center md:text-left">
+            <span class="text-[10px] font-black uppercase tracking-wider text-space-950 bg-brand px-3 py-1 rounded-full print-badge print-brand-text">საპარტნიორო პაკეტი</span>
+            <h3 class="text-xl font-bold text-white tech-text-reset">AI მასტერკლასი LAB Technologies-ის გუნდისთვის</h3>
+            <p class="text-xs text-slate-400 max-w-lg tech-text-reset">
+              პროგრამა შემუშავებულია Smart Academy-სა და LAB Technologies-ს შორის არსებული მჭიდრო ორმხრივი პარტნიორობის ფარგლებში და დამკვეთს მიეწოდება სრულიად უფასოდ.
+            </p>
+          </div>
+          
+          <div class="text-center bg-space-950/80 border border-space-700 px-8 py-6 rounded-2xl min-w-[240px] tech-bg-reset tech-border-reset">
+            <span class="text-[10px] text-slate-400 line-through block mb-1 tech-text-reset">ღირებულება: 4,500.00 GEL</span>
+            <strong class="text-3xl font-black text-brand block print-brand-text">0.00 ლარი</strong>
+            <span class="text-[9px] text-brand/80 block mt-1 uppercase tracking-wider print-brand-text font-bold">100% საპარტნიორო ფასდაკლება</span>
+          </div>
+        </div>
+
+        <div class="text-center pt-2">
+          <button onclick="goToInvoice()" class="inline-flex items-center gap-2 px-6 py-3 bg-brand text-space-950 font-black text-xs uppercase rounded-xl hover:bg-brand-dark transition-all duration-200 shadow-lg shadow-brand/20 no-print">
+            🧾 იხილეთ ოფიციალური საპარტნიორო ინვოისი
+          </button>
+        </div>
+      </section>
+
+      <!-- Section: Trainer Profile (ტრენერის ბიოგრაფია) -->
+      <section class="sheet-screen p-6 md:p-10 space-y-8 tech-bg-reset tech-border-reset">
+        <div class="border-b border-space-800 pb-6 tech-border-reset">
+          <span class="text-xs font-extrabold text-brand uppercase tracking-widest block mb-1 print-brand-text">ინსტრუქტორი</span>
+          <h2 class="text-2xl font-black text-white tech-text-reset">კურსის წამყვანი და ტრენერი</h2>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
+          <div class="w-36 h-36 rounded-2xl bg-gradient-to-br from-brand to-space-900 flex-shrink-0 text-space-950 flex flex-col items-center justify-center relative shadow-lg shadow-brand/10 border border-brand/20 tech-bg-reset tech-border-reset">
+            <span class="text-4xl">👨‍🏫</span>
+            <span class="text-[9px] font-black uppercase tracking-wider text-space-900 mt-2 tech-text-reset">Smart Academy</span>
+            <div class="absolute bottom-2 right-2 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-space-950"></div>
+          </div>
+
+          <div class="space-y-4 text-center md:text-left">
+            <div class="space-y-1">
+              <h3 class="text-xl font-bold text-white tech-text-reset">გიორგი ბასილაია</h3>
+              <p class="text-xs font-bold text-brand uppercase tracking-widest print-brand-text">სმარტ აკადემიის უფროსი ინსტრუქტორი და AI ექსპერტი</p>
+            </div>
+            
+            <p class="text-sm text-slate-300 leading-relaxed max-w-3xl tech-text-reset">
+              25 წელზე მეტი ტექნოლოგიური და აკადემიური გამოცდილება. უნივერსიტეტის ასოცირებული პროფესორი, 14 სამეცნიერო ნაშრომისა (3300-ზე მეტი საერთაშორისო ციტირება Google Scholar-ში) და 18 საერთაშორისო კვლევითი პროექტის (მათ შორის NATO, USAID, ERASMUS) მონაწილე.
+            </p>
+
+            <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+              <span class="text-[10px] bg-space-900 border border-space-800 text-slate-300 px-3 py-1.5 rounded-full font-bold tech-bg-reset tech-border-reset tech-text-reset">Google Certified Educator Level 2</span>
+              <span class="text-[10px] bg-space-900 border border-space-800 text-slate-300 px-3 py-1.5 rounded-full font-bold tech-bg-reset tech-border-reset tech-text-reset">Gemini Certified Faculty</span>
+              <span class="text-[10px] bg-space-900 border border-space-800 text-slate-300 px-3 py-1.5 rounded-full font-bold tech-bg-reset tech-border-reset tech-text-reset">Anthropic AI Certified</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Smart Academy (აკადემიის შესახებ) -->
+      <section class="sheet-screen p-6 md:p-10 space-y-6 tech-bg-reset tech-border-reset">
+        <div class="border-b border-space-800 pb-6 tech-border-reset">
+          <span class="text-xs font-extrabold text-brand uppercase tracking-widest block mb-1 print-brand-text">სასწავლო პარტნიორი</span>
+          <h2 class="text-2xl font-black text-white tech-text-reset">რატომ სმარტ აკადემია?</h2>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed tech-text-reset">
+          სმარტ აკადემია წარმოადგენს მოწინავე საგანმანათლებლო პლატფორმას საქართველოში, რომელიც სპეციალიზებულია ტექნოლოგიური, საოპერაციო და შემოქმედებითი მიმართულებების კადრების მომზადებაში. ჩვენ გვაქვს დიდი გამოცდილება სახელმწიფო და კერძო სექტორებთან თანამშრომლობის კუთხით და ჩვენი სასწავლო მეთოდოლოგია სრულად ორიენტირებულია პრაქტიკულ, უშუალოდ სამუშაოზე ორიენტირებულ შედეგებზე.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 text-center">
+          <div class="p-4 bg-space-900/50 rounded-2xl border border-space-800 tech-bg-reset tech-border-reset">
+            <strong class="text-2xl font-black text-brand block print-brand-text">5000+</strong>
+            <span class="text-xs text-slate-400 font-semibold mt-1 block tech-text-reset">კურსდამთავრებული</span>
+          </div>
+          <div class="p-4 bg-space-900/50 rounded-2xl border border-space-800 tech-bg-reset tech-border-reset">
+            <strong class="text-2xl font-black text-brand block print-brand-text">150+</strong>
+            <span class="text-xs text-slate-400 font-semibold mt-1 block tech-text-reset">კორპორატიული კლიენტი</span>
+          </div>
+          <div class="p-4 bg-space-900/50 rounded-2xl border border-space-800 tech-bg-reset tech-border-reset">
+            <strong class="text-2xl font-black text-brand block print-brand-text">95%</strong>
+            <span class="text-xs text-slate-400 font-semibold mt-1 block tech-text-reset">კმაყოფილების ინდექსი</span>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: OFFICIAL INVOICE (ოფიციალური ინვოისი) -->
+    <!-- ========================================== -->
+    <div id="view-invoice" class="tab-view hidden space-y-8">
+      
+      <!-- A4 Sheet Template -->
+      <div class="sheet-screen p-8 md:p-14 space-y-10 border border-space-800 relative bg-white text-space-950 min-h-[297mm] shadow-2xl tech-bg-reset tech-border-reset">
+        
+        <!-- Invoice Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-6 border-b-2 border-space-900 pb-8 tech-border-reset">
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-space-950 text-white flex items-center justify-center font-black text-lg tech-bg-reset tech-text-reset">
+                S
+              </div>
+              <div>
+                <span class="text-[10px] font-bold text-teal-700 uppercase tracking-widest block leading-none">Smart Academy</span>
+                <span class="text-base font-extrabold text-space-950">სმარტ აკადემია</span>
+              </div>
+            </div>
+            <div class="text-xs text-gray-500 space-y-1">
+              <p><strong>გამცემი:</strong> შეზღუდული პასუხისმგებლობის საზოგადოება სმარტ გრუფი</p>
+              <p><strong>საიდენტიფიკაციო კოდი:</strong> 400284553</p>
+              <p><strong>მისამართი:</strong> საქართველო, თბილისი, მერაბ ალექსიძის ქუჩა #1</p>
+              <p><strong>ტელეფონი:</strong> +995 32 2 200 150 &nbsp;|&nbsp; info@smartacademy.ge</p>
+            </div>
+          </div>
+          
+          <div class="text-left sm:text-right space-y-1">
+            <h2 class="text-2xl font-black text-space-950">საპარტნიორო ინვოისი</h2>
+            <p class="text-sm font-bold text-gray-700">#SA-2026-0605-PARTNER</p>
+            <div class="text-xs text-gray-500 pt-3 space-y-1">
+              <p><strong>თარიღი:</strong> 03 ივნისი, 2026</p>
+              <p><strong>გადახდის ვადა:</strong> -</p>
+              <p><strong>შესყიდვის ტიპი:</strong> საპარტნიორო ინტეგრაცია (უფასო)</p>
+              <p><strong>CPV კოდი:</strong> 80500000 - სატრენინგო მომსახურება</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client & Requisites Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50 p-6 rounded-2xl border border-gray-200 text-xs">
+          <div class="space-y-2">
+            <h3 class="text-xs font-bold text-space-950 uppercase tracking-wider border-b border-gray-300 pb-2">დამკვეთი / CLIENT</h3>
+            <p class="text-sm font-extrabold text-space-950">შეზღუდული პასუხისმგებლობის საზოგადოება ლაბ</p>
+            <p><strong>საიდენტიფიკაციო კოდი:</strong> 200253705</p>
+            <p><strong>მისამართი:</strong> საქართველო, თბილისი, ნოდარ ბოხუას ქუჩა №6</p>
+            <p><strong>საკონტაქტო პირი:</strong> LAB Technologies კორპორატიული მართვა</p>
+            <p><strong>ვებ-გვერდი:</strong> www.lab.ge</p>
+          </div>
+          
+          <div class="space-y-2">
+            <h3 class="text-xs font-bold text-space-950 uppercase tracking-wider border-b border-gray-300 pb-2">საბანკო რეკვიზიტები / BANK DETAILS</h3>
+            <p><strong>მიმღები ბანკი:</strong> სს თიბისი ბანკი</p>
+            <p><strong>ბანკის კოდი (BIC):</strong> TBCBGE22</p>
+            <p><strong>ანგარიშის ნომერი (IBAN):</strong> GE82TB7733660000012345</p>
+            <p><strong>მიმღები:</strong> შეზღუდული პასუხისმგებლობის საზოგადოება სმარტ გრუფი</p>
+            <p class="text-emerald-700 font-bold mt-2">📌 საფასური ანაზღაურებულია ორმხრივი საპარტნიორო შეთანხმებით</p>
+          </div>
+        </div>
+
+        <!-- Invoice Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-space-950 text-white font-extrabold border-b border-space-950 tech-bg-reset tech-text-reset">
+                <th class="p-3 text-center w-12">#</th>
+                <th class="p-3">მომსახურების დასახელება (CPV 80500000)</th>
+                <th class="p-3 text-center w-24">საათები</th>
+                <th class="p-3 text-center w-24">ჯგუფები</th>
+                <th class="p-3 text-right w-32">ფასი (GEL)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-200 hover:bg-gray-50/50">
+                <td class="p-3 text-center font-bold">1</td>
+                <td class="p-3 space-y-1">
+                  <p class="font-extrabold text-space-950 text-sm">ხელოვნური ინტელექტის (AI) პრაქტიკული მასტერკლასი (IT ინტეგრატორის სპეციფიკაზე მორგებული)</p>
+                  <p class="text-[10px] text-gray-500 leading-relaxed">
+                    3-საათიანი ინტენსიური საპარტნიორო ვორქშოფი LAB Technologies-ის გუნდისთვის. 
+                    კურსის წამყვანი და ლექტორი: გიორგი ბასილაია.
+                  </p>
+                </td>
+                <td class="p-3 text-center font-semibold text-gray-700">3 საათი</td>
+                <td class="p-3 text-center font-semibold text-gray-700">1 ჯგუფი</td>
+                <td class="p-3 text-right font-extrabold text-space-950">4,500.00</td>
+              </tr>
+              <tr class="border-b border-gray-200 hover:bg-gray-50/50">
+                <td class="p-3 text-center font-bold">2</td>
+                <td class="p-3 space-y-1">
+                  <p class="font-extrabold text-emerald-700 text-sm">საპარტნიორო შეღავათი (100% ფასდაკლება)</p>
+                  <p class="text-[10px] text-emerald-600 leading-relaxed">
+                    ორმხრივი თანამშრომლობისა და B2B პარტნიორობის ფარგლებში გათვალისწინებული სრული ფასდაკლება.
+                  </p>
+                </td>
+                <td class="p-3 text-center text-gray-400">-</td>
+                <td class="p-3 text-center text-gray-400">-</td>
+                <td class="p-3 text-right font-extrabold text-emerald-700">-4,500.00</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="border-t-2 border-space-950 font-extrabold text-sm tech-border-reset">
+                <td colspan="4" class="p-3 text-right text-gray-600 uppercase tracking-wider">სულ გადასახდელი (GEL):</td>
+                <td class="p-3 text-right text-space-950 text-base font-black">0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Notes / Legals -->
+        <div class="text-[11px] text-gray-500 leading-relaxed space-y-2 border-t border-gray-200 pt-6">
+          <p><strong>შენიშვნა:</strong> შემოთავაზებული ფასდაკლება მოქმედებს Smart Academy-სა და LAB Technologies-ს შორის გაფორმებული ურთიერთთანამშრომლობის მემორანდუმის ფარგლებში.</p>
+          <p><strong>საგადასახადო რეჟიმი:</strong> შეზღუდული პასუხისმგებლობის საზოგადოება სმარტ გრუფი სარგებლობს დღგ-სგან გათავისუფლების შეღავათით საგანმანათლებლო საქმიანობის ნაწილში (საქართველოს საგადასახადო კოდექსის შესაბამისად).</p>
+        </div>
+
+        <!-- Stamped Signatures -->
+        <div class="flex flex-wrap items-center justify-between gap-6 pt-12 border-t border-dashed border-gray-300">
+          
+          <!-- Stamped confirmation text -->
+          <div class="border-2 border-emerald-600/40 bg-emerald-50/50 rounded-xl px-4 py-3 flex items-center gap-3 max-w-sm">
+            <span class="text-2xl">🛡️</span>
+            <div class="text-[10px] text-emerald-800 leading-tight">
+              <p class="font-extrabold uppercase">ელექტრონული დასტური</p>
+              <p class="mt-1">დოკუმენტი დადასტურებულია კვალიფიციური ელექტრონული ხელმოწერითა და შტამპით.</p>
+            </div>
+          </div>
+
+          <!-- Representative Stamp Area -->
+          <div class="flex items-center gap-4 relative">
+            <div class="text-right">
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">წარმომადგენელი</p>
+              <p class="text-sm font-extrabold text-space-950">შეზღუდული პასუხისმგებლობის საზოგადოება სმარტ გრუფი</p>
+              <p class="text-xs text-gray-500 mt-1">დირექტორი: ნინო კაკუბერი</p>
+            </div>
+            
+            <!-- Stamped Seal Mockup -->
+            <div class="relative w-28 h-28 flex items-center justify-center">
+              <svg class="absolute w-28 h-28 text-teal-800/85" viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-dasharray="2 2" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="2"/>
+                <path id="curve" d="M 15 50 A 35 35 0 0 1 85 50" fill="none"/>
+                <text class="text-[6.5px] font-black uppercase tracking-wider" fill="currentColor">
+                  <textPath href="#curve" startOffset="50%" text-anchor="middle">
+                    SMART GROUP LLC · სმარტ გრუფი
+                  </textPath>
+                </text>
+                <path id="curve-bottom" d="M 85 50 A 35 35 0 0 1 15 50" fill="none"/>
+                <text class="text-[6.5px] font-black uppercase tracking-wider" fill="currentColor">
+                  <textPath href="#curve-bottom" startOffset="50%" text-anchor="middle">
+                    IDENTIFICATION CODE 400284553
+                  </textPath>
+                </text>
+                <circle cx="50" cy="50" r="24" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+                <text x="50" y="52" class="text-[12px] font-black text-center" fill="currentColor" text-anchor="middle">SEAL</text>
+              </svg>
+              
+              <!-- Handwritten Representative Signature Mockup -->
+              <svg class="absolute w-20 h-12 text-teal-900/70 rotate-[-12deg] translate-x-[-10px] translate-y-[-5px]" viewBox="0 0 100 50" fill="none">
+                <path d="M10 25 C30 10, 20 40, 45 20 C60 10, 50 45, 75 15 C85 5, 90 25, 95 30" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Interactive Scripting -->
+  <script>
+    // Tab switching architecture
+    function switchTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-view').forEach(view => {
+        view.classList.add('hidden');
+      });
+      
+      // Remove active states from buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand', 'text-space-950', 'active');
+        btn.classList.add('text-slate-400');
+        btn.style.boxShadow = 'none';
+      });
+
+      // Show targeted tab
+      document.getElementById('view-' + tabId).classList.remove('hidden');
+      
+      // Highlight targeted button
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      activeBtn.classList.add('bg-brand', 'text-space-950', 'active');
+      activeBtn.classList.remove('text-slate-400');
+      activeBtn.style.boxShadow = '0 4px 12px rgba(92, 242, 233, 0.2)';
+    }
+
+    function goToInvoice() {
+      switchTab('invoice');
+      document.getElementById('view-invoice').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+
+  <!-- Footer (no-print) -->
+  <footer class="no-print bg-space-950 border-t border-space-800 text-slate-500 text-xs py-8 mt-12">
+    <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© 2026 Smart Academy. ყველა უფლება დაცულია.</p>
+      <div class="flex gap-4">
+        <span>ლექტორი: გიორგი ბასილაია</span>
+        <span>|</span>
+        <span>საკონტაქტო პირი: LAB Technologies მენეჯმენტი</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

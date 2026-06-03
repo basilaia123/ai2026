@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სადაზღვევო კომპანია „არდი“ - AI ტრენინგისა და დანერგვის შეთავაზება</title>
+  <meta name="description" content="ხელოვნური ინტელექტის პრაქტიკული დანერგვის, საოპერაციო ტრანსფორმაციისა და კლიენტთა მომსახურების ავტომატიზაციის პროგრამა სადაზღვევო კომპანია „არდისთვის“.">
+  <meta name="theme-color" content="#E31E24">
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            ardi: {
+              50: '#FFF5F5',
+              100: '#FFE3E3',
+              200: '#FFC9C9',
+              300: '#FFA1A1',
+              400: '#FF6B6B',
+              500: '#E31E24', // Brand Red
+              600: '#C8161B',
+              700: '#A91014',
+              800: '#8A0C0F',
+              900: '#6D0709',
+            },
+            slate: {
+              950: '#0B0F19',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      /* Brand Color System */
+      --primary: #E31E24;
+      --primary-light: #FF4D52;
+      --primary-deep: #BA1219;
+      --secondary: #1E293B;
+      --bg-dark: #0F172A;
+      --bg-light: #F8FAFC;
+      --card-bg-dark: #1E293B;
+      --card-bg-light: #ffffff;
+      --border-dark: #334155;
+      --border-light: #E2E8F0;
+      --text-dark: #F8FAFC;
+      --text-light: #0F172A;
+      --text-muted-dark: #94A3B8;
+      --text-muted-light: #475569;
+      --teal: #10B981;
+      --orange: #F59E0B;
+      
+      /* Dynamic Theme Mappings */
+      --body-bg: var(--bg-dark);
+      --card-bg: var(--card-bg-dark);
+      --text-color: var(--text-dark);
+      --text-muted: var(--text-muted-dark);
+      --border-color: var(--border-dark);
+      --nav-bg: rgba(15, 23, 42, 0.95);
+      
+      --radius: 20px;
+      --radius-sm: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.light-mode {
+      --body-bg: var(--bg-light);
+      --card-bg: var(--card-bg-light);
+      --text-color: var(--text-light);
+      --text-muted: var(--text-muted-light);
+      --border-color: var(--border-light);
+      --nav-bg: rgba(248, 250, 252, 0.95);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--body-bg);
+      color: var(--text-color);
+      line-height: 1.7;
+      font-size: 15px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Scroll progress bar */
+    #progress-bar {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 1000;
+      background: rgba(227, 30, 36, 0.1);
+    }
+    #progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 0.1s linear;
+    }
+
+    /* Custom Gradients */
+    .glow-red {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(140px);
+      -webkit-filter: blur(140px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Accordion mechanics */
+    .accordion-content {
+      max-height: 2000px;
+      transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), padding 0.3s ease, opacity 0.3s ease;
+      overflow: hidden;
+      opacity: 1;
+    }
+    .collapsed .accordion-content {
+      max-height: 0;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      opacity: 0;
+    }
+    .accordion-trigger svg {
+      transition: transform 0.3s ease;
+    }
+    .collapsed .accordion-trigger svg {
+      transform: rotate(-90deg);
+    }
+    
+    /* Animation for tabs switching */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+  </style>
+</head>
+<body class="selection:bg-ardi-100 selection:text-ardi-900">
+
+  <!-- ─── PROGRESS BAR ─── -->
+  <div id="progress-bar">
+    <div id="progress-bar-fill"></div>
+  </div>
+
+  <!-- ─── NAVIGATION BAR ─── -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 h-16 z-50 transition-all duration-300 border-b" style="background-color: var(--nav-bg); border-color: var(--border-color); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+    <div class="max-w-6xl mx-auto h-full px-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <span class="text-ardi-500 font-extrabold text-xl tracking-wider">ARDI</span>
+        <span class="text-xs font-semibold px-2 py-0.5 bg-ardi-500 text-white rounded uppercase tracking-wider">AI Training</span>
+        <span class="hidden md:inline text-xs border-l pl-3 ml-1" style="border-color: var(--border-color); color: var(--text-muted);">კორპორატიული შეთავაზება</span>
+      </div>
+      
+      <!-- Nav Links -->
+      <div class="hidden lg:flex items-center gap-8">
+        <a href="#matches" class="text-xs font-bold hover:text-ardi-500 transition-colors uppercase tracking-wider">უპირატესობები</a>
+        <a href="#teams" class="text-xs font-bold hover:text-ardi-500 transition-colors uppercase tracking-wider">მიმართულებები</a>
+        <a href="#syllabus" class="text-xs font-bold hover:text-ardi-500 transition-colors uppercase tracking-wider">პროგრამა</a>
+        <a href="#pricing" class="text-xs font-bold hover:text-ardi-500 transition-colors uppercase tracking-wider">ტარიფები</a>
+        <a href="#trainer" class="text-xs font-bold hover:text-ardi-500 transition-colors uppercase tracking-wider">ტრენერი</a>
+        <a href="#faq" class="text-xs font-bold hover:text-ardi-500 transition-colors uppercase tracking-wider">FAQ</a>
+      </div>
+
+      <!-- Action Area -->
+      <div class="flex items-center gap-4">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="p-2.5 rounded-full border hover:bg-ardi-50 hover:text-ardi-500 transition-all duration-300" style="border-color: var(--border-color); color: var(--text-color);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        
+        <!-- Mobile Menu Toggle -->
+        <button id="menu-toggle" class="lg:hidden p-2.5 rounded-full border hover:bg-ardi-50 hover:text-ardi-500 transition-all" style="border-color: var(--border-color); color: var(--text-color);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+
+        <a href="#pricing" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 bg-ardi-500 hover:bg-ardi-600 text-white rounded-lg text-xs font-extrabold shadow-[0_4px_14px_rgba(227,30,36,0.35)] transition-all uppercase tracking-wider">შერჩევა</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobile-menu" class="hidden fixed top-16 left-0 right-0 z-40 border-b p-6 flex flex-col gap-4 shadow-xl transition-all" style="background-color: var(--card-bg); border-color: var(--border-color);">
+    <a href="#matches" class="text-sm font-bold py-2 border-b" style="border-color: var(--border-color);">უპირატესობები</a>
+    <a href="#teams" class="text-sm font-bold py-2 border-b" style="border-color: var(--border-color);">მიმართულებები</a>
+    <a href="#syllabus" class="text-sm font-bold py-2 border-b" style="border-color: var(--border-color);">პროგრამა</a>
+    <a href="#pricing" class="text-sm font-bold py-2 border-b" style="border-color: var(--border-color);">ტარიფები</a>
+    <a href="#trainer" class="text-sm font-bold py-2 border-b" style="border-color: var(--border-color);">ტრენერი</a>
+    <a href="#faq" class="text-sm font-bold py-2">FAQ</a>
+    <a href="#pricing" class="mt-2 w-full text-center py-3 bg-ardi-500 text-white rounded-lg font-bold text-sm">აირჩიე ოფცია</a>
+  </div>
+
+  <!-- ─── HERO SECTION ─── -->
+  <header class="relative overflow-hidden pt-36 pb-20 md:pt-44 md:pb-28 border-b" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0b0f19 100%); border-color: var(--border-color);">
+    <!-- Glowing Orbs (Deep red accents) -->
+    <div class="glow-red glow-red-1 w-[450px] h-[450px] bg-ardi-500 top-[-80px] right-[-100px]"></div>
+    <div class="glow-red glow-red-2 w-[400px] h-[400px] bg-blue-600 bottom-[-100px] left-[-100px]"></div>
+    
+    <div class="relative max-w-5xl mx-auto px-6 text-center z-10">
+      <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-5 py-1.5 mb-6 shadow-lg backdrop-blur-md">
+        <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-ardi-100">AI Transformation | სადაზღვევო სექტორი</span>
+      </div>
+
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white mb-6 tracking-tight">
+        ხელოვნური ინტელექტის პრაქტიკული დანერგვა და ტრენინგი
+      </h1>
+      <p class="text-lg md:text-2xl font-light text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed">
+        სპეციალიზებული საოპერაციო, მარკეტინგული და B2B გაყიდვების ტრანსფორმაციის პროგრამა სადაზღვევო კომპანია <span class="text-ardi-400 font-semibold">„არდისთვის“</span>.
+      </p>
+
+      <!-- Metrics -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm shadow-md transition-all hover:bg-white/10 hover:-translate-y-1">
+          <span class="block text-3xl font-extrabold text-ardi-400 mb-1">21+</span>
+          <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">სასწავლო საათი</span>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm shadow-md transition-all hover:bg-white/10 hover:-translate-y-1">
+          <span class="block text-3xl font-extrabold text-white mb-1">3</span>
+          <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">სპეციალიზებული გუნდი</span>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm shadow-md transition-all hover:bg-white/10 hover:-translate-y-1">
+          <span class="block text-3xl font-extrabold text-white mb-1">7</span>
+          <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">პრაქტიკული სესია</span>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm shadow-md transition-all hover:bg-white/10 hover:-translate-y-1">
+          <span class="block text-3xl font-extrabold text-ardi-400 mb-1">50%</span>
+          <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">ფინანსური დანაზოგი</span>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a href="#syllabus" class="px-7 py-3.5 bg-ardi-500 hover:bg-ardi-600 text-white font-bold rounded-lg shadow-xl shadow-ardi-500/20 transition-all hover:-translate-y-0.5 text-sm uppercase tracking-wider">სასწავლო პროგრამა</a>
+        <a href="#pricing" class="px-7 py-3.5 border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-bold rounded-lg transition-all hover:-translate-y-0.5 text-sm uppercase tracking-wider">ტარიფების ნახვა</a>
+      </div>
+    </div>
+    
+    <!-- Wave separator -->
+    <div class="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
+      <svg viewBox="0 0 1440 40" class="w-full relative block" style="height: 40px;"><path d="M0,40 C320,10 640,10 960,40 L1440,40 L1440,40 L0,40 Z" class="transition-colors duration-300" style="fill: var(--body-bg);"></path></svg>
+    </div>
+  </header>
+
+  <!-- ─── WHY THIS MATCHES (Matches Section) ─── -->
+  <section id="matches" class="py-20 relative">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-ardi-500 mb-2 block">Why Ardi + AI</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">რატომ არის AI გადამწყვეტი სადაზღვევო საქმეში?</h2>
+        <p class="text-sm" style="color: var(--text-muted);">ტექნოლოგიური და მეგობრული მომსახურება, ავტომატიზებული საოპერაციო პროცესები და მყისიერი B2B შეთავაზებები.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Item 1 -->
+        <div class="p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <div class="w-12 h-12 rounded-xl bg-ardi-50 text-ardi-500 flex items-center justify-center text-2xl font-bold mb-6">⚡</div>
+          <h3 class="text-lg font-bold mb-3">B2B სადაზღვევო შეთავაზებები</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--text-muted);">
+            Claude Projects-ისა და სპეციალური AI ასისტენტების მეშვეობით კორპორატიული შეთავაზებებისა და სატარიფო პაკეტების მომზადების დრო მცირდება 60%-ით, ბრენდული "Tone of Voice"-ის სრული დაცვით.
+          </p>
+        </div>
+        <!-- Item 2 -->
+        <div class="p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl font-bold mb-6">📊</div>
+          <h3 class="text-lg font-bold mb-3">ზარალების ანალიზი და Excel</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--text-muted);">
+            Advanced Data Analysis-ის დახმარებით სადაზღვევო ზარალიანობის კოეფიციენტების (Loss Ratio), სეზონურობისა და კლინიკების ეფექტურობის ანალიზი CSV ფაილებიდან ხდება წამებში, რთული ფორმულების გარეშე.
+          </p>
+        </div>
+        <!-- Item 3 -->
+        <div class="p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl font-bold mb-6">🛡️</div>
+          <h3 class="text-lg font-bold mb-3">დოკუმენტების OCR და შეჯამება</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--text-muted);">
+            არასტრუქტურირებული სამედიცინო ფორმებიდან (ფორმა 100, კალკულაციები, საავადმყოფოს ანგარიშები) და საპატრულო პოლიციის აქტებიდან ძირითადი მონაცემების მყისიერი OCR ამოცნობა და სტრუქტურირებულ ცხრილებში გადატანა.
+          </p>
+        </div>
+      </div>
+
+      <!-- Brand Identity Widget -->
+      <div class="mt-16 p-8 md:p-10 rounded-3xl border text-center relative overflow-hidden" style="background-color: var(--card-bg); border-color: var(--border-color);">
+        <div class="relative z-10 max-w-3xl mx-auto">
+          <span class="text-[10px] font-extrabold tracking-widest text-ardi-500 uppercase block mb-3">Brand Identity Alignment</span>
+          <h3 class="text-2xl font-bold mb-4">„არდის“ ბრენდული სტილის ავტომატური დაცვა</h3>
+          <p class="text-xs leading-relaxed mb-8" style="color: var(--text-muted);">
+            ინდივიდუალური AI ასისტენტები (Custom GPTs / Claude Projects) დაპროგრამდება „არდის“ ბრენდბუქის, საკომუნიკაციო პოლისისა და 2013 წელს განახლებული მინიმალისტური, მეგობრული და ტექნოლოგიური იდენტობის მიხედვით.
+          </p>
+          <!-- Colors Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="p-4 rounded-xl border flex flex-col items-center" style="border-color: var(--border-color);">
+              <div class="w-full h-8 rounded-lg bg-ardi-500 mb-2 shadow"></div>
+              <span class="text-xs font-extrabold text-ardi-500">#E31E24</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider mt-1 text-slate-400">ARDI Red</span>
+            </div>
+            <div class="p-4 rounded-xl border flex flex-col items-center" style="border-color: var(--border-color);">
+              <div class="w-full h-8 rounded-lg bg-white mb-2 shadow border"></div>
+              <span class="text-xs font-extrabold" style="color: var(--text-color);">#FFFFFF</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider mt-1 text-slate-400">ARDI White</span>
+            </div>
+            <div class="p-4 rounded-xl border flex flex-col items-center" style="border-color: var(--border-color);">
+              <div class="w-full h-8 rounded-lg bg-slate-900 mb-2 shadow"></div>
+              <span class="text-xs font-extrabold text-slate-300">#0F172A</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider mt-1 text-slate-400">Sleek Navy</span>
+            </div>
+            <div class="p-4 rounded-xl border flex flex-col items-center" style="border-color: var(--border-color);">
+              <div class="w-full h-8 rounded-lg bg-slate-100 mb-2 shadow border"></div>
+              <span class="text-xs font-extrabold text-slate-600">#F8FAFC</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider mt-1 text-slate-400">Clean Gray</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── INTERACTIVE ROLE SELECTOR (Teams Section) ─── -->
+  <section id="teams" class="py-20 border-t" style="background-color: var(--bg-light); border-color: var(--border-color);">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-ardi-500 mb-2 block">Specializations</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">მიმართულებები გუნდების მიხედვით</h2>
+        <p class="text-sm" style="color: var(--text-muted);">აირჩიეთ დეპარტამენტი, რომ ნახოთ როგორ მოახდენს AI სამუშაო პროცესის ოპტიმიზაციას.</p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex flex-wrap justify-center gap-3 mb-10">
+        <button onclick="switchRole('marketing')" class="tab-btn active px-6 py-3 rounded-full border text-xs font-extrabold uppercase tracking-wider transition-all" style="border-color: var(--border-color);">
+          📢 მარკეტინგი და PR
+        </button>
+        <button onclick="switchRole('sales')" class="tab-btn px-6 py-3 rounded-full border text-xs font-extrabold uppercase tracking-wider transition-all" style="border-color: var(--border-color);">
+          🤝 გაყიდვები და CRM
+        </button>
+        <button onclick="switchRole('analytics')" class="tab-btn px-6 py-3 rounded-full border text-xs font-extrabold uppercase tracking-wider transition-all" style="border-color: var(--border-color);">
+          📈 ოპერაციები და ანალიტიკა
+        </button>
+      </div>
+
+      <!-- Tab Content Panels -->
+      <div class="max-w-4xl mx-auto">
+        <!-- Marketing Panel -->
+        <div id="pane-marketing" class="role-pane active fade-in p-8 md:p-10 rounded-3xl border" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <div class="flex flex-col md:flex-row gap-8 items-start">
+            <div class="flex-1">
+              <div class="inline-block px-3 py-1 bg-ardi-50 text-ardi-500 text-xs font-extrabold rounded-md mb-4">📢 მარკეტინგი და PR</div>
+              <h3 class="text-xl font-bold mb-4">კრეატიული კამპანიები და მედია წარმოება</h3>
+              <p class="text-xs leading-relaxed mb-6" style="color: var(--text-muted);">
+                მარკეტინგის დეპარტამენტისთვის ტრენინგი ფოკუსირებულია მაღალი ხარისხის სარეკლამო ვიზუალების, სოციალური მედიის კონტენტისა და მოკლე ვიდეოების გენერაციაზე.
+              </p>
+              <ul class="space-y-3 text-xs">
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Midjourney & Flux:** ბრენდირებული ვიზუალების შექმნა ჯანმრთელობის, ავტო და სამოგზაურო დაზღვევის პროდუქტებისთვის.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Kling & Runway AI:** მოკლემეტრაჟიანი ვიდეოების, რილსების და სარეკლამო რეფერენსების დაგენერირება.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Suno AI:** ვიდეოებისა და პრეზენტაციების უნიკალური ფონური მუსიკალური გაფორმება.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="w-full md:w-80 bg-ardi-50 p-6 rounded-2xl border border-ardi-100 shrink-0">
+              <h4 class="text-sm font-extrabold text-ardi-900 mb-3">მოსალოდნელი შედეგები:</h4>
+              <div class="space-y-3">
+                <div class="flex justify-between border-b pb-2 text-xs text-ardi-900 font-medium">
+                  <span>სარეკლამო ვიზუალების მომზადება:</span>
+                  <span class="font-extrabold text-ardi-500">10-ჯერ სწრაფად</span>
+                </div>
+                <div class="flex justify-between border-b pb-2 text-xs text-ardi-900 font-medium">
+                  <span>სტოკ ფოტოების ხარჯები:</span>
+                  <span class="font-extrabold text-ardi-500">0 ლარი</span>
+                </div>
+                <div class="flex justify-between text-xs text-ardi-900 font-medium">
+                  <span>ვიდეო-კრეატივების შექმნა:</span>
+                  <span class="font-extrabold text-ardi-500">24 საათში</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Panel -->
+        <div id="pane-sales" class="role-pane hidden fade-in p-8 md:p-10 rounded-3xl border" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <div class="flex flex-col md:flex-row gap-8 items-start">
+            <div class="flex-1">
+              <div class="inline-block px-3 py-1 bg-ardi-50 text-ardi-500 text-xs font-extrabold rounded-md mb-4">🤝 გაყიდვები და CRM</div>
+              <h3 class="text-xl font-bold mb-4">B2B სადაზღვევო შეთავაზებები და კლიენტებთან კომუნიკაცია</h3>
+              <p class="text-xs leading-relaxed mb-6" style="color: var(--text-muted);">
+                გაყიდვებისა და კლიენტების მომსახურების გუნდისთვის პროგრამა ორიენტირებულია B2B შეთავაზებების პერსონალიზაციაზე, პრეტენზიების მართვასა და ემპათიურ, იურიდიულად გამართულ წერილობით კომუნიკაციაზე.
+              </p>
+              <ul class="space-y-3 text-xs">
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**B2B პერსონალიზაცია:** კორპორატიული კლიენტებისთვის ინდივიდუალური სადაზღვევო პოლისის შეთავაზებების სწრაფი შედგენა.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Claude Projects:** „არდის“ სატარიფო წესების, პირობებისა და ბროშურების ბაზად ატვირთვა ზუსტი წერილების დასაწერად.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Claims-Support & Safety:** სადაზღვევო შემთხვევების უარყოფის ან დადასტურების იურიდიულად სწორი და ემპათიური წერილების ავტომატიზაცია.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="w-full md:w-80 bg-ardi-50 p-6 rounded-2xl border border-ardi-100 shrink-0">
+              <h4 class="text-sm font-extrabold text-ardi-900 mb-3">მოსალოდნელი შედეგები:</h4>
+              <div class="space-y-3">
+                <div class="flex justify-between border-b pb-2 text-xs text-ardi-900 font-medium">
+                  <span>B2B შეთავაზების მომზადება:</span>
+                  <span class="font-extrabold text-ardi-500">60%-ით სწრაფად</span>
+                </div>
+                <div class="flex justify-between border-b pb-2 text-xs text-ardi-900 font-medium">
+                  <span>კომუნიკაციის პასუხის დრო:</span>
+                  <span class="font-extrabold text-ardi-500">ქვევით 5 წუთამდე</span>
+                </div>
+                <div class="flex justify-between text-xs text-ardi-900 font-medium">
+                  <span>B2B საპრეზენტაციო დეკი:</span>
+                  <span class="font-extrabold text-ardi-500">15 წუთში</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Panel -->
+        <div id="pane-analytics" class="role-pane hidden fade-in p-8 md:p-10 rounded-3xl border" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <div class="flex flex-col md:flex-row gap-8 items-start">
+            <div class="flex-1">
+              <div class="inline-block px-3 py-1 bg-ardi-50 text-ardi-500 text-xs font-extrabold rounded-md mb-4">📈 ოპერაციები და ანალიტიკა</div>
+              <h3 class="text-xl font-bold mb-4">Advanced Claims Analytics და Excel-ის ავტომატიზაცია</h3>
+              <p class="text-xs leading-relaxed mb-6" style="color: var(--text-muted);">
+                ანალიტიკოსებისა და საოპერაციო გუნდისთვის პროგრამა მოიცავს ზარალების Excel მონაცემთა ბაზების დამუშავებას, ფორმულების ავტომატიზაციას, სამედიცინო ფორმებიდან ინფორმაციის OCR ამოღებას და ანგარიშგების დეშბორდების აწყობას.
+              </p>
+              <ul class="space-y-3 text-xs">
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Advanced Data Analysis:** სადაზღვევო შემთხვევების ბაზებიდან Loss Ratio-ს, ყველაზე ძვირადღირებული კლინიკებისა და სეზონური ტენდენციების ავტომატური გამოვლენა.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Excel Automation:** რთული ფორმულების (VLOOKUP, Pivot, dynamic tables) წერა ხელოვნური ინტელექტის დახმარებით.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="text-ardi-500 font-extrabold">✓</span>
+                  <span>**Document OCR:** სამედიცინო ფორმა 100-დან, კალკულაციებიდან და საპატრულო ოქმებიდან ციფრებისა და მონაცემების მყისიერი ამოღება და ცხრილში სტრუქტურირება.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="w-full md:w-80 bg-ardi-50 p-6 rounded-2xl border border-ardi-100 shrink-0">
+              <h4 class="text-sm font-extrabold text-ardi-900 mb-3">მოსალოდნელი შედეგები:</h4>
+              <div class="space-y-3">
+                <div class="flex justify-between border-b pb-2 text-xs text-ardi-900 font-medium">
+                  <span>ზარალების CSV ანალიზი:</span>
+                  <span class="font-extrabold text-ardi-500">რამდენიმე წამში</span>
+                </div>
+                <div class="flex justify-between border-b pb-2 text-xs text-ardi-900 font-medium">
+                  <span>დოკუმენტების შეჯამება/OCR:</span>
+                  <span class="font-extrabold text-ardi-500">მყისიერი (Live)</span>
+                </div>
+                <div class="flex justify-between text-xs text-ardi-900 font-medium">
+                  <span>Excel-ის ფორმულების გენერაცია:</span>
+                  <span class="font-extrabold text-ardi-500">შეცდომების გარეშე</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SYLLABUS OPTIONS SECTION ─── -->
+  <section id="syllabus" class="py-20 border-t" style="border-color: var(--border-color);">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-ardi-500 mb-2 block">Curriculum Plan</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">სასწავლო პროგრამა და სესიები</h2>
+        <p class="text-sm" style="color: var(--text-muted);">გაეცანით სამსაფეხურიანი სასწავლო მოდელის დეტალებს. პროგრამა შეიძლება მორგდეს თქვენს განრიგს.</p>
+      </div>
+
+      <!-- Syllabus Nav Tabs (A, B, C Options) -->
+      <div class="flex justify-center mb-10">
+        <div class="inline-flex rounded-xl p-1.5 border" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <button id="s-tab-A" onclick="switchSyllabus('A')" class="syllabus-tab-btn px-5 py-2.5 rounded-lg text-xs font-extrabold uppercase tracking-wider transition-all">
+            ოფცია A (15 საათი)
+          </button>
+          <button id="s-tab-B" onclick="switchSyllabus('B')" class="syllabus-tab-btn active px-5 py-2.5 rounded-lg text-xs font-extrabold uppercase tracking-wider transition-all">
+            ოფცია B (21 საათი - რეკომენდებული)
+          </button>
+          <button id="s-tab-C" onclick="switchSyllabus('C')" class="syllabus-tab-btn px-5 py-2.5 rounded-lg text-xs font-extrabold uppercase tracking-wider transition-all">
+            ოფცია C (24 საათი)
+          </button>
+        </div>
+      </div>
+
+      <!-- Syllabus Content Panes -->
+      <div class="max-w-4xl mx-auto">
+        <!-- OPTION A PANE -->
+        <div id="s-pane-A" class="syllabus-pane hidden fade-in space-y-6">
+          <div class="p-6 rounded-2xl border bg-amber-500/5 border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs mb-4">
+            ⚠️ **ინტენსიური (Fast-Track) პროგრამა:** დროის სიმცირის გამო სწავლება მიმდინარეობს სწრაფი ტემპით. მოიცავს 5 სესიას (1 საერთო + 3 სპეციალიზებული + 1 ინტეგრირებული).
+          </div>
+          
+          <!-- Session A-1 -->
+          <div id="session-a-1" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-a-1')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 1 · საერთო სესია (3 საათი)</span>
+                <h3 class="text-base font-bold">AI საფუძვლები, GDPR და ყოველდღიური პროდუქტიულობა</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** 18-20 მონაწილე (მარკეტინგი, გაყიდვები, საოპერაციო გუნდი)</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>ChatGPT, Claude და Gemini-ის როლი სადაზღვევო საქმეში.</li>
+                <li>**მონაცემთა უსაფრთხოება:** კორპორატიული მონაცემების დაცვა და GDPR.</li>
+                <li>**Universal Prompt:** პრომპტინგის ოქროს ფორმულა (როლი, კონტექსტი, ამოცანა, ტონი).</li>
+                <li>Claude Projects-ისა და ChatGPT Custom GPTs-ის პრაქტიკული გამოყენება „არდის“ სტილში.</li>
+                <li>რუტინული ადმინისტრაციული სამუშაოების ავტომატიზაცია (MS Outlook & Word).</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">ერთი რუტინული ამოცანის შერჩევა და Universal Prompt-ით მისი ავტომატიზაციის პრომპტის შექმნა.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session A-2 -->
+          <div id="session-a-2" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-a-2')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 2 · სპეციალიზებული (3 საათი)</span>
+                <h3 class="text-base font-bold">გრაფიკული დიზაინი, ბრენდინგი და POSM ვიზუალები (მარკეტინგი)</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** მარკეტინგისა და PR გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>Midjourney-ის მოწინავე ტექნიკები სადაზღვევო სარეკლამო კამპანიებისთვის.</li>
+                <li>პერსონაჟის შენარჩუნება (--cref) და Key Visual-ების გენერირება პროდუქტებისთვის (ავტო, ჯანმრთელობა).</li>
+                <li>Photoshop Generative Fill-ისა და Adobe Firefly-ის ინტეგრაცია POSM-ების ფორმატებზე ადაპტაციისთვის.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">Midjourney-ის დახმარებით ახალი სამოგზაურო დაზღვევის პროდუქტის Key Visual-ის მომზადება.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session A-3 -->
+          <div id="session-a-3" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-a-3')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 3 · სპეციალიზებული (3 საათი)</span>
+                <h3 class="text-base font-bold">B2B შეთავაზებები, კოპირაითინგი და ხმის ტონი (გაყიდვები)</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** გაყიდვებისა და CRM გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>B2B კლიენტებისთვის სადაზღვევო პოლისების შეთავაზებების პერსონალიზაცია ChatGPT-სა და Claude-ში.</li>
+                <li>სარეკლამო ტექსტების მომზადება (AIDA, PAS ფორმულები) და პლატფორმის მიხედვით ადაპტაცია.</li>
+                <li>Claude Projects-ის გამოყენება ოფიციალური პირობების ბაზად ასატვირთად.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">პერსონალიზებული B2B კორპორატიული შეთავაზების მომზადება Claude-ის მეშვეობით.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session A-4 -->
+          <div id="session-a-4" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-a-4')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 4 · სპეციალიზებული (3 საათი)</span>
+                <h3 class="text-base font-bold">ზარალების CSV ანალიზი და Excel-ის ავტომატიზაცია (საოპერაციო)</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** ოპერაციებისა და ანალიტიკის გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>სადაზღვევო შემთხვევების (Claims) მონაცემების CSV ანალიზი ChatGPT Advanced Data Analysis-ში.</li>
+                <li>ზარალიანობის ტენდენციების, სეზონურობისა და კლინიკების ხარჯების იდენტიფიცირება.</li>
+                <li>Excel ფორმულებისა და დინამიკური დეშბორდების ავტომატიზაცია.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">მონაცემთა ბაზის ანალიზი და Excel დეშბორდის აწყობა ხელოვნური ინტელექტის დახმარებით.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session A-5 -->
+          <div id="session-a-5" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-a-5')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 5 · საერთო სესია (3 საათი)</span>
+                <h3 class="text-base font-bold">პრაქტიკული ვორქშოფი და სამუშაო ნაკადების ინტეგრაცია</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** 18-20 მონაწილე (სამივე გუნდი)</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>სხვადასხვა AI ხელსაწყოების კომბინირება ერთიან სამუშაო ნაკადში (Workflow).</li>
+                <li>კროს-ფუნქციური მუშაობა: მარკეტინგი (ვიზუალი/კოპი), გაყიდვები (შეთავაზება) და ანალიტიკა (ფინანსური ROI).</li>
+                <li>რეალური სადაზღვევო კამპანიის სრული live დაგეგმვა და პრეზენტაცია.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">პირადი სამუშაო ნაკადის (Workflow) ოპტიმიზაციის პერსონალური გეგმის შედგენა.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPTION B PANE (RECOMMENDED) -->
+        <div id="s-pane-B" class="syllabus-pane fade-in space-y-6">
+          <div class="p-6 rounded-2xl border bg-emerald-500/5 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs mb-4">
+            ⭐ **რეკომენდებული (Optimal-Adoption) პროგრამა:** ოპტიმალური პედაგოგიური მოდელი. თითოეულ გუნდს ეძლევა 2-2 სპეციალიზებული სესია, რაც საშუალებას იძლევა დეტალურად დამუშავდეს რთული ინსტრუმენტები.
+          </div>
+
+          <!-- Session B-1 -->
+          <div id="session-b-1" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-b-1')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 1 · საერთო სესია (3 საათი)</span>
+                <h3 class="text-base font-bold">AI საფუძვლები, GDPR და ყოველდღიური პროდუქტიულობა</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** ყველა გუნდის მონაწილე (მარკეტინგი, გაყიდვები, საოპერაციო გუნდი)</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>ChatGPT, Claude და Gemini სადაზღვევო სექტორში.</li>
+                <li>**კორპორატიული უსაფრთხოება:** მონაცემთა დაცვა და GDPR-ის შესაბამისობა.</li>
+                <li>**Universal Prompt:** პრომპტინგის ოქროს ფორმულა (როლი, კონტექსტი, ამოცანა, ტონი, ფორმატი).</li>
+                <li>Claude Projects-ისა და ChatGPT Custom GPTs-ის პრაქტიკული გამოყენება ბრენდ „არდის“ ხმის ტონის (Tone of Voice) მოდელირებისთვის.</li>
+                <li>ყოველდღიური ადმინისტრაციული საქმიანობის (MS Outlook & MS Word) ოპტიმიზაცია.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">პირადი ყოველდღიური საქმიანობიდან ერთი რუტინული ამოცანის შერჩევა და Universal Prompt-ის ფორმულით მისი ავტომატიზაციის პრომპტ-შაბლონის შექმნა.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session B-2 -->
+          <div id="session-b-2" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-b-2')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 2 · სპეციალიზებული (3 საათი - მარკეტინგი და PR)</span>
+                <h3 class="text-base font-bold">კამპანიის ვიზუალები, დიზაინი და სადაზღვევო ბრენდინგი</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** მარკეტინგისა და PR გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>Midjourney-ისა და Flux-ის მოწინავე ტექნიკები: პერსონაჟის შენარჩუნება (--cref), სტილის გადატანა.</li>
+                <li>**ფოტოგენერაციის პრომპტის (Photo Generation Prompt)** გამოყენება: ჯანმრთელობის, ავტო და სამოგზაურო დაზღვევის პროდუქტებისთვის Key Visual-ების შექმნა, შაბლონური სტოკ-ფოტოების სტილის თავიდან ასაცილებლად.</li>
+                <li>Photoshop Generative Fill-ისა და Adobe Firefly-ის გამოყენება სოციალური მედიის ბანერებისა და POSM მასალების ფორმატებზე სწრაფი ადაპტაციისთვის.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">Midjourney-ით ან Adobe Firefly-ით სარეკლამო კამპანიის კრეატიული Mood Board-ის ან სეზონური ბანერის Key Visual-ის შექმნა მზა ფოტოპრომპტის გამოყენებით.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session B-3 -->
+          <div id="session-b-3" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-b-3')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 3 · სპეციალიზებული (3 საათი - მარკეტინგი და PR)</span>
+                <h3 class="text-base font-bold">AI ვიდეო, მუსიკა და სარეკლამო რეფერენსები</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** მარკეტინგისა და PR გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>AI ვიდეო გენერაცია: სცენარის ლოგიკა, კამერის მოძრაობის კონტროლი Kling-სა და Runway-ში.</li>
+                <li>რილსებისთვის/სთორებისთვის Moodboard-ებისა და კრეატიული ვიდეო-რეფერენსების შექმნა.</li>
+                <li>**Suno-ს მუსიკალური პრომპტის (Music Generation Prompt)** გამოყენება ვიდეოების ფონური მუსიკის დასაგენერირებლად: ჟანრი, ტემპი, ინსტრუმენტები და განწყობა (ვოკალისა და აგრესიული ხმების გარეშე).</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">Kling-ით ან Runway-ით 10-15 წამიანი სარეკლამო ვიდეო-რეფერენსის გენერირება და Suno-თი შესაბამისი ფონური მუსიკის შექმნა.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session B-4 -->
+          <div id="session-b-4" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-b-4')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 4 · სპეციალიზებული (3 საათი - გაყიდვები და CRM)</span>
+                <h3 class="text-base font-bold">B2B შეთავაზებები, სარეკლამო კოპირაითინგი და ხმის ტონი</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** გაყიდვებისა და CRM გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>B2B კორპორატიული კლიენტებისთვის სადაზღვევო პაკეტების შეთავაზებების სტრუქტურირება და პერსონალიზაცია ChatGPT-სა და Claude-ში.</li>
+                <li>სარეკლამო ტექსტების მომზადება (AIDA, PAS ფორმულებით) და პლატფორმის მიხედვით ადაპტაცია (Email, LinkedIn, Phone Script).</li>
+                <li>Claude Projects-ის გამოყენება „არდის“ ოფიციალური პოლისის პირობებისა და სატარიფო დოკუმენტების ბაზად ასატვირთად.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">Claude Projects-ში „არდის“ სადაზღვევო პროდუქტის (მაგალითად, ავტოდაზღვევა) საფუძველზე პერსონალიზებული B2B კორპორატიული შეთავაზების მომზადება.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session B-5 -->
+          <div id="session-b-5" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-b-5')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 5 · სპეციალიზებული (3 საათი - გაყიდვები და CRM)</span>
+                <h3 class="text-base font-bold">კლიენტთა მომსახურების ავტომატიზაცია და უსაფრთხო კომუნიკაცია</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** გაყიდვებისა და CRM გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>სადაზღვევო შემთხვევების (ზარალების) დარეგულირებისას კლიენტებთან წერილობითი კომუნიკაციის ავტომატიზაცია.</li>
+                <li>რთული/პრეტენზიული წერილების დამუშავება და ემპათიური, მაგრამ იურიდიულად გამართული პასუხების მომზადება.</li>
+                <li>**Safety Check Prompt**-ის გამოყენება სადაზღვევო დოკუმენტებში: იმის გაკონტროლება, რომ ხელოვნურმა ინტელექტმა არ შექმნას დაუსაბუთებელი დაპირებები ან არასწორი განაკვეთები.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">სადაზღვევო შემთხვევის უარყოფის შესახებ იურიდიულად გამართული და ემპათიური საპასუხო წერილის შაბლონის მომზადება და მისი უსაფრთხოების ფაქტ-ჩექინგი.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session B-6 -->
+          <div id="session-b-6" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-b-6')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 6 · სპეციალიზებული (3 საათი - ოპერაციები და ანალიტიკა)</span>
+                <h3 class="text-base font-bold">მონაცემთა ანალიზი, Excel-ის ავტომატიზაცია და დეშბორდები</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** ოპერაციებისა და ანალიტიკის გუნდი</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>სადაზღვევო ზარალების მონაცემების (CSV/Excel ფაილები) ანალიზი ChatGPT Advanced Data Analysis-ით (Loss Ratio, ხარჯების განაწილება, კლინიკების ეფექტურობა).</li>
+                <li>Excel-ის რთული ფორმულების, VLOOKUP-ის, Pivot Tables-ისა და დინამიკური დეშბორდების ავტომატიზაცია.</li>
+                <li>არასტრუქტურირებული დოკუმენტების (სამედიცინო ფორმა 100, საავადმყოფოს კალკულაციები, საპატრულო პოლიციის აქტები) სწრაფი დამუშავება, OCR და მონაცემთა ამოღება.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">სადაზღვევო ზარალების სიმულაციური ბაზის ანალიზი ChatGPT-ში და Excel-ის დინამიკური დეშბორდის აგება, რომელიც ავტომატურად აჩვენებს ზარალიანობის ტენდენციებს.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session B-7 -->
+          <div id="session-b-7" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <button onclick="toggleSession('session-b-7')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+              <div>
+                <span class="text-xs text-ardi-500 font-extrabold uppercase tracking-wider block mb-1">სესია 7 · საერთო სესია (3 საათი)</span>
+                <h3 class="text-base font-bold">პრაქტიკული ვორქშოფი და სამუშაო ნაკადების ინტეგრაცია</h3>
+              </div>
+              <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+              <p class="text-xs pt-4 mb-4" style="color: var(--text-muted);">**აუდიტორია:** ყველა გუნდის მონაწილე (მარკეტინგი, გაყიდვები, საოპერაციო გუნდი)</p>
+              <ul class="list-disc list-inside text-xs space-y-2 mb-4" style="color: var(--text-muted);">
+                <li>სხვადასხვა AI ხელსაწყოების კომბინირება ერთიან საოპერაციო პროცესში (Workflow) (მაგალითად: Claude + Midjourney + Canva + Excel).</li>
+                <li>კროს-ფუნქციური მუშაობის ორგანიზება სადაზღვევო გარემოში (მარკეტინგი, გაყიდვები, ანალიზი).</li>
+                <li>პრაქტიკული ჯგუფური ვარჯიში: სადაზღვევო კომპანია „არდის“ რეალური, ახალი სადაზღვევო პროდუქტის (მაგალითად: „ეკო-ავტოდაზღვევა“) სრული კამპანიის დაგეგმვა, ვიზუალიზაცია, B2B პრეზენტაციისა და ფინანსური მოდელის მომზადება.</li>
+              </ul>
+              <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-dashed" style="border-color: var(--border-color);">
+                <span class="text-[10px] font-extrabold text-ardi-500 uppercase block mb-1">📋 საშინაო დავალება</span>
+                <p class="text-xs" style="color: var(--text-muted);">ტრენინგზე მიღებული ცოდნის საფუძველზე საკუთარი ყოველდღიური სამუშაო ნაკადის (Workflow) ოპტიმიზაციის პერსონალური გეგმის შედგენა.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPTION C PANE -->
+        <div id="s-pane-C" class="syllabus-pane hidden fade-in space-y-6">
+          <div class="p-6 rounded-2xl border bg-purple-500/5 border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs mb-4">
+            💼 **სრული ტრანსფორმაციისა და მასტერკლასის (Full Mastery) პროგრამა:** უზრუნველყოფს სამივე გუნდის სრულ პროფესიულ მომზადებას. გამორიცხავს კოგნიტურ გადატვირთვას. მოიცავს 8 სესიას (1 საერთო + 6 სპეციალიზებული + 1 ინტეგრირებული).
+          </div>
+          
+          <!-- Session C-1 to C-8 details in text form -->
+          <div class="p-6 rounded-2xl border" style="background-color: var(--card-bg); border-color: var(--border-color);">
+            <h3 class="text-lg font-bold mb-4">ოფცია C-ის პროგრამის დეტალები</h3>
+            <p class="text-xs mb-4" style="color: var(--text-muted);">ეს ოფცია მოიცავს 8 სრულ სესიას, სადაც თითოეულ ჯგუფს (მარკეტინგი, გაყიდვები/CRM და ანალიტიკა/საოპერაციო) ეძლევა 2 სრულიად დამოუკიდებელი, 3-საათიანი სიღრმისეული სესია. ეს იძლევა საშუალებას სიღრმისეულად შევისწავლოთ:</p>
+            <ul class="list-disc list-inside text-xs space-y-2" style="color: var(--text-muted);">
+              <li>ავტომატური სადაზღვევო კალკულატორების აგება და რისკების შეფასება (Underwriting) ChatGPT-ში.</li>
+              <li>ავტოდაზღვევის ფარგლებში მანქანის დაზიანების ხარისხის დადგენის Live demo (Visual ხელოვნური ინტელექტით).</li>
+              <li>HeyGen-ისა და ElevenLabs-ის მეშვეობით ვიზუალური სადაზღვევო ვიდეო-გიდებისა და ხმოვანი კადრების ავტომატური გენერირება.</li>
+              <li>კლიენტთა პრეტენზიების მართვის პლატფორმის აგება (Claude Projects-ში) იურიდიული წესების 100%-იანი სიზუსტით.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Case Card -->
+      <div class="mt-16 max-w-4xl mx-auto p-8 rounded-3xl border flex flex-col md:flex-row gap-8 items-center" style="background-color: var(--card-bg); border-color: var(--border-color);">
+        <div class="flex-1">
+          <span class="text-[10px] font-extrabold tracking-widest text-ardi-500 uppercase block mb-1">Financial Analysis</span>
+          <h3 class="text-xl font-bold mb-3">საოპერაციო და ფინანსური უპირატესობა</h3>
+          <p class="text-xs leading-relaxed" style="color: var(--text-muted);">
+            თითოეული დეპარტამენტის დამოუკიდებლად ტრენინგის შემთხვევაში, ჯამური ბიუჯეტი შეადგენს **21 800 ლარს** (რადგან საფუძვლები და ინსტრუმენტების საწყისი კურსი სამჯერ უნდა ჩატარდეს ნულიდან). 
+            <br><br>
+            ჰიბრიდული გაერთიანებული პროგრამა (**ოფცია B: 10 800 ლარი**) გთავაზობთ **11 000 ლარის ფინანსურ დანაზოგს (50%-ზე მეტი)** დროისა და რესურსების ოპტიმალური გადანაწილების ხარჯზე.
+          </p>
+        </div>
+        <div class="w-full md:w-64 bg-slate-50 dark:bg-slate-900 border p-6 rounded-2xl shrink-0 flex flex-col items-center justify-center text-center" style="border-color: var(--border-color);">
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">მთლიანი დანაზოგი</span>
+          <span class="text-4xl font-extrabold text-ardi-500 mb-1">11,000 ₾</span>
+          <span class="text-[10px] text-slate-400">ინტეგრირებული ჰიბრიდული მოდელით</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PRICING SECTION ─── -->
+  <section id="pricing" class="py-20 border-t" style="background-color: var(--bg-light); border-color: var(--border-color);">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-ardi-500 mb-2 block">Investment Options</span>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">საინვესტიციო პაკეტები და ტარიფები</h2>
+        <p class="text-sm" style="color: var(--text-muted);">გამჭვირვალე ფასწარმოქმნა კორპორატიული კლიენტებისთვის. ყველა ფასი მოიცავს გადასახადებს.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 items-stretch">
+        <!-- Option A Card -->
+        <div class="flex flex-col p-8 rounded-3xl border transition-all duration-300 hover:shadow-lg" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <h3 class="text-lg font-bold mb-1">ოფცია A: Fast-Track</h3>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-6">ინტენსიური კურსი</span>
+          
+          <div class="mb-6 flex items-baseline gap-1">
+            <span class="text-4xl font-extrabold" style="color: var(--text-color);">8,200</span>
+            <span class="text-lg font-bold">ლარი</span>
+          </div>
+
+          <div class="border-t pt-6 mb-8 flex-1" style="border-color: var(--border-color);">
+            <ul class="space-y-3.5 text-xs" style="color: var(--text-muted);">
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>15 საათიანი კურსი (5 სესია)</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>18-20 მონაწილე</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>სამივე სპეციალიზებული მოდული</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>მზა სადაზღვევო პრომპტები</span>
+              </li>
+            </ul>
+          </div>
+          
+          <a href="mailto:office@ardi.ge?subject=ARDI%20AI%20Training%20Option%20A" class="w-full text-center py-3 border border-ardi-500 hover:bg-ardi-50 text-ardi-500 font-bold rounded-lg text-xs uppercase tracking-wider transition-all">არჩევა</a>
+        </div>
+
+        <!-- Option B Card (RECOMMENDED) -->
+        <div class="flex flex-col p-8 rounded-3xl border-2 border-ardi-500 relative transition-all duration-300 hover:shadow-xl scale-105" style="background-color: var(--card-bg);">
+          <div class="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 px-4 py-1 bg-ardi-500 text-white text-[10px] font-extrabold uppercase tracking-widest rounded-full shadow">რეკომენდებული</div>
+          
+          <h3 class="text-lg font-bold mb-1">ოფცია B: Optimal-Adoption</h3>
+          <span class="text-xs font-semibold uppercase tracking-wider text-ardi-500 mb-6">პრაქტიკული ათვისება</span>
+          
+          <div class="mb-6 flex items-baseline gap-1">
+            <span class="text-4xl font-extrabold text-ardi-500">10,800</span>
+            <span class="text-lg font-bold text-ardi-500">ლარი</span>
+          </div>
+
+          <div class="border-t pt-6 mb-8 flex-1" style="border-color: var(--border-color);">
+            <ul class="space-y-3.5 text-xs" style="color: var(--text-muted);">
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>**21 საათიანი კურსი (7 სესია)**</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>18-20 მონაწილე</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>სიღრმისეული ჯგუფური მუშაობა</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>**Claude Projects-ის აწყობა**</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>**ზარალების Excel ანალიტიკა**</span>
+              </li>
+            </ul>
+          </div>
+          
+          <a href="mailto:office@ardi.ge?subject=ARDI%20AI%20Training%20Option%20B" class="w-full text-center py-3.5 bg-ardi-500 hover:bg-ardi-600 text-white font-extrabold rounded-lg text-xs uppercase tracking-wider transition-all shadow-[0_4px_14px_rgba(227,30,36,0.3)]">არჩევა</a>
+        </div>
+
+        <!-- Option C Card -->
+        <div class="flex flex-col p-8 rounded-3xl border transition-all duration-300 hover:shadow-lg" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <h3 class="text-lg font-bold mb-1">ოფცია C: Full Mastery</h3>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-6">სრული ტრანსფორმაცია</span>
+          
+          <div class="mb-6 flex items-baseline gap-1">
+            <span class="text-4xl font-extrabold" style="color: var(--text-color);">12,200</span>
+            <span class="text-lg font-bold">ლარი</span>
+          </div>
+
+          <div class="border-t pt-6 mb-8 flex-1" style="border-color: var(--border-color);">
+            <ul class="space-y-3.5 text-xs" style="color: var(--text-muted);">
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>24 საათიანი კურსი (8 სესია)</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>18-20 მონაწილე</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>**HeyGen & ElevenLabs ვიდეო-გიდები**</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>**Visual AI ზარალების დეტექცია**</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-ardi-500 font-extrabold">✓</span>
+                <span>ინდივიდუალური მასტერკლასი</span>
+              </li>
+            </ul>
+          </div>
+          
+          <a href="mailto:office@ardi.ge?subject=ARDI%20AI%20Training%20Option%20C" class="w-full text-center py-3 border border-ardi-500 hover:bg-ardi-50 text-ardi-500 font-bold rounded-lg text-xs uppercase tracking-wider transition-all">არჩევა</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TRAINER SECTION ─── -->
+  <section id="trainer" class="py-20 border-t" style="border-color: var(--border-color);">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-ardi-500 mb-2 block">Instructor Details</span>
+        <h2 class="text-3xl font-extrabold tracking-tight mb-4">კურსის ტრენერი</h2>
+      </div>
+
+      <div class="p-8 md:p-10 rounded-3xl border flex flex-col sm:flex-row gap-8 items-center" style="background-color: var(--card-bg); border-color: var(--border-color);">
+        <!-- Avatar -->
+        <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-ardi-500 to-ardi-700 text-white font-extrabold text-4xl flex items-center justify-center shadow-lg shrink-0">
+          გბ
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold mb-1">გიორგი ბასილაია</h3>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-ardi-500 block mb-4">ხელოვნური ინტელექტის ინტეგრაციის კონსულტანტი</span>
+          <p class="text-xs leading-relaxed mb-4" style="color: var(--text-muted);">
+            მარკეტინგის, ბიზნესის განვითარებისა და კორპორატიული ტრენინგების 10-წლიანი გამოცდილებით. Smart Academy-ისა და GIPA-ს მიწვეული ლექტორი, რომელიც სპეციალიზებულია ბიზნეს-პროცესებში გენერაციული AI ინსტრუმენტების პრაქტიკულ დანერგვასა და ოპტიმიზაციაში.
+          </p>
+          <div class="flex gap-4">
+            <span class="text-[10px] px-2.5 py-1 bg-slate-50 dark:bg-slate-900 border rounded text-slate-400 font-semibold uppercase tracking-wider" style="border-color: var(--border-color);">Smart Academy</span>
+            <span class="text-[10px] px-2.5 py-1 bg-slate-50 dark:bg-slate-900 border rounded text-slate-400 font-semibold uppercase tracking-wider" style="border-color: var(--border-color);">GIPA Lecturer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FAQ SECTION ─── -->
+  <section id="faq" class="py-20 border-t" style="background-color: var(--bg-light); border-color: var(--border-color);">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-ardi-500 mb-2 block">Frequently Asked Questions</span>
+        <h2 class="text-3xl font-extrabold tracking-tight mb-4">ხშირად დასმული კითხვები</h2>
+      </div>
+
+      <div class="space-y-4">
+        <!-- FAQ 1 -->
+        <div id="faq-1" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <button onclick="toggleSession('faq-1')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+            <h3 class="text-sm font-bold">აუცილებელია თუ არა მონაწილეებს ჰქონდეთ პროგრამირების გამოცდილება?</h3>
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+            <p class="text-xs pt-4" style="color: var(--text-muted);">
+              არა, კურსი სრულიად პრაქტიკულია და ორიენტირებულია "no-code" და "low-code" ინსტრუმენტებზე. მონაწილეებს მხოლოდ სჭირდებათ საოფისე პროგრამების (Word, Excel) და ინტერნეტის საბაზისო ცოდნა.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div id="faq-2" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <button onclick="toggleSession('faq-2')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+            <h3 class="text-sm font-bold">სად და რა ფორმატში ჩატარდება ტრენინგები?</h3>
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+            <p class="text-xs pt-4" style="color: var(--text-muted);">
+              ტრენინგების ჩატარება შესაძლებელია როგორც „არდის“ სათავო ოფისში (ფიზიკურად, სამუშაო სივრცეში), ისე დისტანციურად (Zoom-ის ან MS Teams-ის მეშვეობით). ფორმატი და განრიგი სრულად ერგება დამკვეთის საოპერაციო გრაფიკს.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div id="faq-3" class="border rounded-2xl transition-all shadow-sm" style="background-color: var(--card-bg); border-color: var(--border-color);">
+          <button onclick="toggleSession('faq-3')" class="accordion-trigger w-full px-6 py-5 flex justify-between items-center text-left">
+            <h3 class="text-sm font-bold">დაცულია თუ არა კომპანიის შიდა მონაცემები ხელოვნური ინტელექტის გამოყენებისას?</h3>
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-content px-6 pb-6 border-t" style="border-color: var(--border-color);">
+            <p class="text-xs pt-4" style="color: var(--text-muted);">
+              დიახ, პირველივე სესიაზე დეტალურად განვიხილავთ კორპორატიული მონაცემების დაცვისა და უსაფრთხოების წესებს. მონაწილეები ისწავლიან, როგორ გამორთონ AI მოდელების ტრენინგზე მონაცემთა გადაცემა და როგორ იმუშაონ ისე, რომ არ დაირღვეს GDPR-ის ან პერსონალურ მონაცემთა დაცვის კანონის მოთხოვნები.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="py-12 border-t text-center" style="background-color: var(--body-bg); border-color: var(--border-color);">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-ardi-500 font-extrabold text-2xl tracking-wider mb-2">ARDI AI</div>
+      <p class="text-xs mb-6 max-w-md mx-auto" style="color: var(--text-muted);">პრაქტიკული AI გადაწყვეტილებების დანერგვა და ტრენინგი სადაზღვევო კომპანია „არდის“ დეპარტამენტებისთვის.</p>
+      <div class="text-[10px] text-slate-400">
+        © 2026 ყველა უფლება დაცულია. კურსის ავტორი: გიორგი ბასილაია
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navigation Scroll Effects
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      const progressBarFill = document.getElementById('progress-bar-fill');
+      
+      if (window.scrollY > 40) {
+        navbar.classList.add('shadow-md');
+      } else {
+        navbar.classList.remove('shadow-md');
+      }
+      
+      const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = scrollTotal > 0 ? (window.scrollY / scrollTotal) * 100 : 0;
+      progressBarFill.style.width = scrollPercent + '%';
+    });
+
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuToggle.addEventListener('click', function() {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close menu on nav click
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      
+      themeToggle.innerHTML = isLight 
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+    });
+
+    // Role Tab Switcher
+    function switchRole(roleId) {
+      // Deactivate all tab buttons and panes
+      const buttons = document.querySelectorAll('.tab-btn');
+      const panes = document.querySelectorAll('.role-pane');
+      
+      buttons.forEach(btn => btn.classList.remove('active'));
+      panes.forEach(pane => pane.classList.add('hidden'));
+      
+      // Find the clicked button
+      const clickedBtn = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(roleId));
+      if (clickedBtn) clickedBtn.classList.add('active');
+      
+      // Activate target pane
+      const targetPane = document.getElementById('pane-' + roleId);
+      if (targetPane) targetPane.classList.remove('hidden');
+    }
+
+    // Timeline Accordion Toggle
+    function toggleSession(sessionId) {
+      const card = document.getElementById(sessionId);
+      card.classList.toggle('collapsed');
+    }
+
+    // Initialize Accordion to collapsed by default except key items
+    document.addEventListener("DOMContentLoaded", function() {
+      // Option A
+      document.getElementById('session-a-2').classList.add('collapsed');
+      document.getElementById('session-a-3').classList.add('collapsed');
+      document.getElementById('session-a-4').classList.add('collapsed');
+      document.getElementById('session-a-5').classList.add('collapsed');
+      
+      // Option B
+      document.getElementById('session-b-2').classList.add('collapsed');
+      document.getElementById('session-b-3').classList.add('collapsed');
+      document.getElementById('session-b-4').classList.add('collapsed');
+      document.getElementById('session-b-5').classList.add('collapsed');
+      document.getElementById('session-b-6').classList.add('collapsed');
+      document.getElementById('session-b-7').classList.add('collapsed');
+      
+      // FAQ
+      document.getElementById('faq-2').classList.add('collapsed');
+      document.getElementById('faq-3').classList.add('collapsed');
+    });
+
+    // Switch Syllabus Options (A, B, C)
+    function switchSyllabus(optionId) {
+      // Deactivate all syllabus tabs
+      const tabs = document.querySelectorAll('.syllabus-tab-btn');
+      tabs.forEach(btn => btn.classList.remove('active'));
+      
+      // Deactivate all syllabus panes
+      const panes = document.querySelectorAll('.syllabus-pane');
+      panes.forEach(pane => pane.classList.add('hidden'));
+      
+      // Activate target tab
+      const clickedTab = document.getElementById('s-tab-' + optionId);
+      if (clickedTab) clickedTab.classList.add('active');
+      
+      // Activate target pane
+      const targetPane = document.getElementById('s-pane-' + optionId);
+      if (targetPane) targetPane.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
