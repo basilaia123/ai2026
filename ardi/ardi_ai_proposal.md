@@ -102,12 +102,12 @@
 * პრაქტიკული ხელოვნური ინტელექტის პროექტების დანერგვის კონსულტანტი წამყვანი ქართული და საერთაშორისო კომპანიებისთვის.
 
 ##### ხელოვნური ინტელექტის მიმართულების სერტიფიკატები:
-* 🎓 **Google Certified Educator Level 2** (Google for Education - 2026 წლის მაისი - 2029 წლის მაისი)
-* 💎 **Gemini Certified Faculty** (Google for Education - 2026 წლის მარტი - 2029 წლის მარტი)
-* ✨ **Gemini Certified Educator** (Google - 2026 წლის თებერვალი - 2029 წლის თებერვალი)
-* ⚡ **Claude Code in Action** (Anthropic - 2026 წლის მარტი)
-* 🧠 **Teaching the AI Fluency Framework** (Anthropic - 2026 წლის მარტი)
-* 📚 **AI Fluency for Educators** (Anthropic - 2026 წლის მარტი)
+* 🎓 **Google Certified Educator Level 2** (Google for Education - მაისი, 2026 - 2029)
+* 💎 **Gemini Certified Faculty** (Google for Education - მარტი, 2026 - 2029)
+* ✨ **Gemini Certified Educator** (Google - თებერვალი, 2026 - 2029)
+* ⚡ **Claude Code in Action** (Anthropic - მარტი, 2026)
+* 🧠 **Teaching the AI Fluency Framework** (Anthropic - მარტი, 2026)
+* 📚 **AI Fluency for Educators** (Anthropic - მარტი, 2026)
 
 #### სერტიფიცირება
 კურსის წარმატებით დასრულების შემდეგ მონაწილეებს გადაეცემათ ორენოვანი კორპორატიული სერტიფიკატები, რომლებიც ადასტურებენ ხელოვნური ინტელექტის ინსტრუმენტების პრაქტიკული გამოყენების კვალიფიკაციას სადაზღვევო საქმეში. სერტიფიკატის მისაღებად აუცილებელია პრაქტიკული დავალებებისა და საბოლოო ინტეგრირებული პროექტის წარმატებით ჩაბარება.
