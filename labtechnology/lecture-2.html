@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სესია 2: მონაცემთა დამუშავება და ფინანსური ანალიზი — LAB Technologies</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: 'var(--brand-color)',
+              dark: 'var(--brand-dark)',
+              light: 'var(--brand-light)',
+              glow: 'var(--brand-glow)'
+            },
+            space: {
+              950: 'var(--space-950)',
+              900: 'var(--space-900)',
+              800: 'var(--space-800)',
+              700: 'var(--space-700)',
+              600: 'var(--space-600)',
+              200: 'var(--space-200)',
+              100: 'var(--space-100)'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      --brand-color: #5cf2e9;
+      --brand-dark: #14b8a6;
+      --brand-light: #99f6e4;
+      --brand-glow: rgba(92, 242, 233, 0.15);
+      
+      --space-950: #060a13;
+      --space-900: #0b111e;
+      --space-800: #111b2d;
+      --space-700: #1d2a44;
+      --space-600: #2d3f5e;
+      --space-200: #cbd5e1;
+      --space-100: #f1f5f9;
+      
+      --sheet-border: rgba(92, 242, 233, 0.1);
+      --sheet-shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    body.daymode {
+      --brand-color: #0d9488;
+      --brand-dark: #0f766e;
+      --brand-light: #ccfbf1;
+      --brand-glow: rgba(13, 148, 136, 0.1);
+      
+      --space-950: #f8fafc;
+      --space-900: #ffffff;
+      --space-800: #e2e8f0;
+      --space-700: #cbd5e1;
+      --space-600: #94a3b8;
+      --space-200: #334155;
+      --space-100: #0f172a;
+      
+      --sheet-border: #cbd5e1;
+      --sheet-shadow: rgba(0, 0, 0, 0.05);
+    }
+
+    * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    
+    body {
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    .sheet-screen, nav, footer, div, section, button, aside {
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(92, 242, 233, 0.2); border-radius: 2px; }
+    .nav-link.active { background: rgba(92, 242, 233, 0.08); border-left: 3px solid var(--brand-color); color: var(--brand-color) !important; }
+
+    body.daymode {
+      color: #334155 !important;
+    }
+    
+    body.daymode h1,
+    body.daymode h2,
+    body.daymode h3,
+    body.daymode h4,
+    body.daymode h5,
+    body.daymode h6,
+    body.daymode .text-white {
+      color: #0f172a !important;
+    }
+    
+    body.daymode .text-slate-100,
+    body.daymode .text-slate-200,
+    body.daymode .text-slate-300 {
+      color: #334155 !important;
+    }
+    
+    body.daymode .text-slate-400 {
+      color: #475569 !important;
+    }
+    
+    body.daymode .text-slate-500 {
+      color: #64748b !important;
+    }
+    
+    body.daymode .bg-space-950\/60 {
+      background-color: rgba(241, 245, 249, 0.6) !important;
+      border-color: #cbd5e1 !important;
+    }
+    
+    body.daymode .bg-space-900\/50 {
+      background-color: rgba(241, 245, 249, 0.5) !important;
+      border-color: #cbd5e1 !important;
+    }
+    
+    body.daymode .bg-space-900\/20 {
+      background-color: rgba(241, 245, 249, 0.2) !important;
+    }
+    
+    body.daymode .bg-space-950 {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.daymode .bg-gradient-to-br.from-space-900 {
+      background-image: linear-gradient(to bottom right, #ffffff, #f8fafc) !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.daymode .border-space-800 {
+      border-color: #cbd5e1 !important;
+    }
+
+    body.daymode .bg-brand.text-space-950 {
+      background-color: #0d9488 !important;
+      color: #ffffff !important;
+    }
+
+    body.daymode .prompt-box {
+      background: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.daymode .prompt-box pre {
+      color: #0f172a !important;
+    }
+
+    body.daymode .nav-link.active {
+      background: rgba(13, 148, 136, 0.08);
+      border-left-color: #0d9488;
+      color: #0d9488 !important;
+    }
+
+    .sheet-screen {
+      background: var(--space-900);
+      border: 1px solid var(--sheet-border);
+      box-shadow: 0 10px 40px var(--sheet-shadow);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sheet-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #5cf2e9, #14b8a6);
+    }
+
+    #backToTop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #backToTop.visible { opacity: 1; pointer-events: auto; }
+    #backToTop:hover { transform: translateY(-2px); }
+
+    #fontControls {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--space-900);
+      border: 1px solid var(--sheet-border);
+      padding: 5px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px var(--sheet-shadow);
+    }
+
+    @media print {
+      #sidebar, #menuBtn, #overlay, #backToTop, #fontControls { display: none !important; }
+      main { margin-left: 0 !important; padding: 0 !important; }
+      body { background: white; color: black; }
+      .sheet-screen { box-shadow: none; border: 1px solid #cbd5e1; background: white; }
+      @page { margin: 1.5cm; }
+    }
+  </style>
+</head>
+<body class="bg-space-950 text-slate-200 min-h-screen flex flex-col antialiased">
+
+  <!-- Mobile Overlay & Menu button -->
+  <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-30 hidden transition-opacity duration-300"></div>
+  
+  <button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-space-900 border border-space-800 text-white p-2.5 rounded-lg shadow-lg hover:bg-space-800 transition-colors lg:hidden" title="მენიუ">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+
+  <!-- Left Navigation Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-space-900 border-r border-space-800 text-slate-300 overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300 lg:translate-x-0">
+    <div class="px-6 py-6 border-b border-space-800">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="bg-brand/10 border border-brand/20 text-brand text-[9px] font-bold px-2 py-0.5 rounded tracking-widest uppercase">LAB Tech</span>
+        <span class="text-slate-400 text-xs font-semibold">სესია 2</span>
+      </div>
+      <h1 class="text-sm font-extrabold text-white leading-tight">მონაცემები & ფინანსური ანალიზი</h1>
+      <p class="text-slate-500 text-[10px] mt-1">კურსის სლაიდები | 2026</p>
+    </div>
+
+    <nav class="py-4 space-y-1">
+      <div class="px-6 py-2 text-[10px] font-bold uppercase tracking-wider text-brand">შესავალი</div>
+      <a href="#intro" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="intro">
+        <span>🎯 სესიის მიზნები</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">5 წთ</span>
+      </a>
+      
+      <div class="px-6 py-2 text-[10px] font-bold uppercase tracking-wider text-brand">ბლოკი I · ფინანსური მონაცემები</div>
+      <a href="#excel-ai" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="excel-ai">
+        <span>📊 Excel და მონაცემთა გაწმენდა</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">20 წთ</span>
+      </a>
+      <a href="#python-sandbox" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="python-sandbox">
+        <span>⚙️ Python Sandbox ანალიზი</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">20 წთ</span>
+      </a>
+      <a href="#rows-reconciliation" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="rows-reconciliation">
+        <span>🧮 Rows AI და Reconciliation</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">20 წთ</span>
+      </a>
+
+      <div class="px-6 py-2 text-[10px] font-bold uppercase tracking-wider text-brand">ბლოკი II · კვლევა & ბაზარი</div>
+      <a href="#perplexity-research" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="perplexity-research">
+        <span>🔍 Perplexity Deep Research</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">20 წთ</span>
+      </a>
+      <a href="#market-analysis" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="market-analysis">
+        <span>📉 კონკურენტების ანალიზი</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">15 წთ</span>
+      </a>
+      <a href="#exercises" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="exercises">
+        <span>✏️ პრაქტიკა (სავარჯიშოები 3-4)</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">30 წთ</span>
+      </a>
+
+      <div class="px-6 py-2 text-[10px] font-bold uppercase tracking-wider text-brand">შეჯამება</div>
+      <a href="#summary" class="nav-link flex items-center justify-between px-6 py-2 text-xs text-slate-400 hover:text-white border-l-3 border-transparent" data-topic="summary">
+        <span>✅ შეჯამება და დავალება</span>
+        <span class="text-[9px] bg-space-800 text-slate-400 px-1.5 py-0.5 rounded">10 წთ</span>
+      </a>
+      
+      <div class="px-6 py-4 border-t border-space-800">
+        <a href="materials.html" class="w-full block text-center bg-space-800 hover:bg-space-700 text-white text-xs font-bold py-2 rounded-lg transition-colors">
+          🌿 მასალების ჰაბი
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content Layout -->
+  <main class="lg:ml-72 flex-1 p-4 md:p-8 space-y-12">
+    <div class="max-w-4xl mx-auto space-y-12">
+      
+      <!-- HERO HEADER -->
+      <header id="intro" class="bg-gradient-to-br from-space-900 via-space-800 to-space-950 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-2xl border border-space-800 scroll-mt-24">
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><defs><pattern id=&quot;g&quot; width=&quot;60&quot; height=&quot;60&quot; patternUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M60 0L0 60M-15 15L15-15M45 75L75 45&quot; stroke=&quot;%235cf2e9&quot; stroke-width=&quot;1&quot; fill=&quot;none&quot;/></pattern></defs><rect fill=&quot;url(%23g)&quot; width=&quot;60&quot; height=&quot;60&quot;/></svg>');"></div>
+        <div class="relative z-10 space-y-6">
+          <div class="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 rounded-full px-4 py-1.5">
+            <span class="w-2 h-2 bg-brand rounded-full animate-pulse"></span>
+            <span class="text-xs font-bold text-brand uppercase tracking-widest">სესია 2 (180 წუთი)</span>
+          </div>
+          <h1 class="text-3xl md:text-5xl font-black leading-tight text-white">
+            მონაცემთა დამუშავება და ფინანსური ანალიზი
+          </h1>
+          <p class="text-slate-300 text-base md:text-lg font-light leading-relaxed">
+            ამ სესიაში შეისწავლით ფინანსური მონაცემების ავტომატურ დამუშავებას, საბანკო ამონაწერების სწრაფ Reconciliation-ს Rows AI-ით და Perplexity Deep Research-ის გამოყენებას ბაზრისა და კონკურენტების შესასწავლად.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <span class="bg-space-950 border border-space-800 text-slate-300 text-xs px-3.5 py-2 rounded-lg font-bold">⏱ 180 წუთი</span>
+            <span class="bg-space-950 border border-space-800 text-slate-300 text-xs px-3.5 py-2 rounded-lg font-bold">👥 2 ბლოკი + პრაქტიკა</span>
+            <span class="bg-space-950 border border-space-800 text-slate-300 text-xs px-3.5 py-2 rounded-lg font-bold">🎯 2 პრაქტიკული დავალება</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ========================================== -->
+      <!-- BLOCK I · FINANCIAL DATA PROCESSING        -->
+      <!-- ========================================== -->
+      <div class="bg-gradient-to-r from-brand/10 via-brand/5 to-transparent border-l-4 border-brand p-6 rounded-r-2xl">
+        <span class="text-[10px] font-extrabold text-brand uppercase tracking-wider block mb-1">ბლოკი I</span>
+        <h2 class="text-xl font-bold text-white">ფინანსური მონაცემების დამუშავება და Excel ავტომატიზაცია</h2>
+      </div>
+
+      <!-- Slide: Excel & Data Cleaning -->
+      <section id="excel-ai" class="sheet-screen p-6 md:p-10 space-y-6 scroll-mt-24">
+        <div class="border-b border-space-800 pb-4">
+          <span class="text-xs font-bold text-brand uppercase tracking-wider">მონაცემთა გაწმენდა</span>
+          <h2 class="text-2xl font-black text-white mt-1">📈 Excel და მონაცემთა ბაზების სწრაფი გაწმენდა</h2>
+        </div>
+        
+        <div class="space-y-4 text-slate-300 text-sm">
+          <p>
+            ბუღალტრული ან ფინანსური მონაცემების დამუშავებისას, პირველი ნაბიჯი ყოველთვის მონაცემთა გაწმენდაა (დუბლიკატების მოცილება, არასწორი ფორმატების გასწორება, თარიღების სინქრონიზაცია).
+          </p>
+          <div class="bg-space-950 border border-space-800 rounded-2xl p-5 space-y-3">
+            <h3 class="text-sm font-bold text-brand">💡 Excel AI-Companion მიდგომა</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              რაც არ უნდა რთული იყოს დავალება (მაგალითად: <em>"დამიწერე Excel ფორმულა, რომელიც გაფილტრავს ყველა Dell-ის სერვერს, რომელთა ღირებულება აღემატება 10,000 აშშ დოლარს და გადაიყვანს ლარში დღევანდელი კურსით"</em>), AI-ს შეუძლია წამებში დაწეროს გამზადებული ფორმულა, მათ შორის <code>VLOOKUP</code>, <code>XLOOKUP</code> და რთული <code>INDEX(MATCH)</code> კონსტრუქციები.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide: Python Sandbox Analysis -->
+      <section id="python-sandbox" class="sheet-screen p-6 md:p-10 space-y-6 scroll-mt-24">
+        <div class="border-b border-space-800 pb-4">
+          <span class="text-xs font-bold text-brand uppercase tracking-wider">მათემატიკური სიზუსტე</span>
+          <h2 class="text-2xl font-black text-white mt-1">⚙️ Python Sandbox ანალიზი (Advanced Data Analysis)</h2>
+        </div>
+
+        <div class="space-y-4 text-slate-300 text-sm">
+          <p>
+            სიტყვიერად გამოანგარიშებისას, AI მოდელები ხშირად უშვებენ მათემატიკურ შეცდომებს. ამ პრობლემის მოსაგვარებლად ChatGPT Plus-სა და Claude-ს აქვთ უნარი გაუშვან Python კოდი დახურულ გარემოში.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div class="bg-space-950 border border-space-800 rounded-2xl p-5 space-y-3">
+              <h3 class="text-sm font-bold text-white">🐍 როგორ მუშაობს?</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                თქვენ ტვირთავთ CSV ან Excel ფაილს. AI წერს Python კოდს (მაგალითად, <code>pandas</code> ბიბლიოთეკის გამოყენებით), უშვებს მას და გიბრუნებთ 100%-ით ზუსტ ფინანსურ გამოთვლებსა და გრაფიკებს.
+              </p>
+            </div>
+            <div class="bg-space-950 border border-space-800 rounded-2xl p-5 space-y-3">
+              <h3 class="text-sm font-bold text-brand">🎯 საუკეთესო პრაქტიკა</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                მიეცით AI-ს დავალება: <em>„გაუშვი Python კოდი, რათა ზუსტად გამოთვალო LAB-ის Q1-ის ჯამური შემოსავალი თითოეული კლიენტის მიხედვით და დახატე შესაბამისი Bar-chart.“</em>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide: Rows AI and Reconciliation -->
+      <section id="rows-reconciliation" class="sheet-screen p-6 md:p-10 space-y-6 scroll-mt-24">
+        <div class="border-b border-space-800 pb-4">
+          <span class="text-xs font-bold text-brand uppercase tracking-wider">ავტომატიზაცია</span>
+          <h2 class="text-2xl font-black text-white mt-1">🧮 Rows AI და ფინანსური Reconciliation</h2>
+        </div>
+
+        <div class="space-y-4 text-slate-300 text-sm">
+          <p>
+            <strong>Rows AI</strong> არის თანამედროვე ცხრილების პლატფორმა ჩაშენებული AI ასისტენტით. ის საუკეთესოა საბანკო ამონაწერების (Bank Statements) და შიდა რეესტრის მონაცემების შესადარებლად (Reconciliation).
+          </p>
+          <div class="bg-space-950 border border-space-800 rounded-2xl p-5 relative prompt-box">
+            <button onclick="copyPromptText(this, 'rows-reconcile-prompt')" class="absolute top-3 right-3 bg-brand/10 hover:bg-brand/30 text-brand text-[10px] font-bold px-3 py-1.5 rounded border border-brand/20 transition-colors">კოპირება</button>
+            <p class="text-[10px] font-bold text-brand uppercase tracking-wider mb-2">სამუშაო პრომპტი (Reconciliation):</p>
+            <pre id="rows-reconcile-prompt" class="font-mono text-[10px] text-slate-300 leading-normal pt-2 overflow-x-auto">მე მაქვს ფინანსური ცხრილი ორი სვეტით: [ამონაწერი] და [რეესტრი]. 
+დამიწერე Excel-ის ფორმულა (ან Rows AI ინსტრუქცია), რომელიც შეადარებს ამ სვეტებს, გამოავლენს შეუსაბამობებს და დააჯგუფებს მათ თარიღებისა და თანხების მიხედვით.
+მონაცემები:
+[მონაცემების ნიმუში]</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- BLOCK II · RESEARCH & MARKET               -->
+      <!-- ========================================== -->
+      <div class="bg-gradient-to-r from-brand/10 via-brand/5 to-transparent border-l-4 border-brand p-6 rounded-r-2xl">
+        <span class="text-[10px] font-extrabold text-brand uppercase tracking-wider block mb-1">ბლოკი II</span>
+        <h2 class="text-xl font-bold text-white">კვლევა, ბაზრის ანალიზი და პრაქტიკა</h2>
+      </div>
+
+      <!-- Slide: Perplexity Deep Research -->
+      <section id="perplexity-research" class="sheet-screen p-6 md:p-10 space-y-6 scroll-mt-24">
+        <div class="border-b border-space-800 pb-4">
+          <span class="text-xs font-bold text-brand uppercase tracking-wider">კვლევა</span>
+          <h2 class="text-2xl font-black text-white mt-1">🔍 Perplexity Deep Research ბაზრის კვლევისთვის</h2>
+        </div>
+
+        <div class="space-y-4 text-slate-300 text-sm">
+          <p>
+            <strong>Perplexity Deep Research</strong> არის AI საძიებო სისტემა, რომელიც მუშაობს რეალურ ვებ-გვერდებზე დაყრდნობით. ის აჯგუფებს ათობით წყაროს და გაწვდით მათ ბმულებს (Citations).
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-space-950 border border-space-800 rounded-2xl p-4 space-y-2">
+              <h4 class="text-xs font-bold text-white">🎯 გამოყენების სფერო:</h4>
+              <ul class="text-xs text-slate-400 space-y-1 list-disc list-inside">
+                <li>ახალი კონკურენტების ძიება B2B IT სფეროში</li>
+                <li>საერთაშორისო ტექნოლოგიური ტრენდების კვლევა</li>
+                <li>HPE/Dell/Cisco ახალი მოდელების სპეციფიკაციების მოძიება</li>
+              </ul>
+            </div>
+            <div class="bg-space-950 border border-space-800 rounded-2xl p-4 space-y-2">
+              <h4 class="text-xs font-bold text-brand">💡 ძირითადი უპირატესობა:</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                არ ახდენს ფაქტების ჰალუცინაციას, რადგან ყველა წინადადებას ახლავს მითითება, თუ რომელი საიტიდან არის აღებული ეს მონაცემი.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide: Competitor Analysis -->
+      <section id="market-analysis" class="sheet-screen p-6 md:p-10 space-y-6 scroll-mt-24">
+        <div class="border-b border-space-800 pb-4">
+          <span class="text-xs font-bold text-brand uppercase tracking-wider">სტრატეგია</span>
+          <h2 class="text-2xl font-black text-white mt-1">📉 კონკურენტების ანალიზი და Value Proposition</h2>
+        </div>
+
+        <div class="space-y-4 text-slate-300 text-sm">
+          <p>
+            კვლევის შედეგების საფუძველზე, AI დაგეხმარებათ შექმნათ კონკურენტული უპირატესობის მატრიცა და ჩამოაყალიბოთ LAB-ის უნიკალური ღირებულება (Value Proposition).
+          </p>
+          <div class="bg-space-950 border border-space-800 rounded-2xl p-5 relative prompt-box">
+            <button onclick="copyPromptText(this, 'comp-prompt')" class="absolute top-3 right-3 bg-brand/10 hover:bg-brand/30 text-brand text-[10px] font-bold px-3 py-1.5 rounded border border-brand/20 transition-colors">კოპირება</button>
+            <p class="text-[10px] font-bold text-brand uppercase tracking-wider mb-2">სამუშაო პრომპტი (კონკურენტების ანალიზი):</p>
+            <pre id="comp-prompt" class="font-mono text-[10px] text-slate-300 leading-normal pt-2 overflow-x-auto">შენ ხარ LAB Technologies-ის სტრატეგიული მარკეტინგის დირექტორი. გაანალიზე შემდეგი კონკურენტების მონაცემები და შეადგინე კონკურენტული უპირატესობის მატრიცა.
+
+კონკურენტების მონაცემები:
+[Perplexity-ს კვლევის შედეგი]
+
+დამიწერე LAB-ის უნიკალური ღირებულება (Value Proposition) B2B სერვერული ინტეგრაციის მიმართულებით.</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide: Exercises and Timers -->
+      <section id="exercises" class="sheet-screen p-6 md:p-10 space-y-6 scroll-mt-24">
+        <div class="border-b border-space-800 pb-4">
+          <span class="text-xs font-bold text-brand uppercase tracking-wider">პრაქტიკა</span>
+          <h2 class="text-2xl font-black text-white mt-1">✏️ მეორე სესიის პრაქტიკული სავარჯიშოები</h2>
+        </div>
+
+        <div class="space-y-4">
+          <p class="text-xs text-slate-300">
+            გამოიყენეთ მოცემული ტაიმერები დავალებების დროულად შესასრულებლად:
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Timer 3 -->
+            <div class="bg-space-950 border border-space-800 rounded-2xl p-5 flex flex-col justify-between space-y-4">
+              <div>
+                <h4 class="text-xs font-bold text-white">პრაქტიკული დავალება 3: Excel ფორმულები</h4>
+                <p class="text-[10px] text-slate-400 mt-1">დაწერეთ AI პრომპტი Excel-ში რთული ფინანსური Reconciliation-ისთვის.</p>
+              </div>
+              <div class="flex items-center justify-between">
+                <span id="timer-display-3" class="font-mono text-2xl font-black text-brand">15:00</span>
+                <div class="flex gap-1.5">
+                  <button onclick="toggleTimer(3, 900)" id="timer-btn-3" class="bg-brand text-space-950 font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-brand-light transition-colors">დაწყება</button>
+                  <button onclick="resetTimer(3, 900)" class="bg-space-800 border border-space-700 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-space-700 transition-colors">რესეტი</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timer 4 -->
+            <div class="bg-space-950 border border-space-800 rounded-2xl p-5 flex flex-col justify-between space-y-4">
+              <div>
+                <h4 class="text-xs font-bold text-white">პრაქტიკული დავალება 4: Perplexity ძიება</h4>
+                <p class="text-[10px] text-slate-400 mt-1">მოიძიეთ ინფორმაცია B2B IT ინტეგრაციის მიმართულებით უახლესი გლობალური ტრენდების შესახებ.</p>
+              </div>
+              <div class="flex items-center justify-between">
+                <span id="timer-display-4" class="font-mono text-2xl font-black text-brand">15:00</span>
+                <div class="flex gap-1.5">
+                  <button onclick="toggleTimer(4, 900)" id="timer-btn-4" class="bg-brand text-space-950 font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-brand-light transition-colors">დაწყება</button>
+                  <button onclick="resetTimer(4, 900)" class="bg-space-800 border border-space-700 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg hover:bg-space-700 transition-colors">რესეტი</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SUMMARY & HOMEWORK                         -->
+      <!-- ========================================== -->
+      <section id="summary" class="sheet-screen p-6 md:p-10 space-y-6 scroll-mt-24">
+        <div class="border-b border-space-800 pb-4">
+          <span class="text-xs font-bold text-brand uppercase tracking-wider">შეჯამება</span>
+          <h2 class="text-2xl font-black text-white mt-1">✅ მეორე სესიის შეჯამება და დავალება</h2>
+        </div>
+
+        <div class="bg-space-950 border border-space-800 rounded-2xl p-6 space-y-4">
+          <h3 class="text-sm font-bold text-brand">📋 სესიის ძირითადი მიგნებები:</h3>
+          <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside">
+            <li>ზუსტი ფინანსური გამოთვლებისთვის AI ჩატებში ყოველთვის გამოიყენეთ Python Sandbox.</li>
+            <li>Rows AI არის უსწრაფესი გზა საბანკო ამონაწერების შიდა რეესტრთან შესადარებლად.</li>
+            <li>Perplexity Deep Research არის საუკეთესო იარაღი ბაზრის კვლევისთვის, რადგან ის მუშაობს რეალური დროის ვებ-წყაროებით და არ აჰალუცინებს.</li>
+          </ul>
+        </div>
+
+        <div class="bg-brand/5 border border-brand/20 rounded-2xl p-6 space-y-3">
+          <h3 class="text-sm font-bold text-white">✏️ საშინაო დავალება 2:</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            მოამზადეთ LAB-ის მომდევნო კვარტლის ხარჯების სატესტო Excel ცხრილი (ანონიმიზებული სახით). გამოიყენეთ Rows AI ან ChatGPT Python Sandbox, რათა გააკეთოთ ხარჯების კატეგორიზაცია და დახაზოთ მინიმუმ 2 დიაგრამა, რომელიც აჩვენებს ძირითად საოპერაციო მიმართულებებს.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Floating Navigation Tools -->
+  <div id="fontControls" class="no-print">
+    <button onclick="adjustFontSize(1.1)" title="შრიფტის გაზრდა" class="text-white hover:bg-space-800 p-1.5 rounded transition-colors font-bold text-sm">A+</button>
+    <button onclick="adjustFontSize(0.9)" title="შრიფტის შემცირება" class="text-white hover:bg-space-800 p-1.5 rounded transition-colors font-bold text-sm">A-</button>
+  </div>
+
+  <button id="backToTop" onclick="scrollToTop()" class="no-print fixed bottom-6 right-6 z-40 bg-brand text-space-950 p-3 rounded-full shadow-lg hover:bg-brand-light transition-all duration-300" title="ზემოთ დაბრუნება">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+  </button>
+
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      if (body.classList.contains('daymode')) {
+        body.classList.remove('daymode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        body.classList.add('daymode');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('daymode');
+      }
+      window.addEventListener('scroll', highlightActiveLink);
+      highlightActiveLink();
+    });
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      sidebar.classList.toggle('translate-x-0');
+      overlay.classList.toggle('hidden');
+    }
+
+    function highlightActiveLink() {
+      const sections = document.querySelectorAll('section[id]');
+      const scrollPos = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+      
+      sections.forEach(curr => {
+        const sectionHeight = curr.offsetHeight;
+        const sectionTop = curr.offsetTop - 120;
+        const id = curr.getAttribute('id');
+        
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+          });
+          const activeLink = document.querySelector(`.nav-link[data-topic="${id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    }
+
+    let currentSizeMultiplier = 1;
+    function adjustFontSize(multiplier) {
+      currentSizeMultiplier *= multiplier;
+      if (currentSizeMultiplier < 0.8) currentSizeMultiplier = 0.8;
+      if (currentSizeMultiplier > 1.4) currentSizeMultiplier = 1.4;
+      document.documentElement.style.fontSize = `${currentSizeMultiplier * 16}px`;
+    }
+
+    window.onscroll = function() {
+      const bttBtn = document.getElementById('backToTop');
+      if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        bttBtn.classList.add('visible');
+      } else {
+        bttBtn.classList.remove('visible');
+      }
+    };
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyPromptText(button, textId) {
+      const text = document.getElementById(textId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.innerHTML;
+        button.innerHTML = '✓ კოპირებულია';
+        button.classList.add('bg-emerald-600', 'text-white');
+        button.classList.remove('text-brand');
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.classList.remove('bg-emerald-600', 'text-white');
+          button.classList.add('text-brand');
+        }, 2000);
+      });
+    }
+
+    const timers = {};
+    function toggleTimer(id, defaultSeconds) {
+      if (!timers[id]) {
+        timers[id] = {
+          seconds: defaultSeconds,
+          interval: null,
+          running: false
+        };
+      }
+      
+      const timer = timers[id];
+      const btn = document.getElementById(`timer-btn-${id}`);
+      
+      if (timer.running) {
+        clearInterval(timer.interval);
+        timer.running = false;
+        btn.innerHTML = 'გაგრძელება';
+      } else {
+        timer.running = true;
+        btn.innerHTML = 'პაუზა';
+        timer.interval = setInterval(() => {
+          timer.seconds--;
+          updateTimerDisplay(id);
+          
+          if (timer.seconds <= 0) {
+            clearInterval(timer.interval);
+            timer.running = false;
+            btn.innerHTML = 'დასრულდა';
+            alert(`დავალება ${id}-ის დრო ამოიწურა!`);
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer(id, defaultSeconds) {
+      if (timers[id]) {
+        clearInterval(timers[id].interval);
+      }
+      timers[id] = {
+        seconds: defaultSeconds,
+        interval: null,
+        running: false
+      };
+      document.getElementById(`timer-btn-${id}`).innerHTML = 'დაწყება';
+      updateTimerDisplay(id);
+    }
+
+    function updateTimerDisplay(id) {
+      const timer = timers[id];
+      const display = document.getElementById(`timer-display-${id}`);
+      const mins = Math.floor(timer.seconds / 60);
+      const secs = timer.seconds % 60;
+      display.innerHTML = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+  </script>
+</body>
+</html>
