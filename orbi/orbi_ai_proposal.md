@@ -35,8 +35,8 @@
 <details>
 <summary><b>4. Design Team</b></summary>
 
-* **Description:** Manages room concepts and finishes for hotel brands. Uses NotebookLM to query Radisson/Planet Hollywood interior brand guidelines and datasheets, Notion for material/furniture inventory catalogs, and Lovable for design approval procedures and moodboard reviews.
-* **Focus:** Brand Guidelines & Material Catalogues
+* **Description:** Manages room concepts and finishes for hotel brands. Uses NotebookLM to query international hotel brand standards, interior guidelines, and datasheets, Notion for material/furniture inventory catalogs, and Lovable for design approval procedures and moodboard reviews.
+* **Focus:** International Hotel Standards & Material Catalogues
 </details>
 
 <details>
