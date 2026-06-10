@@ -84,7 +84,7 @@ The program is offered in three flexible duration tiers:
 * **Duration:** 9 Hours (3 days - 3 hours per day).
 * **Budget:** 6,500 GEL + VAT
 * **Structure:**
-  * **Day 1:** AI Foundations, GDPR & Data Security (Gemini 2M context window).
+  * **Day 1:** AI Foundations, LLM Mechanics & Prompting Frameworks (PARTS & CREATE).
   * **Day 2:** Prompt Engineering, Claude Projects & Custom GPTs, NotebookLM, and Revit/AutoCAD scripting basics.
   * **Day 3:** Notion (Databases), Make.com (automation basics), and Lovable.app (Supabase integration overview).
 * **Evaluation:** Provides a quick, practical overview of the tools, though hands-on exercises are limited due to time constraints.
@@ -93,7 +93,7 @@ The program is offered in three flexible duration tiers:
 * **Duration:** 12 Hours (4 days - 3 hours per day).
 * **Budget:** 8,500 GEL + VAT
 * **Structure:**
-  * **Day 1:** AI Foundations, GDPR & Data Security (Gemini 2M context window).
+  * **Day 1:** AI Foundations, LLM Mechanics & Prompting Frameworks (PARTS & CREATE).
   * **Day 2:** Prompt Engineering, Custom Assistants (Custom GPTs / Claude Projects), NotebookLM, and Revit/Dynamo script automation.
   * **Day 3:** Notion & Lovable.app (structured databases, Notion AI, and rapid prototyping of web portals with Supabase data-bindings).
   * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack, and AI assistant modules).
@@ -113,16 +113,17 @@ The program is offered in three flexible duration tiers:
 
 Every session is delivered in person. The 3-hour daily meetings are divided into two focused work blocks and a coffee break.
 
-#### Day 1: AI Foundations, GDPR & Data Security (3 Hours)
+#### Day 1: AI Foundations, LLM Mechanics & Prompting Frameworks (3 Hours)
 * **Block 1 (1 hour 25 minutes):**
   * Introduction to ChatGPT, Claude, and Gemini in construction, engineering, and real estate.
-  * **Data Privacy and GDPR compliance:** Rules for handling proprietary architectural drawings, budgets, and schedules without leaking them.
-  * **Gemini Pro 2M Context:** Processing massive blueprint libraries, contracts, and codes simultaneously for automated conflict/clash checks.
+  * **LLM Mechanics & History:** Brief history of AI (from ELIZA effect to modern LLMs), Next-Word prediction mechanics, and the nature of hallucinations.
+  * **Data Privacy & GDPR:** Rules for handling proprietary architectural drawings, budgets, and schedules without leaking them.
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hour 25 minutes):**
-  * **The Universal Prompt Framework:** Mastering Role, Context, Task, Format, Tone, and Constraints.
-  * Administrative productivity: automating official correspondence, writing meeting summaries, and summarizing technical reports.
-* **📋 Practical Assignment:** Select a routine administrative task and build a reusable Universal Prompt to automate it.
+  * **Prompting Frameworks (PARTS & CREATE):** PARTS framework (for quick tasks) and CREATE framework (ideal for complex reports and documentation).
+  * **Advanced Techniques:** Few-shot prompting and in-context learning.
+  * Administrative productivity: automating Outlook and Word correspondence and reports.
+* **📋 Practical Assignment:** Select a routine administrative task and build a reusable prompt using PARTS/CREATE frameworks to automate it.
 
 #### Day 2: Prompt Engineering, Custom Assistants, and NotebookLM (3 Hours)
 * **Block 1 (1 hour 25 minutes):**
