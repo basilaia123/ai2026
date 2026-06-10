@@ -173,8 +173,9 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
   * **Live Demo:** Using **Arena.ai** (lmarena.ai) for blind-testing models — let participants vote on which AI wrote the best answer.
   * **Perplexity.ai** as a real-time research engine (vs. Google and vs. standard ChatGPT).
 * **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes): Model Comparison, Hallucinations & Critical Thinking**
+* **Block 2 (1 hour 25 minutes): Model Comparison, Brainstorming & Critical Thinking**
   * **ChatGPT vs. Claude vs. Gemini — Hands-on Comparison:** Same prompt, three models. Evaluating tone, accuracy, depth, and formatting for Orbi use cases.
+  * **AI Brainstorming (Top 2 Techniques):** Multi-Perspective Roleplay (simulating multiple expert roles simultaneously) and Reverse Brainstorming (generating failure points to find creative solutions).
   * **Claude Cowork:** Setting up the desktop agent and running your first task.
   * **AI Limitations & Hallucinations:** Why LLMs hallucinate, how to spot fabricated facts, figures, and citations. Live hallucination examples.
   * **Critical Thinking Framework for AI Use:** The VERIFY checklist — always cross-reference outputs, check sources, and apply domain expertise before acting on AI-generated content.
