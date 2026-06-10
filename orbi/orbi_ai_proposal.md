@@ -83,29 +83,80 @@ The program is offered in three flexible duration tiers:
 #### Option A: Minimal (Fast-Track) Program (9 Hours - 3 Days)
 * **Duration:** 9 Hours (3 days - 3 hours per day).
 * **Budget:** 6,500 GEL + VAT
-* **Structure:**
-  * **Day 1:** AI Foundations, LLM Mechanics & Prompting Frameworks (PARTS & CREATE).
-  * **Day 2:** Prompt Engineering, Claude Projects & Custom GPTs, NotebookLM, and Revit/AutoCAD scripting basics.
-  * **Day 3:** Notion (Databases), Make.com (automation basics), and Lovable.app (Supabase integration overview).
-* **Evaluation:** Provides a quick, practical overview of the tools, though hands-on exercises are limited due to time constraints.
+* **Evaluation:** Provides a rapid, practical flyover of the entire AI toolkit. Participants leave with working prompts, a NotebookLM notebook, and a Notion database. Hands-on depth is intentionally condensed — ideal for teams that need immediate productivity gains and plan to self-study further.
+
+**Day A-1: AI Foundations & Prompting (3 Hours)**
+* **Block 1 (1 hr 20 min):**
+  * Brief history of AI: from ELIZA to modern LLMs — what changed and why it matters for construction.
+  * How LLMs work: Next-Word prediction, context windows, and hallucinations — practical guardrails.
+  * Data Privacy & GDPR: rules for sharing architectural drawings, budgets, and contracts with AI tools safely.
+  * Live demo: ChatGPT, Claude, and Gemini side-by-side for a real ORBI task (e.g., drafting a contractor brief).
+* **☕ Coffee Break (10 minutes)**
+* **Block 2 (1 hr 20 min):**
+  * **PARTS Framework** (Role, Action, Purpose, Topic, Style) — structured prompting for quick tasks.
+  * **CREATE Framework** (Context, Role, Examples, Ask, Tone, Execution) — for complex reports and documentation.
+  * Few-shot prompting: teaching the AI with examples from real ORBI documents.
+  * **Gamma.app:** generating professional presentations from a one-paragraph brief — live exercise.
+* **📋 Assignment A-1:** Write a PARTS-structured prompt for a real routine task, then generate a Gamma.app slide deck from a project brief.
+
+**Day A-2: Custom Assistants & NotebookLM (3 Hours)**
+* **Block 1 (1 hr 20 min):**
+  * **Claude Projects:** creating a dedicated assistant for Central Park Towers (e.g., an MEP Compliance Checker or a Tender Spec Reviewer).
+  * **SOP Auto-Generation:** using Claude to convert raw process notes into structured Standard Operating Procedures with numbered steps, responsible roles, and checklists.
+  * **CAD & BIM Scripting intro:** prompting Claude to generate a short AutoCAD LISP snippet or a Revit Python snippet — understanding the workflow, not memorizing syntax.
+* **☕ Coffee Break (10 minutes)**
+* **Block 2 (1 hr 20 min):**
+  * **NotebookLM Setup:** uploading 2-3 real datasheets, international hotel brand standards, or MEP manuals; running Q&A and generating an Audio Overview summary.
+  * Navigating sources, highlighting citations, and sharing notebooks across the team.
+  * Best practices: what to upload, privacy settings, and combining multiple document types.
+* **📋 Assignment A-2:** Set up a NotebookLM notebook with real project documents and create one SOP draft in Claude Projects.
+
+**Day A-3: Notion, Make.com & Lovable.app (3 Hours)**
+* **Block 1 (1 hr 20 min):**
+  * **Notion Databases:** Pages vs. Databases, Properties, Relations, and Rollups — building a live Central Park Towers data structure (e.g., a Contractor Tracker or a Defect Log).
+  * **Notion AI:** summarizing meeting notes, extracting action items, and auto-filling database entries.
+* **☕ Coffee Break (10 minutes)**
+* **Block 2 (1 hr 20 min):**
+  * **Make.com Quick-Start:** Scenarios, Triggers, and Actions. Building one live automation: a new email → creates a Notion task automatically.
+  * **Lovable.app Overview:** what it is, what it can build (dashboards, portals, defect reporters), and how it connects to Supabase. Live walkthrough of a pre-built example app.
+  * AI Governance quick brief: what Shadow AI is and the three company rules every participant should follow today.
+* **📋 Assignment A-3:** Build the email-to-Notion Make.com scenario and sketch (on paper or in Lovable.app) one internal tool your team would benefit from.
 
 #### Option B: Optimal Adoption Program (12 Hours - 4 Days) - Recommended
 * **Duration:** 12 Hours (4 days - 3 hours per day).
 * **Budget:** 8,500 GEL + VAT
 * **Structure:**
-  * **Day 1:** AI Foundations, LLM Mechanics & Prompting Frameworks (PARTS & CREATE).
-  * **Day 2:** Prompt Engineering, Custom Assistants (Custom GPTs / Claude Projects), NotebookLM, and Revit/Dynamo script automation.
+  * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), and Gamma.app presentations from briefs.
+  * **Day 2:** Custom Assistants (Claude Projects & Custom GPTs), SOP auto-generation, NotebookLM setup for long manuals/design standards, and Revit/Dynamo script automation.
   * **Day 3:** Notion & Lovable.app (structured databases, Notion AI, and rapid prototyping of web portals with Supabase data-bindings).
-  * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack, and AI assistant modules).
+  * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack), corporate AI Policy, Data Governance, and Shadow AI prevention.
 * **Evaluation:** The optimal pedagogical format. Provides ample time for participants to integrate their real project documents, design a database backend in Notion, build a front-end portal in Lovable.app, and automate it via Make.com.
 
 #### Option C: Full Mastery Program (15 Hours - 5 Days)
 * **Duration:** 15 Hours (5 days - 3 hours per day).
 * **Budget:** 10,500 GEL + VAT
-* **Structure:**
-  * **Day 1 - Day 4:** The optimal Option B program with expanded practical exercises.
-  * **Day 5:** Advanced Lovable.app & Cross-Functional Simulation. The team will engage in advanced Lovable.app development (Supabase user authentication, role-based access control (RBAC), and visual dashboard analytics) and execute a live cross-functional simulation of a Central Park Towers spa redesign change request (Plumbing/Electrical verify compliance guidelines and datasheets via NotebookLM, Architects verify BIM, Designers approve moodboards, PM logs status in Notion, IT connects system endpoints, and Make.com handles alert notifications).
-* **Evaluation:** Ensures full operational transformation and leaves the team with active, customized web portals and automation workflows.
+* **Evaluation:** The complete operational transformation track. Days 1–4 follow the Option B curriculum with expanded hands-on time and department-specific exercises. Day 5 adds advanced engineering, AI governance, and a live cross-functional simulation unique to this tier.
+
+**Days C-1 through C-4:** Full Option B curriculum (see detailed schedule below) with additional practice time per block — approximately 10-15 extra minutes per block for deeper department-specific exercises (e.g., Architects generate and test Dynamo scripts on real BIM tasks; Designers build a full moodboard review workflow in Lovable.app; PMs create a multi-table Notion project backend with Rollup KPIs).
+
+**Day C-5: Advanced Development, AI Governance & Cross-Functional Simulation (3 Hours)**
+* **Block 1 (1 hr 20 min) — Advanced Lovable.app Engineering:**
+  * Supabase user authentication: setting up login/logout, password reset, and protected routes for a Central Park Towers internal portal.
+  * Role-Based Access Control (RBAC): defining roles (Admin, PM, Engineer, Viewer) and restricting data visibility per role using Supabase Row-Level Security policies.
+  * Visual dashboard analytics: building charts (bar, line, KPI cards) from live Supabase data — e.g., defect counts by floor, contractor task completion rates.
+  * Webhook integration: triggering Make.com automations directly from a Lovable.app button click.
+* **☕ Coffee Break (10 minutes)**
+* **Block 2 (1 hr 20 min) — AI Policy, Governance & Live Simulation:**
+  * **Corporate AI Policy Workshop:** drafting ORBI Group's official AI Usage Policy — approved tools list, prohibited data types, incident reporting procedure, and Shadow AI prevention rules.
+  * **Data Governance Standards:** data classification (public / internal / confidential / restricted), retention schedules for AI-generated outputs, and audit trail requirements for construction compliance.
+  * **Live Cross-Functional Simulation — Central Park Towers Spa Redesign Change Request:**
+    * 🔵 **Plumbing & Electrical:** verify MEP compliance via NotebookLM (datasheets + EN standards Q&A).
+    * 🟡 **Architecture:** validate BIM clash scenarios and generate updated specification notes via Claude.
+    * 🟢 **Design Team:** approve revised moodboard, check material specifications against international hotel brand standards in NotebookLM.
+    * 🔴 **Project Manager:** log the change request in the Notion project database, assign owners, update KPI dashboard.
+    * ⚫ **IT:** connect the new Lovable.app portal endpoint to the BMS API and validate role permissions in Supabase.
+    * 🔔 **Make.com:** trigger automated Slack + email alert to all stakeholders when PM marks the change request as "Approved" in Notion.
+* **📋 Final Deliverable:** Each participant presents one AI-powered workflow they built during the 5 days and receives a personalized audit of their tools setup before the group certification.
 
 ---
 
@@ -122,17 +173,17 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 * **Block 2 (1 hour 25 minutes):**
   * **Prompting Frameworks (PARTS & CREATE):** PARTS framework (for quick tasks) and CREATE framework (ideal for complex reports and documentation).
   * **Advanced Techniques:** Few-shot prompting and in-context learning.
-  * Administrative productivity: automating Outlook and Word correspondence and reports.
-* **📋 Practical Assignment:** Select a routine administrative task and build a reusable prompt using PARTS/CREATE frameworks to automate it.
+  * Administrative productivity: automating Outlook and Word correspondence and reports, and **Gamma.app** for generating professional presentations from briefs.
+* **📋 Practical Assignment:** Select a routine administrative task and build a reusable prompt using PARTS/CREATE frameworks to automate it, and generate a draft presentation in Gamma.app.
 
 #### Day 2: Prompt Engineering, Custom Assistants, and NotebookLM (3 Hours)
 * **Block 1 (1 hour 25 minutes):**
   * **Advanced Prompting:** Few-shot prompting, roleplay modeling, and parsing technical documents.
-  * **Building Custom Assistants:** Setting up Custom GPTs and Claude Projects. Creating dedicated assistants for Central Park Towers (e.g., MEP Standard Compliance Checkers, Tender Specification Reviewers).
+  * **Building Custom Assistants & SOPs:** Setting up Custom GPTs and Claude Projects. Creating dedicated assistants for Central Park Towers (e.g., MEP Standard Compliance Checkers, Tender Specification Reviewers, and **auto-generating Standard Operating Procedures (SOPs)**).
   * **CAD & BIM Scripting:** Generating and debugging AutoCAD LISP, Revit Python, and Dynamo scripts inside Claude.
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hour 25 minutes):**
-  * **NotebookLM in Practice:** Using Google's NotebookLM to manage project documentation. Uploading datasheets, instructions, and manuals.
+  * **NotebookLM in Practice:** Using Google's NotebookLM to manage project documentation. Setting up NotebookLM for long manuals and international design standards (similar to MEP codes). Uploading datasheets, instructions, and manuals.
   * Navigating the project database, running Q&A, and generating structured Audio Overviews (AI podcasts) summarizing complex specs.
 * **📋 Practical Assignment:** Create a NotebookLM project with 2-3 technical datasheets and draft a custom assistant prototype in Claude Projects.
 
@@ -156,13 +207,15 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
   * Building practical automations: Syncing Outlook/Gmail emails to Notion/Lovable task boards.
   * Setting up Slack/email alerts triggered by portal status updates.
   * Integrating AI modules inside Make.com scenarios for automatic email analysis and using Make's AI Assistant for logic building and error handling.
-* **📋 Practical Assignment:** Create a live Make.com scenario that automatically creates a Notion entry when a specific email trigger is received.
+  * **AI Governance:** Establishing corporate AI Policy, Data Governance standards, and Shadow AI prevention guidelines for construction workflows.
+* **📋 Practical Assignment:** Create a live Make.com scenario that automatically creates a Notion entry when a specific email trigger is received, and draft a basic data security guideline.
 
 ---
 
 ### 🎓 Trainer & Certification
 
 #### Trainer: Giorgi Basilaia
+* [LinkedIn Profile](https://www.linkedin.com/in/basilaia/)
 * 10+ years of practical experience in marketing, business development, and generative AI integration.
 * Associate Professor at the Free University of Tbilisi.
 * Instructor at Smart Academy and other leading corporate training platforms.
