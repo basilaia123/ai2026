@@ -82,7 +82,7 @@ The program is offered in three flexible duration tiers:
 
 #### Option A: Minimal (Fast-Track) Program (9 Hours - 3 Days)
 * **Duration:** 9 Hours (3 days - 3 hours per day).
-* **Budget:** 6,500 GEL + VAT
+* **Budget:** 5,600 GEL + VAT
 * **Evaluation:** Provides a rapid, practical flyover of the entire AI toolkit. Participants leave with working prompts, a NotebookLM notebook, and a Notion database. Hands-on depth is intentionally condensed — ideal for teams that need immediate productivity gains and plan to self-study further.
 
 **Day A-1: AI Foundations & Prompting (3 Hours)**
@@ -124,7 +124,7 @@ The program is offered in three flexible duration tiers:
 
 #### Option B: Optimal Adoption Program (12 Hours - 4 Days) - Recommended
 * **Duration:** 12 Hours (4 days - 3 hours per day).
-* **Budget:** 8,500 GEL + VAT
+* **Budget:** 7,100 GEL + VAT
 * **Structure:**
   * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), and Gamma.app presentations from briefs.
   * **Day 2:** Custom Assistants (Claude Projects & Custom GPTs), SOP auto-generation, NotebookLM setup for long manuals/design standards, and Revit/Dynamo script automation.
@@ -134,7 +134,7 @@ The program is offered in three flexible duration tiers:
 
 #### Option C: Full Mastery Program (15 Hours - 5 Days)
 * **Duration:** 15 Hours (5 days - 3 hours per day).
-* **Budget:** 10,500 GEL + VAT
+* **Budget:** 8,600 GEL + VAT
 * **Evaluation:** The complete operational transformation track. Days 1–4 follow the Option B curriculum with expanded hands-on time and department-specific exercises. Day 5 adds advanced engineering, AI governance, and a live cross-functional simulation unique to this tier.
 
 **Days C-1 through C-4:** Full Option B curriculum (see detailed schedule below) with additional practice time per block — approximately 10-15 extra minutes per block for deeper department-specific exercises (e.g., Architects generate and test Dynamo scripts on real BIM tasks; Designers build a full moodboard review workflow in Lovable.app; PMs create a multi-table Notion project backend with Rollup KPIs).
