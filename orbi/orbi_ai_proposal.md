@@ -70,11 +70,12 @@ To foster collaboration and prevent communication silos, the program is structur
 
 The training will focus on five industry-leading tools, demonstrating their direct application to Central Park Towers' operations:
 
-1. **Claude 3.5, GPT-4o & Gemini Pro:** Advanced reasoning engines. Uses Claude Projects & Artifacts for codebase control and Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, and Gemini's 2M context window for clash analysis and querying massive blueprint libraries.
-2. **Google NotebookLM:** Localized knowledge hubs. Leverages Gemini Pro to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
+1. **Claude Opus 4.8, GPT-5.5 & Gemini 3.5 Pro (with Claude Cowork):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 2M context window for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
+2. **Google NotebookLM:** Localized knowledge hubs. Leverages Gemini 3.5 Pro to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
 3. **Notion & Notion AI:** Central operations backend. Relational databases with advanced formulas, semantic Notion AI search, and team dashboards acting as our unified project database.
 4. **Lovable.app (Supabase):** AI-powered full-stack app builder. Develops, deploys, and updates React/Vite web applications with natural language, connecting to Supabase tables, role-based access control (RBAC), user auth, and API webhooks.
 5. **Make.com (AI Scenario Builder):** Workflow automation engine. Integrates Lovable frontends and Notion backends with Outlook and Slack, leveraging Make's AI Assistant for script generation and error handling.
+6. **Perplexity.ai & Arena.ai (lmarena.ai):** Advanced search & model benchmarking. Uses Perplexity for real-time project research, manufacturer datasheet retrieval, and code compliance queries, and Chatbot Arena for objective, blind-test model evaluation.
 
 ---
 
@@ -90,7 +91,7 @@ The program is offered in three flexible duration tiers:
   * Brief history of AI: from ELIZA to modern LLMs — what changed and why it matters for construction.
   * How LLMs work: Next-Word prediction, context windows, and hallucinations — practical guardrails.
   * Data Privacy & GDPR: rules for sharing architectural drawings, budgets, and contracts with AI tools safely.
-  * Live demo: ChatGPT, Claude, and Gemini side-by-side for a real ORBI task (e.g., drafting a contractor brief).
+  * Live demo: ChatGPT, Claude, and Gemini side-by-side for a real ORBI task (e.g., drafting a contractor brief). Introducing **Perplexity.ai** for real-time project research and **Arena.ai** (lmarena.ai) for objective model benchmarking.
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hr 20 min):**
   * **PARTS Framework** (Role, Action, Purpose, Topic, Style) — structured prompting for quick tasks.
@@ -101,7 +102,7 @@ The program is offered in three flexible duration tiers:
 
 **Day A-2: Custom Assistants & NotebookLM (3 Hours)**
 * **Block 1 (1 hr 20 min):**
-  * **Claude Projects:** creating a dedicated assistant for Central Park Towers (e.g., an MEP Compliance Checker or a Tender Spec Reviewer).
+  * **Claude Projects & Claude Cowork:** creating a dedicated assistant for Central Park Towers (e.g., an MEP Compliance Checker or a Tender Spec Reviewer) and setting up **Claude Cowork** desktop agent to automate folder scanning and local workspace tasks.
   * **SOP Auto-Generation:** using Claude to convert raw process notes into structured Standard Operating Procedures with numbered steps, responsible roles, and checklists.
   * **CAD & BIM Scripting intro:** prompting Claude to generate a short AutoCAD LISP snippet or a Revit Python snippet — understanding the workflow, not memorizing syntax.
 * **☕ Coffee Break (10 minutes)**
@@ -126,8 +127,8 @@ The program is offered in three flexible duration tiers:
 * **Duration:** 12 Hours (4 days - 3 hours per day).
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
-  * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), and Gamma.app presentations from briefs.
-  * **Day 2:** Custom Assistants (Claude Projects & Custom GPTs), SOP auto-generation, NotebookLM setup for long manuals/design standards, and Revit/Dynamo script automation.
+  * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), Perplexity.ai & Arena.ai research, and Gamma.app presentations from briefs.
+  * **Day 2:** Custom Assistants (Claude Projects, Custom GPTs & Claude Cowork agent), SOP auto-generation, NotebookLM setup for long manuals/design standards, and Revit/Dynamo script automation.
   * **Day 3:** Notion & Lovable.app (structured databases, Notion AI, and rapid prototyping of web portals with Supabase data-bindings).
   * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack), corporate AI Policy, Data Governance, and Shadow AI prevention.
 * **Evaluation:** The optimal pedagogical format. Provides ample time for participants to integrate their real project documents, design a database backend in Notion, build a front-end portal in Lovable.app, and automate it via Make.com.
@@ -164,22 +165,26 @@ The program is offered in three flexible duration tiers:
 
 Every session is delivered in person. The 3-hour daily meetings are divided into two focused work blocks and a coffee break.
 
-#### Day 1: AI Foundations, LLM Mechanics & Prompting Frameworks (3 Hours)
-* **Block 1 (1 hour 25 minutes):**
-  * Introduction to ChatGPT, Claude, and Gemini in construction, engineering, and real estate.
-  * **LLM Mechanics & History:** Brief history of AI (from ELIZA effect to modern LLMs), Next-Word prediction mechanics, and the nature of hallucinations.
-  * **Data Privacy & GDPR:** Rules for handling proprietary architectural drawings, budgets, and schedules without leaking them.
+#### Day 1: AI History, Model Comparison & Critical Thinking (3 Hours)
+* **Block 1 (1 hour 25 minutes): AI History, Evolution & the 2026 Landscape**
+  * The history of AI: from ELIZA (1966) → Deep Learning → GPT-3 → ChatGPT → the 2026 agentic era.
+  * How LLMs work: Next-Word prediction, training data, and why this matters for professionals.
+  * The 2026 AI landscape: **GPT-5.5**, **Claude Opus 4.8**, **Gemini 3.5 Pro** — what each excels at.
+  * **Live Demo:** Using **Arena.ai** (lmarena.ai) for blind-testing models — let participants vote on which AI wrote the best answer.
+  * **Perplexity.ai** as a real-time research engine (vs. Google and vs. standard ChatGPT).
 * **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes):**
-  * **Prompting Frameworks (PARTS & CREATE):** PARTS framework (for quick tasks) and CREATE framework (ideal for complex reports and documentation).
-  * **Advanced Techniques:** Few-shot prompting and in-context learning.
-  * Administrative productivity: automating Outlook and Word correspondence and reports, and **Gamma.app** for generating professional presentations from briefs.
-* **📋 Practical Assignment:** Select a routine administrative task and build a reusable prompt using PARTS/CREATE frameworks to automate it, and generate a draft presentation in Gamma.app.
+* **Block 2 (1 hour 25 minutes): Model Comparison, Hallucinations & Critical Thinking**
+  * **ChatGPT vs. Claude vs. Gemini — Hands-on Comparison:** Same prompt, three models. Evaluating tone, accuracy, depth, and formatting for Orbi use cases.
+  * **Claude Cowork:** Setting up the desktop agent and running your first task.
+  * **AI Limitations & Hallucinations:** Why LLMs hallucinate, how to spot fabricated facts, figures, and citations. Live hallucination examples.
+  * **Critical Thinking Framework for AI Use:** The VERIFY checklist — always cross-reference outputs, check sources, and apply domain expertise before acting on AI-generated content.
+  * **Data Privacy Rules:** What NOT to send to any AI — proprietary drawings, personal data, unreleased budgets.
+* **📋 Practical Assignment:** Run the same work-relevant prompt across ChatGPT, Claude, and Gemini. Document the differences and identify any factual errors or hallucinations using the VERIFY checklist.
 
 #### Day 2: Prompt Engineering, Custom Assistants, and NotebookLM (3 Hours)
 * **Block 1 (1 hour 25 minutes):**
   * **Advanced Prompting:** Few-shot prompting, roleplay modeling, and parsing technical documents.
-  * **Building Custom Assistants & SOPs:** Setting up Custom GPTs and Claude Projects. Creating dedicated assistants for Central Park Towers (e.g., MEP Standard Compliance Checkers, Tender Specification Reviewers, and **auto-generating Standard Operating Procedures (SOPs)**).
+  * **Building Custom Assistants & SOPs:** Setting up Custom GPTs, Claude Projects, and **Claude Cowork** desktop agent. Creating dedicated assistants for Central Park Towers (e.g., MEP Standard Compliance Checkers, Tender Specification Reviewers, and **auto-generating Standard Operating Procedures (SOPs)**).
   * **CAD & BIM Scripting:** Generating and debugging AutoCAD LISP, Revit Python, and Dynamo scripts inside Claude.
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hour 25 minutes):**
