@@ -167,54 +167,65 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 
 #### Day 1: AI History, Model Comparison & Critical Thinking (3 Hours)
 * **Block 1 (1 hour 25 minutes): AI History, Evolution & the 2026 Landscape**
-  * The history of AI: from ELIZA (1966) → Deep Learning → GPT-3 → ChatGPT → the 2026 agentic era.
-  * How LLMs work: Next-Word prediction, training data, and why this matters for professionals.
-  * The 2026 AI landscape: **GPT-5.5**, **Claude Opus 4.8**, **Gemini 3.5 Pro** — what each excels at.
-  * **Live Demo:** Using **Arena.ai** (lmarena.ai) for blind-testing models — let participants vote on which AI wrote the best answer.
-  * **Perplexity.ai** as a real-time research engine (vs. Google and vs. standard ChatGPT).
+  * **AI Evolution Timeline:** From rule-based systems (ELIZA, 1966) and neural network breakthroughs to Transformer architecture, GPT-3, ChatGPT, and the 2026 agent-first ecosystem.
+  * **LLM Mechanics Under the Hood:** Understanding next-word prediction probability vectors, temperature settings, and why tokenization and training corpus context directly impact output reliability.
+  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-5.5** (speed/multimodal analysis), **Claude Opus 4.8** (complex coding/logic/reasoning), and **Gemini 3.5 Pro** (2M+ token context window for huge project archives).
+  * **Arena.ai (lmarena.ai) Benchmarking:** Running blind model comparison tests. Participants learn how to submit live prompts, evaluate blind outputs side-by-side, vote, and interpret ELO rating leaderboards.
+  * **Perplexity.ai for Real-Time Project Research:** Master focus filters (All vs. Writing vs. Search), search operators, file uploads for web analysis, and how to verify Perplexity inline source citations against official regulatory or vendor websites.
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hour 25 minutes): Model Comparison, Brainstorming & Critical Thinking**
-  * **ChatGPT vs. Claude vs. Gemini — Hands-on Comparison:** Same prompt, three models. Evaluating tone, accuracy, depth, and formatting for Orbi use cases.
-  * **AI Brainstorming (Top 2 Techniques):** Multi-Perspective Roleplay (simulating multiple expert roles simultaneously) and Reverse Brainstorming (generating failure points to find creative solutions).
-  * **Claude Cowork:** Setting up the desktop agent and running your first task.
-  * **AI Limitations & Hallucinations:** Why LLMs hallucinate, how to spot fabricated facts, figures, and citations. Live hallucination examples.
-  * **Critical Thinking Framework for AI Use:** The VERIFY checklist — always cross-reference outputs, check sources, and apply domain expertise before acting on AI-generated content.
-  * **Data Privacy Rules:** What NOT to send to any AI — proprietary drawings, personal data, unreleased budgets.
-* **📋 Practical Assignment:** Run the same work-relevant prompt across ChatGPT, Claude, and Gemini. Document the differences and identify any factual errors or hallucinations using the VERIFY checklist.
+  * **Hands-on Model Comparison:** Running identical prompt structures across all three flagships to contrast tone, accuracy, table formatting, and structural differences on actual Orbi business cases.
+  * **AI Brainstorming (Top 2 Techniques):**
+    1. *Multi-Perspective Roleplay:* Structuring system instructions to make the AI simulate a joint review panel (e.g., Architect, MEP Engineer, Project Manager, Hotel Operator) to identify design issues.
+    2. *Reverse Brainstorming:* Forcing the AI to list every logical reason why a specific site construction schedule or procurement plan might fail, then reversing those constraints into risk-mitigation prompts.
+  * **Claude Cowork desktop agent:** Downloading, configuring permissions, and running local file scanning tasks (e.g., automatically sorting construction logs or generating summaries from directories of weekly reports).
+  * **AI Hallucinations & Limitations:** Why LLMs hallucinate, recognizing "plausible-sounding" but fabricated metrics, fake CAD commands, and non-existent industry standards.
+  * **VERIFY Critical Thinking Framework:**
+    * **V**alidate facts against official documents.
+    * **E**valuate source reliability.
+    * **R**ead details actively.
+    * **I**nspect output variables and instructions.
+    * **F**act-check numerical calculations.
+    * **Y**ield decision-making power only after manual human audit.
+  * **Enterprise Data Privacy & Security:** Practical rules for handling proprietary ORBI architectural drawings, supplier agreements, unreleased budgets, and GDPR-compliant client data.
+* **📋 Practical Assignment:** Run a work-relevant project planning prompt across ChatGPT, Claude, and Gemini. Write a comparative report scoring them on accuracy, tone, and format, and identify at least one hallucination or logic error using the VERIFY checklist.
 
 #### Day 2: Prompt Engineering, Custom Assistants, and NotebookLM (3 Hours)
-* **Block 1 (1 hour 25 minutes):**
-  * **Advanced Prompting:** Few-shot prompting, roleplay modeling, and parsing technical documents.
-  * **Building Custom Assistants & SOPs:** Setting up Custom GPTs, Claude Projects, and **Claude Cowork** desktop agent. Creating dedicated assistants for Central Park Towers (e.g., MEP Standard Compliance Checkers, Tender Specification Reviewers, and **auto-generating Standard Operating Procedures (SOPs)**).
-  * **CAD & BIM Scripting:** Generating and debugging AutoCAD LISP, Revit Python, and Dynamo scripts inside Claude.
+* **Block 1 (1 hour 25 minutes): Advanced Prompting, Custom Assistants & CAD Automation**
+  * **Prompt Engineering Frameworks:** Deep-dive into **PARTS** (Purpose, Action, Role, Topic, Style) and **CREATE** (Context, Role, Examples, Ask, Tone, Execution).
+  * **Advanced In-Context Learning:** Implementing zero-shot, one-shot, and multi-shot prompting with raw Orbi specification examples.
+  * **Custom AI Assistants:** Setting up Custom GPTs and Claude Projects. Structuring system instructions, configuring knowledge bases (MEP guidelines, Orbi design standards), and using markdown system prompts to enforce specific formatting.
+  * **CAD, BIM, and Scripting Automation:** Prompting Claude to generate, debug, and optimize AutoCAD LISP routines, Revit Python scripts, and Dynamo script blocks. Step-by-step methods for explaining execution errors to the AI to auto-correct code.
 * **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes):**
-  * **NotebookLM in Practice:** Using Google's NotebookLM to manage project documentation. Setting up NotebookLM for long manuals and international design standards (similar to MEP codes). Uploading datasheets, instructions, and manuals.
-  * Navigating the project database, running Q&A, and generating structured Audio Overviews (AI podcasts) summarizing complex specs.
-* **📋 Practical Assignment:** Create a NotebookLM project with 2-3 technical datasheets and draft a custom assistant prototype in Claude Projects.
+* **Block 2 (1 hour 25 minutes): Google NotebookLM in Practice**
+  * **NotebookLM Workspace Setup:** Creating dedicated notebooks for large-scale projects (e.g., Central Park Towers). Uploading multiple sources: PDF manuals, MEP standards, Excel schedules, and international hotel brand checklists.
+  * **Retrieval & Analysis:** Running cross-source semantic Q&A, generating automatic study guides, briefing notes, and extracting action items from hundreds of pages of documentation.
+  * **AI Audio Overviews (Podcasts):** Configuring and generating natural-sounding AI audio dialogues summarizing technical specifications, and downloading them for site managers' mobile briefings.
+* **📋 Practical Assignment:** Create a NotebookLM workspace with at least 3 project specification documents, generate a Q&A summary note, and build a prototype Custom Assistant in Claude Projects loaded with your department's standard operating procedures (SOPs).
 
 #### Day 3: Notion & Lovable.app Prototyping (3 Hours)
-* **Block 1 (1 hour 25 minutes):**
-  * **Notion Databases as a Backend:** Pages, databases, Relations, and Rollups. Building a structured data scheme for Central Park Towers.
-  * **Notion AI:** Summarizing pages, technical documentation, and extracting action items from meeting notes.
+* **Block 1 (1 hour 25 minutes): Notion Databases as a Backend**
+  * **Structured Data Architectures:** Pages vs. Databases, properties (Select, Formula, Relation, Rollup). Building a relational schema connecting a "Contractors Database" to a "Site Tasks Log" and "Project Milestones".
+  * **Notion AI Integration:** Automatically summarizing meeting minutes, auto-extracting task items into checkboxes, drafting status updates from database records, and using Notion AI formulas.
 * **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes):**
-  * **Lovable.app No-Code Development:** Introduction to Lovable.app for rapid web app prototyping, linking Supabase databases.
-  * Designing a custom web interface (e.g., a "Project Dashboard" or a "Site Defect Reporter") that connects to databases.
-  * Prototyping Role-Based Access Control (RBAC) and data visualization dashboards.
-* **📋 Practical Assignment:** Create a Notion database structure and prototype a basic web app front-end in Lovable.app.
+* **Block 2 (1 hour 25 minutes): Lovable.app No-Code Development**
+  * **Interactive App Prototyping:** Introduction to Lovable.app. Understanding how to use simple natural language prompts to generate a complete React/Vite web application front-end.
+  * **Database Bindings & Supabase:** Linking the Lovable UI to Supabase databases. Creating fields, data tables, and setting up real-time sync.
+  * **Practical Real Estate Portals:** Designing an interface for a "Site Defect Reporter" or a "Project KPI Dashboard". Configuring Role-Based Access Control (RBAC) to restrict viewing rights between contractors and Orbi management.
+* **📋 Practical Assignment:** Build a structured, two-table relational database in Notion and generate a functional web portal prototype in Lovable.app that displays mock construction task statuses.
 
 #### Day 4: Make.com - Workflow Automation (3 Hours)
-* **Block 1 (1 hour 25 minutes):**
-  * **Make.com Core Concepts:** Scenarios, Triggers, Actions, and Routers (No-Code automation).
-  * Connecting Notion and Lovable.app to Make.com: updating project databases automatically.
+* **Block 1 (1 hour 25 minutes): Make.com Core Concepts**
+  * **No-Code Automation Architecture:** Understanding Scenarios, Triggers, Actions, and search modules. Working with JSON data, filters, and conditional routers.
+  * **Data Syncing:** Connecting Notion, Supabase/Lovable, and external APIs. Automatically triggering a workflow when a new site defect is logged in the Lovable portal.
 * **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes):**
-  * Building practical automations: Syncing Outlook/Gmail emails to Notion/Lovable task boards.
-  * Setting up Slack/email alerts triggered by portal status updates.
-  * Integrating AI modules inside Make.com scenarios for automatic email analysis and using Make's AI Assistant for logic building and error handling.
-  * **AI Governance:** Establishing corporate AI Policy, Data Governance standards, and Shadow AI prevention guidelines for construction workflows.
-* **📋 Practical Assignment:** Create a live Make.com scenario that automatically creates a Notion entry when a specific email trigger is received, and draft a basic data security guideline.
+* **Block 2 (1 hour 25 minutes): Practical Scenarios & AI Governance**
+  * **Real-World Automation Recipes:**
+    * Automatically capturing incoming contractor emails, using AI modules (GPT-5.5 / Claude API) inside Make to extract defect details, and logging them in Notion.
+    * Sending automated Slack notifications and Outlook emails when task statuses change.
+    * Utilizing Make's AI Assistant for writing complex mapping formulas and troubleshooting runtime errors.
+  * **Corporate AI Governance & Policy:** Structuring allowed corporate tool lists, secure API key management, intellectual property boundaries, and establishing "Shadow AI" prevention protocols.
+* **📋 Practical Assignment:** Build a live Make.com scenario that connects an email inbox to your Notion database, automatically generating tasks from incoming emails, and draft a 5-point corporate AI compliance checklist.
 
 ---
 
