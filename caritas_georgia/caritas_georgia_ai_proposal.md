@@ -3,15 +3,19 @@ project: Caritas Czech Republic - Georgia Branch
 client_short: Caritas Georgia
 folder: caritas_georgia
 created: 2026-06-12
+updated: 2026-06-12 (v2: 6 persons, 4 bottleneck workflows, Prague HQ focus, M365 conditional)
 generator: ai2026-automation v1.0.0 + ai2026-knowledge-base
-audience: 5 NGO team members with basic/intermediate AI experience
-duration: 2-day workshop
-language: Georgian (default), English/Czech on request
-status: DRAFT for review
+audience: 6 NGO team members (Director, Program Manager, Project Coordinator, Admin/Finance Manager, Procurement Officer, PR Officer) with basic/intermediate AI experience
+duration: 2-day workshop (8 hours total, Tier B recommended)
+format: Both days PHYSICAL at Caritas Georgia Tbilisi office
+focus: Branch office operations with Prague HQ - 4 bottleneck workflows
+language: Georgian (default), English, Czech (for HQ-ისთან კომუნიკაცია)
+m365_conditional: Two scenarios (with/without M365 Copilot) - to be confirmed after IT meeting
+status: DRAFT v2 (M365 scenario pending)
 ---
 
 # AI პრაქტიკული ვორქშოფი - კარიტას საქართველო
-## ორდღიანი პროგრამა 5-კაციანი გუნდისთვის: AI-ის პრაქტიკული გამოყენება NGO-ის ყოველდღიურ საქმიანობაში
+## ორდღიანი პროგრამა 6-კაციანი გუნდისთვის: AI-ის პრაქტიკული გამოყენება ფილიალის ყოველდღიურ ოპერაციებში (HQ-სთან კომუნიკაციის ჩათვლით)
 
 ---
 
@@ -38,17 +42,41 @@ status: DRAFT for review
 
 ---
 
+### 🌍 ფილიალის ოპერაციები და Prague HQ-სთან ინტეგრაცია
+
+კარიტას საქართველო, როგორც Caritas Czech Republic-ის ფილიალი, **ყოველა ეტაპზე გადის პრაღის სათაო ოფისთან პროცესებს** - განსაკუთრებით ფინანსურ და შესყიდვების ნაწილში. თქვენი გუნდი უკვე იყენებს **SharePoint-ს** და ელექტრონულ დოკუმენტბრუნვას (EDM), რაც ქმნის მყარ ტექნოლოგიურ ფუნდამენტს AI-ს დასანერგავად.
+
 ### 🌳 შესაბამისობის კავშირი (Why This Workshop Fits)
 
-კარიტას საქართველო, როგორც ჰუმანიტარული NGO, ყოველდღიურად მართავს **6 კრიტიკულ პროცესს** - პროექტების ანგარიშგებიდან შესყიდვებამდე. თქვენი გუნდი უკვე იყენებს ChatGPT-ს, Gemini-ს, Perplexity-ს - ეს ნიშნავს, რომ **ფუნდამენტი უკვე არსებობს**, მაგრამ პოტენციალი ათვისებულია მხოლოდ 20-30%-ით.
+კარიტას საქართველოს **6-კაციანი გუნდი** (დირექტორი, პროგრამის მენეჯერი, პროექტების კოორდინატორი, ადმინ/ფინ მენეჯერი, შესყიდვების ოფიცერი, PR ოფიცერი) უკვე იყენებს ChatGPT-ს, Gemini-ს, Perplexity-ს - ეს ნიშნავს, რომ **ფუნდამენტი უკვე არსებობს**, მაგრამ პოტენციალი ათვისებულია მხოლოდ 20-30%-ით.
 
-ეს ვორქშოფი **არ არის AI-ის ზოგადი გაცნობა**. ეს არის **6 კონკრეტული სამუშაო ნაკადის** (workflow) ღრმა გადამუშავება, სადაც თითოეული მონაწილე გამოვა **კონკრეტულ შედეგს** (workflow, prompt, automation) რომელსაც ხვალვე გამოიყენებს. პატარა ჯგუფი (5 კაცი) საშუალებას გვაძლევს **Follow-along + ინდივიდუალური კონსულტაციის** მოდელი გამოვიყენოთ, რაც დიდ ჯგუფებში შეუძლებელია.
+ეს ვორქშოფი **არ არის AI-ის ზოგადი გაცნობა**. ეს არის **4 კონკრეტული bottleneck workflow-ს** (ფილიალი → HQ) ღრმა გადამუშავება, სადაც თითოეული მონაწილე გამოვა **კონკრეტულ შედეგს** (workflow, prompt, automation) რომელსაც ხვალვე გამოიყენებს. პატარა ჯგუფი (6 კაცი) საშუალებას გვაძლევს **Follow-along + ინდივიდუალური კონსულტაციის** მოდელი გამოვიყენოთ, რაც დიდ ჯგუფებში შეუძლებელია.
 
-**მოსალოდნელი ROI** (კონსერვატიული შეფასება, 5-კაციანი გუნდი):
-- **ანგარიშგების დრო:** 2-3 საათი/კვირაში → 30-45 წუთი/კვირაში (**~75% დაზოგვა**)
-- **ფინანსური რეპორტები:** 4 საათი → 1 საათი
-- **მეილების მომზადება (პარტნიორებთან/დონორებთან):** 50% სწრაფად
-- **მონაცემთა ანალიზი (M&E):** 60% სწრაფად
+### 🎯 4 კონკრეტული Bottleneck Workflow (ფილიალი ↔ HQ)
+
+| # | Bottleneck | პრობლემა | AI გადაწყვეტა |
+|---|---|---|---|
+| **1** | **📄 Document Translation** (GE ↔ EN ↔ CS) | ყველა დოკუმენტი HQ-ში იგზავნება EN/CS-ზე, ფილიალში GE-ზეა. ხელით თარგმნა ნელია, format-ი იკარგება | **Claude 4 + Custom prompt-ები 3-ენა თარგმნისთვის** (format preservation + Caritas-ის ტერმინოლოგიით) |
+| **2** | **📊 Document Summarization for HQ** | HQ-ს სჭირდება 2-გვერდიანი შეჯამება 50-გვერდიანი ანგარიშისა. ხელით შეჯამება 2-3 საათი მოითხოვს | **NotebookLM + Claude Projects** SharePoint-ის კონტენტის საფუძველზე HQ-grade შეჯამება (5-10 წუთი) |
+| **3** | **📋 Template Generation (RFPs, Contracts, Reports)** | პრაღის HQ format-ის RFP-ები, კონტრაქტები, ანგარიშები - ხელით შექმნა ნელია, შეუსაბამობები ხშირია | **C.R.E.A.T.E. + HQ Compliance Checklist** prompts - ყველა ფორმა Caritas-ის სტანდარტით + გუნდის Role-სპეციფიკური examples |
+| **4** | **🔄 SharePoint/EDM Workflow Automation** | დოკუმენტის ცირკულაცია, ვერსიები, დადასტურებები, SharePoint tag-ინგი - ხელით ნელია, human error-ები | **Microsoft Power Automate + (Copilot if available)** - auto-routing, auto-naming, version tracking |
+
+**მოსალოდნელი ROI** (კონსერვატიული შეფასება, 6-კაციანი გუნდი):
+- **📄 Document Translation:** 4-6 საათი/კვირაში → 30-45 წუთი (**~85% დაზოგვა**)
+- **📊 HQ Summaries:** 2-3 საათი/ანგარიში → 15-20 წუთი (**~90% დაზოგვა**)
+- **📋 Templates:** 1-2 საათი → 10-15 წუთი + 0 format errors
+- **🔄 SharePoint Workflow:** 3-5 human hours/week → 30 წუთი/week (**~85% დაზოგვა**)
+
+### 🏢 Caritas-ის 6-კაციანი გუნდი - Role-სპეციფიკური AI გამოყენება
+
+| როლი | AI-ს გამოყენების ფოკუსი | კონკრეტული Workflow |
+|---|---|---|
+| **დირექტორი** | სტრატეგიული დოკუმენტები, HQ-სთან კომუნიკაცია | Strategic memo-ები (GE↔EN↔CS), Board-ისთვის 2-გვერდიანი შეჯამებები |
+| **პროგრამის მენეჯერი** | პროექტების მართვა, დონორებთან კომუნიკაცია | Project proposals, donor reports, partner briefings |
+| **პროექტების კოორდინატორი** | ყოველდღიური კოორდინაცია, შეხვედრები, ანგარიშები | Meeting minutes, weekly updates, schedule creation |
+| **ადმინ/ფინ მენეჯერი** | ფინანსური ანგარიშები, ბიუჯეტი, compliance | Budget analyses, financial summaries for HQ, audit prep |
+| **შესყიდვების ოფიცერი** | RFP-ები, ვენდორული შედარებები, კონტრაქტები | HQ-format RFP-ები, supplier comparison, contract drafting |
+| **PR და კომუნიკაციის ოფიცერი** | PR მასალები, მედია, სოც-მედია | Press releases, social media posts, event materials |
 
 ---
 
