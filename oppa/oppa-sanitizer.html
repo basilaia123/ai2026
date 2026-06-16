@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPPA AI Data Sanitizer — მონაცემთა უსაფრთხოების ხელსაწყო</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 950: '#0B1E30', 900: '#11223F', 800: '#1B3A5C', 700: '#275284', 600: '#346B9E', 500: '#4785C0', 100: '#D9ECF7' },
+                        teal: { 500: '#00F2FE', 400: '#4FACFE', 300: '#7FE5FF' },
+                        neon: { green: '#00E676', red: '#FF1744' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #081225;
+            color: #E2E8F0;
+            background-image: radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(79, 172, 254, 0.05) 0%, transparent 40%);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .glass-panel {
+            background: rgba(17, 34, 63, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .interactive-word {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
+            padding: 0 2px;
+        }
+        .interactive-word:hover {
+            background: rgba(0, 242, 254, 0.15);
+            border-bottom-color: #00F2FE;
+            color: #00F2FE;
+        }
+        .interactive-word.redacted {
+            background: rgba(255, 23, 68, 0.25);
+            border-bottom-color: #FF1744;
+            color: #FF8A80;
+            text-decoration: line-through;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(8, 18, 37, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 242, 254, 0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 254, 0.4); }
+
+        /* Day Theme (Light Mode) Overrides */
+        body.light-mode {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            background-image: radial-gradient(circle at 10% 20%, rgba(46, 134, 171, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(79, 172, 254, 0.08) 0%, transparent 40%);
+        }
+
+        body.light-mode .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(15, 23, 42, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.06);
+        }
+
+        body.light-mode h1.bg-gradient-to-r {
+            background: none;
+            -webkit-text-fill-color: initial;
+            color: #0f172a;
+        }
+        
+        body.light-mode h2.text-teal-300, 
+        body.light-mode h3.text-teal-300,
+        body.light-mode h2.text-teal-300 span,
+        body.light-mode h3.text-teal-300 span {
+            color: #1b3a5c !important;
+        }
+
+        body.light-mode .text-gray-400 { color: #64748b; }
+        body.light-mode .text-gray-500 { color: #94a3b8; }
+        body.light-mode .text-gray-300 { color: #334155; }
+        body.light-mode .text-white { color: #0f172a; }
+
+        body.light-mode textarea,
+        body.light-mode input[type="text"] {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode textarea:focus,
+        body.light-mode input[type="text"]:focus {
+            border-color: #1b3a5c !important;
+        }
+        body.light-mode textarea#sanitizedOutput {
+            color: #1e6e8a !important;
+        }
+
+        body.light-mode .bg-navy-900\/40,
+        body.light-mode .bg-navy-950\/40,
+        body.light-mode .bg-navy-950\/50,
+        body.light-mode .bg-navy-950\/60 {
+            background-color: rgba(226, 232, 240, 0.8) !important;
+            border-color: rgba(15, 23, 42, 0.08) !important;
+            color: #1e293b !important;
+        }
+        body.light-mode .bg-navy-900\/40:hover {
+            background-color: rgba(203, 213, 225, 0.9) !important;
+        }
+
+        body.light-mode input[type="checkbox"] {
+            border-color: #94a3b8 !important;
+            background-color: #ffffff !important;
+        }
+
+        body.light-mode .bg-white\/5 {
+            background-color: rgba(15, 23, 42, 0.05) !important;
+            border-color: rgba(15, 23, 42, 0.1) !important;
+            color: #475569 !important;
+        }
+        body.light-mode .bg-white\/5:hover {
+            background-color: rgba(15, 23, 42, 0.1) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .bg-teal-500\/20 {
+            background-color: rgba(46, 134, 171, 0.1) !important;
+            border-color: rgba(46, 134, 171, 0.2) !important;
+            color: #1e6e8a !important;
+        }
+        body.light-mode .bg-teal-500\/20:hover {
+            background-color: rgba(46, 134, 171, 0.2) !important;
+        }
+
+        body.light-mode tr.border-b {
+            border-color: rgba(15, 23, 42, 0.08) !important;
+        }
+        body.light-mode tr.border-b:hover {
+            background-color: rgba(15, 23, 42, 0.03) !important;
+        }
+        body.light-mode td.text-teal-400 {
+            color: #1e6e8a !important;
+        }
+        body.light-mode td.text-gray-300 {
+            color: #334155 !important;
+        }
+        body.light-mode th {
+            color: #475569 !important;
+        }
+
+        body.light-mode .interactive-word {
+            border-bottom-color: rgba(15, 23, 42, 0.2);
+            color: #334155;
+        }
+        body.light-mode .interactive-word:hover {
+            background: rgba(46, 134, 171, 0.15);
+            border-bottom-color: #1b3a5c;
+            color: #1b3a5c;
+        }
+        body.light-mode .interactive-word.redacted {
+            background: rgba(239, 68, 68, 0.15);
+            border-bottom-color: #ef4444;
+            color: #b91c1c;
+        }
+        body.light-mode ::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.5); }
+        body.light-mode ::-webkit-scrollbar-thumb { background: rgba(46, 134, 171, 0.2); }
+        body.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(46, 134, 171, 0.4); }
+
+        body.light-mode h1.text-xl {
+            background: none !important;
+            -webkit-text-fill-color: initial !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .bg-teal-500\/10 {
+            background-color: rgba(46, 134, 171, 0.08) !important;
+            border-color: rgba(46, 134, 171, 0.15) !important;
+            color: #1e6e8a !important;
+        }
+        body.light-mode #piiCount {
+            color: #1e6e8a !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between py-6 px-4 md:px-8">
+
+    <!-- Header -->
+    <header class="max-w-7xl w-full mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-teal-500 to-teal-400 p-2.5 rounded-xl shadow-lg shadow-teal-500/20">
+                <svg class="w-6 h-6 text-navy-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">OPPA AI Data Sanitizer</h1>
+                    <span class="bg-teal-500/10 text-teal-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-teal-500/20">PSP COMPLIANCE</span>
+                </div>
+                <p class="text-xs text-gray-400">მონაცემთა გაწმენდისა და ანონიმიზაციის ხელსაწყო (2026 ვერსია)</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <!-- Theme Toggle Button -->
+            <button id="themeToggle" class="bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 p-2.5 rounded-lg text-xs flex items-center justify-center transition" title="თემის შეცვლა">
+                <!-- Sun Icon -->
+                <svg id="sunIcon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05L5.75 4.343a1 1 0 10-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
+                <!-- Moon Icon -->
+                <svg id="moonIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            </button>
+            <a href="oppa-session3.html" class="bg-white/5 hover:bg-white/10 text-gray-300 text-xs py-2 px-4 rounded-lg border border-white/10 transition">← სახელმძღვანელო</a>
+            <a href="index.html" class="bg-white/5 hover:bg-white/10 text-gray-300 text-xs py-2 px-4 rounded-lg border border-white/10 transition">ინდექსი</a>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch flex-grow">
+        
+        <!-- Left Panel: Controls & Raw Input -->
+        <div class="lg:col-span-6 flex flex-col gap-6">
+            
+            <!-- Settings Card -->
+            <div class="glass-panel rounded-2xl p-5">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-teal-300 mb-4 flex items-center gap-2">
+                    <span>⚙️</span> კონფიგურაცია / Settings
+                </h2>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskCards" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">💳 ბარათები (Cards)</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskIds" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">🆔 პირ. ნომრები (IDs)</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskPhones" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">📱 ტელეფონები (Phones)</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskEmails" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">📧 მეილები (Emails)</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskNames" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">👤 სახელები (Names)</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskTerminals" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">📟 ტერმინალები (Paybox)</span>
+                    </label>
+                </div>
+
+                <!-- Custom terms input -->
+                <div class="mt-4">
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">სპეციფიკური სიტყვები ნიღბვისთვის (კომათი გამოყოფილი):</label>
+                    <input type="text" id="customKeywords" placeholder="მაგ: SmartRetail, კაპანაძე, ჭავჭავაძე" class="w-full bg-navy-950/60 border border-white/10 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-teal-500 transition">
+                </div>
+            </div>
+
+            <!-- Raw Input Card -->
+            <div class="glass-panel rounded-2xl p-5 flex flex-col flex-grow min-h-[300px]">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
+                        <span>📥</span> ნედლი ტექსტი / Raw Input Text
+                    </h2>
+                    <button id="clearInput" class="text-xs text-gray-400 hover:text-white transition">გასუფთავება</button>
+                </div>
+                <textarea id="rawText" placeholder="ჩასვით აქ კლიენტის საჩივარი, ტრანზაქციის ლოგი ან ნებისმიერი PII შემცველი ტექსტი..." class="w-full flex-grow bg-navy-950/40 border border-white/10 rounded-xl p-4 text-xs font-mono focus:outline-none focus:border-teal-500 resize-none transition leading-relaxed"></textarea>
+            </div>
+
+        </div>
+
+        <!-- Right Panel: Sanitized Result & Preview -->
+        <div class="lg:col-span-6 flex flex-col gap-6">
+            
+            <!-- Interactive Preview & Word Selection -->
+            <div class="glass-panel rounded-2xl p-5 flex flex-col min-h-[220px]">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
+                        <span>🖱️</span> ინტერაქტიული კორექტირება / Click to Redact
+                    </h2>
+                    <span class="text-[10px] text-gray-400">დააწკაპუნეთ ნებისმიერ სიტყვაზე დასაფარად</span>
+                </div>
+                <div id="interactivePreview" class="w-full flex-grow bg-navy-950/40 border border-white/10 rounded-xl p-4 text-xs leading-relaxed overflow-y-auto whitespace-pre-wrap select-text">
+                    <span class="text-gray-500">ინტერაქტიული პრევიუ გამოჩნდება ტექსტის შეყვანისთანავე...</span>
+                </div>
+            </div>
+
+            <!-- Final Sanitized Output & copy actions -->
+            <div class="glass-panel rounded-2xl p-5 flex flex-col flex-grow min-h-[250px]">
+                <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
+                        <span>📤</span> უსაფრთხო გამოსავალი / Sanitized Output
+                    </h2>
+                    <div class="flex gap-2">
+                        <button id="copySanitized" class="bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30 text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1 font-semibold">
+                            📋 კოპირება
+                        </button>
+                        <button id="copyPrompt" class="bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1 font-semibold">
+                            🤖 Prompt + Text
+                        </button>
+                    </div>
+                </div>
+                <textarea id="sanitizedOutput" readonly class="w-full flex-grow bg-navy-950/60 border border-white/5 rounded-xl p-4 text-xs font-mono focus:outline-none text-teal-200 resize-none leading-relaxed"></textarea>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Bottom Mapping & Stats Drawer -->
+    <section class="max-w-7xl w-full mx-auto mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Mapping Database View -->
+        <div class="lg:col-span-8 glass-panel rounded-2xl p-5">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-teal-300">🗺️ ჩანაცვლების ბაზა / Anonymization Map</h3>
+                <button id="downloadMap" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 py-1 px-2.5 rounded border border-white/10 transition">JSON ექსპორტი</button>
+            </div>
+            <div class="overflow-x-auto max-h-[120px] overflow-y-auto">
+                <table class="w-full text-[11px] text-left">
+                    <thead>
+                        <tr class="border-b border-white/10 text-gray-400">
+                            <th class="pb-1.5">ტეგი (Tag)</th>
+                            <th class="pb-1.5">ორიგინალი მნიშვნელობა (Original)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mappingTable" class="divide-y divide-white/5 font-mono text-gray-300">
+                        <tr>
+                            <td colspan="2" class="py-2 text-gray-500 italic text-center">ჩანაცვლებები ჯერ არ განხორციელებულა.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Live Analytics Stats -->
+        <div class="lg:col-span-4 glass-panel rounded-2xl p-5 flex flex-col justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-teal-300 mb-3">📈 უსაფრთხოების სტატისტიკა / Analytics</h3>
+            <div class="grid grid-cols-2 gap-4 flex-grow items-center">
+                <div class="bg-navy-950/50 p-3 rounded-xl border border-white/5 text-center">
+                    <p class="text-[10px] text-gray-400 uppercase font-semibold">PII წაშლილია</p>
+                    <p id="piiCount" class="text-2xl font-bold text-teal-300 mt-1">0</p>
+                </div>
+                <div class="bg-navy-950/50 p-3 rounded-xl border border-white/5 text-center">
+                    <p class="text-[10px] text-gray-400 uppercase font-semibold">უსაფრთხოების ქულა</p>
+                    <p id="safetyScore" class="text-2xl font-bold text-neon-green mt-1">100%</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl w-full mx-auto text-center text-[10px] text-gray-500 mt-8 border-t border-white/5 pt-4">
+        OPPA.GE AI კორპორატიული ტრენინგი · [მონაცემები არ იგზავნება სერვერზე - დამუშავება ხდება 100%-ით ლოკალურად ბრაუზერში]
+    </footer>
+
+    <!-- APP SCRIPT -->
+    <script>
+        const rawText = document.getElementById('rawText');
+        const sanitizedOutput = document.getElementById('sanitizedOutput');
+        const interactivePreview = document.getElementById('interactivePreview');
+        const mappingTable = document.getElementById('mappingTable');
+        const piiCountEl = document.getElementById('piiCount');
+        const safetyScoreEl = document.getElementById('safetyScore');
+        const customKeywordsInput = document.getElementById('customKeywords');
+        const clearInput = document.getElementById('clearInput');
+
+        // Checkboxes
+        const maskCards = document.getElementById('maskCards');
+        const maskIds = document.getElementById('maskIds');
+        const maskPhones = document.getElementById('maskPhones');
+        const maskEmails = document.getElementById('maskEmails');
+        const maskNames = document.getElementById('maskNames');
+        const maskTerminals = document.getElementById('maskTerminals');
+
+        let mappingDb = {};
+        let manualRedactions = new Set();
+        let currentTokens = [];
+
+        // Watch checkboxes and raw text input
+        [rawText, maskCards, maskIds, maskPhones, maskEmails, maskNames, maskTerminals, customKeywordsInput].forEach(el => {
+            el.addEventListener('input', processText);
+            el.addEventListener('change', processText);
+        });
+
+        clearInput.addEventListener('click', () => {
+            rawText.value = '';
+            manualRedactions.clear();
+            processText();
+        });
+
+        // Heuristics for Georgian Names (words ending in standard Georgian surname/name patterns)
+        // capital letters in Georgian are not native, but FiraGO displays standard Georgian text. 
+        // We will look for words containing common name roots or endings if they aren't common stop words.
+        const geoSurnameSuffixes = /(შვილი|ძე|ია|ავა|უა|ური|ული|ელი|ონი|ანი|ხელი)$/;
+        const geoStopwords = new Set([
+            'და', 'რომ', 'ეს', 'არის', 'მაგრამ', 'თუ', 'ამ', 'იმ', 'არ', 'ვერ', 'ნახვა', 
+            'გადახდა', 'აპარატი', 'თანხა', 'მერჩანტი', 'კლიენტი', 'მომხმარებელი', 'წერილი', 
+            'ბარათი', 'ანგარიში', 'ხარვეზი', 'დრო', 'ვადა', 'საათი', 'დღე', 'ტარიფი', 'საკომისიო'
+        ]);
+
+        function isGeorgianName(word) {
+            // Clean punctuation
+            const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'„“]/g,"");
+            if (cleanWord.length < 3) return false;
+            if (geoStopwords.has(cleanWord)) return false;
+            
+            // Heuristic check: typical surnames
+            if (geoSurnameSuffixes.test(cleanWord)) return true;
+            
+            return false;
+        }
+
+        // Processing main logic
+        function processText() {
+            let text = rawText.value;
+            if (!text.trim()) {
+                interactivePreview.innerHTML = '<span class="text-gray-500">ინტერაქტიული პრევიუ გამოჩნდება ტექსტის შეყვანისთანავე...</span>';
+                sanitizedOutput.value = '';
+                mappingTable.innerHTML = '<tr><td colspan="2" class="py-2 text-gray-500 italic text-center">ჩანაცვლებები ჯერ არ განხორციელებულა.</td></tr>';
+                piiCountEl.textContent = '0';
+                safetyScoreEl.textContent = '100%';
+                safetyScoreEl.className = 'text-2xl font-bold text-neon-green mt-1';
+                mappingDb = {};
+                return;
+            }
+
+            mappingDb = {};
+            let matchIndex = 1;
+
+            // Regex lists
+            let regexList = [];
+
+            // Card Numbers (16 digits or groups of 4 separated by space/dash)
+            if (maskCards.checked) {
+                const cardRegex = /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b|\b\d{16}\b/g;
+                text = text.replace(cardRegex, (match) => {
+                    const clean = match.replace(/[-\s]/g, '');
+                    const masked = `${clean.slice(0, 4)}********${clean.slice(12)}`;
+                    const tag = `[CARD_MASKED_${matchIndex++}]`;
+                    mappingDb[tag] = match;
+                    return tag;
+                });
+            }
+
+            // Georgian Personal ID (exactly 11 digits)
+            if (maskIds.checked) {
+                const idRegex = /\b\d{11}\b/g;
+                text = text.replace(idRegex, (match) => {
+                    const tag = `[ID_REDACTED_${matchIndex++}]`;
+                    mappingDb[tag] = match;
+                    return tag;
+                });
+            }
+
+            // Phone numbers (e.g. +9955xxxxxxx, 5xxxxxxxx, 5xx-xx-xx-xx, etc.)
+            if (maskPhones.checked) {
+                const phoneRegex = /(?:\+995)?\s*5\d{2}\s*\d{2}\s*\d{2}\s*\d{2}\b|\b5\d{8}\b/g;
+                text = text.replace(phoneRegex, (match) => {
+                    const tag = `[PHONE_REDACTED_${matchIndex++}]`;
+                    mappingDb[tag] = match;
+                    return tag;
+                });
+            }
+
+            // Emails
+            if (maskEmails.checked) {
+                const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+                text = text.replace(emailRegex, (match) => {
+                    const tag = `[EMAIL_REDACTED_${matchIndex++}]`;
+                    mappingDb[tag] = match;
+                    return tag;
+                });
+            }
+
+            // Paybox / Terminal ID (typically 6 digits starting with non-zero)
+            if (maskTerminals.checked) {
+                const termRegex = /\b[1-9]\d{5}\b/g;
+                text = text.replace(termRegex, (match) => {
+                    const tag = `[TERMINAL_MASKED_${matchIndex++}]`;
+                    mappingDb[tag] = match;
+                    return tag;
+                });
+            }
+
+            // Custom Keywords
+            const customVal = customKeywordsInput.value.trim();
+            if (customVal) {
+                const keywords = customVal.split(',').map(k => k.trim()).filter(k => k.length > 0);
+                keywords.forEach(keyword => {
+                    const escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    const keyRegex = new RegExp(`\\b${escaped}\\b`, 'gi');
+                    text = text.replace(keyRegex, (match) => {
+                        const tag = `[KEYWORD_MASKED_${matchIndex++}]`;
+                        mappingDb[tag] = match;
+                        return tag;
+                    });
+                });
+            }
+
+            // Let's tokenize the text to build the interactive preview
+            // Splitting by spaces but keeping punctuation attached to tokens
+            const words = text.split(/(\s+)/);
+            let previewHtml = '';
+            
+            words.forEach((token) => {
+                if (token.trim() === '') {
+                    previewHtml += token;
+                    return;
+                }
+
+                // Clean word for name checking
+                const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'„“]/g,"");
+                
+                // Heuristic check for Names if checked
+                let isName = false;
+                if (maskNames.checked && isGeorgianName(cleanWord)) {
+                    isName = true;
+                }
+
+                const lowercaseWord = cleanWord.toLowerCase();
+                const isManuallyRedacted = manualRedactions.has(lowercaseWord);
+
+                if (isName || isManuallyRedacted) {
+                    let tag = '';
+                    // Find if it's already mapped
+                    const existingTag = Object.keys(mappingDb).find(key => mappingDb[key].toLowerCase() === cleanWord.toLowerCase());
+                    if (existingTag) {
+                        tag = existingTag;
+                    } else {
+                        tag = `[NAME_REDACTED_${matchIndex++}]`;
+                        mappingDb[tag] = cleanWord;
+                    }
+
+                    const replacedToken = token.replace(cleanWord, tag);
+                    previewHtml += `<span class="interactive-word redacted font-bold text-red-400" onclick="toggleManualRedact('${lowercaseWord}')" title="ორიგინალი: ${cleanWord}">${replacedToken}</span>`;
+                } else {
+                    // Regular word
+                    previewHtml += `<span class="interactive-word text-gray-200" onclick="toggleManualRedact('${lowercaseWord}')">${token}</span>`;
+                }
+            });
+
+            // Update interactive Preview
+            interactivePreview.innerHTML = previewHtml;
+
+            // Reconstruct final sanitized text from the Preview DOM representation
+            // We can replace the active redacted elements in the original text
+            let finalOutputText = text;
+            
+            // Build list of all redacted tags in preview
+            // We update the final output text to match the interactive preview
+            words.forEach(token => {
+                const cleanWord = token.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'„“]/g,"");
+                const lowercaseWord = cleanWord.toLowerCase();
+                if (manualRedactions.has(lowercaseWord)) {
+                    const existingTag = Object.keys(mappingDb).find(key => mappingDb[key].toLowerCase() === cleanWord.toLowerCase());
+                    if (existingTag) {
+                        finalOutputText = finalOutputText.split(cleanWord).join(existingTag);
+                    }
+                }
+            });
+
+            sanitizedOutput.value = finalOutputText;
+
+            // Update stats
+            const piiCount = Object.keys(mappingDb).length;
+            piiCountEl.textContent = piiCount;
+
+            // Calculate Safety Score
+            let score = 100;
+            // Heuristic check: look for residual PII in sanitized text
+            const containsResidualPhone = /(?:\+995)?\s*5\d{2}\s*\d{2}\s*\d{2}\s*\d{2}/.test(finalOutputText);
+            const containsResidualId = /\b\d{11}\b/.test(finalOutputText);
+            const containsResidualCard = /\b\d{16}\b/.test(finalOutputText);
+            
+            if (containsResidualPhone) score -= 30;
+            if (containsResidualId) score -= 40;
+            if (containsResidualCard) score -= 30;
+            
+            score = Math.max(0, score);
+            safetyScoreEl.textContent = score + '%';
+            if (score === 100) {
+                safetyScoreEl.className = 'text-2xl font-bold text-neon-green mt-1';
+            } else if (score >= 70) {
+                safetyScoreEl.className = 'text-2xl font-bold text-yellow-400 mt-1';
+            } else {
+                safetyScoreEl.className = 'text-2xl font-bold text-neon-red mt-1';
+            }
+
+            // Update mapping table
+            let tableHtml = '';
+            const tags = Object.keys(mappingDb);
+            if (tags.length === 0) {
+                tableHtml = '<tr><td colspan="2" class="py-2 text-gray-500 italic text-center">ჩანაცვლებები ჯერ არ განხორციელებულა.</td></tr>';
+            } else {
+                tags.forEach(tag => {
+                    tableHtml += `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="py-2 text-teal-400 font-bold">${tag}</td><td class="py-2 text-gray-300 font-semibold">${mappingDb[tag]}</td></tr>`;
+                });
+            }
+            mappingTable.innerHTML = tableHtml;
+        }
+
+        function toggleManualRedact(word) {
+            if (manualRedactions.has(word)) {
+                manualRedactions.delete(word);
+            } else {
+                manualRedactions.add(word);
+            }
+            processText();
+        }
+
+        // Actions: Copy Sanitized
+        document.getElementById('copySanitized').addEventListener('click', function() {
+            if (!sanitizedOutput.value) return;
+            navigator.clipboard.writeText(sanitizedOutput.value).then(() => {
+                const prevText = this.textContent;
+                this.textContent = '✓ კოპირდა!';
+                this.classList.replace('bg-teal-500/20', 'bg-neon-green/20');
+                this.classList.replace('text-teal-300', 'text-neon-green');
+                setTimeout(() => {
+                    this.textContent = prevText;
+                    this.classList.replace('bg-neon-green/20', 'bg-teal-500/20');
+                    this.classList.replace('text-neon-green', 'text-teal-300');
+                }, 2000);
+            });
+        });
+
+        // Actions: Copy Prompt + Sanitized Text
+        document.getElementById('copyPrompt').addEventListener('click', function() {
+            if (!sanitizedOutput.value) return;
+            const promptTemplate = `შენ ხარ OPPA.GE-ს გამოცდილი ფინტექ-ანალიტიკოსი და კომუნიკაციის ექსპერტი. 
+გთხოვ, გაანალიზო შემდეგი დეიდენტიფიცირებული ტექსტი და მოამზადო შესაბამისი, ემპათიური და ფინანსურად ზუსტი პასუხი კლიენტისთვის OPPA-ს Brand Voice-ის დაცვით.
+
+მნიშვნელოვანი შეზღუდვები:
+1. პასუხში შეინარჩუნე იგივე უსაფრთხო ტეგები (მაგ. [CUSTOMER_1], [CARD_MASKED_1]) და არავითარ შემთხვევაში არ შეეცადო მათ უკან გაშიფვრას.
+2. ნუ მოიგონებ ტარიფებს ან ვადებს, დაეყრდენი მხოლოდ ფაქტებს.
+
+გასაანალიზებელი ტექსტი:
+"""
+${sanitizedOutput.value}
+"""`;
+            
+            navigator.clipboard.writeText(promptTemplate).then(() => {
+                const prevText = this.textContent;
+                this.textContent = '✓ კოპირდა!';
+                this.classList.replace('bg-white/5', 'bg-neon-green/20');
+                this.classList.add('text-neon-green');
+                setTimeout(() => {
+                    this.textContent = prevText;
+                    this.classList.replace('bg-neon-green/20', 'bg-white/5');
+                    this.classList.remove('text-neon-green');
+                }, 2000);
+            });
+        });
+
+        // Actions: JSON Export Map
+        document.getElementById('downloadMap').addEventListener('click', function() {
+            if (Object.keys(mappingDb).length === 0) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(mappingDb, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", "oppa_anonymizer_map.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
+
+        // Theme Toggling Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        // Check for saved theme preference, otherwise default to dark mode
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.documentElement.classList.add('light-mode');
+            document.body.classList.add('light-mode');
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isLight = document.body.classList.toggle('light-mode');
+            document.documentElement.classList.toggle('light-mode', isLight);
+            
+            if (isLight) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                localStorage.setItem('theme', 'light');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Initialize with a default demo text on load
+        window.addEventListener('DOMContentLoaded', () => {
+            rawText.value = `მომხმარებელი: გიორგი მებონია
+პირადი ნომერი: 01024098754
+ტელეფონი: 599123456
+მისამართი: თბილისი, ჭავჭავაძის გამზ. 20
+საჩივარი:
+„გუშინ, 16 მაისს, ვცადე 250 ლარის ჩარიცხვა ჩემს ანგარიშზე PayBox აპარატით, ID: 998811.
+ბარათიდან (ნომერი: 4824 1198 2233 4455) თანხა ჩამომეჭრა, მაგრამ მერჩანტთან 'შპს სმარტ-რითეილი' არ აისახა. გთხოვთ, სასწრაფოდ მომიგვაროთ პრობლემა ან დამიბრუნოთ თანხა.“`;
+            processText();
+        });
+    </script>
+</body>
+</html>
