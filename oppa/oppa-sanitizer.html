@@ -57,6 +57,29 @@
         ::-webkit-scrollbar-thumb { background: rgba(0, 242, 254, 0.2); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 254, 0.4); }
 
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(17, 34, 63, 0.95);
+            border: 1px solid #00F2FE;
+            color: #E2E8F0;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 11px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 50;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            font-family: 'FiraGO', sans-serif;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Day Theme (Light Mode) Overrides */
         body.light-mode {
             background-color: #f1f5f9;
@@ -186,6 +209,12 @@
         body.light-mode #piiCount {
             color: #1e6e8a !important;
         }
+        body.light-mode .toast-msg {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #1b3a5c;
+            color: #0f172a;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between py-6 px-4 md:px-8">
@@ -214,6 +243,10 @@
                 <!-- Moon Icon -->
                 <svg id="moonIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
             </button>
+            <!-- Panic Reset Button -->
+            <button id="panicReset" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 py-2.5 px-4 rounded-lg text-xs flex items-center justify-center transition font-bold gap-1" title="მეხსიერების სრული განადგურება">
+                💥 Burn Session
+            </button>
             <a href="oppa-session3.html" class="bg-white/5 hover:bg-white/10 text-gray-300 text-xs py-2 px-4 rounded-lg border border-white/10 transition">← სახელმძღვანელო</a>
             <a href="index.html" class="bg-white/5 hover:bg-white/10 text-gray-300 text-xs py-2 px-4 rounded-lg border border-white/10 transition">ინდექსი</a>
         </div>
@@ -231,7 +264,7 @@
                     <span>⚙️</span> კონფიგურაცია / Settings
                 </h2>
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
                         <input type="checkbox" id="maskCards" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
                         <span class="text-xs font-semibold">💳 ბარათები (Cards)</span>
@@ -255,6 +288,14 @@
                     <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
                         <input type="checkbox" id="maskTerminals" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
                         <span class="text-xs font-semibold">📟 ტერმინალები (Paybox)</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskIbans" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">🏦 საბანკო IBAN</span>
+                    </label>
+                    <label class="flex items-center gap-2 bg-navy-900/40 p-2.5 rounded-xl border border-white/5 cursor-pointer hover:bg-navy-800/50 transition">
+                        <input type="checkbox" id="maskB2b" checked class="rounded border-gray-600 text-teal-500 focus:ring-teal-500 bg-navy-950">
+                        <span class="text-xs font-semibold">🏢 კომპანიის კოდი</span>
                     </label>
                 </div>
 
@@ -344,10 +385,14 @@
     <section class="max-w-7xl w-full mx-auto mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Mapping Database View -->
         <div class="lg:col-span-8 glass-panel rounded-2xl p-5">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-teal-300">🗺️ ჩანაცვლების ბაზა / Anonymization Map</h3>
-                <button id="downloadMap" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 py-1 px-2.5 rounded border border-white/10 transition">JSON ექსპორტი</button>
+                <div class="flex gap-2">
+                    <button id="importMap" class="text-[10px] bg-white/5 hover:bg-white/10 text-gray-300 py-1.5 px-2.5 rounded border border-white/10 transition">📥 JSON იმპორტი</button>
+                    <button id="downloadMap" class="text-[10px] bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 py-1.5 px-2.5 rounded border border-teal-500/30 transition font-bold">🔒 დაშიფრული ექსპორტი</button>
+                </div>
             </div>
+            <input type="file" id="mapFileSelector" accept=".json" class="hidden">
             <div class="overflow-x-auto max-h-[120px] overflow-y-auto">
                 <table class="w-full text-[11px] text-left">
                     <thead>
@@ -398,6 +443,10 @@
         const clearInput = document.getElementById('clearInput');
         const aiResponseInput = document.getElementById('aiResponseInput');
         const restoredOutput = document.getElementById('restoredOutput');
+        const panicReset = document.getElementById('panicReset');
+        const importMap = document.getElementById('importMap');
+        const downloadMap = document.getElementById('downloadMap');
+        const mapFileSelector = document.getElementById('mapFileSelector');
 
         // Checkboxes
         const maskCards = document.getElementById('maskCards');
@@ -406,13 +455,16 @@
         const maskEmails = document.getElementById('maskEmails');
         const maskNames = document.getElementById('maskNames');
         const maskTerminals = document.getElementById('maskTerminals');
+        const maskIbans = document.getElementById('maskIbans');
+        const maskB2b = document.getElementById('maskB2b');
 
         let mappingDb = {};
         let manualRedactions = new Set();
         let currentTokens = [];
+        let clipboardClearTimeout;
 
         // Watch checkboxes and raw text input
-        [rawText, maskCards, maskIds, maskPhones, maskEmails, maskNames, maskTerminals, customKeywordsInput].forEach(el => {
+        [rawText, maskCards, maskIds, maskPhones, maskEmails, maskNames, maskTerminals, maskIbans, maskB2b, customKeywordsInput].forEach(el => {
             el.addEventListener('input', processText);
             el.addEventListener('change', processText);
         });
@@ -424,6 +476,29 @@
             rawText.value = '';
             manualRedactions.clear();
             processText();
+        });
+
+        panicReset.addEventListener('click', () => {
+            if (!confirm("💥 დარწმუნებული ხართ, რომ გსურთ სესიის განადგურება?\nყველა მონაცემი, ჩანაცვლების ბაზა და ბუფერი მყისიერად წაიშლება სამუდამოდ!")) return;
+            
+            rawText.value = '';
+            aiResponseInput.value = '';
+            sanitizedOutput.value = '';
+            restoredOutput.value = '';
+            interactivePreview.innerHTML = '<span class="text-gray-500">ინტერაქტიული პრევიუ გამოჩნდება ტექსტის შეყვანისთანავე...</span>';
+            mappingTable.innerHTML = '<tr><td colspan="2" class="py-2 text-gray-500 italic text-center">ჩანაცვლებები ჯერ არ განხორციელებულა.</td></tr>';
+            piiCountEl.textContent = '0';
+            safetyScoreEl.textContent = '100%';
+            safetyScoreEl.className = 'text-2xl font-bold text-neon-green mt-1';
+            
+            mappingDb = {};
+            manualRedactions.clear();
+            
+            navigator.clipboard.writeText("").then(() => {
+                showToast("🔥 სესია და ყველა მონაცემი უსაფრთხოდ განადგურდა!");
+            }).catch(() => {
+                showToast("🔥 სესია და მეხსიერება განადგურდა!");
+            });
         });
 
         // Heuristics for Georgian Names (words ending in standard Georgian surname/name patterns)
@@ -515,6 +590,26 @@
                 const termRegex = /\b[1-9]\d{5}\b/g;
                 text = text.replace(termRegex, (match) => {
                     const tag = `[TERMINAL_MASKED_${matchIndex++}]`;
+                    mappingDb[tag] = match;
+                    return tag;
+                });
+            }
+
+            // IBAN (Georgian bank account, e.g. GE00TB0000000000000000 - 22 chars)
+            if (maskIbans.checked) {
+                const ibanRegex = /\bGE\d{2}[A-Z]{2}\d{16}\b|\bGE\s*\d{2}\s*[A-Z]{2}\s*(?:\d\s*){16}\b/gi;
+                text = text.replace(ibanRegex, (match) => {
+                    const tag = `[IBAN_REDACTED_${matchIndex++}]`;
+                    mappingDb[tag] = match;
+                    return tag;
+                });
+            }
+
+            // B2B Company Code (9 digits starting with 2 or 4, e.g. 204556677)
+            if (maskB2b.checked) {
+                const b2bRegex = /\b[24]\d{8}\b/g;
+                text = text.replace(b2bRegex, (match) => {
+                    const tag = `[COMPANY_ID_REDACTED_${matchIndex++}]`;
                     mappingDb[tag] = match;
                     return tag;
                 });
@@ -691,17 +786,280 @@ ${sanitizedOutput.value}
             });
         });
 
-        // Actions: JSON Export Map
-        document.getElementById('downloadMap').addEventListener('click', function() {
+        // Helper to convert ArrayBuffer to Base64
+        function bufferToBase64(buffer) {
+            return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+        }
+
+        // Helper to convert Base64 to ArrayBuffer
+        function base64ToBuffer(base64) {
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Encrypt function using Web Crypto API (AES-GCM PBKDF2)
+        async function encryptData(dataStr, password) {
+            const enc = new TextEncoder();
+            const salt = window.crypto.getRandomValues(new Uint8Array(16));
+            const iv = window.crypto.getRandomValues(new Uint8Array(12));
+            
+            const passwordKey = await window.crypto.subtle.importKey(
+                "raw",
+                enc.encode(password),
+                { name: "PBKDF2" },
+                false,
+                ["deriveKey"]
+            );
+            
+            const aesKey = await window.crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: salt,
+                    iterations: 100000,
+                    hash: "SHA-256"
+                },
+                passwordKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt"]
+            );
+            
+            const ciphertext = await window.crypto.subtle.encrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                aesKey,
+                enc.encode(dataStr)
+            );
+            
+            return {
+                encrypted: true,
+                salt: bufferToBase64(salt),
+                iv: bufferToBase64(iv),
+                ciphertext: bufferToBase64(ciphertext)
+            };
+        }
+
+        // Decrypt function using Web Crypto API (AES-GCM PBKDF2)
+        async function decryptData(encryptedObj, password) {
+            const enc = new TextEncoder();
+            const dec = new TextDecoder();
+            const salt = new Uint8Array(base64ToBuffer(encryptedObj.salt));
+            const iv = new Uint8Array(base64ToBuffer(encryptedObj.iv));
+            const ciphertext = base64ToBuffer(encryptedObj.ciphertext);
+            
+            const passwordKey = await window.crypto.subtle.importKey(
+                "raw",
+                enc.encode(password),
+                { name: "PBKDF2" },
+                false,
+                ["deriveKey"]
+            );
+            
+            const aesKey = await window.crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: salt,
+                    iterations: 100000,
+                    hash: "SHA-256"
+                },
+                passwordKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["decrypt"]
+            );
+            
+            try {
+                const decryptedBuffer = await window.crypto.subtle.decrypt(
+                    {
+                        name: "AES-GCM",
+                        iv: iv
+                    },
+                    aesKey,
+                    ciphertext
+                );
+                return dec.decode(decryptedBuffer);
+            } catch (e) {
+                throw new Error("არასწორი პაროლი!");
+            }
+        }
+
+        // Floating Toast Notification system
+        let toastTimeout;
+        function showToast(message) {
+            let toast = document.getElementById('toastNotification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toastNotification';
+                toast.className = 'toast-msg';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Clipboard auto-clear helper
+        function handleCopy(text, successMessage, buttonEl) {
+            navigator.clipboard.writeText(text).then(() => {
+                const prevText = buttonEl.textContent;
+                buttonEl.textContent = '✓ კოპირდა!';
+                
+                // Styling feedback
+                const isTeal = buttonEl.classList.contains('bg-teal-500/20') || buttonEl.id === 'copyRestored';
+                const isWhite = buttonEl.classList.contains('bg-white/5') || buttonEl.id === 'copyPrompt';
+                
+                if (isTeal) {
+                    buttonEl.classList.replace('bg-teal-500/20', 'bg-neon-green/20');
+                    buttonEl.classList.replace('text-teal-300', 'text-neon-green');
+                } else if (isWhite) {
+                    buttonEl.classList.replace('bg-white/5', 'bg-neon-green/20');
+                    buttonEl.classList.add('text-neon-green');
+                }
+                
+                showToast(successMessage + " ⏳ ბუფერი გასუფთავდება 60 წამში.");
+                
+                setTimeout(() => {
+                    buttonEl.textContent = prevText;
+                    if (isTeal) {
+                        buttonEl.classList.replace('bg-neon-green/20', 'bg-teal-500/20');
+                        buttonEl.classList.replace('text-neon-green', 'text-teal-300');
+                    } else if (isWhite) {
+                        buttonEl.classList.replace('bg-neon-green/20', 'bg-white/5');
+                        buttonEl.classList.remove('text-neon-green');
+                    }
+                }, 2000);
+                
+                clearTimeout(clipboardClearTimeout);
+                clipboardClearTimeout = setTimeout(() => {
+                    navigator.clipboard.writeText("").then(() => {
+                        showToast("🧹 ბუფერი უსაფრთხოდ გასუფთავდა.");
+                    });
+                }, 60000);
+            });
+        }
+
+        // Actions: Copy Sanitized
+        document.getElementById('copySanitized').addEventListener('click', function() {
+            if (!sanitizedOutput.value) return;
+            handleCopy(sanitizedOutput.value, "გასუფთავებული ტექსტი კოპირებულია!", this);
+        });
+
+        // Actions: Copy Prompt + Sanitized Text
+        document.getElementById('copyPrompt').addEventListener('click', function() {
+            if (!sanitizedOutput.value) return;
+            const promptTemplate = `შენ ხარ OPPA.GE-ს გამოცდილი ფინტექ-ანალიტიკოსი და კომუნიკაციის ექსპერტი. 
+გთხოვ, გაანალიზო შემდეგი დეიდენტიფიცირებული ტექსტი და მოამზადო შესაბამისი, ემპათიური და ფინანსურად ზუსტი პასუხი კლიენტისთვის OPPA-ს Brand Voice-ის დაცვით.
+
+მნიშვნელოვანი შეზღუდვები:
+1. პასუხში შეინარჩუნე იგივე უსაფრთხო ტეგები (მაგ. [CUSTOMER_1], [CARD_MASKED_1]) და არავითარ შემთხვევაში არ შეეცადო მათ უკან გაშიფვრას.
+2. ნუ მოიგონებ ტარიფებს ან ვადებს, დაეყრდენი მხოლოდ ფაქტებს.
+
+გასაანალიზებელი ტექსტი:
+"""
+${sanitizedOutput.value}
+"""`;
+            handleCopy(promptTemplate, "პრომპტი ტექსტით კოპირებულია!", this);
+        });
+
+        // Actions: JSON Export Map with Password Encryption
+        document.getElementById('downloadMap').addEventListener('click', async function() {
             if (Object.keys(mappingDb).length === 0) return;
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(mappingDb, null, 2));
+            
+            const password = prompt("შეიყვანეთ პაროლი ფაილის დასაშიფრად:\n(თუ არ შეიყვანთ პაროლს, ფაილი ჩაიწერება დაუშიფრავი სახით)");
+            if (password === null) return; // cancel clicked
+            
+            let exportDataStr = "";
+            let filename = "oppa_anonymizer_map.json";
+            
+            if (password.trim() === "") {
+                // Export plain json
+                exportDataStr = JSON.stringify(mappingDb, null, 2);
+                showToast("📥 ბაზა ექსპორტირებულია დაუშიფრავი სახით.");
+            } else {
+                // Export encrypted json
+                try {
+                    const encryptedObj = await encryptData(JSON.stringify(mappingDb), password);
+                    exportDataStr = JSON.stringify(encryptedObj, null, 2);
+                    filename = "oppa_anonymizer_map.enc.json";
+                    showToast("🔒 ბაზა დაშიფრულია და ექსპორტირებულია.");
+                } catch (e) {
+                    showToast("❌ დაშიფვრა ვერ მოხერხდა.");
+                    return;
+                }
+            }
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(exportDataStr);
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href",     dataStr);
-            downloadAnchorNode.setAttribute("download", "oppa_anonymizer_map.json");
+            downloadAnchorNode.setAttribute("download", filename);
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
         });
+
+        // Actions: JSON Import Map with Decryption
+        importMap.addEventListener('click', () => {
+            mapFileSelector.click();
+        });
+
+        mapFileSelector.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(evt) {
+                try {
+                    const parsed = JSON.parse(evt.target.result);
+                    if (parsed.encrypted) {
+                        const password = prompt("ეს ფაილი დაშიფრულია. გთხოვთ შეიყვანოთ დეშიფრაციის პაროლი:");
+                        if (password === null) return;
+                        
+                        try {
+                            const decryptedStr = await decryptData(parsed, password);
+                            const decryptedMap = JSON.parse(decryptedStr);
+                            loadImportedMap(decryptedMap);
+                        } catch (err) {
+                            alert("❌ დეშიფრაცია ვერ მოხერხდა: " + err.message);
+                        }
+                    } else {
+                        loadImportedMap(parsed);
+                    }
+                } catch (err) {
+                    alert("❌ ფაილის წაკითხვა ვერ მოხერხდა. დარწმუნდით, რომ სწორი JSON ფაილია.");
+                }
+                mapFileSelector.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        function loadImportedMap(mapData) {
+            mappingDb = mapData;
+            const piiCount = Object.keys(mappingDb).length;
+            piiCountEl.textContent = piiCount;
+            
+            let tableHtml = '';
+            const tags = Object.keys(mappingDb);
+            if (tags.length === 0) {
+                tableHtml = '<tr><td colspan="2" class="py-2 text-gray-500 italic text-center">ჩანაცვლებები ჯერ არ განხორციელებულა.</td></tr>';
+            } else {
+                tags.forEach(tag => {
+                    tableHtml += `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="py-2 text-teal-400 font-bold">${tag}</td><td class="py-2 text-gray-300 font-semibold">${mappingDb[tag]}</td></tr>`;
+                });
+            }
+            mappingTable.innerHTML = tableHtml;
+            restorePII();
+            showToast("🔑 ჩანაცვლების ბაზა წარმატებით ჩაიტვირთა!");
+        }
 
         // De-anonymize / Restore original PII in AI response
         function restorePII() {
@@ -721,17 +1079,7 @@ ${sanitizedOutput.value}
         // Actions: Copy Restored Output
         document.getElementById('copyRestored').addEventListener('click', function() {
             if (!restoredOutput.value) return;
-            navigator.clipboard.writeText(restoredOutput.value).then(() => {
-                const prevText = this.textContent;
-                this.textContent = '✓ კოპირდა!';
-                this.classList.replace('bg-teal-500/20', 'bg-neon-green/20');
-                this.classList.replace('text-teal-300', 'text-neon-green');
-                setTimeout(() => {
-                    this.textContent = prevText;
-                    this.classList.replace('bg-neon-green/20', 'bg-teal-500/20');
-                    this.classList.replace('text-neon-green', 'text-teal-300');
-                }, 2000);
-            });
+            handleCopy(restoredOutput.value, "საბოლოო პასუხი კოპირებულია!", this);
         });
 
         // Theme Toggling Logic
