@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPPA.GE — PayBox Network Live Monitor</title>
+<meta name="description" content="OPPA-ს PayBox ტერმინალების ქსელის რეალურ დროში მონიტორინგის დაშბორდი">
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: { 950: '#0B1E30', 900: '#112438', 800: '#1B3A5C', 700: '#275284', 600: '#346B9E' },
+          teal: { 500: '#2E86AB', 400: '#3a9fc7', 300: '#7FE5FF' },
+          accent: { 500: '#E8505B', 400: '#f06770' },
+          success: '#10B981',
+          warning: '#F59E0B',
+          gray: { 50: '#F7F9FC', 100: '#EEF2F7', 200: '#DDE3ED', 600: '#556075', 800: '#1a2a3a' }
+        },
+        fontFamily: { sans: ['FiraGO', 'Segoe UI', sans-serif'] }
+      }
+    }
+  }
+</script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'FiraGO', sans-serif; background: #F7F9FC; color: #1a2a3a; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #EEF2F7; }
+  ::-webkit-scrollbar-thumb { background: #2E86AB; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #1B3A5C; }
+
+  /* Leaflet custom styles */
+  .leaflet-container { background: #112438; font-family: 'FiraGO', sans-serif; }
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    font-family: 'FiraGO', sans-serif;
+  }
+  .leaflet-popup-content { margin: 14px 16px; line-height: 1.6; }
+  .leaflet-popup-tip { box-shadow: none; }
+
+  /* Custom marker */
+  .terminal-marker {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+  }
+  .terminal-marker:hover { transform: scale(1.3); }
+  .terminal-marker.online { background: #10B981; }
+  .terminal-marker.warning { background: #F59E0B; }
+  .terminal-marker.critical {
+    background: #E8505B;
+    animation: pulse-critical 1.5s ease-in-out infinite;
+  }
+  .terminal-marker.offline { background: #8898AA; }
+  @keyframes pulse-critical {
+    0%, 100% { box-shadow: 0 2px 6px rgba(232,80,91,0.5), 0 0 0 0 rgba(232,80,91,0.7); }
+    50% { box-shadow: 0 2px 6px rgba(232,80,91,0.5), 0 0 0 12px rgba(232,80,91,0); }
+  }
+
+  /* Live indicator */
+  .live-dot {
+    width: 8px; height: 8px;
+    background: #10B981;
+    border-radius: 50%;
+    animation: pulse-live 2s ease-in-out infinite;
+    display: inline-block;
+  }
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+
+  /* KPI counter animation */
+  .kpi-value { font-variant-numeric: tabular-nums; }
+
+  /* Alert animations */
+  .alert-item { animation: slideIn 0.4s ease-out; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Transaction stream */
+  .tx-row { animation: fadeInUp 0.3s ease-out; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .tx-row.anomaly {
+    background: linear-gradient(90deg, rgba(232,80,91,0.08) 0%, transparent 100%);
+    border-left: 3px solid #E8505B;
+  }
+
+  /* AI insight card */
+  .insight-card {
+    transition: all 0.3s;
+  }
+  .insight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(27,58,92,0.12);
+  }
+
+  /* Filter button */
+  .filter-btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #DDE3ED;
+    background: white;
+    color: #556075;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .filter-btn:hover { border-color: #2E86AB; color: #2E86AB; }
+  .filter-btn.active {
+    background: #1B3A5C;
+    color: white;
+    border-color: #1B3A5C;
+  }
+
+  /* Glass panel effect */
+  .glass-panel {
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(221,227,237,0.6);
+  }
+
+  /* Map container */
+  #map { height: 100%; width: 100%; border-radius: 12px; }
+
+  /* Loading state */
+  .skeleton {
+    background: linear-gradient(90deg, #EEF2F7 0%, #F7F9FC 50%, #EEF2F7 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- HEADER                                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<header class="bg-gradient-to-r from-navy-900 via-navy-800 to-navy-900 shadow-lg sticky top-0 z-50">
+  <div class="px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-accent-500 flex items-center justify-center font-black text-white text-sm">
+        OPPA
+      </div>
+      <div>
+        <h1 class="text-white font-bold text-lg leading-tight">PayBox Network Monitor</h1>
+        <div class="flex items-center gap-2 text-xs text-blue-200">
+          <span class="live-dot"></span>
+          <span>რეალურ დროში · <span id="currentTime">--:--:--</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex items-center gap-2 text-sm text-blue-200">
+        <span class="text-xs uppercase tracking-wider opacity-70">ფილტრი:</span>
+        <button class="filter-btn active" data-filter="all">ყველა</button>
+        <button class="filter-btn" data-filter="online">🟢 Online</button>
+        <button class="filter-btn" data-filter="warning">🟡 Warning</button>
+        <button class="filter-btn" data-filter="critical">🔴 Critical</button>
+        <button class="filter-btn" data-filter="offline">⚫ Offline</button>
+      </div>
+
+      <button class="relative w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition" title="შეტყობინებები">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0a3 3 0 11-6 0"/></svg>
+        <span id="alertBadge" class="absolute -top-1 -right-1 bg-accent-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+      </button>
+
+      <div class="w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-sm">
+        SM
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- KPI CARDS                                                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="px-6 py-5">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+    <div class="glass-panel rounded-xl p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs uppercase tracking-wider text-gray-600 font-semibold">აქტიური ტერმინალები</span>
+        <div class="w-9 h-9 rounded-lg bg-success/10 flex items-center justify-center text-success text-lg">🟢</div>
+      </div>
+      <div class="flex items-baseline gap-1">
+        <span class="kpi-value text-3xl font-black text-navy-800" id="kpiActive">0</span>
+        <span class="text-lg text-gray-600 font-semibold">/<span id="kpiTotal">50</span></span>
+      </div>
+      <div class="mt-2 text-xs text-success font-semibold flex items-center gap-1">
+        <span>↑ +2</span>
+        <span class="text-gray-600">ბოლო საათში</span>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-xl p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs uppercase tracking-wider text-gray-600 font-semibold">დღევანდელი ტრანზაქციები</span>
+        <div class="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 text-lg">💳</div>
+      </div>
+      <div class="flex items-baseline gap-1">
+        <span class="text-2xl font-black text-navy-800">₾</span>
+        <span class="kpi-value text-3xl font-black text-navy-800" id="kpiVolume">0</span>
+      </div>
+      <div class="mt-2 text-xs text-success font-semibold flex items-center gap-1">
+        <span id="kpiTxCount">0</span>
+        <span class="text-gray-600">ტრანზაქცია · ↑ +12%</span>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-xl p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs uppercase tracking-wider text-gray-600 font-semibold">საშუალო თანხა</span>
+        <div class="w-9 h-9 rounded-lg bg-warning/10 flex items-center justify-center text-warning text-lg">📊</div>
+      </div>
+      <div class="flex items-baseline gap-1">
+        <span class="text-2xl font-black text-navy-800">₾</span>
+        <span class="kpi-value text-3xl font-black text-navy-800" id="kpiAvg">0</span>
+      </div>
+      <div class="mt-2 text-xs text-gray-600 font-semibold flex items-center gap-1">
+        <span>→ უცვლელია</span>
+        <span class="text-gray-600">vs yesterday</span>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-xl p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs uppercase tracking-wider text-gray-600 font-semibold">CSAT ქულა</span>
+        <div class="w-9 h-9 rounded-lg bg-accent-500/10 flex items-center justify-center text-accent-500 text-lg">⭐</div>
+      </div>
+      <div class="flex items-baseline gap-1">
+        <span class="kpi-value text-3xl font-black text-navy-800" id="kpiCsat">0</span>
+        <span class="text-lg text-gray-600 font-semibold">/5</span>
+      </div>
+      <div class="mt-2 text-xs text-success font-semibold flex items-center gap-1">
+        <span>↑ +0.2</span>
+        <span class="text-gray-600">247 შეფასება</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT: MAP + SIDEBAR                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="px-6 pb-5">
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+    <!-- MAP (60%) -->
+    <div class="lg:col-span-3 glass-panel rounded-xl shadow-sm overflow-hidden" style="height: 540px;">
+      <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🗺️</span>
+          <h2 class="font-bold text-navy-800 text-sm">ტერმინალების გეოგრაფიული რუკა</h2>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-success"></span><span class="text-gray-600">Online</span></div>
+          <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-warning"></span><span class="text-gray-600">Warning</span></div>
+          <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-accent-500"></span><span class="text-gray-600">Critical</span></div>
+          <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-gray-600"></span><span class="text-gray-600">Offline</span></div>
+        </div>
+      </div>
+      <div id="map" class="h-[calc(100%-57px)]"></div>
+    </div>
+
+    <!-- SIDEBAR (40%) -->
+    <div class="lg:col-span-2 flex flex-col gap-4" style="height: 540px;">
+
+      <!-- ALERTS (50%) -->
+      <div class="glass-panel rounded-xl shadow-sm flex-1 flex flex-col overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🚨</span>
+            <h2 class="font-bold text-navy-800 text-sm">შეტყობინებები</h2>
+            <span class="text-xs bg-accent-500/10 text-accent-500 px-2 py-0.5 rounded-full font-bold" id="alertCountBadge">0</span>
+          </div>
+          <button class="text-xs text-teal-500 hover:text-teal-400 font-semibold">ყველას ნახვა →</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-3 space-y-2" id="alertsContainer">
+          <!-- alerts dynamically injected -->
+        </div>
+      </div>
+
+      <!-- TRANSACTIONS (50%) -->
+      <div class="glass-panel rounded-xl shadow-sm flex-1 flex flex-col overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">💳</span>
+            <h2 class="font-bold text-navy-800 text-sm">ცოცხალი ტრანზაქციები</h2>
+            <span class="live-dot"></span>
+          </div>
+          <span class="text-xs text-gray-600" id="streamStatus">მოსმენა...</span>
+        </div>
+        <div class="flex-1 overflow-y-auto p-2" id="transactionsContainer">
+          <!-- transactions dynamically injected -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- CHARTS ROW                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="px-6 pb-5">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+    <!-- HOURLY VOLUME -->
+    <div class="lg:col-span-2 glass-panel rounded-xl shadow-sm p-5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="font-bold text-navy-800">📈 საათობრივი ტრანზაქციების მოცულობა</h3>
+          <p class="text-xs text-gray-600 mt-0.5">დღეს vs გუშინ</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <div class="flex items-center gap-1.5"><span class="w-3 h-1 rounded bg-teal-500"></span><span>დღეს</span></div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-1 rounded bg-gray-600 opacity-50"></span><span>გუშინ</span></div>
+        </div>
+      </div>
+      <div class="h-64">
+        <canvas id="hourlyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- STATUS DISTRIBUTION -->
+    <div class="glass-panel rounded-xl shadow-sm p-5">
+      <h3 class="font-bold text-navy-800 mb-4">🎯 სტატუსის განაწილება</h3>
+      <div class="h-64 flex items-center justify-center">
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- AI INSIGHTS PANEL                                               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="px-6 pb-8">
+  <div class="glass-panel rounded-xl shadow-sm p-6">
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🤖</span>
+        <div>
+          <h3 class="font-bold text-navy-800 text-lg">AI Insights — ავტომატური ანალიზი</h3>
+          <p class="text-xs text-gray-600">განახლდება ყოველ 30 წამში · 24-საათიანი მონაცემების ბაზაზე</p>
+        </div>
+      </div>
+      <span class="text-xs text-gray-600 flex items-center gap-1">
+        <span class="live-dot"></span>
+        <span>ბოლო განახლება: <span id="insightTime">--:--</span></span>
+      </span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="insightsContainer">
+      <!-- insights dynamically injected -->
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<footer class="bg-navy-900 text-blue-200 px-6 py-4 text-xs">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-4">
+      <span>OPPA.GE · PayBox Network Live Monitor</span>
+      <span class="text-blue-200/60">v1.0 · 2026</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1"><span class="live-dot"></span>სისტემა მუშაობს</span>
+      <span class="text-blue-200/60">მონაცემები განახლდება ყოველ 3 წამში</span>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- JAVASCRIPT                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+/* ================================================================
+   MOCK DATA: 50 TERMINALS ACROSS TBILISI
+================================================================ */
+const DISTRICTS = {
+  vake:        { center: [41.7158, 44.7770], name: "ვაკე" },
+  saburtalo:   { center: [41.7350, 44.7500], name: "საბურთალო" },
+  gldani:      { center: [41.8200, 44.7900], name: "გლდანი" },
+  isani:       { center: [41.6900, 44.8300], name: "ისანი" },
+  chughureti:  { center: [41.7100, 44.7800], name: "ჩუღურეთი" },
+  didube:      { center: [41.7400, 44.7900], name: "დიდუბე" },
+  nadzaladevi: { center: [41.7700, 44.7800], name: "ნაძალადევი" },
+  samgori:     { center: [41.7000, 44.8700], name: "სამგორი" },
+  krtsanisi:   { center: [41.6700, 44.8200], name: "კრწანისი" },
+  mtatsminda:  { center: [41.6940, 44.7850], name: "მთაწმინდა" }
+};
+
+const MERCHANT_TYPES = [
+  { type: "კაფე", names: ["ბურგერი", "კომპასი", "პური და მარილი", "არტ კაფე", "ლიტერატორი", "ჩაის სახლი", "თბილისი კლასიკი"] },
+  { type: "რესტორანი", names: ["მარანი", "ქართლი", "სუფრა", "ქორობილი", "წინანდალი", "გრილი", "მეგობარი"] },
+  { type: "მაღაზია", names: ["ელექტრონი", "ტანსაცმელები", "წიგნები", "საჩუქარი", "მოდა+", "ჰაუსი"] },
+  { type: "აფთიაქი", names: ["ფარმა+", "ვიტა", "მედი", "ავერსი", "ჰელსი"] },
+  { type: "სუპერმარკეტი", names: ["ნიკორა", "სპარი", "ფრესკო", "კარფური", "მაგნიტი"] },
+  { type: "სალონი", names: ["ბიუთი", "სტილი", "ლუქსი", "ელეგანტი"] },
+  { type: "კლუბი/ბარი", names: ["ნონა", "ბასიანი", "მოდა", "კონტაქტი", "ქალაქი"] },
+  { type: "სპორტი", names: ["ფიტნეს+", "სპორტ ჰოლი", "აქტიუმი"] }
+];
+
+const STREETS = {
+  vake:        ["ჭავჭავაძის გამზ.", "ატენის ქ.", "ბაგრატიონის ქ.", "ვაკის პარკის მიმდებარე"],
+  saburtalo:   ["ვაჟა-ფშაველას გამზ.", "ყაზბეგის გამზ.", "პეკინის ქ.", "ცინცაძის ქ."],
+  glddani:     ["გლდანის მე-7 მკ/რ", "ხიხანიშვილის ქ.", "გლდანის გზ."],
+  isani:       ["წერეთლის გამზ.", "ქეთევან დედოფლის გამზ.", "ისნის ქ."],
+  chughureti:  ["კოსტავას ქ.", "სანაკოეთის ქ.", "ჩუღურეთის ქ."],
+  didube:      ["დიდუბის ქ.", "წყალტუბოს ქ."],
+  nadzaladevi: ["წურწუმას ქ.", "ნაძალადევის ქ."],
+  samgori:     ["მოსკოვის გამზ.", "სამგორის ქ."],
+  krtsanisi:   ["კრწანისის ქ.", "ორთაჭალის ქ."],
+  mtatsminda:  ["რუსთაველის გამზ.", "ფურცელაძის ქ.", "კოტე აფხაზის ქ."]
+};
+
+const ERROR_CODES = ["4032", "5031", "E-114", "PRINTER", "NETWORK_TIMEOUT", "CARD_READ"];
+
+function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randomChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function jitter(coord, range = 0.012) { return coord + (Math.random() - 0.5) * range; }
+
+function generateTerminals() {
+  const terminals = [];
+  const districtKeys = Object.keys(DISTRICTS);
+  const usedIds = new Set();
+
+  for (let i = 0; i < 50; i++) {
+    const districtKey = districtKeys[i % districtKeys.length];
+    const district = DISTRICTS[districtKey];
+    const merchantType = randomChoice(MERCHANT_TYPES);
+    const merchantName = randomChoice(merchantType.names);
+    const street = randomChoice(STREETS[districtKey] || ["ცენტრალური ქ."]);
+
+    // Status distribution: 80% online, 10% warning, 6% critical, 4% offline
+    const statusRand = Math.random();
+    let status = "online";
+    if (statusRand > 0.96) status = "offline";
+    else if (statusRand > 0.90) status = "critical";
+    else if (statusRand > 0.80) status = "warning";
+
+    // Generate unique ID
+    let id;
+    do {
+      id = `PB-${randomInt(1000, 9999)}`;
+    } while (usedIds.has(id));
+    usedIds.add(id);
+
+    terminals.push({
+      id,
+      merchant: `${merchantType.type} ${merchantName}`,
+      merchantType: merchantType.type,
+      address: `${street} ${randomInt(1, 150)}`,
+      district: district.name,
+      districtKey,
+      lat: jitter(district.center[0]),
+      lng: jitter(district.center[1]),
+      status,
+      cashLevel: status === "offline" ? randomInt(0, 50) : randomInt(15, 100),
+      lastTransaction: `${randomInt(0, 23).toString().padStart(2, '0')}:${randomInt(0, 59).toString().padStart(2, '0')}`,
+      todayTransactions: randomInt(5, 150),
+      todayVolume: randomInt(200, 8000),
+      errorCode: status === "critical" ? randomChoice(ERROR_CODES) : null,
+      uptime: status === "offline" ? randomInt(60, 90) : randomInt(95, 100)
+    });
+  }
+  return terminals;
+}
+
+const terminals = generateTerminals();
+
+/* ================================================================
+   STATE
+================================================================ */
+let totalVolume = terminals.reduce((sum, t) => sum + t.todayVolume, 0);
+let totalTxCount = terminals.reduce((sum, t) => sum + t.todayTransactions, 0);
+let alerts = [];
+let transactions = [];
+let activeFilter = "all";
+let currentInsightIndex = 0;
+
+/* ================================================================
+   MAP INITIALIZATION
+================================================================ */
+const map = L.map('map', {
+  zoomControl: true,
+  scrollWheelZoom: true
+}).setView([41.7158, 44.7900], 12);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+const markers = {};
+function createMarkerIcon(status) {
+  return L.divIcon({
+    className: '',
+    html: `<div class="terminal-marker ${status}"></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
+}
+
+function renderMarkers() {
+  Object.values(markers).forEach(m => map.removeLayer(m));
+  Object.keys(markers).forEach(k => delete markers[k]);
+
+  terminals.forEach(t => {
+    if (activeFilter !== "all" && t.status !== activeFilter) return;
+
+    const marker = L.marker([t.lat, t.lng], { icon: createMarkerIcon(t.status) }).addTo(map);
+
+    const statusColor = { online: '#10B981', warning: '#F59E0B', critical: '#E8505B', offline: '#8898AA' }[t.status];
+    const statusLabel = { online: 'ონლაინ', warning: 'გაფრთხილება', critical: 'კრიტიკული', offline: 'გათიშული' }[t.status];
+
+    marker.bindPopup(`
+      <div style="min-width: 240px;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+          <div>
+            <div style="font-weight: 800; color: #1B3A5C; font-size: 14px;">${t.merchant}</div>
+            <div style="font-size: 11px; color: #556075;">${t.id} · ${t.district}</div>
+          </div>
+          <span style="background: ${statusColor}22; color: ${statusColor}; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700;">${statusLabel}</span>
+        </div>
+        <div style="font-size: 11px; color: #556075; margin-bottom: 8px;">📍 ${t.address}</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; padding: 8px; background: #F7F9FC; border-radius: 6px;">
+          <div>
+            <div style="color: #8898AA; font-size: 10px; text-transform: uppercase;">ქეში</div>
+            <div style="font-weight: 700; color: ${t.cashLevel < 20 ? '#E8505B' : t.cashLevel < 50 ? '#F59E0B' : '#10B981'};">${t.cashLevel}%</div>
+          </div>
+          <div>
+            <div style="color: #8898AA; font-size: 10px; text-transform: uppercase;">ტრანზ.</div>
+            <div style="font-weight: 700; color: #1B3A5C;">${t.todayTransactions}</div>
+          </div>
+          <div>
+            <div style="color: #8898AA; font-size: 10px; text-transform: uppercase;">მოცულ.</div>
+            <div style="font-weight: 700; color: #1B3A5C;">₾${t.todayVolume.toLocaleString()}</div>
+          </div>
+          <div>
+            <div style="color: #8898AA; font-size: 10px; text-transform: uppercase;">Uptime</div>
+            <div style="font-weight: 700; color: #1B3A5C;">${t.uptime}%</div>
+          </div>
+        </div>
+        ${t.errorCode ? `<div style="margin-top: 8px; padding: 6px 10px; background: #E8505B11; border-left: 3px solid #E8505B; font-size: 11px; color: #E8505B; font-weight: 600;">⚠️ Error Code: ${t.errorCode}</div>` : ''}
+        <button onclick="alert('ტექნიკოსის გამოძახება ${t.id}-ზე: ${t.address}')" style="margin-top: 10px; width: 100%; padding: 8px; background: #1B3A5C; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">🛠️ ტექნიკოსის გამოძახება</button>
+      </div>
+    `);
+
+    markers[t.id] = marker;
+  });
+}
+
+/* ================================================================
+   KPI COUNTER ANIMATION
+================================================================ */
+function animateCounter(elementId, target, duration = 1500, isCurrency = false, appendText = "") {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const start = parseInt(el.textContent.replace(/[^0-9]/g, '')) || 0;
+  const startTime = performance.now();
+
+  function step(currentTime) {
+    const progress = Math.min((currentTime - startTime) / duration, 1);
+    const current = Math.floor(start + (target - start) * progress);
+    el.textContent = (isCurrency ? "" : "") + current.toLocaleString() + appendText;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function updateKPIs() {
+  const online = terminals.filter(t => t.status === "online").length;
+  const avg = totalTxCount > 0 ? Math.round(totalVolume / totalTxCount) : 0;
+
+  animateCounter("kpiActive", online, 800);
+  document.getElementById("kpiVolume").textContent = Math.round(totalVolume).toLocaleString();
+  document.getElementById("kpiTxCount").textContent = totalTxCount.toLocaleString();
+  animateCounter("kpiAvg", avg, 600);
+  animateCounter("kpiCsat", 4.7, 600, false, "");
+}
+
+/* ================================================================
+   TIME
+================================================================ */
+function updateTime() {
+  const now = new Date();
+  const timeStr = now.toTimeString().split(' ')[0];
+  document.getElementById("currentTime").textContent = timeStr;
+  document.getElementById("insightTime").textContent = timeStr.substring(0, 5);
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+/* ================================================================
+   ALERTS
+================================================================ */
+const alertTemplates = [
+  { type: "critical", text: t => `${t.id} — 5x ნორმალურზე მეტი ტრანზაქცია ბოლო 30 წთ-ში (შესაძლო თაღლითობა)` },
+  { type: "critical", text: t => `${t.id} — Error Code: ${t.errorCode || 'უცნობი'}, მერჩანტი ვერ ახორციელებს გადახდას` },
+  { type: "warning", text: t => `${t.id} — ქეშის დონე ${t.cashLevel}%-მდე დაეცა, საჭიროა შევსება` },
+  { type: "warning", text: t => `${t.id} — ქსელის კავშირი არასტაბილურია (3 გათიშვა ბოლო საათში)` },
+  { type: "info", text: t => `${t.id} — firmware წარმატებით განახლდა v2.4.1` },
+  { type: "info", text: t => `${t.id} — დღიური ლიმიტი მიღწეულია (₾5,000)` },
+  { type: "info", text: t => `${t.id} — ახალი მერჩანტი დარეგისტრირდა, KYC დასრულებულია` }
+];
+
+function pushAlert() {
+  const t = randomChoice(terminals);
+  const template = randomChoice(alertTemplates);
+  const alert = {
+    id: Date.now() + Math.random(),
+    type: template.type,
+    text: template.text(t),
+    terminalId: t.id,
+    time: new Date().toTimeString().substring(0, 8)
+  };
+  alerts.unshift(alert);
+  if (alerts.length > 15) alerts = alerts.slice(0, 15);
+  renderAlerts();
+  document.getElementById("alertBadge").textContent = alerts.filter(a => a.type !== "info").length;
+}
+
+function renderAlerts() {
+  const container = document.getElementById("alertsContainer");
+  document.getElementById("alertCountBadge").textContent = alerts.length;
+
+  if (alerts.length === 0) {
+    container.innerHTML = '<div class="text-center text-gray-600 text-sm py-8">🎉 შეტყობინებები არ არის</div>';
+    return;
+  }
+
+  const colors = { critical: 'border-accent-500 bg-accent-500/5', warning: 'border-warning bg-warning/5', info: 'border-teal-500 bg-teal-500/5' };
+  const icons = { critical: '🔴', warning: '🟡', info: '🔵' };
+  const labels = { critical: 'კრიტიკული', warning: 'გაფრთხილება', info: 'ინფორმაცია' };
+
+  container.innerHTML = alerts.map(a => `
+    <div class="alert-item border-l-4 ${colors[a.type]} rounded-r-lg p-3 cursor-pointer hover:shadow-sm transition">
+      <div class="flex items-start justify-between gap-2 mb-1">
+        <span class="text-xs font-bold ${a.type === 'critical' ? 'text-accent-500' : a.type === 'warning' ? 'text-warning' : 'text-teal-500'}">${icons[a.type]} ${labels[a.type]}</span>
+        <span class="text-[10px] text-gray-600 font-mono">${a.time}</span>
+      </div>
+      <p class="text-xs text-gray-800 leading-snug">${a.text}</p>
+    </div>
+  `).join('');
+}
+
+// Initial alerts
+for (let i = 0; i < 5; i++) {
+  setTimeout(pushAlert, i * 200);
+}
+
+/* ================================================================
+   TRANSACTION STREAM
+================================================================ */
+function pushTransaction() {
+  const t = terminals.filter(t => t.status !== "offline")[Math.floor(Math.random() * (terminals.length - terminals.filter(x => x.status === "offline").length))];
+  const amount = Math.round((Math.random() * 500 + 5) * 100) / 100;
+  const isAnomaly = amount > 400;
+  const tx = {
+    id: Date.now() + Math.random(),
+    amount,
+    merchant: t.merchant,
+    terminalId: t.id,
+    time: new Date().toTimeString().substring(0, 8),
+    anomaly: isAnomaly
+  };
+
+  transactions.unshift(tx);
+  if (transactions.length > 25) transactions = transactions.slice(0, 25);
+
+  // Update totals
+  totalVolume += amount;
+  totalTxCount += 1;
+  t.todayTransactions += 1;
+  t.todayVolume += amount;
+
+  renderTransactions();
+  document.getElementById("streamStatus").textContent = `${totalTxCount.toLocaleString()} ტრანზაქცია დღეს`;
+  updateKPIs();
+}
+
+function renderTransactions() {
+  const container = document.getElementById("transactionsContainer");
+  container.innerHTML = transactions.map(tx => `
+    <div class="tx-row ${tx.anomaly ? 'anomaly' : ''} px-3 py-2 rounded-md hover:bg-gray-50 transition text-xs">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="font-mono text-[10px] text-gray-600">${tx.time}</span>
+          <span class="font-bold ${tx.anomaly ? 'text-accent-500' : 'text-navy-800'}">₾${tx.amount.toFixed(2)}</span>
+          <span class="text-gray-600 truncate">${tx.merchant}</span>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <span class="text-[10px] text-gray-600 font-mono">${tx.terminalId}</span>
+          ${tx.anomaly ? '<span class="text-accent-500" title="ანომალია">⚠️</span>' : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ================================================================
+   CHARTS
+================================================================ */
+let hourlyChart, statusChart;
+
+function initCharts() {
+  // Hourly chart
+  const hours = Array.from({length: 24}, (_, i) => i.toString().padStart(2, '0') + ':00');
+  const todayData = hours.map((_, i) => {
+    // simulate business hours peak
+    const base = 30 + Math.sin((i - 6) / 24 * Math.PI * 2) * 20;
+    return Math.round(base + Math.random() * 30);
+  });
+  const yesterdayData = todayData.map(v => Math.round(v * (0.85 + Math.random() * 0.2)));
+
+  const ctx1 = document.getElementById('hourlyChart').getContext('2d');
+  hourlyChart = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: hours,
+      datasets: [
+        {
+          label: 'დღეს',
+          data: todayData,
+          borderColor: '#2E86AB',
+          backgroundColor: 'rgba(46,134,171,0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#2E86AB',
+          pointBorderColor: 'white',
+          pointBorderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'გუშინ',
+          data: yesterdayData,
+          borderColor: '#8898AA',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          borderDash: [5, 5],
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1B3A5C',
+          padding: 10,
+          cornerRadius: 6,
+          titleFont: { family: 'FiraGO', weight: 'bold' },
+          bodyFont: { family: 'FiraGO' }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'FiraGO', size: 10 }, color: '#8898AA' }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: '#EEF2F7' },
+          ticks: { font: { family: 'FiraGO', size: 10 }, color: '#8898AA' }
+        }
+      }
+    }
+  });
+
+  // Status distribution
+  const statusCounts = {
+    online: terminals.filter(t => t.status === "online").length,
+    warning: terminals.filter(t => t.status === "warning").length,
+    critical: terminals.filter(t => t.status === "critical").length,
+    offline: terminals.filter(t => t.status === "offline").length
+  };
+
+  const ctx2 = document.getElementById('statusChart').getContext('2d');
+  statusChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['Online', 'Warning', 'Critical', 'Offline'],
+      datasets: [{
+        data: [statusCounts.online, statusCounts.warning, statusCounts.critical, statusCounts.offline],
+        backgroundColor: ['#10B981', '#F59E0B', '#E8505B', '#8898AA'],
+        borderColor: 'white',
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            font: { family: 'FiraGO', size: 11 },
+            color: '#556075',
+            padding: 12,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: '#1B3A5C',
+          padding: 10,
+          cornerRadius: 6,
+          titleFont: { family: 'FiraGO', weight: 'bold' },
+          bodyFont: { family: 'FiraGO' },
+          callbacks: {
+            label: function(ctx) {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = Math.round((ctx.raw / total) * 100);
+              return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+/* ================================================================
+   AI INSIGHTS
+================================================================ */
+const insights = [
+  {
+    icon: "💰",
+    priority: "high",
+    title: "ქეშის დეფიციტის პროგნოზი",
+    text: "ბოლო 24 საათში 6 ტერმინალმა (12%) განიცადა ქეშის დეფიციტი. AI-ის პროგნოზი: ხვალ 14:00-მდე კიდევ 3 ტერმინალი დაემატება.",
+    action: "გადანაწილების მარშრუტის ოპტიმიზაცია",
+    priorityLabel: "მაღალი",
+    priorityColor: "bg-accent-500"
+  },
+  {
+    icon: "📈",
+    priority: "medium",
+    title: "პიკის დროის ანალიზი",
+    text: "ვაკის რაიონში ტრანზაქციების მოცულობა 18:00-21:00 საათებზე 2.3x-ით აღემატება საშუალოს. ამ დროს საშუალო ლოდინია 47 წამი.",
+    action: "დამატებითი ტერმინალის განთავსება",
+    priorityLabel: "საშუალო",
+    priorityColor: "bg-warning"
+  },
+  {
+    icon: "🔧",
+    priority: "high",
+    title: "ტექნიკური პრობლემის პატერნი",
+    text: "Terminal PB-7701 (საბურთალო) ბოლო 3 დღეა ხარვეზით მუშაობს. 85% შანსი, რომ პრობლემა ქსელის ინსტალაციაშია.",
+    action: "ტექნიკოსის ვიზიტი დღესვე",
+    priorityLabel: "მაღალი",
+    priorityColor: "bg-accent-500"
+  },
+  {
+    icon: "⭐",
+    priority: "low",
+    title: "მერჩანტის კმაყოფილება",
+    text: "CSAT ქულა 4.7/5 — წინა კვირასთან შედარებით +0.2. ყველაზე დადებითი შეფასებები: სწრაფი ტრანზაქციები (94%).",
+    action: "ბრენდის მარკეტინგული აქტივობა",
+    priorityLabel: "დაბალი",
+    priorityColor: "bg-success"
+  },
+  {
+    icon: "🛡️",
+    priority: "high",
+    title: "თაღლითობის რისკის დეტექცია",
+    text: "AI-მ აღმოაჩინა 3 საეჭვო ტრანზაქცია ბოლო 6 საათში (მოცულობა: ₾2,340). პატერნი: rapid succession, ერთი ბარათიდან, სხვადასხვა ტერმინალი.",
+    action: "რისკ გუნდის შეტყობინება",
+    priorityLabel: "მაღალი",
+    priorityColor: "bg-accent-500"
+  },
+  {
+    icon: "🎯",
+    priority: "medium",
+    title: "მონაცემებზე დაფუძნებული რეკომენდაცია",
+    text: "სამგორის რაიონში საშუალო ტრანზაქცია ₾98-ია, რაც 23%-ით ნაკლებია ქალაქის საშუალოზე. შესაძლო მიზეზი: დემოგრაფიული სტრუქტურა.",
+    action: "მარკეტინგული კამპანიის გეგმა",
+    priorityLabel: "საშუალო",
+    priorityColor: "bg-warning"
+  }
+];
+
+function renderInsights() {
+  const container = document.getElementById("insightsContainer");
+  const visibleInsights = [
+    insights[currentInsightIndex % insights.length],
+    insights[(currentInsightIndex + 1) % insights.length],
+    insights[(currentInsightIndex + 2) % insights.length]
+  ];
+
+  container.innerHTML = visibleInsights.map(ins => `
+    <div class="insight-card bg-white border border-gray-100 rounded-xl p-5 cursor-pointer">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">${ins.icon}</span>
+          <div>
+            <h4 class="font-bold text-navy-800 text-sm">${ins.title}</h4>
+          </div>
+        </div>
+        <span class="${ins.priorityColor} text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">${ins.priorityLabel}</span>
+      </div>
+      <p class="text-xs text-gray-800 leading-relaxed mb-3">${ins.text}</p>
+      <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+        <span class="text-xs text-gray-600 flex items-center gap-1">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span class="font-semibold">${ins.action}</span>
+        </span>
+        <button class="text-xs text-teal-500 hover:text-teal-400 font-bold">დეტალურად →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ================================================================
+   FILTER BUTTONS
+================================================================ */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    activeFilter = this.dataset.filter;
+    renderMarkers();
+  });
+});
+
+/* ================================================================
+   MASTER LOOP - REAL-TIME SIMULATION
+================================================================ */
+function masterLoop() {
+  // Push new transaction
+  pushTransaction();
+
+  // Random chance to push a new alert
+  if (Math.random() < 0.25) pushAlert();
+
+  // Occasionally change a terminal's status
+  if (Math.random() < 0.05) {
+    const t = randomChoice(terminals);
+    const possibleStatuses = ["online", "warning", "critical", "offline"];
+    const newStatus = randomChoice(possibleStatuses);
+    if (newStatus !== t.status) {
+      t.status = newStatus;
+      if (newStatus === "critical" && !t.errorCode) t.errorCode = randomChoice(ERROR_CODES);
+      if (newStatus !== "critical") t.errorCode = null;
+      renderMarkers();
+
+      // Update status chart
+      const statusCounts = {
+        online: terminals.filter(t => t.status === "online").length,
+        warning: terminals.filter(t => t.status === "warning").length,
+        critical: terminals.filter(t => t.status === "critical").length,
+        offline: terminals.filter(t => t.status === "offline").length
+      };
+      statusChart.data.datasets[0].data = [statusCounts.online, statusCounts.warning, statusCounts.critical, statusCounts.offline];
+      statusChart.update('none');
+    }
+  }
+}
+
+/* ================================================================
+   INSIGHTS ROTATION
+================================================================ */
+setInterval(() => {
+  currentInsightIndex += 1;
+  renderInsights();
+}, 15000);
+
+/* ================================================================
+   INITIALIZATION
+================================================================ */
+renderMarkers();
+renderAlerts();
+renderTransactions();
+initCharts();
+renderInsights();
+updateKPIs();
+
+// Start the master loop
+setInterval(masterLoop, 3000);
+
+// Welcome message
+setTimeout(() => {
+  pushAlert();
+  pushTransaction();
+  pushTransaction();
+}, 1000);
+
+console.log("🟢 OPPA Live Monitor initialized — " + terminals.length + " terminals loaded");
+</script>
+
+</body>
+</html>
