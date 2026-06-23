@@ -427,6 +427,56 @@ Auto-refresh: ყოველდღე 8:00-ზე
         </div>
     </div>
 
+    <!-- 3B. AML & FRAUD DETECTION -->
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">🛡️ AML & Fraud Detection — ტრანზაქციების მონიტორინგი და საეჭვო პატერნები</h3>
+        <p class="text-gray-700 text-sm mb-4">ფინტექ კომპანიებისთვის კრიტიკულია საეჭვო ტრანზაქციების და სტრუქტურირების (Smurfing — სებ-ის AML ლიმიტების თავიდან ასაცილებლად თანხების დაყოფა) დროული იდენტიფიცირება. AI-ს შეუძლია დიდი მოცულობის სატრანზაქციო ლოგებიდან გამოავლინოს ეს პატერნები და მოამზადოს STR (საეჭვო ტრანზაქციის რეპორტი).</p>
+        
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-950 leading-relaxed mb-4">
+            <strong class="block mb-2 text-sm text-navy-950">🔍 Mock მონაცემები (სატრანზაქციო ლოგი):</strong>
+            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto font-mono text-[10px]">
+trans_id | user_id | terminal_id | amount    | timestamp        | location
+TXN101   | USR901  | TERM-45     | 2950 GEL  | 2026-06-24 10:15 | თბილისი, საბურთალო
+TXN102   | USR901  | TERM-45     | 2900 GEL  | 2026-06-24 10:18 | თბილისი, საბურთალო
+TXN103   | USR901  | TERM-45     | 2800 GEL  | 2026-06-24 10:22 | თბილისი, საბურთალო
+TXN104   | USR302  | TERM-12     | 150 GEL   | 2026-06-24 11:00 | ქუთაისი, რუსთაველი
+TXN105   | USR405  | TERM-08     | 5000 GEL  | 2026-06-24 11:30 | ბათუმი, ბულვარი
+TXN106   | USR901  | TERM-42     | 2990 GEL  | 2026-06-24 12:05 | თბილისი, ვაკე
+TXN107   | USR880  | TERM-19     | 100 GEL   | 2026-06-24 13:00 | გორი, ჭავჭავაძე
+TXN108   | USR880  | TERM-19     | 2950 GEL  | 2026-06-24 13:05 | გორი, ჭავჭავაძე
+TXN109   | USR880  | TERM-19     | 2950 GEL  | 2026-06-24 13:10 | გორი, ჭავჭავაძე
+            </pre>
+            <p class="mt-2 text-blue-900 font-semibold">ლოგში საეჭვო პატერნებია: USR901 და USR880 ახორციელებენ "Structuring"-ს (თითოეული ტრანზაქცია &lt; 3000 ლარზეა, მაგრამ ჯამურად ბევრად აღემატება, რაც იდენტიფიკაციის თავიდან არიდების ნიშანია).</p>
+        </div>
+
+        <div class="prompt-box text-left">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">AML მონიტორინგისა და საეჭვო ტრანზაქციების (STR) პრომპტი</p>
+            <pre>შენ ხარ OPPA.GE-ს AML და ფინანსური მონიტორინგის უფროსი ოფიცერი.
+გააანალიზე სატრანზაქციო ლოგები &lt;transaction_logs&gt; ტეგებში:
+
+&lt;transaction_logs&gt;
+trans_id | user_id | terminal_id | amount    | timestamp        | location
+TXN101   | USR901  | TERM-45     | 2950 GEL  | 2026-06-24 10:15 | თბილისი, საბურთალო
+TXN102   | USR901  | TERM-45     | 2900 GEL  | 2026-06-24 10:18 | თბილისი, საბურთალო
+TXN103   | USR901  | TERM-45     | 2800 GEL  | 2026-06-24 10:22 | თბილისი, საბურთალო
+TXN104   | USR302  | TERM-12     | 150 GEL   | 2026-06-24 11:00 | ქუთაისი, რუსთაველი
+TXN105   | USR405  | TERM-08     | 5000 GEL  | 2026-06-24 11:30 | ბათუმი, ბულვარი
+TXN106   | USR901  | TERM-42     | 2990 GEL  | 2026-06-24 12:05 | თბილისი, ვაკე
+TXN107   | USR880  | TERM-19     | 100 GEL   | 2026-06-24 13:00 | გორი, ჭავჭავაძე
+TXN108   | USR880  | TERM-19     | 2950 GEL  | 2026-06-24 13:05 | გორი, ჭავჭავაძე
+TXN109   | USR880  | TERM-19     | 2950 GEL  | 2026-06-24 13:10 | გორი, ჭავჭავაძე
+&lt;/transaction_logs&gt;
+
+დავალება (ნაბიჯ-ნაბიჯ Chain-of-Thought მსჯელობით):
+1. გამოავლინე მომხმარებლები, რომლებიც სავარაუდოდ ეწევიან Structuring (Smurfing) ქმედებას — ხელოვნურად ყოფენ ტრანზაქციებს 3000 ლარის ზღვარს ქვეშ (მაგ. 2800-2990 ლარი) მოკლე პერიოდში.
+2. გამოავლინე მაღალი სიხშირის (Velocity Spike) საეჭვო აქტივობები კონკრეტულ ტერმინალებზე.
+3. მოამზადე ოფიციალური საეჭვო ტრანზაქციის რეპორტის (STR) პროექტი ფინანსური მონიტორინგის სამსახურისთვის (FMS). ჩამოწერე მომხმარებლის ID-ები, ჩართული ტერმინალები, ჯამური თანხა და საეჭვო პატერნის დასაბუთება.
+
+პასუხი მომაწოდე სტრუქტურირებულად ქართულ ენაზე.</pre>
+        </div>
+    </div>
+
     <!-- 4. KARPATHY PROMPT CHECKLIST -->
     <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
         <h3 class="font-bold text-navy-900 mb-3">📋 Andrej Karpathy-ს პრომპტინგის ჩეკლისტი (Prompt Quality Check)</h3>
