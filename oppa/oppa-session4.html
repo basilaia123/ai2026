@@ -477,6 +477,76 @@ TXN109   | USR880  | TERM-19     | 2950 GEL  | 2026-06-24 13:10 | გორი, 
         </div>
     </div>
 
+    <!-- 3C. BANK/SYSTEM RECONCILIATION -->
+    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+        <h3 class="font-bold text-navy-900 mb-3">📊 Bank/System Reconciliation — შედარება-შეჯერების ავტომატიზაცია</h3>
+        <p class="text-gray-700 text-sm mb-4">ფინანსურ ოპერაციებში ყოველდღიური შედარება-შეჯერება (Reconciliation) შიდა ჟურნალსა (Internal Ledger) და ბანკის ამონაწერს (Bank Statement) შორის უდიდეს დროს მოითხოვს. AI-ს შეუძლია ავტომატურად იპოვოს შეუსაბამობები (Discrepancies), აკლებული ტრანზაქციები ან თანხობრივი სხვაობები.</p>
+        
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-950 leading-relaxed mb-4">
+            <strong class="block mb-2 text-sm text-navy-950">🔍 შესადარებელი ორმხრივი Mock მონაცემები:</strong>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <strong class="text-teal-800 block mb-1">წყარო A: OPPA შიდა ჟურნალი (Internal Ledger)</strong>
+                    <pre class="bg-slate-900 text-slate-100 p-2 rounded font-mono text-[9px] overflow-x-auto">
+ref_id       | date       | amount   | status
+TXN-2026-001 | 2026-06-24 | 1500 GEL | Success
+TXN-2026-002 | 2026-06-24 | 450 GEL  | Success
+TXN-2026-003 | 2026-06-24 | 3000 GEL | Success
+TXN-2026-004 | 2026-06-24 | 120 GEL  | Success
+                    </pre>
+                </div>
+                <div>
+                    <strong class="text-purple-800 block mb-1">წყარო B: ბანკის ამონაწერი (Bank Statement)</strong>
+                    <pre class="bg-slate-900 text-slate-100 p-2 rounded font-mono text-[9px] overflow-x-auto">
+bank_ref     | date       | amount   | type
+TXN-2026-001 | 2026-06-24 | 1500 GEL | Credit
+TXN-2026-002 | 2026-06-24 | 450 GEL  | Credit
+TXN-2026-003 | 2026-06-24 | 2900 GEL | Credit
+TXN-2026-999 | 2026-06-24 | 800 GEL  | Credit
+                    </pre>
+                </div>
+            </div>
+            <p class="mt-2 text-blue-900 font-semibold">საანალიზო შეუსაბამობები (Discrepancies):</p>
+            <ul class="list-disc pl-5 mt-1 space-y-0.5 text-blue-900 font-medium">
+                <li>TXN-2026-003: შიდა ბაზაში არის 3000 GEL, ბანკში კი — 2900 GEL (თანხობრივი სხვაობა).</li>
+                <li>TXN-2026-004: არის შიდა ჟურნალში, მაგრამ აკლია ბანკის ამონაწერს (განაღდების პრობლემა).</li>
+                <li>TXN-2026-999: არის ბანკის ამონაწერში, მაგრამ აკლია შიდა ბაზას (გაუტარებელი ტრანზაქცია).</li>
+            </ul>
+        </div>
+
+        <div class="prompt-box text-left">
+            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+            <p class="text-xs font-semibold text-teal-400 uppercase mb-2">ავტომატური შედარება-შეჯერების (Reconciliation) პრომპტი</p>
+            <pre>შენ ხარ OPPA-ს უფროსი ფინანსური კონტროლერი.
+გთხოვ შეადარო ერთმანეთს &lt;internal_ledger&gt; და &lt;bank_statement&gt; და მოამზადო შეჯერების აქტი:
+
+&lt;internal_ledger&gt;
+ref_id       | date       | amount   | status
+TXN-2026-001 | 2026-06-24 | 1500 GEL | Success
+TXN-2026-002 | 2026-06-24 | 450 GEL  | Success
+TXN-2026-003 | 2026-06-24 | 3000 GEL | Success
+TXN-2026-004 | 2026-06-24 | 120 GEL  | Success
+&lt;/internal_ledger&gt;
+
+&lt;bank_statement&gt;
+bank_ref     | date       | amount   | type
+TXN-2026-001 | 2026-06-24 | 1500 GEL | Credit
+TXN-2026-002 | 2026-06-24 | 450 GEL  | Credit
+TXN-2026-003 | 2026-06-24 | 2900 GEL | Credit
+TXN-2026-999 | 2026-06-24 | 800 GEL  | Credit
+&lt;/bank_statement&gt;
+
+დავალება (Chain-of-Thought მსჯელობით):
+1. შეადარე ტრანზაქციები ref_id-ის მიხედვით.
+2. გამოავლინე თანხობრივი შეუსაბამობები (Discrepancies) — ერთი და იგივე ID, მაგრამ განსხვავებული თანხა.
+3. გამოავლინე ტრანზაქციები, რომლებიც არის შიდა ჟურნალში, მაგრამ აკლია ბანკის ამონაწერს.
+4. გამოავლინე ტრანზაქციები, რომლებიც არის ბანკის ამონაწერში, მაგრამ აკლია შიდა ჟურნალს.
+5. ჩამოაყალიბე შედარება-შეჯერების შემაჯამებელი ანგარიში (Reconciliation Summary Report) Markdown ცხრილის სახით.
+
+პასუხი დაწერე ქართულად.</pre>
+        </div>
+    </div>
+
     <!-- 4. KARPATHY PROMPT CHECKLIST -->
     <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
         <h3 class="font-bold text-navy-900 mb-3">📋 Andrej Karpathy-ს პრომპტინგის ჩეკლისტი (Prompt Quality Check)</h3>

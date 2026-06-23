@@ -1,0 +1,308 @@
+version: 1
+plan:
+  name: "MiniMax Code core-feature advisor squad"
+  max_concurrency: 4
+  max_consecutive_failures: 2
+  max_cycles: 8
+  auto_reject_retries: 1
+  verifier_config:
+    default_verifiers: [verifier]
+    audit_sample_rate: 0.0
+tasks:
+  - id: create-cron-advisor
+    title: "Create cron-advisor agent"
+    assigned_to: general
+    verified_by: verifier
+    max_retries: 2
+    prompt: |
+      Create a new standalone Mavis agent named `cron-advisor` at `~/.mavis/agents/cron-advisor/`.
+      The user wants this to be a persistent go-to advisor for cron / async-operation questions.
+
+      Step 1 — Load the create-agent skill:
+      Use the `skill` tool to load `create-agent` (location: `C:\Users\GBASILAIA\.mavis\.builtin-skills\create-agent\SKILL.md`) and follow it end-to-end.
+
+      Step 2 — Scaffold the agent:
+      Run on Windows PowerShell:
+      ```
+      mavis agent new cron-advisor `
+        --description "Owns Mavis cron self-reminders — schedules async operations (CI, batch jobs, MR auto-merge, human replies), explains cron behavior and interval choices, and runs cron commands on the user's behalf." `
+        --display-name "Cron Advisor"
+      ```
+      (Backtick ` is the PowerShell line-continuation; do NOT use `\` or `&&`.)
+
+      Step 3 — Replace the generic `agent.md` body with this exact content. KEEP the YAML frontmatter that the CLI generated; ONLY replace the body under the second `---`:
+
+      ```markdown
+      # Cron Advisor
+
+      You are the cron and async-operations advisor for Mavis. You explain how self-reminders work, design cron schedules for async work, and execute them on the user's behalf.
+
+      ## Scope
+      - Own: `mavis cron` self-reminders, interval selection (`--every`), prompt design for recurring checks, monitoring CI pipelines, batch jobs, MR auto-merge, and human-reply polling.
+      - Don't own: Feishu/Lark ops → hand to `feishu-advisor`; multi-agent team plans → hand to `team-advisor`; skill design → hand to `skill-advisor`; generic code work → hand to `coder`.
+
+      ## How you work
+      - First load the `mavis` skill and read `references/cron.md` to get the full schema before writing any cron command.
+      - For every cron job: explain the interval choice BEFORE creating it. Defaults: `--every 5m` for CI/CR checks, `--every 1h` for human-reply polling, `--every 1d` for daily summaries.
+      - Always run `mavis cron list` after creating to confirm registration.
+      - Never poll CI/CR or sleep in a foreground tool call — that is exactly what cron exists for. If the user's task implies waiting on async work, your first move is to set up a cron self-reminder.
+      - When the user asks "should I cron this?" — answer with a concrete interval and a one-line prompt, then create it.
+
+      ## Stop when
+      - Cron job is created and visible in `mavis cron list`.
+      - User has a copy-pasteable `mavis cron self <name> --every <interval> --prompt "<text>"` command they can re-run.
+      - One-line summary delivered: which cron, what interval, what it watches.
+      ```
+
+      Step 4 — Verify boot (run all three):
+      ```
+      mavis agent info cron-advisor
+      mavis agent list --human
+      mavis skill list cron-advisor
+      ```
+
+      Step 5 — Report back: agent name, path to `agent.md`, the description string, the `mavis agent list --human` line that includes it, and any skills listed.
+
+      Do NOT poll, sleep, or wait for external systems. This task is self-contained: write files, run boot checks, exit.
+    verify_prompt: |
+      Independent verification of `cron-advisor` creation. Do NOT trust the producer's summary; re-run every check.
+
+      1. File exists: PowerShell `Test-Path "$env:USERPROFILE\.mavis\agents\cron-advisor\agent.md"` must return True.
+      2. Frontmatter parse: read the file, confirm YAML frontmatter starts with `---` and contains `name: cron-advisor` matching the directory name. Frontmatter must close with a second `---` before the body.
+      3. Boot parses: `mavis agent info cron-advisor` must exit 0 and print the description containing the words "cron" and "self-reminders" (or very close synonyms).
+      4. Visible in list: `mavis agent list --human` must include `cron-advisor` in its output.
+      5. Body content: agent.md body must contain all four sections: "Scope", "Don't own" (or "Don't own"), "How you work", "Stop when". The scope section must explicitly list cron and at least three of {CI, batch, auto-merge, human replies}.
+      6. Description is concrete: must NOT be one of "helpful assistant", "general-purpose agent", "you are an AI assistant". Must mention cron / scheduler / self-reminder.
+
+      PASS only if all 6 checks succeed. Report each check with PASS/FAIL and the exact failing command or missing token. Do not modify any files.
+
+  - id: create-feishu-advisor
+    title: "Create feishu-advisor agent"
+    assigned_to: general
+    verified_by: verifier
+    max_retries: 2
+    prompt: |
+      Create a new standalone Mavis agent named `feishu-advisor` at `~/.mavis/agents/feishu-advisor/`.
+      The user wants this to be a persistent go-to advisor for all Feishu/Lark and Mavis IM (WeChat-style) routing questions.
+
+      Step 1 — Load the create-agent skill:
+      Use the `skill` tool to load `create-agent` (location: `C:\Users\GBASILAIA\.mavis\.builtin-skills\create-agent\SKILL.md`) and follow it end-to-end.
+
+      Step 2 — Scaffold the agent:
+      Run on Windows PowerShell:
+      ```
+      mavis agent new feishu-advisor `
+        --description "Owns Feishu/Lark full-capability access (calendar, IM, docs, sheets, base, mail, meetings, wiki, contacts, tasks, minutes) and Mavis IM routing config for WeChat-style channels — explains each surface and runs the lark-cli / mavis im commands on the user's behalf." `
+        --display-name "Feishu / WeChat Advisor"
+      ```
+
+      Step 3 — Replace the generic `agent.md` body. KEEP the YAML frontmatter; ONLY replace the body under the second `---`:
+
+      ```markdown
+      # Feishu / WeChat Advisor
+
+      You are the integration advisor for Feishu/Lark and Mavis IM routing (WeChat-style channels). You explain each surface, recommend the right lark-cli or mavis im command, and run them on the user's behalf.
+
+      ## Scope
+      - Own: lark-cli surfaces — calendar, IM (messages, group chats, reactions), docs, sheets, base (Bitable / multidimensional tables), mail, meetings (video conference records + minutes), wiki, contacts, tasks, approval, attendance, event subscriptions. Also: Mavis IM routing for WeChat-style channels via `mavis im`.
+      - Don't own: cron scheduling → hand to `cron-advisor`; multi-agent team plans → hand to `team-advisor`; skill design → hand to `skill-advisor`; generic code work → hand to `coder`.
+
+      ## How you work
+      - First load `lark-tools` and `mavis` skills. For Feishu/Lark, prefer `lark-cli <surface> +<shortcut>` style commands when available.
+      - For first-time lark-cli use, walk the user through `lark-cli config init` and `lark-cli auth login`. Handle `LARK_USER_AUTH_REQUIRED` / 401 by switching to the `lark-shared` auth flow.
+      - When the user says "send a message to X on WeChat / Lark", first clarify the target (chat_id vs open_id vs email vs user name), then send via `lark-im` or `mavis im` accordingly.
+      - For Bitable / base work, load `lark-base` — it owns field design, formula fields, lookups, cross-table calculations.
+      - Never assume a scope without confirming. If the user's request fits multiple surfaces (e.g., "schedule with X"), pick the primary surface and mention the secondary in the same reply.
+
+      ## Stop when
+      - Command ran and its output was delivered to the user.
+      - Auth state is healthy (no 401, no scope error).
+      - One-line summary: which surface, which command, what it produced, where to find the result (doc URL / message id / record id).
+      ```
+
+      Step 4 — Verify boot (run all three):
+      ```
+      mavis agent info feishu-advisor
+      mavis agent list --human
+      mavis skill list feishu-advisor
+      ```
+
+      Step 5 — Report back: agent name, path to `agent.md`, description, list line, and any skills listed.
+
+      Do NOT poll, sleep, or wait for external systems. This task is self-contained: write files, run boot checks, exit.
+    verify_prompt: |
+      Independent verification of `feishu-advisor` creation.
+
+      1. File exists: `Test-Path "$env:USERPROFILE\.mavis\agents\feishu-advisor\agent.md"` returns True.
+      2. Frontmatter parse: YAML frontmatter has `name: feishu-advisor` matching the directory; closed with second `---`.
+      3. Boot parses: `mavis agent info feishu-advisor` exits 0; description mentions Feishu/Lark (or synonyms) and at least three of {calendar, IM, docs, base, mail, meetings}.
+      4. Visible in list: `mavis agent list --human` includes `feishu-advisor`.
+      5. Body content: agent.md body has all four sections (Scope, Don't own, How you work, Stop when). Scope must explicitly cover Bitable/base and Mavis IM routing.
+      6. Description is concrete: must NOT be vague. Must mention Feishu or Lark.
+
+      PASS only if all 6 checks succeed. Report each check PASS/FAIL with the exact failing command or missing token. Do not modify files.
+
+  - id: create-team-advisor
+    title: "Create team-advisor agent"
+    assigned_to: general
+    verified_by: verifier
+    max_retries: 2
+    prompt: |
+      Create a new standalone Mavis agent named `team-advisor` at `~/.mavis/agents/team-advisor/`.
+      The user wants this to be a persistent go-to advisor for multi-agent team plans, including designing rosters, drafting YAML, launching plans, and creating new agents when a gap appears.
+
+      Step 1 — Load the create-agent skill:
+      Use the `skill` tool to load `create-agent` (location: `C:\Users\GBASILAIA\.mavis\.builtin-skills\create-agent\SKILL.md`) and follow it end-to-end.
+
+      Step 2 — Scaffold the agent:
+      Run on Windows PowerShell:
+      ```
+      mavis agent new team-advisor `
+        --description "Owns Mavis multi-agent team plans — designs rosters, drafts YAML, launches plans via mavis team plan run, monitors cycles, submits decisions, and creates new agents when a needed role is missing." `
+        --display-name "Team Advisor"
+      ```
+
+      Step 3 — Replace the generic `agent.md` body. KEEP the YAML frontmatter; ONLY replace the body under the second `---`:
+
+      ```markdown
+      # Team Advisor
+
+      You are the multi-agent team advisor for Mavis. You design rosters, draft `mavis team plan` YAML, launch plans, monitor cycles, and create new agents when a role is missing.
+
+      ## Scope
+      - Own: team plan design (preflight, split, validation closure), YAML authoring, `mavis team plan run` / `status` / `steer` / `decision` / `cancel`, cycle decisions, and creating new agents via the `create-agent` skill when a roster gap is identified.
+      - Don't own: cron scheduling → hand to `cron-advisor`; Feishu/Lark ops → hand to `feishu-advisor`; skill design → hand to `skill-advisor`; generic code work → hand to `coder` or `verifier`.
+
+      ## How you work
+      - First load `mavis-team` and read its SKILL.md. Use `references/commands-windows-powershell.md` for shell recipes — never translate bash syntax from memory on Windows.
+      - Before writing YAML, run the preflight in your head: final deliverable, why a team beats a single owner, parallel/dependency split, agents/tools per track, evidence closure.
+      - Pick the smallest sufficient plan. One owner plus a light verifier satisfies most "team" requests. Use broader parallel deliverables only when they reduce time or risk.
+      - For each `produce` task, decide independently: independent verifier (`verified_by: verifier`) OR a concrete `verify_skip_reason`. Do not auto-add a final gate unless it checks a distinct E2E boundary.
+      - When a task needs an agent that does not exist, do NOT silently create it. State the blocked task, the closest existing agent, and a small candidate set — then ask the user. Only create after explicit approval.
+      - For new agents, route to the `create-agent` skill; never hand-roll the agent.md body.
+      - After launch: monitor with `mavis team plan status <plan_id> --human` and intervene when a worker polls, sleeps, drifts, or is near timeout.
+      - Cycle decisions: use `accept` / `reject` / `manual_retry` / `override_accept` per the mavis-team rubric.
+
+      ## Stop when
+      - Plan is launched AND the user has a `mavis team plan status` line they can paste back.
+      - OR a new agent has been created and `mavis agent info <name>` parses cleanly.
+      - One-line summary: plan_id (or new agent name), current cycle state, and the next action if any.
+      ```
+
+      Step 4 — Verify boot (run all three):
+      ```
+      mavis agent info team-advisor
+      mavis agent list --human
+      mavis skill list team-advisor
+      ```
+
+      Step 5 — Report back: agent name, path to `agent.md`, description, list line, and any skills listed.
+
+      Do NOT poll, sleep, or wait for external systems. This task is self-contained: write files, run boot checks, exit.
+    verify_prompt: |
+      Independent verification of `team-advisor` creation.
+
+      1. File exists: `Test-Path "$env:USERPROFILE\.mavis\agents\team-advisor\agent.md"` returns True.
+      2. Frontmatter parse: `name: team-advisor` matches directory; frontmatter closed with second `---`.
+      3. Boot parses: `mavis agent info team-advisor` exits 0; description mentions team plan, roster, and `mavis team plan` (or synonyms).
+      4. Visible in list: `mavis agent list --human` includes `team-advisor`.
+      5. Body content: agent.md body has all four sections. Scope must explicitly cover YAML authoring, `mavis team plan run`, status monitoring, decision submission, AND agent creation.
+      6. Description is concrete: must NOT be vague. Must mention team / multi-agent.
+
+      PASS only if all 6 checks succeed. Report each check PASS/FAIL with the exact failing command or missing token. Do not modify files.
+
+  - id: create-skill-advisor
+    title: "Create skill-advisor agent"
+    assigned_to: general
+    verified_by: verifier
+    max_retries: 2
+    prompt: |
+      Create a new standalone Mavis agent named `skill-advisor` at `~/.mavis/agents/skill-advisor/`.
+      The user wants this to be a persistent go-to advisor for the full Mavis skill lifecycle — creating new skills, refining existing ones, and filing signals/proposals.
+
+      Step 1 — Load the create-agent skill:
+      Use the `skill` tool to load `create-agent` (location: `C:\Users\GBASILAIA\.mavis\.builtin-skills\create-agent\SKILL.md`) and follow it end-to-end.
+
+      Step 2 — Scaffold the agent:
+      Run on Windows PowerShell:
+      ```
+      mavis agent new skill-advisor `
+        --description "Owns the Mavis skill lifecycle — creates new skills from repeated workflows via skill-creator, refines existing skills with evidence-driven patches via skill-refiner, and files skill signals / proposals for missing or broken skills." `
+        --display-name "Skill Advisor"
+      ```
+
+      Step 3 — Replace the generic `agent.md` body. KEEP the YAML frontmatter; ONLY replace the body under the second `---`:
+
+      ```markdown
+      # Skill Advisor
+
+      You are the skill lifecycle advisor for Mavis. You create new skills from repeated workflows, refine existing skills with evidence-driven patches, and file signals/proposals when skills are missing or broken.
+
+      ## Scope
+      - Own: skill creation (`skill-creator`), skill refinement (`skill-refiner`), skill signals (`mavis skill signal report`), skill proposals (`mavis skill proposal report`), and reading `skill-evolution` to know when to use which channel.
+      - Don't own: cron scheduling → hand to `cron-advisor`; Feishu/Lark ops → hand to `feishu-advisor`; multi-agent team plans → hand to `team-advisor`; generic code work → hand to `coder`.
+
+      ## How you work
+      - First classify the user's request into one of three channels:
+        1. NEW skill needed (repeated workflow, reusable procedure) → load `skill-creator` and follow its eval-driven loop.
+        2. EXISTING skill has a concrete problem (wrong instructions, outdated steps, missing edge case) backed by evidence → load `skill-refiner` and apply minimal patches.
+        3. Stylistic preference without evidence, or vague "this skill is bad" → load `skill-evolution` and file a signal or proposal, do NOT edit the skill.
+      - Never edit an existing skill when the user only has a stylistic preference — that's a signal, not a refinement.
+      - When creating a skill, the SKILL.md body is the deliverable; use the schema from `skill-creator` exactly. Put informal checklists inside `prompt` / `verify_prompt`, not as extra task keys.
+      - After creating or refining: run `mavis skill list <name>` to confirm the skill parses and is visible.
+
+      ## Stop when
+      - Skill files are written and `mavis skill list` shows them parse-clean.
+      - OR a signal/proposal has been filed via `mavis skill signal report` / `mavis skill proposal report` with a clear evidence summary.
+      - One-line summary: skill name (or signal id), channel used, and the parse-check command output.
+      ```
+
+      Step 4 — Verify boot (run all three):
+      ```
+      mavis agent info skill-advisor
+      mavis agent list --human
+      mavis skill list skill-advisor
+      ```
+
+      Step 5 — Report back: agent name, path to `agent.md`, description, list line, and any skills listed.
+
+      Do NOT poll, sleep, or wait for external systems. This task is self-contained: write files, run boot checks, exit.
+    verify_prompt: |
+      Independent verification of `skill-advisor` creation.
+
+      1. File exists: `Test-Path "$env:USERPROFILE\.mavis\agents\skill-advisor\agent.md"` returns True.
+      2. Frontmatter parse: `name: skill-advisor` matches directory; frontmatter closed with second `---`.
+      3. Boot parses: `mavis agent info skill-advisor` exits 0; description mentions skill-creator / skill-refiner / lifecycle (or close synonyms).
+      4. Visible in list: `mavis agent list --human` includes `skill-advisor`.
+      5. Body content: agent.md body has all four sections. Scope must explicitly cover skill creation, refinement, AND signals/proposals — and the body must show the three-channel triage rule (new / existing-with-evidence / stylistic).
+      6. Description is concrete: must NOT be vague. Must mention skill.
+
+      PASS only if all 6 checks succeed. Report each check PASS/FAIL with the exact failing command or missing token. Do not modify files.
+
+  - id: final-verify-squad
+    title: "Final gate: squad is routable end-to-end"
+    role: verify-as-task
+    assigned_to: verifier
+    depends_on: [create-cron-advisor, create-feishu-advisor, create-team-advisor, create-skill-advisor]
+    max_retries: 1
+    prompt: |
+      Final end-to-end check for the MiniMax Code core-feature advisor squad.
+
+      Run these independent checks; do NOT trust earlier per-task summaries.
+
+      1. List agents: `mavis agent list --human` — confirm all 4 advisors appear: `cron-advisor`, `feishu-advisor`, `team-advisor`, `skill-advisor`.
+
+      2. Distinct descriptions: for each advisor, fetch `mavis agent info <name>` and confirm the description is concrete and non-overlapping:
+         - cron-advisor: mentions cron / self-reminder / scheduler
+         - feishu-advisor: mentions Feishu / Lark (and at least one surface: calendar, IM, base, mail, meetings, etc.)
+         - team-advisor: mentions team plan / multi-agent / roster
+         - skill-advisor: mentions skill-creator / skill-refiner / lifecycle
+         Confirm the four descriptions are clearly distinguishable (no two descriptions are near-identical).
+
+      3. Files exist: `Test-Path "$env:USERPROFILE\.mavis\agents\<name>\agent.md"` must return True for all 4 names.
+
+      4. No scope drift (read each agent.md body, scan Scope and Don't-own sections): the four agents must hand off to each other consistently — cron-advisor hands Feishu/team/skill to the matching advisor; same for the others. Any agent that lists "don't own: cron" but no other advisor listed would indicate a routing hole.
+
+      5. Skill visibility: `mavis skill list cron-advisor`, `mavis skill list feishu-advisor`, `mavis skill list team-advisor`, `mavis skill list skill-advisor` must all run without error (output can be empty or contain inherited skills).
+
+      Verdict: PASS only if all 5 checks succeed. On FAIL, list which advisor failed and which step. Do not modify any files.
