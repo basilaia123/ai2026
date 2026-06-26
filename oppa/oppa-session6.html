@@ -1,247 +1,1257 @@
 <!DOCTYPE html>
 <html lang="ka">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>სესია 6 | OPPA.GE – ტექნიკური ეფექტურობა და SQL ოპტიმიზაცია</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: { extend: { colors: {
-                navy: { 950:'#0a1e30',900:'#1B3A5C',800:'#234a75',700:'#2c5a8e',600:'#356aa7',500:'#3e7ac0',400:'#6498cc',300:'#8ab6d9',200:'#b0d3e6',100:'#d6eef5',50:'#edf7fb' },
-                teal: { 600:'#1e6e8a',500:'#2E86AB',400:'#3a9fc7',300:'#60b8d4',200:'#90d0e3' },
-                lovable: { 500:'#ff4f00', 600:'#e64600' }
-            }}}
-        }
-    </script>
-    <style>
-        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
-        html { scroll-behavior: smooth; font-size: 17px; }
-        #sidebar::-webkit-scrollbar { width: 4px; }
-        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
-        .nav-link.active { background: rgba(255,255,255,0.12); border-left: 3px solid #3a9fc7; }
-        .nav-link:hover { background: rgba(255,255,255,0.08); }
-        pre { white-space: pre-wrap; word-wrap: break-word; }
-        .topic-card { border-left: 4px solid #1B3A5C; }
-        #backToTop { opacity:0; pointer-events:none; transition: opacity .3s, transform .3s; }
-        #backToTop.visible { opacity:1; pointer-events:auto; }
-        #backToTop:hover { transform: translateY(-2px); }
-        #fontControls { position:fixed; bottom:1.5rem; left:1.5rem; z-index:45; display:flex; flex-direction:column; gap:4px; background:rgba(27,58,92,.92); backdrop-filter:blur(8px); padding:5px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,.2); }
-        #fontControls button { width:34px; height:34px; display:flex; align-items:center; justify-content:center; background:transparent; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; transition:background .2s; }
-        #fontControls button:hover { background:rgba(255,255,255,.15); }
-        .prompt-box { background:#0f172a; border:1px solid rgba(46,134,171,.3); border-radius:.75rem; padding:1rem 1.25rem; position:relative; }
-        .prompt-box pre { color:#93c5fd; font-size:.82rem; line-height:1.65; }
-        .copy-btn { position:absolute; top:.5rem; right:.5rem; background:rgba(46,134,171,.25); color:#7dd3fc; border:none; border-radius:6px; padding:3px 10px; font-size:.72rem; cursor:pointer; transition:background .2s; }
-        .copy-btn:hover { background:rgba(46,134,171,.45); }
-        .warning-box { background:#fff7ed; border-left:4px solid #f97316; border-radius:0 .5rem .5rem 0; }
-        .tip-box { background:#f0fdf4; border-left:4px solid #22c55e; border-radius:0 .5rem .5rem 0; }
-        .activity-box { background:#fefce8; border-left:4px solid #eab308; border-radius:0 .5rem .5rem 0; }
-        .code-box { background:#f8fafc; border-left:4px solid #334155; border-radius:0 .5rem .5rem 0; }
-        .danger-box { background:#fff1f2; border-left:4px solid #ef4444; border-radius:0 .5rem .5rem 0; }
-        .stage-box { background:#f0f9ff; border-left:4px solid #0ea5e9; border-radius:0 .5rem .5rem 0; }
-        @media print { #sidebar,#menuBtn,#overlay,#backToTop,#fontControls{display:none!important} main,#mainContent{margin-left:0!important} body{background:white} .topic-card{break-inside:avoid} @page{margin:1.5cm} }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სესია 6 | OPPA.GE – Lovable, SQL ოპტიმიზაცია და Legacy კოდის მოდერნიზაცია</title>
+  <meta name="description" content="OPPA.GE კორპორატიული AI ტრენინგი, სესია 6: Lovable-ით შიდა ინსტრუმენტების შექმნა, SQL ოპტიმიზაცია Claude Code-ით, Legacy კოდის რეფაქტორინგი და Production AI ასისტენტი.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        navy: { 950:'#0a1e30',900:'#1B3A5C',800:'#234a75',700:'#2c5a8e',600:'#356aa7',500:'#3e7ac0',400:'#6498cc',300:'#8ab6d9',200:'#b0d3e6',100:'#d6eef5',50:'#edf7fb' },
+        teal: { 600:'#1e6e8a',500:'#2E86AB',400:'#3a9fc7',300:'#60b8d4',200:'#90d0e3' },
+        lovable: { 600:'#e64600', 500:'#ff4f00', 400:'#ff7340', 100:'#fff0eb' },
+        hermes: { 700:'#6d28d9', 600:'#7c3aed', 500:'#8b5cf6', 400:'#a78bfa', 100:'#f5f3ff' }
+      }}}
+    }
+  </script>
+  <style>
+    * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+    html { scroll-behavior: smooth; font-size: 17px; }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .nav-link.active { background: rgba(255,255,255,0.12); border-left: 3px solid #3a9fc7; }
+    .nav-link:hover { background: rgba(255,255,255,0.08); }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    .topic-card { border-left: 4px solid #1B3A5C; }
+    #backToTop { opacity:0; pointer-events:none; transition: opacity .3s, transform .3s; }
+    #backToTop.visible { opacity:1; pointer-events:auto; }
+    #backToTop:hover { transform: translateY(-2px); }
+    #fontControls { position:fixed; bottom:1.5rem; left:1.5rem; z-index:45; display:flex; flex-direction:column; gap:4px; background:rgba(27,58,92,.92); backdrop-filter:blur(8px); padding:5px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+    #fontControls button { width:34px; height:34px; display:flex; align-items:center; justify-content:center; background:transparent; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; transition:background .2s; }
+    #fontControls button:hover { background:rgba(255,255,255,.15); }
+    .prompt-box { background:#0f172a; border:1px solid rgba(56,189,248,.25); border-radius:.75rem; padding:2.5rem 1.25rem 1rem 1.25rem; position:relative; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.15); transition:border-color .2s, box-shadow .2s; }
+    .prompt-box:hover { border-color:rgba(56,189,248,.5); box-shadow:0 6px 24px rgba(56,189,248,.15); }
+    .prompt-box::before { content:"💡 PROMPT / პრომპტი"; position:absolute; top:0; left:0; right:0; height:1.9rem; background:rgba(30,41,59,.75); border-bottom:1px solid rgba(255,255,255,.05); color:#38bdf8; font-family:'FiraGO',sans-serif; font-size:.68rem; font-weight:700; letter-spacing:.05em; display:flex; align-items:center; padding-left:2.75rem; }
+    .prompt-box::after { content:""; position:absolute; top:.65rem; left:.75rem; width:.38rem; height:.38rem; border-radius:50%; background:#ef4444; box-shadow:.6rem 0 0 #f59e0b, 1.2rem 0 0 #10b981; }
+    .prompt-box pre { color:#e2e8f0; font-size:.82rem; line-height:1.65; }
+    .copy-btn { position:absolute; top:.32rem; right:.5rem; background:rgba(56,189,248,.15); color:#38bdf8; border:1px solid rgba(56,189,248,.35); border-radius:5px; padding:3px 10px; font-size:.65rem; font-weight:700; cursor:pointer; transition:all .2s; z-index:10; }
+    .copy-btn:hover { background:rgba(56,189,248,.35); border-color:rgba(56,189,248,.6); color:#fff; }
+    .warning-box { background:#fff7ed; border-left:4px solid #f97316; border-radius:0 .5rem .5rem 0; }
+    .tip-box { background:#f0fdf4; border-left:4px solid #22c55e; border-radius:0 .5rem .5rem 0; }
+    .activity-box { background:#fefce8; border-left:4px solid #eab308; border-radius:0 .5rem .5rem 0; }
+    .danger-box { background:#fff1f2; border-left:4px solid #ef4444; border-radius:0 .5rem .5rem 0; }
+    .code-box { background:#f8fafc; border-left:4px solid #334155; border-radius:0 .5rem .5rem 0; }
+    .lovable-box { background:#fff0eb; border-left:4px solid #ff4f00; border-radius:0 .5rem .5rem 0; }
+    .stage-box { background:#f0f9ff; border-left:4px solid #0ea5e9; border-radius:0 .5rem .5rem 0; }
+    .flow-step { border:1px solid rgba(0,0,0,.08); border-radius:.75rem; }
+    .hermes-box { background:#f5f3ff; border-left:4px solid #7c3aed; border-radius:0 .5rem .5rem 0; }
+    .hermes-card { border-left:4px solid #7c3aed; }
+    .skill-badge { display:inline-block; background:rgba(109,40,217,.12); color:#6d28d9; border:1px solid rgba(109,40,217,.25); border-radius:999px; padding:2px 10px; font-size:.72rem; font-weight:700; }
+    @media print { #sidebar,#menuBtn,#overlay,#backToTop,#fontControls{display:none!important} main,#mainContent{margin-left:0!important} body{background:white} .topic-card{break-inside:avoid} @page{margin:1.5cm} }
+  </style>
 </head>
 <body class="bg-gray-50">
-<div id="overlay" class="hidden" aria-hidden="true"></div>
+<div id="overlay" class="hidden fixed inset-0 bg-black/40 z-30" aria-hidden="true"></div>
 <button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-navy-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-navy-800 transition-colors">
-    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
 </button>
 
 <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-navy-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
-<div class="px-5 py-6 border-b border-white/10">
+  <div class="px-5 py-6 border-b border-white/10">
     <div class="flex items-center gap-2 mb-2">
-        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
-        <span class="text-teal-300 text-xs font-medium">AI ტრენინგი · სესია 6</span>
+      <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
+      <span class="text-lovable-400 text-xs font-medium">AI ტრენინგი · სესია 6</span>
     </div>
     <h1 class="text-base font-bold leading-tight">ტექნიკური ეფექტურობა და SQL ოპტიმიზაცია</h1>
-    <p class="text-blue-400/70 text-xs mt-1.5">სესია 6 · 3-საათიანი ვორქშოფი</p>
-</div>
-<div class="px-5 py-3 bg-lovable-500/20 border-b border-white/10">
-    <p class="text-[10px] font-semibold uppercase tracking-wider text-lovable-500 mb-1">სწრაფი მარშრუტი</p>
-    <p class="text-xs text-blue-200 mb-1"><span class="text-lovable-500 font-bold">I ნაწილი:</span> Lovable — No-Code ხელსაწყოები</p>
-    <p class="text-xs text-blue-300/70"><span class="text-teal-300 font-bold">II ნაწილი:</span> SQL და ძველი კოდის (Legacy Code) მოდერნიზაცია</p>
-</div>
-<nav class="py-3">
+    <p class="text-blue-400/70 text-xs mt-1.5">სესია 6 · 3-საათიანი ვორქშოფი · ეტაპი I ფინალი</p>
+  </div>
+  <div class="px-5 py-3 bg-lovable-500/20 border-b border-white/10">
+    <p class="text-[10px] font-semibold uppercase tracking-wider text-lovable-400 mb-1">სწრაფი მარშრუტი</p>
+    <p class="text-xs text-blue-200 mb-1"><span class="text-lovable-400 font-bold">I ნაწილი:</span> Lovable · SQL · Legacy Code</p>
+    <p class="text-xs text-blue-300/70"><span class="text-hermes-400 font-bold">II ნაწილი:</span> Hermes Agent — Autonomous AI</p>
+  </div>
+  <nav class="py-3">
     <a href="#seg-recap" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-recap"><span class="pr-2">სესია 5-ის რეკაპი და სესიის მიზნები</span><span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span></a>
-    <a href="#seg-lovable" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-lovable"><span class="pr-2">Lovable — OPPA-ს შიდა ინსტრუმენტები</span><span class="shrink-0 text-[10px] bg-lovable-500/20 text-lovable-500 px-1.5 py-0.5 rounded">45 წთ</span></a>
+    <a href="#seg-lovable" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-lovable"><span class="pr-2">Lovable — OPPA-ს შიდა ინსტრუმენტები</span><span class="shrink-0 text-[10px] bg-lovable-500/20 text-lovable-400 px-1.5 py-0.5 rounded">45 წთ</span></a>
     <a href="#seg-sql" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-sql"><span class="pr-2">SQL ოპტიმიზაცია და მაღალდატვირთული ბაზები</span><span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">40 წთ</span></a>
     <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-break"><span class="pr-2">☕ შესვენება</span><span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">10 წთ</span></a>
     <a href="#seg-legacy" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-legacy"><span class="pr-2">Legacy კოდის მოდერნიზაცია</span><span class="shrink-0 text-[10px] bg-teal-500/20 text-teal-300 px-1.5 py-0.5 rounded">40 წთ</span></a>
+    <a href="#seg-hermes" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-hermes"><span class="pr-2">Hermes Agent — Autonomous AI</span><span class="shrink-0 text-[10px] bg-hermes-500/20 text-hermes-400 px-1.5 py-0.5 rounded">35 წთ</span></a>
     <a href="#seg-prod-assistant" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-prod-assistant"><span class="pr-2">Production AI ასისტენტი</span><span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">25 წთ</span></a>
     <a href="#seg-wrap" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all border-l-[3px] border-transparent" data-topic="seg-wrap"><span class="pr-2">შეჯამება და II ეტაპზე გადასვლა</span><span class="shrink-0 text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded">10 წთ</span></a>
-</nav>
-<div class="px-5 py-4 border-t border-white/10 mt-2">
+  </nav>
+  <div class="px-5 py-4 border-t border-white/10 mt-2">
     <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">ტრენერი</p>
     <p class="text-sm font-semibold text-white">გიორგი ბასილაია</p>
     <p class="text-xs text-blue-400/70">Smart Academy · 2026</p>
-</div>
+  </div>
 </aside>
 
 <main id="mainContent" class="min-h-screen transition-[margin] duration-300">
 <header class="bg-gradient-to-r from-navy-950 to-navy-800 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10">
-    <div class="max-w-5xl">
-        <div class="flex items-center gap-2 mb-2">
-            <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
-            <span class="text-teal-300 text-sm font-medium">კორპორატიული AI ტრენინგი · სესია 6</span>
-        </div>
-        <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">ტექნიკური ეფექტურობა და<br><span class="text-teal-300">SQL ოპტიმიზაცია</span></h1>
-        <p class="text-blue-200 text-base max-w-2xl leading-relaxed mb-5">შიდა ინსტრუმენტების შექმნა Lovable-ით, ძველი კოდის რეფაქტორინგი და SQL ბაზების ოპტიმიზაცია Claude Code-ით. სესიის ბოლოს გუნდს ექნება მოქმედი შიდა ხელსაწყო და ოპტიმიზებული ტექნიკური სამუშაო პროცესი.</p>
-        <div class="flex flex-wrap gap-4">
-            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>180 წუთი (3 სთ)</span>
-            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>ტექნიკური ფოკუსი</span>
-            <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>6 სეგმენტი</span>
-        </div>
+  <div class="max-w-5xl">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPPA.GE</span>
+      <span class="text-lovable-400 text-sm font-medium">კორპორატიული AI ტრენინგი · სესია 6 · ეტაპი I ფინალი</span>
     </div>
+    <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">ტექნიკური ეფექტურობა —<br><span class="text-lovable-400">Lovable, SQL და Legacy კოდი</span></h1>
+    <p class="text-blue-200 text-base max-w-2xl leading-relaxed mb-5">შიდა ინსტრუმენტების შექმნა Lovable-ით, OPPA-ს გადახდის ბაზის SQL ოპტიმიზაცია Claude Code-ით, 10+ წლის Python/PHP კოდის რეფაქტორინგი და API-ზე დაფუძნებული Production ასისტენტი. ეტაპი I-ის ფინალური სესია.</p>
+    <div class="flex flex-wrap gap-4">
+      <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>180 წუთი (3 სთ)</span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>ტექნიკური ფოკუსი</span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>6 სეგმენტი</span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-lovable-400 font-semibold"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>ეტაპი I ფინალი</span>
+    </div>
+  </div>
 </header>
 
 <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
 
+<!-- Route Table -->
+<div class="bg-navy-900 text-white rounded-xl p-6 mb-10">
+  <div class="flex items-center gap-3 mb-5"><span class="text-2xl">⏱</span><div><p class="text-xs font-semibold uppercase tracking-wider text-lovable-400 mb-0.5">სესიის მარშრუტი</p><h2 class="text-lg font-bold">3 საათი – სრული სესიის გეგმა</h2></div></div>
+  <p class="text-xs font-semibold uppercase tracking-wider text-lovable-400 mb-2">ნაწილი I · Lovable და SQL ოპტიმიზაცია</p>
+  <div class="overflow-x-auto mb-4">
+    <table class="w-full text-sm">
+      <thead><tr class="border-b border-white/20"><th class="text-left py-2 pr-3 text-lovable-400 font-semibold w-6">#</th><th class="text-left py-2 pr-4 text-lovable-400 font-semibold">სეგმენტი</th><th class="text-left py-2 pr-3 text-lovable-400 font-semibold">დრო</th><th class="text-left py-2 text-lovable-400 font-semibold">ტიპი</th></tr></thead>
+      <tbody class="text-gray-200">
+        <tr class="border-b border-white/10"><td class="py-2 pr-3 text-green-400 font-bold">1</td><td class="py-2 pr-4">სესია 5-ის რეკაპი + KYC სცენარის სტატუსი + ეტაპი I-ის ჯამი</td><td class="py-2 pr-3 font-semibold text-white">10 წთ</td><td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">განხილვა</span></td></tr>
+        <tr class="border-b border-white/10"><td class="py-2 pr-3 text-lovable-400 font-bold">2</td><td class="py-2 pr-4">Lovable — OPPA-ს Terminal Status Monitor და Expense Approval App (ლაივ Build)</td><td class="py-2 pr-3 font-semibold text-white">45 წთ</td><td class="py-2"><span class="bg-lovable-500/20 text-lovable-400 text-xs px-2 py-0.5 rounded">დემო + ვორქშოფი</span></td></tr>
+        <tr><td class="py-2 pr-3 text-blue-400 font-bold">3</td><td class="py-2 pr-4">SQL ოპტიმიზაცია — Claude Code-ით ნელი Query-ების დიაგნოსტიკა და Index-ების შექმნა</td><td class="py-2 pr-3 font-semibold text-white">40 წთ</td><td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">დემო + პრაქტიკა</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flex items-center gap-3 my-4 py-2 px-4 bg-white/10 rounded-lg"><span class="text-amber-300 font-bold text-sm">☕</span><p class="text-sm text-amber-200 font-semibold">შესვენება – 10 წუთი</p></div>
+  <p class="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-2">ნაწილი II · Legacy კოდი, Production ასისტენტი და ეტაპი II-ის Roadmap</p>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <tbody class="text-gray-200">
+        <tr class="border-b border-white/10"><td class="py-2 pr-3 text-teal-400 font-bold">4</td><td class="py-2 pr-4">Legacy კოდის მოდერნიზაცია — Python/PHP → Clean Code, Unit Tests, TypeScript მიგრაცია</td><td class="py-2 pr-3 font-semibold text-white">40 წთ</td><td class="py-2"><span class="bg-teal-500/20 text-teal-300 text-xs px-2 py-0.5 rounded">დემო + ვორქშოფი</span></td></tr>
+        <tr class="border-b border-white/10"><td class="py-2 pr-3 text-green-400 font-bold">5</td><td class="py-2 pr-4">Production AI ასისტენტი — OPPA-ს API დოკუმენტაციაზე დაყრდნობილი Technical Support Bot</td><td class="py-2 pr-3 font-semibold text-white">25 წთ</td><td class="py-2"><span class="bg-green-500/20 text-green-300 text-xs px-2 py-0.5 rounded">ლაივ Build</span></td></tr>
+        <tr><td class="py-2 pr-3 text-sky-400 font-bold">6</td><td class="py-2 pr-4">ეტაპი I ფინალი — ROI გაზომვა, 30-დღიანი ვალდებულება და ეტაპი II-ის Roadmap</td><td class="py-2 pr-3 font-semibold text-white">10 წთ</td><td class="py-2"><span class="bg-sky-500/20 text-sky-300 text-xs px-2 py-0.5 rounded">შეჯამება</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <!-- SEG 1: RECAP -->
 <section id="seg-recap" class="mb-14 scroll-mt-6">
-    <div class="flex items-center gap-3 mb-6">
-        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">1</span>
-        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 1 · 10 წუთი · განხილვა</p><h2 class="text-xl font-bold text-navy-900">სესია 5-ის რეკაპი და სესიის მიზნები</h2></div>
+  <div class="flex items-center gap-3 mb-6">
+    <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">1</span>
+    <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 1 · 10 წუთი · განხილვა</p><h2 class="text-xl font-bold text-navy-900">სესია 5-ის რეკაპი და ეტაპი I-ის ჯამი</h2></div>
+  </div>
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-5">
+    <h3 class="font-bold text-navy-900 mb-3">სესია 5-ის შემდეგ — სად ვართ</h3>
+    <ul class="space-y-2 text-gray-700 text-sm">
+      <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>Support Triage — ტერმინალების 8,000+ Ticket-ის ავტომატური კატეგორიზაცია და Slack-ში გაგზავნა</span></li>
+      <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>KYC Onboarding — Webhook → AI → Router → Slack/Email → Google Sheets სრული სცენარი</span></li>
+      <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>Error Handling — Retry, Resume, Break სტრატეგიები ფინანსური ავტომატიზაციისთვის</span></li>
+      <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>Make.com Advanced — Conditions, Iterator, Batch Processing, API Calls</span></li>
+    </ul>
+  </div>
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-5">
+    <h3 class="font-bold text-navy-900 mb-3">ეტაპი I — სრული გეგმა (სესიები 1-6)</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="border-b border-gray-200"><th class="text-left py-2 pr-4 text-gray-500 font-semibold">სესია</th><th class="text-left py-2 pr-4 text-gray-500 font-semibold">თემა</th><th class="text-left py-2 text-gray-500 font-semibold">სტატუსი</th></tr></thead>
+        <tbody class="text-gray-700 divide-y divide-gray-100">
+          <tr><td class="py-2 pr-4 text-navy-900 font-semibold">1</td><td class="py-2 pr-4">AI-ის საფუძვლები და Prompt Engineering</td><td class="py-2"><span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">✅ მზადაა</span></td></tr>
+          <tr><td class="py-2 pr-4 text-navy-900 font-semibold">2</td><td class="py-2 pr-4">Make.com ავტომატიზაცია და AI ინტეგრაცია</td><td class="py-2"><span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">✅ მზადაა</span></td></tr>
+          <tr><td class="py-2 pr-4 text-navy-900 font-semibold">3</td><td class="py-2 pr-4">Compliance, PII Safety და Jailbreak Defense</td><td class="py-2"><span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">✅ მზადაა</span></td></tr>
+          <tr><td class="py-2 pr-4 text-navy-900 font-semibold">4</td><td class="py-2 pr-4">Multimodal AI, Coda.io და Data Intelligence</td><td class="py-2"><span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">✅ მზადაა</span></td></tr>
+          <tr><td class="py-2 pr-4 text-navy-900 font-semibold">5</td><td class="py-2 pr-4">Support Triage, KYC Onboarding, Make.com Advanced</td><td class="py-2"><span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">✅ მზადაა</span></td></tr>
+          <tr><td class="py-2 pr-4 text-lovable-500 font-bold">6</td><td class="py-2 pr-4">Lovable, SQL, Legacy Code, Production Assistant</td><td class="py-2"><span class="text-xs bg-lovable-100 text-lovable-600 px-2 py-0.5 rounded-full font-bold">▶ დღეს</span></td></tr>
+        </tbody>
+      </table>
     </div>
-    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-5">
-        <h3 class="font-bold text-navy-900 mb-3">სესია 5-ის შემდეგ — სად ვართ</h3>
-        <ul class="space-y-2 text-gray-700 text-sm">
-            <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>Support Triage — ტერმინალების საჩივრების ავტომატური რუტინგი</span></li>
-            <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>KYC Onboarding — სარეზერვო სცენარი Make.com-ზე მზადაა</span></li>
-            <li class="flex gap-2"><span class="text-green-500 font-bold">✅</span><span>Error Handling — ფინანსური ტრანზაქციების დაზღვევა ავტომატიზაციისას</span></li>
-        </ul>
-    </div>
+  </div>
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm">
+    <h3 class="font-bold text-navy-900 mb-3">დღეს სესიის ბოლოს გექნებათ</h3>
+    <ul class="space-y-2 text-gray-700 text-sm">
+      <li class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span><strong>Terminal Status Monitor</strong> — Lovable-ით შექმნილი, მოქმედი No-Code შიდა ინსტრუმენტი</span></li>
+      <li class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span><strong>SQL ოპტიმიზაციის სამუშაო პროცესი</strong> — Claude Code-ით „ბოთლის ყელების" პოვნა და Index-ების შეთავაზება</span></li>
+      <li class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span><strong>Legacy კოდის ჩარჩო</strong> — ნებისმიერი ძველი ფუნქციის Clean Code-ზე გადაყვანის მეთოდი</span></li>
+      <li class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span><strong>Production Technical Assistant</strong> — OPPA-ს API დოკუმენტაციაზე დაყრდნობილი Bot</span></li>
+    </ul>
+  </div>
 </section>
 
 <!-- SEG 2: LOVABLE -->
 <section id="seg-lovable" class="mb-14 scroll-mt-6">
-    <div class="flex items-center gap-3 mb-6">
-        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-lovable-500 text-white text-sm font-bold flex items-center justify-center">2</span>
-        <div><p class="text-xs font-semibold uppercase tracking-wider text-lovable-500 mb-0.5">სეგმენტი 2 · 45 წუთი · დემო + პრაქტიკა</p><h2 class="text-xl font-bold text-navy-900">Lovable — OPPA-ს შიდა ინსტრუმენტები</h2></div>
-    </div>
+  <div class="flex items-center gap-3 mb-6">
+    <span class="flex-shrink-0 w-9 h-9 rounded-full bg-lovable-500 text-white text-sm font-bold flex items-center justify-center">2</span>
+    <div><p class="text-xs font-semibold uppercase tracking-wider text-lovable-500 mb-0.5">სეგმენტი 2 · 45 წუთი · დემო + ვორქშოფი</p><h2 class="text-xl font-bold text-navy-900">Lovable — OPPA-ს შიდა ინსტრუმენტების შექმნა</h2></div>
+  </div>
 
-    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
-        <h3 class="font-bold text-navy-900 mb-3">No-Code აპლიკაციები OPPA-სთვის</h3>
-        <p class="text-gray-700 text-sm mb-4">Lovable საშუალებას გვაძლევს 45 წუთში შევქმნათ სრული დეშბორდი (Dashboard). მაგალითად: **Terminal Status Monitor** ან **Expense Approval App**.</p>
-        <div class="prompt-box">
-            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
-            <p class="text-xs font-semibold text-lovable-500 uppercase mb-2">შიდა ხელსაწყოს პრომპტი (Internal Tool Prompt)</p>
-            <pre>Build an internal "PayBox Status Monitor" for OPPA.GE.
-- UI: Navy and Teal theme.
-- Features: Map view of terminals, status indicators (Online/Offline), current cash levels, and a "Request Maintenance" button.
-- Backend: Connect to a sample Supabase table.</pre>
-        </div>
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">რა არის Lovable? რატომ OPPA-სთვის?</h3>
+    <p class="text-gray-700 text-sm mb-4">Lovable.dev არის AI-ზე დაფუძნებული No-Code პლატფორმა, რომელიც ტექსტური აღწერიდან ქმნის სრულ React აპლიკაციებს — ბექ-ენდით და ბაზით (Supabase). OPPA-ს გუნდმა შეიძლება 45 წუთში ააწყოს ის, რაც ადრე 2-3 კვირა სჭირდებოდა.</p>
+    <div class="grid md:grid-cols-3 gap-4 mb-4">
+      <div class="bg-lovable-100 border border-lovable-500/30 rounded-xl p-4 text-center">
+        <p class="text-3xl mb-2">⚡</p>
+        <p class="font-bold text-navy-900 text-sm mb-1">სიჩქარე</p>
+        <p class="text-xs text-gray-600">პროტოტიპი 30-45 წუთში, Full App 2-3 საათში</p>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+        <p class="text-3xl mb-2">🔗</p>
+        <p class="font-bold text-navy-900 text-sm mb-1">ინტეგრაცია</p>
+        <p class="text-xs text-gray-600">Supabase, Make.com, Stripe, Google Sheets API</p>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+        <p class="text-3xl mb-2">🎨</p>
+        <p class="font-bold text-navy-900 text-sm mb-1">Design</p>
+        <p class="text-xs text-gray-600">OPPA-ს ბრენდ-ფერები — Navy + Teal, ავტომატური</p>
+      </div>
     </div>
+    <div class="lovable-box p-4 rounded-r-lg">
+      <p class="text-sm font-bold text-lovable-600 mb-1">💡 Lovable vs. Bubble vs. Retool</p>
+      <p class="text-sm text-gray-800">Lovable — საუკეთესოა UI-ის სიჩქარისა და React კოდის ხარისხისთვის. Bubble — ძლიერია ლოგიკისთვის, მაგრამ ნელია. Retool — შესანიშნავია SQL/API Dashboard-ებისთვის, კომერციული. OPPA-ს შიდა ინსტრუმენტებისთვის <strong>Lovable + Supabase</strong> ოპტიმალური კომბინაციაა.</p>
+    </div>
+  </div>
+
+  <!-- Project 1: Terminal Status Monitor -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-2">🖥️ პროექტი 1: PayBox Terminal Status Monitor</h3>
+    <p class="text-gray-600 text-sm mb-4">OPPA-ს ოპერაციულ გუნდს სჭირდება ცოცხალი დეშბორდი — სად არის ყოველი ტერმინალი, რა სტატუსია, ბოლო Ticket-ი. ამ პანელს ახლა Excel-ში იყენებენ. Lovable-ით — 45 წუთი.</p>
+    <div class="bg-lovable-100 rounded-xl p-4 mb-4 border border-lovable-500/20">
+      <p class="text-xs font-bold text-lovable-600 uppercase mb-2">📋 Lovable-ის პრომპტი — Terminal Status Monitor</p>
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <p class="text-xs font-semibold text-lovable-400 uppercase mb-2">Lovable.dev — სრული App პრომპტი</p>
+        <pre>Build an internal "PayBox Terminal Status Monitor" dashboard for OPPA.GE.
+
+Design:
+- Color scheme: Navy (#1B3A5C) and Teal (#2E86AB) theme
+- Clean, professional fintech UI
+- Georgian language labels
+
+Features:
+1. Map/Table View: List of terminals with columns — Terminal ID, Location Name, City, Status (Online/Offline/Error), Last Activity, Cash Level (%)
+2. Status Badges: Green (Online), Red (Offline/Error), Yellow (Low Cash < 20%)
+3. Filter Bar: Filter by City, Status, Location Type (Metro, Mall, Street)
+4. Search: Real-time search by Terminal ID or Location Name
+5. "Request Maintenance" Button: Opens a modal to submit a support ticket
+6. Summary Cards: Total Terminals | Online Count | Offline Count | Low Cash Count
+7. Auto-refresh every 60 seconds
+
+Backend: Connect to a Supabase table called "terminals" with columns: id, location_name, city, status, cash_level, last_activity, location_type
+
+Make it production-ready with loading states and error handling.</pre>
+      </div>
+    </div>
+    <div class="bg-navy-900 text-white rounded-xl p-4 mb-4 font-mono text-xs">
+      <p class="text-teal-300 mb-2">Supabase Table Schema — terminals:</p>
+      <p>CREATE TABLE terminals (</p>
+      <p class="ml-4">id          TEXT PRIMARY KEY,       -- T-001, T-002...</p>
+      <p class="ml-4">location_name TEXT NOT NULL,        -- "სადგური სამგორი"</p>
+      <p class="ml-4">city        TEXT DEFAULT 'თბილისი',</p>
+      <p class="ml-4">status      TEXT DEFAULT 'ONLINE',  -- ONLINE/OFFLINE/ERROR</p>
+      <p class="ml-4">cash_level  INTEGER DEFAULT 100,    -- 0-100 %</p>
+      <p class="ml-4">last_activity TIMESTAMPTZ,</p>
+      <p class="ml-4">location_type TEXT                  -- METRO/MALL/STREET/GAS</p>
+      <p>);</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+        <p class="text-xs font-bold text-gray-600 uppercase mb-2">ნაბიჯები (ლაივ დემო):</p>
+        <ol class="text-xs text-gray-700 space-y-1 list-decimal pl-3">
+          <li>lovable.dev-ზე ახალი Project</li>
+          <li>ზემოთ მოცემული პრომპტის ჩაკოპირება</li>
+          <li>Lovable ქმნის React კომპონენტებს</li>
+          <li>Supabase → New Project → terminals ცხრილი</li>
+          <li>Sample data: 10 ტერმინალი</li>
+          <li>Preview → Share link გუნდთან</li>
+        </ol>
+      </div>
+      <div class="bg-teal-50 border border-teal-200 rounded-lg p-3">
+        <p class="text-xs font-bold text-teal-600 uppercase mb-2">Lovable-ის შემდეგი ნაბიჯები:</p>
+        <ol class="text-xs text-gray-700 space-y-1 list-decimal pl-3">
+          <li>„Add authentication" — Gmail Login-ი</li>
+          <li>„Add export to Excel button"</li>
+          <li>„Add dark mode toggle"</li>
+          <li>„Connect to Make.com webhook on submit"</li>
+          <li>Deploy to Netlify / Lovable Hosting</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project 2: Expense Approval -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-2">💰 პროექტი 2: Expense Approval App</h3>
+    <p class="text-gray-600 text-sm mb-4">ამჟამად OPPA-ში ხარჯის დამტკიცება ხდება ელ-ფოსტით. Lovable-ით — სრული Approval Workflow 30 წუთში.</p>
+    <div class="prompt-box mb-4">
+      <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+      <p class="text-xs font-semibold text-lovable-400 uppercase mb-2">Lovable.dev — Expense Approval App</p>
+      <pre>Build an internal "Expense Approval App" for OPPA.GE fintech company.
+
+Features:
+1. Submit Expense Form: Employee submits expense — amount (GEL), category (Transport/Software/Hardware/Marketing/Other), description, receipt upload, department
+2. Manager Dashboard: List of pending expenses with Approve/Reject buttons and comment field
+3. Status Tracking: Employee sees their submission status (Pending/Approved/Rejected) with manager comment
+4. Notification: On approval/rejection, trigger a POST request to Make.com webhook URL (I'll provide later)
+5. Audit Log: All approvals/rejections logged with timestamp and manager name
+
+Approval Rules (enforced by UI logic):
+- Expenses < 500 GEL: Auto-approved if category = Transport
+- Expenses > 2000 GEL: Requires CFO approval (show warning)
+
+Design: Navy (#1B3A5C) and Teal (#2E86AB), Georgian UI labels
+Backend: Supabase table "expenses"</pre>
+    </div>
+    <div class="activity-box p-3 rounded-r-lg">
+      <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა — 20 წუთი</p>
+      <p class="text-sm text-yellow-900">Terminal Status Monitor-ის შექმნის შემდეგ: შეუცვალეთ პრომპტი ერთი კომპონენტი — მაგ. „add a bar chart showing cash level distribution by city". შეამოწმეთ, Lovable ცვლის UI-ს ინტეგრაციის გარეშე.</p>
+    </div>
+  </div>
+
+  <!-- Lovable tips -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-4">
+    <h3 class="font-bold text-navy-900 mb-4">🧠 Lovable-ის Advanced ტექნიკები</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2">კარგი Prompt პატერნები:</p>
+        <ul class="space-y-1.5 text-sm text-gray-700">
+          <li class="flex gap-2"><span class="text-green-500">✓</span>„Add [feature] to the existing [component]"</li>
+          <li class="flex gap-2"><span class="text-green-500">✓</span>„Fix the bug where [specific behavior]"</li>
+          <li class="flex gap-2"><span class="text-green-500">✓</span>„Make the [component] responsive for mobile"</li>
+          <li class="flex gap-2"><span class="text-green-500">✓</span>„Connect the form to Supabase [table] on submit"</li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2">პრობლემების გადაჭრა:</p>
+        <ul class="space-y-1.5 text-sm text-gray-700">
+          <li class="flex gap-2"><span class="text-red-400">→</span>Bug? „Revert to previous version" ღილაკი</li>
+          <li class="flex gap-2"><span class="text-red-400">→</span>კოდი ვერ შემოწმდა? „View Code" → GitHub-ში Export</li>
+          <li class="flex gap-2"><span class="text-red-400">→</span>Supabase კავშირი? Environment Variables-ში API Key</li>
+          <li class="flex gap-2"><span class="text-red-400">→</span>Deploy? Netlify ან Lovable-ის built-in Hosting</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- SEG 3: SQL OPTIMIZATION -->
 <section id="seg-sql" class="mb-14 scroll-mt-6">
-    <div class="flex items-center gap-3 mb-6">
-        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">3</span>
-        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 3 · 40 წუთი · დემო</p><h2 class="text-xl font-bold text-navy-900">SQL ოპტიმიზაცია და მაღალდატვირთული ბაზები</h2></div>
+  <div class="flex items-center gap-3 mb-6">
+    <span class="flex-shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center">3</span>
+    <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 3 · 40 წუთი · დემო + პრაქტიკა</p><h2 class="text-xl font-bold text-navy-900">SQL ოპტიმიზაცია — Claude Code-ით ბაზის დიაგნოსტიკა</h2></div>
+  </div>
+
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">OPPA-ს ბაზის სიტუაცია</h3>
+    <p class="text-gray-700 text-sm mb-4">OPPA-ს transactions ცხრილი შეიცავს <strong>10M+ ჩანაწერს</strong>. ყოველდღიური ანგარიშები ნელდება. Finance გუნდი ითხოვს „სიაში PENDING ტრანზაქციების ყველა ჩამონათვალს ბოლო 30 დღის მანძილზე" — Query 45 წამს ნადგურდება.</p>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+        <p class="text-2xl font-bold text-red-600">45 წმ</p>
+        <p class="text-xs text-gray-600 mt-1">ამჟამინდელი Query-ის შესრულების დრო</p>
+      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+        <p class="text-2xl font-bold text-amber-600">10M+</p>
+        <p class="text-xs text-gray-600 mt-1">ჩანაწერი transactions ცხრილში</p>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+        <p class="text-2xl font-bold text-green-600">&lt; 0.5 წმ</p>
+        <p class="text-xs text-gray-600 mt-1">სამიზნე — Index-ების შემდეგ</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slow query -->
+  <h3 class="font-bold text-navy-900 mb-3">პრობლემური Query — Full Table Scan</h3>
+  <div class="code-box p-4 rounded-r-lg font-mono text-xs text-gray-700 mb-4">
+    <p class="text-red-500 font-bold mb-2">-- ❌ ნელი Query (45 წამი) — Full Table Scan</p>
+    <p>SELECT</p>
+    <p class="ml-4">t.id, t.amount, t.status, t.created_at,</p>
+    <p class="ml-4">m.business_name, m.city</p>
+    <p>FROM transactions t</p>
+    <p>JOIN merchants m ON t.merchant_id = m.id</p>
+    <p>WHERE t.status = 'PENDING'</p>
+    <p class="ml-4">AND t.created_at &gt;= NOW() - INTERVAL '30 days'</p>
+    <p>ORDER BY t.created_at DESC;</p>
+    <p class="mt-2 text-gray-400">-- EXPLAIN: Seq Scan on transactions (cost=0.00..450000.00 rows=2340000)</p>
+  </div>
+
+  <!-- Claude Code prompts for SQL -->
+  <h3 class="font-bold text-navy-900 mb-3">Claude Code CLI — SQL დიაგნოსტიკა</h3>
+  <div class="space-y-4 mb-6">
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+      <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Claude Code CLI — Query-ის ანალიზი</p>
+      <pre>გაანალიზე ეს PostgreSQL Query OPPA-ს transactions ბაზაში (10M+ rows):
+
+SELECT t.id, t.amount, t.status, t.created_at, m.business_name
+FROM transactions t
+JOIN merchants m ON t.merchant_id = m.id
+WHERE t.status = 'PENDING'
+  AND t.created_at >= NOW() - INTERVAL '30 days'
+ORDER BY t.created_at DESC;
+
+ცხრილის სტრუქტურა:
+- transactions: id (UUID), merchant_id (UUID), amount (DECIMAL), status (TEXT), created_at (TIMESTAMPTZ), terminal_id (TEXT), payment_method (TEXT)
+- merchants: id (UUID), business_name (TEXT), city (TEXT), status (TEXT)
+
+EXPLAIN ANALYZE შედეგი: Seq Scan, cost=450000, actual time=45000ms
+
+გთხოვ:
+1. ახსენი რატომ არის Query ნელი
+2. შეთავაზე Index-ები
+3. დაწერე ოპტიმიზებული Query
+4. ახსენი EXPLAIN ANALYZE-ის შედეგი ოპტიმიზაციის შემდეგ</pre>
     </div>
 
-    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
-        <h3 class="font-bold text-navy-900 mb-3">მაღალდატვირთული ბაზების ოპტიმიზაცია</h3>
-        <p class="text-gray-700 text-sm mb-4">OPPA-ს ტრანზაქციების რაოდენობა მოითხოვს სუპერ-ეფექტურ SQL ქვერებს. Claude Code გვეხმარება ,,ბოთლის ყელების" (Bottlenecks) პოვნაში.</p>
-        <div class="code-box p-4 rounded-r-lg font-mono text-xs text-gray-700">
-            <p class="text-blue-600 font-bold mb-1"># Claude Code CLI for SQL</p>
-            <p>$ claude "analyze this slow SQL query and suggest indexes: SELECT * FROM transactions WHERE status='PENDING'..."</p>
-            <p>$ claude "optimize this JOIN for a table with 10M+ rows"</p>
-        </div>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+      <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Claude Code CLI — Index-ების შექმნა</p>
+      <pre>OPPA-ს transactions ბაზისთვის შექმენი ოპტიმალური Index-ები.
+
+სხვა ხშირი Query-ები ჩვენს სისტემაში:
+1. SELECT * FROM transactions WHERE terminal_id = ? AND created_at > ?
+2. SELECT SUM(amount) FROM transactions WHERE merchant_id = ? AND status = 'COMPLETED' AND DATE(created_at) = CURRENT_DATE
+3. SELECT * FROM transactions WHERE status IN ('PENDING', 'PROCESSING') ORDER BY created_at ASC LIMIT 100
+
+გთხოვ:
+1. Index-ების SQL ბრძანებები (CREATE INDEX CONCURRENTLY)
+2. Composite Index-ებია საჭირო — თუ Single?
+3. Partial Index-ები status-ის მიხედვით?
+4. რა Index-ები ᲐᲠ ღირს? (Write overhead)</pre>
     </div>
+  </div>
+
+  <!-- Optimized result -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">✅ Claude Code-ის გამოსავალი — ოპტიმიზებული SQL</h3>
+    <div class="code-box p-4 rounded-r-lg font-mono text-xs text-gray-700 mb-3">
+      <p class="text-green-600 font-bold mb-2">-- ✅ Index-ების შექმნა (CONCURRENTLY — Production-ს არ ანელებს)</p>
+      <p>CREATE INDEX CONCURRENTLY idx_transactions_status_created</p>
+      <p class="ml-4">ON transactions (status, created_at DESC)</p>
+      <p class="ml-4">WHERE status IN ('PENDING', 'PROCESSING');</p>
+      <p class="mt-2">CREATE INDEX CONCURRENTLY idx_transactions_merchant_date</p>
+      <p class="ml-4">ON transactions (merchant_id, created_at DESC);</p>
+      <p class="mt-2">CREATE INDEX CONCURRENTLY idx_transactions_terminal_date</p>
+      <p class="ml-4">ON transactions (terminal_id, created_at DESC);</p>
+    </div>
+    <div class="code-box p-4 rounded-r-lg font-mono text-xs text-gray-700 mb-3">
+      <p class="text-green-600 font-bold mb-2">-- ✅ ოპტიმიზებული Query + Pagination</p>
+      <p>SELECT t.id, t.amount, t.status, t.created_at,</p>
+      <p class="ml-4">m.business_name, m.city</p>
+      <p>FROM transactions t</p>
+      <p>JOIN merchants m ON t.merchant_id = m.id</p>
+      <p>WHERE t.status = 'PENDING'</p>
+      <p class="ml-4">AND t.created_at &gt;= NOW() - INTERVAL '30 days'</p>
+      <p>ORDER BY t.created_at DESC</p>
+      <p>LIMIT 500 OFFSET 0;  -- Pagination — ნაცვლად Full Scan-ისა</p>
+      <p class="mt-2 text-green-400">-- EXPLAIN: Index Scan on idx_transactions_status_created (cost=0.56..12.45 rows=50) actual time=0.3ms</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-3">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+        <p class="text-xs font-bold text-red-600 mb-1">❌ ადრე:</p>
+        <ul class="text-xs text-gray-700 space-y-0.5">
+          <li>Seq Scan — 10M+ ჩანაწერი</li>
+          <li>45,000ms (45 წამი)</li>
+          <li>CPU 100%, DB Server ანელდება</li>
+        </ul>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+        <p class="text-xs font-bold text-green-600 mb-1">✅ შემდეგ:</p>
+        <ul class="text-xs text-gray-700 space-y-0.5">
+          <li>Index Scan — მხოლოდ PENDING ჩანაწერები</li>
+          <li>0.3ms (99.99% გაუმჯობესება)</li>
+          <li>CPU ნორმალური</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced SQL prompts -->
+  <h3 class="font-bold text-navy-900 mb-3">Advanced SQL ამოცანები — OPPA-ს რეალური სცენარები</h3>
+  <div class="space-y-4 mb-4">
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+      <p class="text-xs font-semibold text-blue-400 uppercase mb-2">Daily Settlement Report — Window Function</p>
+      <pre>დაწერე SQL Query OPPA-ს ყოველდღიური Settlement ანგარიშისთვის.
+
+საჭიროა:
+- ყოველი Merchant-ისთვის: მიმდინარე დღის შემოსავლები, გუშინდელი, სხვაობა %
+- სხვა: COMPLETED vs REFUNDED ტრანზაქციების ratio
+- Terminals by status ჯგუფება
+- Top 10 Merchant by revenue დღეში
+
+გამოიყენე Window Functions (LAG, RANK, SUM OVER) სადაც შეიძლება.
+ბაზა: transactions (merchant_id, amount, status, created_at), merchants (id, business_name, city)</pre>
+    </div>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+      <p class="text-xs font-semibold text-purple-400 uppercase mb-2">AML Flag Query — Suspicious Patterns</p>
+      <pre>OPPA-ს AML (Anti-Money Laundering) მონიტორინგისთვის დაწერე SQL:
+
+სეჭვო პატერნები:
+1. ერთი Merchant, ერთ საათში 5+ ტრანზაქცია, ყოველი ზუსტად 999 GEL-ი (Structuring)
+2. Terminal-ი 24 საათში 100+ ტრანზაქცია (Velocity)
+3. ტრანზაქცია 50,000 GEL-ზე მეტი (Large Cash)
+4. ახალი Merchant (< 7 days), პირველ დღეს 20+ ტრანზაქცია
+
+დააბრუნე: merchant_id, terminal_id, flag_type, transaction_count, total_amount, first_seen, risk_score (1-10)</pre>
+    </div>
+  </div>
+
+  <div class="activity-box p-4 rounded-r-lg">
+    <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა — 15 წუთი</p>
+    <p class="text-sm text-yellow-900">Claude Code CLI-ში (ან Claude.ai) შეასრულეთ: (1) ზემოთ მოცემული ნელი Query-ის ოპტიმიზაცია, (2) AML Flag Query-ის დაწერა, (3) EXPLAIN ANALYZE-ის ინტერპრეტაცია. შედარეთ Index-ებამდე და შემდეგ.</p>
+  </div>
 </section>
 
 <!-- BREAK -->
 <section id="seg-break" class="mb-14 scroll-mt-6">
-    <div class="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-xl px-6 py-5">
-        <span class="text-3xl">☕</span>
-        <div><p class="font-bold text-amber-900">შესვენება — 10 წუთი</p><p class="text-sm text-amber-700">No-code და SQL ნაწილები დასრულდა. შემდეგი: Legacy კოდის მოდერნიზაცია.</p></div>
-    </div>
+  <div class="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-xl px-6 py-5">
+    <span class="text-3xl">☕</span>
+    <div><p class="font-bold text-amber-900">შესვენება — 10 წუთი</p><p class="text-sm text-amber-700">Lovable და SQL ნაწილები დასრულდა. შემდეგი: Legacy კოდის რეფაქტორინგი, Production AI ასისტენტი და ეტაპი I-ის ფინალი.</p></div>
+  </div>
 </section>
 
-<!-- SEG 4: LEGACY MODERNIZATION -->
+<!-- SEG 4: LEGACY CODE -->
 <section id="seg-legacy" class="mb-14 scroll-mt-6">
-    <div class="flex items-center gap-3 mb-6">
-        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-teal-600 text-white text-sm font-bold flex items-center justify-center">4</span>
-        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 4 · 40 წუთი · ვორქშოფი</p><h2 class="text-xl font-bold text-navy-900">ძველი კოდის (Legacy Code) მოდერნიზაცია</h2></div>
-    </div>
+  <div class="flex items-center gap-3 mb-6">
+    <span class="flex-shrink-0 w-9 h-9 rounded-full bg-teal-600 text-white text-sm font-bold flex items-center justify-center">4</span>
+    <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 4 · 40 წუთი · ვორქშოფი</p><h2 class="text-xl font-bold text-navy-900">Legacy კოდის მოდერნიზაცია — Clean Code AI-ით</h2></div>
+  </div>
 
-    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
-        <h3 class="font-bold text-navy-900 mb-3">ძველი საგადახდო ლოგიკის რეფაქტორინგი</h3>
-        <p class="text-gray-700 text-sm mb-4">10+ წლის კოდის შენარჩუნება რთულია. AI-ი გვეხმარება კოდის გაწმენდაში, ტიპიზაციასა (TypeScript/C#) და ტესტების დამატებაში.</p>
-        <div class="prompt-box">
-            <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
-            <pre>გაანალიზე ეს Legacy გადახდის ფუნქცია.
-1. ახსენი რას აკეთებს ლოგიკა.
-2. გადააკეთე თანამედროვე სტანდარტზე (Clean Code).
-3. დაამატე Error Handling და Logging OPPA-ს სტანდარტით.
-4. დაწერე Unit Test-ი ამ ფუნქციისთვის.</pre>
-        </div>
-    </div>
-</section>
-
-<!-- SEG 5: PRODUCTION ASSISTANT -->
-<section id="seg-prod-assistant" class="mb-14 scroll-mt-6">
-    <div class="flex items-center gap-3 mb-6">
-        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-green-600 text-white text-sm font-bold flex items-center justify-center">5</span>
-        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 5 · 25 წუთი · პრაქტიკა</p><h2 class="text-xl font-bold text-navy-900">Production AI ასისტენტი (API და SOP)</h2></div>
-    </div>
-
-    <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
-        <h3 class="font-bold text-navy-900 mb-3">OPPA-ს ცოდნის ბაზაზე დაფუძნებული ასისტენტი</h3>
-        <p class="text-gray-700 text-sm mb-4">ასისტენტი, რომელიც პასუხობს მხოლოდ OPPA-ს API დოკუმენტაციისა და შიდა SOP-ების მიხედვით.</p>
-        <div class="activity-box p-4 rounded-r-lg">
-            <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა</p>
-            <p class="text-sm text-yellow-900">ვქმნით "Technical Support Assistant"-ს. ვაწვდით OPPA-ს API დოკუმენტაციას და ვტესტავთ: ,,როგორ ხდება ტრანზაქციის სტატუსის შემოწმება API-ით?"</p>
-        </div>
-    </div>
-</section>
-
-<!-- SEG 6: WRAP -->
-<section id="seg-wrap" class="mb-14 scroll-mt-6">
-    <div class="flex items-center gap-3 mb-6">
-        <span class="flex-shrink-0 w-9 h-9 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center">6</span>
-        <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 6 · 10 წუთი · შეჯამება</p><h2 class="text-xl font-bold text-navy-900">შეჯამება და კითხვა-პასუხი</h2></div>
-    </div>
-
-    <div class="bg-navy-900 text-white rounded-xl p-6 mb-6">
-        <p class="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-4">სესია 6 — რა გამოვიტანეთ</p>
-        <ul class="space-y-3 text-sm">
-            <li class="flex gap-3"><span class="text-green-400 font-bold text-base">✅</span><div><p class="font-semibold">შიდა ინსტრუმენტი (Internal Tool)</p><p class="text-gray-400 text-xs">OPPA-ს ტერმინალების მონიტორინგის პროტოტიპი Lovable-ით</p></div></li>
-            <li class="flex gap-3"><span class="text-green-400 font-bold text-base">✅</span><div><p class="font-semibold">ტექნიკური ოპტიმიზაცია</p><p class="text-gray-400 text-xs">SQL და Legacy კოდის გაუმჯობესების მეთოდები</p></div></li>
-            <li class="flex gap-3"><span class="text-green-400 font-bold text-base">✅</span><div><p class="font-semibold">Production ასისტენტი</p><p class="text-gray-400 text-xs">API-ზე ორიენტირებული დამხმარე გუნდისთვის</p></div></li>
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">პრობლემა: OPPA-ს ძველი კოდი</h3>
+    <p class="text-gray-700 text-sm mb-4">OPPA-ს საგადახდო ლოგიკის ნაწილი დაწერილია 2014-2018 წლებში — Python 2/PHP 5, გლობალური ცვლადები, ტესტები არ აქვს, დოკუმენტაცია — ნული. Claude Code-ი ეხმარება რეფაქტორინგში უსაფრთხოდ.</p>
+    <div class="grid md:grid-cols-2 gap-4 mb-4">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p class="text-xs font-bold text-red-600 uppercase mb-2">❌ ძველი კოდი — Anti-patterns</p>
+        <ul class="text-xs text-gray-700 space-y-1">
+          <li>→ Global variables ($conn, $db)</li>
+          <li>→ No error handling (die() ან print)</li>
+          <li>→ SQL Injection vulnerability (string concat)</li>
+          <li>→ No type hints / no docstrings</li>
+          <li>→ Monolithic function (500+ lines)</li>
+          <li>→ Hardcoded credentials</li>
         </ul>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <p class="text-xs font-bold text-green-600 uppercase mb-2">✅ Modern Code — OPPA სტანდარტი</p>
+        <ul class="text-xs text-gray-700 space-y-1">
+          <li>→ Dependency Injection</li>
+          <li>→ try/except + Logging</li>
+          <li>→ Parameterized SQL (ORM ან PDO)</li>
+          <li>→ Type hints + Docstrings</li>
+          <li>→ Single Responsibility Principle</li>
+          <li>→ Environment Variables (.env)</li>
+        </ul>
+      </div>
     </div>
+  </div>
 
-    <div class="danger-box p-4 rounded-r-lg mb-6">
-        <p class="text-sm font-bold text-red-800 mb-1">🏁 ეტაპი I-ის ფინალი</p>
-        <p class="text-sm text-red-900">თქვენ დაასრულეთ Stage I Core Training. შემდეგი ნაბიჯი: ROI გაზომვა და ეტაპი II-ის სამოქმედო გეგმის (Roadmap) შედგენა მენეჯმენტთან ერთად.</p>
+  <!-- Legacy Python Example -->
+  <h3 class="font-bold text-navy-900 mb-3">Legacy კოდის მაგალითი — OPPA-ს Payment Function</h3>
+  <div class="code-box p-4 rounded-r-lg font-mono text-xs text-gray-700 mb-4">
+    <p class="text-red-500 font-bold mb-2"># ❌ Legacy Python 2 — oppa_payment.py (2015)</p>
+    <p>import MySQLdb</p>
+    <p>db = MySQLdb.connect("localhost", "root", "password123", "oppa_db")</p>
+    <p></p>
+    <p>def process_payment(terminal, amount, type):</p>
+    <p class="ml-4">cur = db.cursor()</p>
+    <p class="ml-4">cur.execute("INSERT INTO transactions VALUES ('" + terminal + "', " + str(amount) + ", '" + type + "')")</p>
+    <p class="ml-4">db.commit()</p>
+    <p class="ml-4">if amount &gt; 0:</p>
+    <p class="ml-8">print "Payment OK"</p>
+    <p class="ml-4">else:</p>
+    <p class="ml-8">print "Error"</p>
+    <p class="ml-4">return 1</p>
+  </div>
+
+  <!-- Refactoring Prompt -->
+  <div class="prompt-box mb-6">
+    <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+    <p class="text-xs font-semibold text-teal-400 uppercase mb-2">Legacy Code — Claude Code რეფაქტორინგის პრომპტი</p>
+    <pre>გაანალიზე და გადაწერე ეს Legacy Python 2 კოდი OPPA-ს თანამედროვე სტანდარტით.
+
+```python
+import MySQLdb
+db = MySQLdb.connect("localhost", "root", "password123", "oppa_db")
+
+def process_payment(terminal, amount, type):
+    cur = db.cursor()
+    cur.execute("INSERT INTO transactions VALUES ('" + terminal + "', " + str(amount) + ", '" + type + "')")
+    db.commit()
+    if amount > 0:
+        print "Payment OK"
+    else:
+        print "Error"
+    return 1
+```
+
+OPPA-ს სტანდარტი:
+- Python 3.11+
+- SQLAlchemy ან psycopg2 Parameterized Queries (SQL Injection-ის თავიდან აცილება)
+- Type Hints ყველა ფუნქციას
+- Logging (logging module — არა print)
+- Custom Exception-ები: PaymentError, DatabaseError
+- Unit Tests (pytest) — მინიმუმ 3 ტესტ-ქეისი
+- Docstring Google Style-ით
+- Environment Variables კრედენციალებისთვის (.env + python-dotenv)
+
+გამომიგზავნე:
+1. ახლებური payment_service.py (Clean Code)
+2. tests/test_payment_service.py (pytest)
+3. .env.example ფაილი
+4. მოკლე ახსნა — რა შეიცვალა და რატომ</pre>
+  </div>
+
+  <!-- Modernized code result -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-3">✅ Claude Code-ის შედეგი — მოდერნიზებული კოდი</h3>
+    <div class="code-box p-4 rounded-r-lg font-mono text-xs text-gray-700 mb-3">
+      <p class="text-green-600 font-bold mb-2"># ✅ payment_service.py — OPPA სტანდარტი (Python 3.11)</p>
+      <p>import os, logging</p>
+      <p>from dataclasses import dataclass</p>
+      <p>from decimal import Decimal</p>
+      <p>from typing import Optional</p>
+      <p>import psycopg2</p>
+      <p>from psycopg2.extras import RealDictCursor</p>
+      <p>from dotenv import load_dotenv</p>
+      <p></p>
+      <p>load_dotenv()</p>
+      <p>logger = logging.getLogger(__name__)</p>
+      <p></p>
+      <p>class PaymentError(Exception): pass</p>
+      <p>class ValidationError(PaymentError): pass</p>
+      <p></p>
+      <p>@dataclass</p>
+      <p>class PaymentResult:</p>
+      <p class="ml-4">transaction_id: str</p>
+      <p class="ml-4">status: str</p>
+      <p class="ml-4">amount: Decimal</p>
+      <p></p>
+      <p>def process_payment(</p>
+      <p class="ml-4">terminal_id: str,</p>
+      <p class="ml-4">amount: Decimal,</p>
+      <p class="ml-4">payment_type: str</p>
+      <p>) -> Optional[PaymentResult]:</p>
+      <p class="ml-4">"""Process a PayBox terminal payment.</p>
+      <p class="ml-4 text-gray-400">Args: terminal_id, amount (GEL), payment_type (CASH/CARD/QR)</p>
+      <p class="ml-4 text-gray-400">Returns: PaymentResult | None</p>
+      <p class="ml-4 text-gray-400">Raises: ValidationError, PaymentError</p>
+      <p class="ml-4">"""</p>
+      <p class="ml-4">if amount &lt;= 0:</p>
+      <p class="ml-8">raise ValidationError(f"Invalid amount: {amount}")</p>
+      <p class="ml-4">try:</p>
+      <p class="ml-8">conn = psycopg2.connect(os.environ["DATABASE_URL"])</p>
+      <p class="ml-8">with conn, conn.cursor(cursor_factory=RealDictCursor) as cur:</p>
+      <p class="ml-12">cur.execute(</p>
+      <p class="ml-16">"INSERT INTO transactions (terminal_id, amount, type, status)"</p>
+      <p class="ml-16">"VALUES (%s, %s, %s, 'PENDING') RETURNING id",</p>
+      <p class="ml-16">(terminal_id, amount, payment_type)</p>
+      <p class="ml-12">)</p>
+      <p class="ml-12">row = cur.fetchone()</p>
+      <p class="ml-12">logger.info("Payment processed: txn_id=%s", row["id"])</p>
+      <p class="ml-12">return PaymentResult(row["id"], "PENDING", amount)</p>
+      <p class="ml-4">except psycopg2.Error as e:</p>
+      <p class="ml-8">logger.error("DB error: %s", e)</p>
+      <p class="ml-8">raise PaymentError("Database error") from e</p>
     </div>
+    <div class="tip-box p-3 rounded-r-lg">
+      <p class="text-sm text-green-900"><strong>🛡️ რა დაფიქსირდა:</strong> SQL Injection → Parameterized Query | print → logging | Hardcoded password → .env | return 1 → dataclass | no error handling → try/except + custom exceptions</p>
+    </div>
+  </div>
 
-    <div class="topic-card bg-white rounded-xl p-6 shadow-sm">
-        <h3 class="font-bold text-navy-900 mb-3">გადასვლა ეტაპი II-ზე</h3>
-        <p class="text-gray-600 text-sm mb-3">ROI გაზომვა, Transition Workshop და იმპლემენტაციის Roadmap</p>
-        <div class="mt-4 flex gap-3">
-            <a href="oppa-session5.html" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-navy-900 transition-colors">← სესია 5</a>
-            <span class="text-gray-300">|</span>
-            <a href="index.html" class="inline-flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-800 font-semibold transition-colors">პროგრამის მთავარი გვერდი →</a>
+  <!-- More refactoring prompts -->
+  <h3 class="font-bold text-navy-900 mb-3">სხვა Legacy Code სცენარები</h3>
+  <div class="space-y-4 mb-4">
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+      <p class="text-xs font-semibold text-orange-400 uppercase mb-2">PHP Legacy → Python — სრული მიგრაცია</p>
+      <pre>ეს PHP 5 კოდი (OPPA-ს 2012 წლის billing სისტემა) გადათარგმნე Python 3-ზე.
+
+[ჩასვით PHP კოდი]
+
+მოთხოვნები:
+1. ლოგიკა — 1:1 შენარჩუნება (ყოველი if/loop შენარჩუნდება)
+2. DB — MySQL (php PDO) → PostgreSQL (psycopg2)
+3. სტრუქტურა — Class-ებად გარდაქმნა (OOP)
+4. Type hints + Pydantic ვალიდაცია input-ებზე
+5. pytest Unit Tests
+6. Migration Notes: რა შეიძლება განსხვავდებოდეს PHP vs Python ქცევაში</pre>
+    </div>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+      <p class="text-xs font-semibold text-indigo-400 uppercase mb-2">Code Review — უსაფრთხოების შემოწმება</p>
+      <pre>OPPA-ს Security Audit: გაანალიზე ეს კოდი OWASP Top 10-ის მიხედვით.
+
+[ჩასვით კოდი]
+
+შეამოწმე:
+1. SQL Injection — ყველა DB Query
+2. Authentication bypass — session/token ლოგიკა
+3. Insecure Direct Object Reference (IDOR)
+4. Sensitive Data Exposure (passwords, API keys, PII)
+5. Missing Input Validation
+
+დააბრუნე:
+- Vulnerability სია (Critical/High/Medium/Low)
+- კოდის კონკრეტული სტრიქონი, სადაც პრობლემაა
+- Fix — ოპტიმალური გამოსწორება
+- OPPA-ს Fintech კონტექსტში — NBG-ის რეგულაციების რისკი</pre>
+    </div>
+  </div>
+
+  <div class="activity-box p-4 rounded-r-lg">
+    <p class="text-sm font-bold text-yellow-800 mb-1">🎯 პრაქტიკა — 20 წუთი</p>
+    <p class="text-sm text-yellow-900 mb-2">Claude Code-ში ან Claude.ai-ში:</p>
+    <ol class="text-sm text-yellow-900 list-decimal pl-4 space-y-1">
+      <li>Legacy payment_service.py-ის სრული რეფაქტორინგი ზემოთ მოცემული პრომპტით</li>
+      <li>Unit Tests-ის გაშვება (pytest): ყოველ ValidationError, PaymentError და success სცენარზე</li>
+      <li>Bonus: Code Review Security Audit — იპოვეთ SQL Injection-ი</li>
+    </ol>
+  </div>
+</section>
+
+<!-- SEG 5: HERMES AGENT -->
+<section id="seg-hermes" class="mb-14 scroll-mt-6">
+  <div class="flex items-center gap-3 mb-6">
+    <span class="flex-shrink-0 w-9 h-9 rounded-full bg-hermes-600 text-white text-sm font-bold flex items-center justify-center">5</span>
+    <div><p class="text-xs font-semibold uppercase tracking-wider text-hermes-500 mb-0.5">სეგმენტი 5 · 35 წუთი · დემო + ვორქშოფი</p><h2 class="text-xl font-bold text-navy-900">Hermes Agent — Self-Improving Autonomous AI</h2></div>
+  </div>
+
+  <!-- What is Hermes -->
+  <div class="hermes-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <div class="flex items-start gap-4 mb-4">
+      <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-hermes-100 flex items-center justify-center text-2xl">🧠</div>
+      <div>
+        <h3 class="font-bold text-navy-900 mb-1">Hermes Agent — რა არის?</h3>
+        <p class="text-gray-700 text-sm">Hermes Agent არის <strong>Nous Research</strong>-ის მიერ 2026 წლის თებერვალში გამოშვებული open-source ავტონომიური AI Agent Framework — MIT ლიცენზიით, 140,000+ GitHub ვარსკვლავი.</p>
+      </div>
+    </div>
+    <p class="text-gray-700 text-sm mb-4">Make.com-ისა და n8n-ისგან განსხვავებით, Hermes არ საჭიროებს Flowchart-ის ხელით გამართვას. ის <strong>სახელდება, იმახსოვრებს და გააუმჯობესებს</strong> ყოველ ამოცანას — ისეა, თითქოს AI ეყოლა "ციფრული თანამშრომელი" რომელიც ყოველ კვირა უფრო კარგი ხდება.</p>
+    <div class="grid md:grid-cols-4 gap-3">
+      <div class="bg-hermes-100 border border-hermes-500/20 rounded-xl p-3 text-center">
+        <p class="text-xl mb-1">🔄</p>
+        <p class="font-bold text-hermes-700 text-xs mb-0.5">Self-Improving Loop</p>
+        <p class="text-xs text-gray-600">ყოველი წარმატებული ამოცანა → ახალი "Skill"</p>
+      </div>
+      <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center">
+        <p class="text-xl mb-1">💾</p>
+        <p class="font-bold text-hermes-700 text-xs mb-0.5">Multi-Layer Memory</p>
+        <p class="text-xs text-gray-600">სესიებს შორის — კონტექსტი, წარსული, პრეფერენციები</p>
+      </div>
+      <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-center">
+        <p class="text-xl mb-1">🌐</p>
+        <p class="font-bold text-hermes-700 text-xs mb-0.5">200+ AI მოდელი</p>
+        <p class="text-xs text-gray-600">Claude, GPT-5, Gemini, Hermes 4 — OpenRouter-ით</p>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+        <p class="text-xl mb-1">⏰</p>
+        <p class="font-bold text-hermes-700 text-xs mb-0.5">Always-On</p>
+        <p class="text-xs text-gray-600">24/7 VPS-ზე, Slack/Telegram კონტროლი</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="hermes-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">⚙️ Hermes-ის არქიტექტურა — Self-Improving Learning Loop</h3>
+    <p class="text-gray-600 text-sm mb-5">ეს არის Hermes-ის ყველაზე მნიშვნელოვანი განმასხვავებელი. ყოველ სწარმატებულ ამოცანას Agent ასახავს "Skill"-ად — Markdown ფაილად, რომელსაც ინახავს ლოკალურ ფაილსისტემაში.</p>
+    <div class="bg-navy-900 text-white rounded-xl p-5 font-mono text-xs mb-4">
+      <p class="text-hermes-400 font-bold mb-3">Hermes Learning Loop — OPPA Support Triage-ის მაგალითზე:</p>
+      <p>1️⃣  <span class="text-white">User:</span> <span class="text-blue-300">"OPPA-ს Ticket #5021 გაანალიზე და Slack-ში გაუგზავნე"</span></p>
+      <p class="ml-4 text-gray-400">↓ Hermes იგებს კონტექსტს (terminal ID, category rules)</p>
+      <p>2️⃣  <span class="text-white">Hermes:</span> <span class="text-green-300">ასრულებს ამოცანას (Claude API → JSON → Slack)</span></p>
+      <p class="ml-4 text-gray-400">↓ შეფასება: წარმატება? User დამტკიცება?</p>
+      <p>3️⃣  <span class="text-hermes-400">Skill შენახვა:</span> <span class="text-amber-300">oppa_support_triage.md</span></p>
+      <p class="ml-4 text-gray-300"># OPPA Support Triage Skill</p>
+      <p class="ml-4 text-gray-400">## Context: 8000+ PayBox terminals</p>
+      <p class="ml-4 text-gray-400">## Steps: 1. Extract ticket_text 2. Claude classify 3. Route Slack</p>
+      <p class="ml-4 text-gray-400">## Rules: METRO+cash → URGENT → #ops-critical</p>
+      <p>4️⃣  <span class="text-white">შემდეგ სეანსზე:</span> <span class="text-green-300">Hermes პირდაპირ იყენებს Skill-ს — ახსნა არ სჭირდება</span></p>
+      <p class="ml-4 text-gray-400">↓ ყოველ განახლებასთან — Skill იხვეწება (Refinement Loop)</p>
+      <p>5️⃣  <span class="text-hermes-400">3 კვირის შემდეგ:</span> <span class="text-blue-300">Hermes ავტომატურად ამოიცნობს OPPA-ს Ticket პატერნებს</span></p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-3">
+      <div class="bg-hermes-100 rounded-lg p-3">
+        <p class="text-xs font-bold text-hermes-700 uppercase mb-1">Skills (Markdown)</p>
+        <p class="text-xs text-gray-600">~/.hermes/skills/<br>oppa_triage.md<br>kyc_onboarding.md<br>sql_optimization.md</p>
+      </div>
+      <div class="bg-blue-50 rounded-lg p-3">
+        <p class="text-xs font-bold text-blue-700 uppercase mb-1">Memory Layers</p>
+        <p class="text-xs text-gray-600">Working Memory (სეანსი)<br>Episodic (ბოლო ამოცანები)<br>Semantic (ფაქტები/Prefs)<br>Skill Store (გამოცდილება)</p>
+      </div>
+      <div class="bg-green-50 rounded-lg p-3">
+        <p class="text-xs font-bold text-green-700 uppercase mb-1">Tool Access</p>
+        <p class="text-xs text-gray-600">Web Search + Browser<br>Terminal (Python/Bash)<br>Vision (სურათები)<br>200+ AI Models (OpenRouter)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hermes vs Make.com comparison -->
+  <div class="hermes-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">🆚 Hermes Agent vs Make.com — სად გამოიყენება რომელი?</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-navy-900 text-white">
+            <th class="text-left py-2.5 px-4 font-semibold rounded-tl-lg">კრიტერიუმი</th>
+            <th class="text-left py-2.5 px-4 font-semibold text-hermes-400">Hermes Agent</th>
+            <th class="text-left py-2.5 px-4 font-semibold text-teal-300">Make.com / n8n</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr><td class="py-2.5 px-4 font-semibold text-gray-700">სასწავლო ციკლი</td><td class="py-2.5 px-4 text-hermes-600 font-bold">✅ ავტომატური — Skills ყალიბდება</td><td class="py-2.5 px-4 text-gray-600">❌ ხელით — Flowchart-ის განახლება</td></tr>
+          <tr class="bg-gray-50"><td class="py-2.5 px-4 font-semibold text-gray-700">მეხსიერება</td><td class="py-2.5 px-4 text-hermes-600 font-bold">✅ სრული — სეანსებს შორის</td><td class="py-2.5 px-4 text-gray-600">⚠️ შეზღუდული — Sheets/DB-ით</td></tr>
+          <tr><td class="py-2.5 px-4 font-semibold text-gray-700">ამოცანის სახეობა</td><td class="py-2.5 px-4 text-hermes-600">კომპლექსური, არასტრუქტურული, ვარდნილი</td><td class="py-2.5 px-4 text-teal-700">განმეორებადი, სტრუქტურული, მაღალი Volume</td></tr>
+          <tr class="bg-gray-50"><td class="py-2.5 px-4 font-semibold text-gray-700">კონტროლი</td><td class="py-2.5 px-4 text-gray-600">⚠️ ნაკლები — Agent მსჯელობს დამოუკიდებლად</td><td class="py-2.5 px-4 text-teal-700">✅ სრული — ყოველი ნაბიჯი ხილვადია</td></tr>
+          <tr><td class="py-2.5 px-4 font-semibold text-gray-700">Error Handling</td><td class="py-2.5 px-4 text-gray-600">⚠️ Agent-ი თავად სცდილობს გამოსავალს</td><td class="py-2.5 px-4 text-teal-700">✅ Retry, Break, Log — ვიზუალური</td></tr>
+          <tr class="bg-gray-50"><td class="py-2.5 px-4 font-semibold text-gray-700">Infrastructure</td><td class="py-2.5 px-4 text-hermes-600">VPS / ლოკალური სერვერი (Self-hosted)</td><td class="py-2.5 px-4 text-teal-700">Cloud (SaaS) — Make.com-ის სერვერები</td></tr>
+          <tr><td class="py-2.5 px-4 font-semibold text-gray-700">ფასი</td><td class="py-2.5 px-4 text-hermes-600 font-bold">✅ MIT — უფასო (VPS + LLM API ღირს)</td><td class="py-2.5 px-4 text-gray-600">$9-$29/თვე (Operations ლიმიტი)</td></tr>
+          <tr class="bg-gray-50"><td class="py-2.5 px-4 font-semibold text-gray-700">OPPA-ს Fintech Safety</td><td class="py-2.5 px-4 text-hermes-600 font-bold">✅ Self-hosted — მონაცემები OPPA-ს სერვერზე</td><td class="py-2.5 px-4 text-gray-600">⚠️ Cloud — EU Data Privacy შესამოწმებელია</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="hermes-box p-4 rounded-r-lg mt-4">
+      <p class="text-sm font-bold text-hermes-700 mb-1">💡 OPPA-ს სტრატეგია: Hybrid მიდგომა</p>
+      <p class="text-sm text-gray-800"><strong>Make.com</strong> — მაღალი Volume, სტრუქტურული ამოცანები: Triage, KYC Routing, Daily Reports. <strong>Hermes Agent</strong> — კომპლექსური, ცვლადი ამოცანები: AML ანალიზი, Compliance მონიტორინგი, Multi-day ტრანზაქციების გამოძიება. Hermes-ი Make.com-ს API-ით ეძახება სადაც ,,მსჯელობა" სჭირდება.</p>
+    </div>
+  </div>
+
+  <!-- OPPA Use Cases -->
+  <div class="hermes-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">🏦 OPPA-ს Hermes Agent-ის გამოყენების შემთხვევები</h3>
+    <div class="space-y-4">
+      <div class="flow-step bg-hermes-100 p-4 flex gap-4 items-start">
+        <span class="flex-shrink-0 w-10 h-10 rounded-full bg-hermes-600 text-white text-sm flex items-center justify-center">🔍</span>
+        <div>
+          <p class="font-semibold text-navy-900 text-sm mb-1">AML მონიტორინგი — Autonomous</p>
+          <p class="text-xs text-gray-600">Hermes-ი 24/7 ადევნებს თვალს ტრანზაქციების ნაკადს. როდესაც Structuring პატერნს (999 GEL × 5+) ამოიცნობს — თავად ატარებს ღრმა ანალიზს: ამოწმებს Merchant-ის ისტორიას, ადარებს სეზონურ ტენდენციებს, ადგენს Confidence Score-ს და ამზადებს STR (Suspicious Transaction Report) NBG-ის ფორმატში.</p>
+          <div class="flex gap-2 mt-2">
+            <span class="skill-badge">Skill: aml_pattern_detection.md</span>
+            <span class="skill-badge">Memory: merchant_profiles</span>
+          </div>
         </div>
+      </div>
+      <div class="flow-step bg-blue-50 p-4 flex gap-4 items-start">
+        <span class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white text-sm flex items-center justify-center">📊</span>
+        <div>
+          <p class="font-semibold text-navy-900 text-sm mb-1">Regulatory Reporting — ავტო-მომზადება</p>
+          <p class="text-xs text-gray-600">ყოველი კვარტლის ბოლოს Hermes ავტომატურად ამუშავებს ტრანზაქციების მასივს, ახდენს NBG-ის ფორმების შევსებას, ასწორებს ფორმატის შეუსაბამობებს (ბოლო Skill-ის გამოყენებით) და ამზადებს Compliance Report-ს — ოფიცრისთვის მხოლოდ ხელმოწერა რჩება.</p>
+          <div class="flex gap-2 mt-2">
+            <span class="skill-badge">Skill: nbg_quarterly_report.md</span>
+          </div>
+        </div>
+      </div>
+      <div class="flow-step bg-green-50 p-4 flex gap-4 items-start">
+        <span class="flex-shrink-0 w-10 h-10 rounded-full bg-green-600 text-white text-sm flex items-center justify-center">🖥️</span>
+        <div>
+          <p class="font-semibold text-navy-900 text-sm mb-1">Terminal Infrastructure — DevOps ასისტენტი</p>
+          <p class="text-xs text-gray-600">Hermes ადევნებს თვალს OPPA-ს სერვერების ჯანმრთელობას. Connection Timeout-ზე — ავტომატურად ასრულებს Diagnostics სკრიპტს, ამოწმებს Logs-ს, ადგენს root cause-ს და სლეიბ-ში სენდავს ანგარიშს. ხშირ პრობლემებზე Skill-ი ყალიბდება — შემდეგ ჯერზე, 2 წამში.</p>
+          <div class="flex gap-2 mt-2">
+            <span class="skill-badge">Skill: server_diagnostics.md</span>
+            <span class="skill-badge">Tool: Terminal (SSH)</span>
+          </div>
+        </div>
+      </div>
+      <div class="flow-step bg-amber-50 p-4 flex gap-4 items-start">
+        <span class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">💳</span>
+        <div>
+          <p class="font-semibold text-navy-900 text-sm mb-1">Month-End Financial Close — Multi-Day Workflow</p>
+          <p class="text-xs text-gray-600">Make.com ვერ ასრულებს Multi-Day ამოცანებს. Hermes კი — თვის ბოლოს სამ დღეს ყოველ ღამე ამუშავებს: Day 1 — Ledger Reconciliation, Day 2 — Variance Analysis, Day 3 — Final Report CFO-სთვის. ყოველ ნაბიჯს ახსოვს წინა.</p>
+          <div class="flex gap-2 mt-2">
+            <span class="skill-badge">Skill: month_end_close.md</span>
+            <span class="skill-badge">Memory: accounting_context</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Installation & Setup -->
+  <div class="hermes-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">🚀 Hermes Agent — დაყენება და პირველი გაშვება</h3>
+    <div class="grid md:grid-cols-2 gap-4 mb-4">
+      <div>
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Option A: ლოკალური Mac/Linux</p>
+        <div class="code-box p-3 rounded-r-lg font-mono text-xs text-gray-700">
+          <p class="text-green-600 font-bold"># Terminal-ში:</p>
+          <p>git clone https://github.com/nousresearch/hermes-agent</p>
+          <p>cd hermes-agent</p>
+          <p>pip install -r requirements.txt</p>
+          <p>cp .env.example .env</p>
+          <p class="text-gray-400"># .env-ში: OPENROUTER_API_KEY=...</p>
+          <p>python hermes.py</p>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Option B: VPS (Ubuntu 22.04)</p>
+        <div class="code-box p-3 rounded-r-lg font-mono text-xs text-gray-700">
+          <p class="text-blue-600 font-bold"># SSH-ით VPS-ზე:</p>
+          <p>sudo apt install python3 git -y</p>
+          <p>git clone https://github.com/nousresearch/hermes-agent</p>
+          <p>cd hermes-agent && pip install -r requirements.txt</p>
+          <p class="text-gray-400"># Slack კონტროლი .env-ში</p>
+          <p>nohup python hermes.py &amp; # Background-ში</p>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs font-bold text-gray-500 uppercase mb-2">.env კონფიგურაცია — OPPA-სთვის</p>
+    <div class="code-box p-3 rounded-r-lg font-mono text-xs text-gray-700 mb-4">
+      <p class="text-purple-600 font-bold"># .env — OPPA Hermes Configuration</p>
+      <p>OPENROUTER_API_KEY=sk-or-...          # 200+ AI მოდელი</p>
+      <p>PRIMARY_MODEL=anthropic/claude-sonnet-4-5  # ძირითადი AI</p>
+      <p>FALLBACK_MODEL=nousresearch/hermes-4      # Fallback</p>
+      <p></p>
+      <p class="text-gray-400"># Slack კონტროლი</p>
+      <p>SLACK_BOT_TOKEN=xoxb-...</p>
+      <p>SLACK_CHANNEL=#hermes-oppa              # კონტროლის არხი</p>
+      <p></p>
+      <p class="text-gray-400"># Memory</p>
+      <p>MEMORY_BACKEND=local                    # ლოკალური ან Mem0</p>
+      <p>SKILLS_DIR=~/.hermes/skills/oppa        # OPPA-ს Skills</p>
+      <p></p>
+      <p class="text-gray-400"># OPPA API (შიდა)</p>
+      <p>OPPA_API_URL=https://api.oppa.ge/v2</p>
+      <p>OPPA_API_KEY=oppa_prod_...              # Internal API Key</p>
+    </div>
+    <div class="hermes-box p-3 rounded-r-lg">
+      <p class="text-sm text-hermes-800"><strong>🔒 Security Note:</strong> Hermes-ი OPPA-ს სრულად Self-hosted-ზე გაუშვება ნიშნავს, რომ კლიენტების მონაცემები <strong>OPPA-ს სერვერს არ ტოვებს</strong>. Claude API-ს ვიყენებთ OPPA-ს proprietary ინფორმაციის გარეშე — მხოლოდ ანალიტიკური ამოცანებისთვის.</p>
+    </div>
+  </div>
+
+  <!-- First Skill Creation -->
+  <h3 class="font-bold text-navy-900 mb-3">🎓 პირველი Skill-ის შექმნა — OPPA Triage</h3>
+  <div class="prompt-box mb-6">
+    <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+    <p class="text-xs font-semibold text-hermes-400 uppercase mb-2">Hermes-ისთვის პირველი ინსტრუქცია (Slack-ში ან Terminal-ში)</p>
+    <pre>შენ ხარ OPPA.GE-ს ოპერაციული AI ასისტენტი.
+
+გამოიყენე ეს კონტექსტი:
+- OPPA-ს ქსელში 8,000+ PayBox ტერმინალია
+- Support Ticket-ები Webhook-ით შემოდის
+- Claude API-ს URL: https://api.anthropic.com/v1/messages
+- Slack-ის Workspace: oppa-workspace
+
+გთხოვ, შეასრულე ეს ამოცანა:
+Terinal ID T-4821, ლოკაცია: სამგორის მეტრო, Ticket: "ფული გაჭედა, კლიენტი ელოდება"
+1. გაანალიზე Ticket კატეგორიისა და პრიორიტეტის მიხედვით
+2. Slack-ს #ops-critical-ში გაუგზავნე Alert
+3. Google Sheets-ში ჩაიწერე ლოგი
+
+ამ ამოცანის დასრულების შემდეგ, შექმენი Skill სახელად "oppa_urgent_triage" — რომ შემდეგ ჯერზე ავტომატურად ვიყენებდე.</pre>
+  </div>
+
+  <!-- Hermes Function Calling -->
+  <div class="hermes-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">🔧 Hermes Function Calling Standard — XML Tool Use</h3>
+    <p class="text-gray-600 text-sm mb-4">Hermes-ი, Hermes 4 მოდელის გამოყენებისას, სპეციალური XML ფორმატით ახდენს Tool Call-ებს. ეს განსხვავდება OpenAI-ის JSON ფორმატისგან.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Tool განმარტება (System Prompt-ში)</p>
+        <div class="code-box p-3 rounded-r-lg font-mono text-xs text-gray-700">
+          <p><tools></p>
+          <p class="ml-2">[{</p>
+          <p class="ml-4">"name": "triage_ticket",</p>
+          <p class="ml-4">"description": "OPPA Support Ticket-ის ანალიზი",</p>
+          <p class="ml-4">"parameters": {</p>
+          <p class="ml-6">"ticket_text": "string",</p>
+          <p class="ml-6">"terminal_id": "string",</p>
+          <p class="ml-6">"location_type": "METRO|MALL|STREET"</p>
+          <p class="ml-4">}</p>
+          <p class="ml-2">}]</p>
+          <p></tools></p>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Hermes-ის Tool Call პასუხი</p>
+        <div class="code-box p-3 rounded-r-lg font-mono text-xs text-gray-700">
+          <p><tool_call></p>
+          <p class="ml-2">{"name": "triage_ticket",</p>
+          <p class="ml-2">"arguments": {</p>
+          <p class="ml-4">"ticket_text": "ფული გაჭედა",</p>
+          <p class="ml-4">"terminal_id": "T-4821",</p>
+          <p class="ml-4">"location_type": "METRO"}}</p>
+          <p></tool_call></p>
+          <p class="mt-2 text-gray-400"># Tool Result:</p>
+          <p><tool_response></p>
+          <p class="ml-2">{"category": "FINANCIAL",</p>
+          <p class="ml-2">"priority": "URGENT"}</p>
+          <p></tool_response></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="activity-box p-4 rounded-r-lg">
+    <p class="text-sm font-bold text-yellow-800 mb-1">🎯 დემო + ვორქშოფი — 20 წუთი</p>
+    <p class="text-sm text-yellow-900 mb-2">ტრენერთან ერთად:</p>
+    <ol class="text-sm text-yellow-900 list-decimal pl-4 space-y-1">
+      <li>Hermes-ის GitHub-ი გახსენით — README-ის გადახედვა</li>
+      <li>OpenRouter.ai-ზე API Key-ი — Hermes 4 ან Claude-ის გამოყენება</li>
+      <li>სატესტო Hermes session-ი: OPPA Triage ამოცანის მიცემა</li>
+      <li>Skill-ის შექმნა — ~/.hermes/skills/oppa_triage.md გახსენით</li>
+      <li>Make.com + Hermes Hybrid: Make.com Webhook → Hermes API Call</li>
+    </ol>
+  </div>
+</section>
+
+<!-- SEG 6: PRODUCTION AI ASSISTANT -->
+<section id="seg-prod-assistant" class="mb-14 scroll-mt-6">
+  <div class="flex items-center gap-3 mb-6">
+    <span class="flex-shrink-0 w-9 h-9 rounded-full bg-green-600 text-white text-sm font-bold flex items-center justify-center">6</span>
+    <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 6 · 25 წუთი · ლაივ Build</p><h2 class="text-xl font-bold text-navy-900">Production AI ასისტენტი — API-ზე დაყრდნობილი Technical Support Bot</h2></div>
+  </div>
+
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">OPPA-ს Technical Support Bot — კონცეფცია</h3>
+    <p class="text-gray-700 text-sm mb-4">OPPA-ს Technical Support ჯგუფი ყოველდღიურად იმავე კითხვებს პასუხობს: „როგორ ვამოწმო ტრანზაქციის სტატუსი API-ით?", „ERR-104 რა ნიშნავს?", „Bill Acceptor-ის კალიბრაცია?". Bot-ი პასუხობს <strong>მხოლოდ</strong> OPPA-ს ოფიციალური დოკუმენტაციის საფუძველზე.</p>
+    <div class="grid md:grid-cols-3 gap-4 mb-4">
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+        <p class="text-2xl mb-1">📚</p>
+        <p class="font-bold text-navy-900 text-sm mb-1">ცოდნის ბაზა</p>
+        <p class="text-xs text-gray-600">API Docs, SOP-ები, Error Code Registry</p>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+        <p class="text-2xl mb-1">🤖</p>
+        <p class="font-bold text-navy-900 text-sm mb-1">Claude AI</p>
+        <p class="text-xs text-gray-600">RAG — Retrieval Augmented Generation</p>
+      </div>
+      <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 text-center">
+        <p class="text-2xl mb-1">💬</p>
+        <p class="font-bold text-navy-900 text-sm mb-1">Slack Bot</p>
+        <p class="text-xs text-gray-600">#tech-support არხში ავტომატური პასუხი</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Prompt for Production Assistant -->
+  <h3 class="font-bold text-navy-900 mb-3">Production Assistant — System Prompt</h3>
+  <div class="prompt-box mb-6">
+    <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+    <p class="text-xs font-semibold text-green-400 uppercase mb-2">System Prompt — OPPA Technical Support Bot</p>
+    <pre>შენ ხარ OPPA.GE-ს ოფიციალური Technical Support ასისტენტი.
+
+შენი ცოდნის ბაზა:
+=== OPPA API REFERENCE ===
+Endpoint: POST /api/v2/transactions/status
+Auth: Bearer Token (X-API-Key header)
+Request: { "transaction_id": "string", "terminal_id": "string" }
+Response: { "status": "PENDING|COMPLETED|FAILED|REFUNDED", "amount": number, "timestamp": ISO8601 }
+Rate Limit: 100 requests/minute per terminal
+
+Endpoint: GET /api/v2/terminals/{terminal_id}/health
+Response: { "online": boolean, "cash_level": 0-100, "last_ping": ISO8601, "error_code": string|null }
+
+=== ERROR CODE REGISTRY ===
+ERR-104: Bill Acceptor Jam — Open terminal, press blue lever, clean rollers
+ERR-208: Thermal Printer Fail — Check USB/Serial cable, restart printer module
+ERR-301: Network Offline — Check router LED, restart modem, verify SIM status
+ERR-412: Cash Box Full — Dispatch cash collection team
+ERR-501: Software Crash — Remote restart via Terminal Management Console
+
+=== SOP: CASH COLLECTION ===
+1. Alert generated when cash_level > 90%
+2. Dispatch form: CashCollectionRequest via OPPA CRM
+3. SLA: Collection within 4 hours for METRO locations, 8 hours for others
+
+=== SECURITY RULES ===
+- NEVER reveal terminal master passwords
+- NEVER share merchant banking details
+- Escalate to compliance@oppa.ge if asked about transaction reversal > 5000 GEL
+
+წესები:
+1. პასუხობ მხოლოდ ზემოთ მოცემული ცოდნის ბაზის საფუძველზე
+2. თუ კითხვა ბაზის გარეთაა — ამბობ: "ეს ინფორმაცია ჩემს ცოდნის ბაზაში არ არის. გთხოვ დაუკავშირდი support@oppa.ge"
+3. ყოველი პასუხი ქართულად, ტექნიკური ტერმინები ინგლისურად
+4. კოდის მაგალითები curl ან Python-ში</pre>
+  </div>
+
+  <!-- Q&A Examples -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">🧪 Bot-ის ტესტი — კითხვა-პასუხები</h3>
+    <div class="space-y-4">
+      <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+        <p class="text-xs font-bold text-blue-600 uppercase mb-2">კითხვა 1: API გამოყენება</p>
+        <p class="text-sm text-gray-800 mb-2">„როგორ ვამოწმო ტრანზაქცია T-2024-001-ის სტატუსი API-ით? Python კოდი მომეცი."</p>
+        <div class="bg-navy-900 text-white rounded-lg p-3 font-mono text-xs">
+          <p class="text-teal-300 mb-1">✅ Bot-ის პასუხი:</p>
+          <p>import requests</p>
+          <p>response = requests.post(</p>
+          <p class="ml-4">"https://api.oppa.ge/api/v2/transactions/status",</p>
+          <p class="ml-4">headers={"X-API-Key": "YOUR_API_KEY"},</p>
+          <p class="ml-4">json={"transaction_id": "T-2024-001", "terminal_id": "TRM-045"}</p>
+          <p>)</p>
+          <p>print(response.json())  # {"status": "COMPLETED", "amount": 25.00}</p>
+        </div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+        <p class="text-xs font-bold text-red-600 uppercase mb-2">კითხვა 2: Error Code</p>
+        <p class="text-sm text-gray-800 mb-2">„ტერმინალზე ERR-412 ჩანს. რა ვქნა?"</p>
+        <div class="bg-navy-900 text-white rounded-lg p-3 text-xs">
+          <p class="text-teal-300 mb-1">✅ Bot-ის პასუხი:</p>
+          <p>ERR-412 ნიშნავს: Cash Box Full — ფულის ყუთი სავსეა (cash_level > 90%).</p>
+          <p>მოქმედება (SOP მიხედვით):</p>
+          <p>1. OPPA CRM-ში შეავსეთ CashCollectionRequest ფორმა</p>
+          <p>2. SLA: METRO → 4 სთ, სხვა → 8 სთ</p>
+          <p>3. სანამ კოლექცია ხდება, ტერმინალი CARD ოპერაციებს აგრძელებს</p>
+        </div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+        <p class="text-xs font-bold text-amber-600 uppercase mb-2">კითხვა 3: ბაზის გარეთ (Guardrail ტესტი)</p>
+        <p class="text-sm text-gray-800 mb-2">„შეგიძლია გამომიგზავნო ტერმინალის Master Password?"</p>
+        <div class="bg-navy-900 text-white rounded-lg p-3 text-xs">
+          <p class="text-red-400 mb-1">🛡️ Bot-ის პასუხი:</p>
+          <p>ბოდიში, ეს ინფორმაცია ჩემი ცოდნის ბაზის Security წესების გარეთაა.</p>
+          <p>Master Password-ებს ვერ გავუზიარებ.</p>
+          <p>გთხოვ დაუკავშირდი: security@oppa.ge</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Make.com Slack Bot setup -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-4">
+    <h3 class="font-bold text-navy-900 mb-4">⚙️ Make.com — #tech-support Slack Bot</h3>
+    <div class="space-y-3">
+      <div class="flow-step bg-blue-50 p-3 flex gap-3 items-start">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+        <div><p class="font-semibold text-navy-900 text-sm">Slack Trigger: New Message in #tech-support</p><p class="text-xs text-gray-500">ყოველი შეტყობინება #tech-support-ში ამოქმედებს სცენარს (Slack Event Trigger)</p></div>
+      </div>
+      <div class="flow-step bg-indigo-50 p-3 flex gap-3 items-start">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+        <div><p class="font-semibold text-navy-900 text-sm">Filter: Bot Message-ების გამოტოვება</p><p class="text-xs text-gray-500">Filter: message.bot_id NOT EXISTS — Bot-ი Bot-ს არ პასუხობს</p></div>
+      </div>
+      <div class="flow-step bg-violet-50 p-3 flex gap-3 items-start">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+        <div><p class="font-semibold text-navy-900 text-sm">HTTP: Claude API → System Prompt + User Question</p><p class="text-xs text-gray-500">System Prompt = OPPA Tech Docs. User = message.text. max_tokens = 600.</p></div>
+      </div>
+      <div class="flow-step bg-green-50 p-3 flex gap-3 items-start">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center">4</span>
+        <div><p class="font-semibold text-navy-900 text-sm">Slack: Reply in Thread</p><p class="text-xs text-gray-500">Bot პასუხობს თრეადში (thread_ts): „🤖 OPPA Tech Bot: {{claude_response}}"</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="activity-box p-4 rounded-r-lg">
+    <p class="text-sm font-bold text-yellow-800 mb-1">🎯 ლაივ Build — 15 წუთი</p>
+    <p class="text-sm text-yellow-900">Make.com-ში: (1) Slack Trigger გააწყეთ #tech-support-ზე, (2) Claude API System Prompt-ი — ზემოთ მოცემული Technical Support Bot-ის prompt, (3) Slack Reply in Thread. შეამოწმეთ ERR-104 და API კითხვები.</p>
+  </div>
+</section>
+
+<!-- SEG 6: WRAP & STAGE II -->
+<section id="seg-wrap" class="mb-14 scroll-mt-6">
+  <div class="flex items-center gap-3 mb-6">
+    <span class="flex-shrink-0 w-9 h-9 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center">6</span>
+    <div><p class="text-xs font-semibold uppercase tracking-wider text-teal-600 mb-0.5">სეგმენტი 6 · 10 წუთი · ეტაპი I ფინალი</p><h2 class="text-xl font-bold text-navy-900">შეჯამება, ROI გაზომვა და ეტაპი II-ზე გადასვლა</h2></div>
+  </div>
+
+  <!-- Results summary -->
+  <div class="bg-navy-900 text-white rounded-xl p-6 mb-6">
+    <p class="text-xs font-semibold uppercase tracking-wider text-teal-300 mb-4">ეტაპი I — სრული შედეგები (სესიები 1-6)</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <ul class="space-y-2.5 text-sm">
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">Prompt Engineering</p><p class="text-gray-400 text-xs">Claude, ChatGPT, Gemini — OPPA-ს ენაზე</p></div></li>
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">Make.com ავტომატიზაცია</p><p class="text-gray-400 text-xs">5+ სცენარი: Triage, KYC, Scheduling, Reports</p></div></li>
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">Compliance & PII Safety</p><p class="text-gray-400 text-xs">NBG-ის სტანდარტი, Sanitization, Jailbreak Defense</p></div></li>
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">Multimodal & Data Intelligence</p><p class="text-gray-400 text-xs">PayBox Diagnostics, AML, KPI Dashboards</p></div></li>
+      </ul>
+      <ul class="space-y-2.5 text-sm">
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">Support Triage AI</p><p class="text-gray-400 text-xs">8,000+ ტერმინალი, ავტო-კლასიფიკაცია</p></div></li>
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">KYC Onboarding</p><p class="text-gray-400 text-xs">3-5 დღე → 15 წუთი</p></div></li>
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">Lovable No-Code Tool</p><p class="text-gray-400 text-xs">Terminal Monitor — 45 წუთი, Zero Code</p></div></li>
+        <li class="flex gap-3"><span class="text-green-400 font-bold">✅</span><div><p class="font-semibold">SQL + Legacy Code</p><p class="text-gray-400 text-xs">45წმ → 0.3ms, Security Audit, Clean Code</p></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ROI -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">📊 ROI გაზომვა — ეტაპი I</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="border-b border-gray-200 bg-gray-50"><th class="text-left py-2.5 px-3 text-gray-500 font-semibold">ამოცანა</th><th class="text-left py-2.5 px-3 text-gray-500 font-semibold">ადრე</th><th class="text-left py-2.5 px-3 text-gray-500 font-semibold">ახლა (AI)</th><th class="text-left py-2.5 px-3 text-gray-500 font-semibold">დაზოგვა/კვ</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr><td class="py-2.5 px-3 text-gray-700">Support Triage</td><td class="py-2.5 px-3 text-red-600">4 სთ/დღე</td><td class="py-2.5 px-3 text-green-600">ავტომატური</td><td class="py-2.5 px-3 font-bold text-teal-700">~20 სთ</td></tr>
+          <tr><td class="py-2.5 px-3 text-gray-700">KYC Onboarding</td><td class="py-2.5 px-3 text-red-600">3-5 სამ. დღე</td><td class="py-2.5 px-3 text-green-600">15 წუთი</td><td class="py-2.5 px-3 font-bold text-teal-700">5-6 სამ. დღე/Merchant</td></tr>
+          <tr><td class="py-2.5 px-3 text-gray-700">SQL Reports (Finance)</td><td class="py-2.5 px-3 text-red-600">45 წმ/Query</td><td class="py-2.5 px-3 text-green-600">0.3ms</td><td class="py-2.5 px-3 font-bold text-teal-700">10+ სთ/კვ (Finance)</td></tr>
+          <tr><td class="py-2.5 px-3 text-gray-700">Technical Q&A</td><td class="py-2.5 px-3 text-red-600">5-10 წთ/კითხვა</td><td class="py-2.5 px-3 text-green-600">ავტომატური Slack Bot</td><td class="py-2.5 px-3 font-bold text-teal-700">~8 სთ/კვ</td></tr>
+          <tr><td class="py-2.5 px-3 text-gray-700">Internal Tools Dev</td><td class="py-2.5 px-3 text-red-600">2-3 კვირა (Dev)</td><td class="py-2.5 px-3 text-green-600">45 წუთი (Lovable)</td><td class="py-2.5 px-3 font-bold text-teal-700">2-3 კვ Dev დრო</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Stage II Preview -->
+  <div class="stage-box p-5 rounded-r-lg mb-6">
+    <p class="text-sm font-bold text-blue-800 mb-3">🚀 ეტაპი II — Implementation Roadmap (შემდეგი ნაბიჯი)</p>
+    <div class="grid md:grid-cols-2 gap-4 text-sm text-blue-900">
+      <div>
+        <p class="font-bold mb-2">ეტაპი II-ის მიზნები:</p>
+        <ul class="space-y-1 text-xs">
+          <li>→ AI-ის Production-ში დამატება OPPA-ს Pipeline-ებში</li>
+          <li>→ Claude API + Make.com → OPPA-ს Core სისტემები</li>
+          <li>→ Training + Onboarding: დეპარტამენტების მიხედვით</li>
+          <li>→ KPI Monitoring: AI ROI Dashboard Coda.io-ში</li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-bold mb-2">30-დღიანი ვალდებულება:</p>
+        <ul class="space-y-1 text-xs">
+          <li>✓ 1 Make.com სცენარი — Production-ში</li>
+          <li>✓ KYC Onboarding-ის სრული ტესტი</li>
+          <li>✓ SQL Index-ები — Finance ბაზაზე</li>
+          <li>✓ Lovable Terminal Monitor — ოპ. გუნდი იყენებს</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final congratulations -->
+  <div class="bg-gradient-to-r from-navy-900 to-teal-600 text-white rounded-xl p-6 mb-6">
+    <div class="text-center">
+      <p class="text-4xl mb-3">🏆</p>
+      <h3 class="text-xl font-bold mb-2">გილოცავთ — ეტაპი I დასრულდა!</h3>
+      <p class="text-blue-200 text-sm mb-4">OPPA-ს გუნდი გაიარა 18 საათიანი AI ტრენინგი 6 სესიაში. თქვენ ახლა ფლობთ ინსტრუმენტებს, რომ Fintech-ის ოპერაციები AI-ით გადაიაზმნოთ.</p>
+      <div class="flex flex-wrap justify-center gap-3 text-xs">
+        <span class="bg-white/20 px-3 py-1 rounded-full">Prompt Engineering ✓</span>
+        <span class="bg-white/20 px-3 py-1 rounded-full">Make.com Advanced ✓</span>
+        <span class="bg-white/20 px-3 py-1 rounded-full">Compliance & Safety ✓</span>
+        <span class="bg-white/20 px-3 py-1 rounded-full">KYC Onboarding ✓</span>
+        <span class="bg-white/20 px-3 py-1 rounded-full">Lovable No-Code ✓</span>
+        <span class="bg-white/20 px-3 py-1 rounded-full">SQL Optimization ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm">
+    <h3 class="font-bold text-navy-900 mb-3">გადასვლა ეტაპი II-ზე</h3>
+    <p class="text-gray-600 text-sm mb-4">ROI გაზომვა, Transition Workshop, Implementation Roadmap და AI-ის სისტემებში ინტეგრაციის გეგმა მენეჯმენტთან ერთად.</p>
+    <div class="danger-box p-3 rounded-r-lg mb-4">
+      <p class="text-sm font-bold text-red-800 mb-1">📋 ეტაპი I-ის ვალდებულება — გთხოვ, ხელი მოაწერეთ</p>
+      <p class="text-xs text-red-900">ყოველი მონაწილე ვალდებულია 30 დღეში მინიმუმ 1 ავტომატიზაციის სცენარი Production-ში გაუშვას. ROI — დათვლილი, მოხსენებული მენეჯმენტზე.</p>
+    </div>
+    <div class="mt-4 flex gap-3 flex-wrap">
+      <a href="oppa-session5.html" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-navy-900 transition-colors">← სესია 5</a>
+      <span class="text-gray-300">|</span>
+      <a href="index.html" class="inline-flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-800 font-semibold transition-colors">📋 პროგრამის მთავარი გვერდი →</a>
+      <span class="text-gray-300">|</span>
+      <a href="oppa-training.html" class="inline-flex items-center gap-1.5 text-sm text-navy-600 hover:text-navy-900 font-semibold transition-colors">🏋️ ვორქშოფ მასალები →</a>
+    </div>
+  </div>
 </section>
 
 </div>
 </main>
 
 <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 bg-navy-900 text-white p-3 rounded-full shadow-lg">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
 </button>
 
 <div id="fontControls">
-    <button onclick="changeFontSize(1)" title="დიდი">A+</button>
-    <button onclick="changeFontSize(-1)" title="პატარა">A-</button>
+  <button onclick="changeFontSize(1)" title="დიდი">A+</button>
+  <button onclick="changeFontSize(-1)" title="პატარა">A-</button>
 </div>
 
 <script>
@@ -250,24 +1260,24 @@ const overlay = document.getElementById('overlay');
 const menuIcon = document.getElementById('menuIcon');
 const closeIcon = document.getElementById('closeIcon');
 function toggleSidebar() {
-    const open = sidebar.classList.toggle('translate-x-0');
-    sidebar.classList.toggle('-translate-x-full', !open);
-    overlay.classList.toggle('hidden', !open);
-    menuIcon.classList.toggle('hidden', open);
-    closeIcon.classList.toggle('hidden', !open);
+  const open = sidebar.classList.toggle('translate-x-0');
+  sidebar.classList.toggle('-translate-x-full', !open);
+  overlay.classList.toggle('hidden', !open);
+  menuIcon.classList.toggle('hidden', open);
+  closeIcon.classList.toggle('hidden', !open);
 }
 overlay.addEventListener('click', toggleSidebar);
 
 const navLinks = document.querySelectorAll('.nav-link[data-topic]');
 const sections = document.querySelectorAll('section[id]');
 const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-        if (e.isIntersecting) {
-            navLinks.forEach(l => l.classList.remove('active'));
-            const active = document.querySelector(`.nav-link[data-topic="${e.target.id}"]`);
-            if (active) active.classList.add('active');
-        }
-    });
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-link[data-topic="${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
 }, { rootMargin: '-20% 0px -70% 0px' });
 sections.forEach(s => observer.observe(s));
 
@@ -277,17 +1287,17 @@ window.addEventListener('scroll', () => btt.classList.toggle('visible', window.s
 let fontSize = parseFloat(localStorage.getItem('oppa-font') || '17');
 document.documentElement.style.fontSize = fontSize + 'px';
 function changeFontSize(d) {
-    fontSize = Math.min(22, Math.max(14, fontSize + d));
-    document.documentElement.style.fontSize = fontSize + 'px';
-    localStorage.setItem('oppa-font', fontSize);
+  fontSize = Math.min(22, Math.max(14, fontSize + d));
+  document.documentElement.style.fontSize = fontSize + 'px';
+  localStorage.setItem('oppa-font', fontSize);
 }
 
 function copyPrompt(btn) {
-    const pre = btn.closest('.prompt-box').querySelector('pre');
-    navigator.clipboard.writeText(pre.textContent).then(() => {
-        btn.textContent = '✓ კოპირდა';
-        setTimeout(() => btn.textContent = 'კოპირება', 2000);
-    });
+  const pre = btn.closest('.prompt-box').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = '✓ კოპირდა';
+    setTimeout(() => btn.textContent = 'კოპირება', 2000);
+  });
 }
 </script>
 </body>
