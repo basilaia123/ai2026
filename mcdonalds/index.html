@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>მაკდონალდს საქართველო — AI ტრენინგისა და დანერგვის პროგრამა</title>
+  <meta name="description" content="ხელოვნური ინტელექტის პრაქტიკული დანერგვის, საოპერაციო ეფექტურობისა და მონაცემთა ანალიზის პროგრამა მაკდონალდს საქართველოს მენეჯმენტისთვის.">
+  <meta name="theme-color" content="#DA291C">
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <style>
+    :root {
+      /* Brand Theme Colors */
+      --primary: #DA291C; /* McDonald's Red */
+      --primary-light: #FF4D42;
+      --primary-deep: #B51C12;
+      --secondary: #FFC72C; /* McDonald's Gold */
+      --secondary-light: #FFE082;
+      --bg-dark: #0B0F19;
+      --bg-light: #F4F6F9;
+      --card-bg-dark: #121826;
+      --card-bg-light: #ffffff;
+      --border-dark: #1E293B;
+      --border-light: #E2E8F0;
+      --text-dark: #F1F5F9;
+      --text-light: #0F172A;
+      --text-muted-dark: #94A3B8;
+      --text-muted-light: #475569;
+      --success: #10B981;
+      --orange: #F59E0B;
+      
+      /* Active Theme Variables - Dark Mode by Default */
+      --body-bg: var(--bg-dark);
+      --card-bg: var(--card-bg-dark);
+      --text: var(--text-dark);
+      --text-muted: var(--text-muted-dark);
+      --border: var(--border-dark);
+      
+      /* Design Elements */
+      --radius: 16px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.light-mode {
+      --body-bg: var(--bg-light);
+      --card-bg: var(--card-bg-light);
+      --text: var(--text-light);
+      --text-muted: var(--text-muted-light);
+      --border: var(--border-light);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--body-bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ─── PROGRESS BAR ─── */
+    #progress-bar {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 1000;
+      background: rgba(255,255,255,0.05);
+    }
+    #progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.1s linear;
+    }
+
+    /* ─── NAVIGATION BAR ─── */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      z-index: 999;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+    }
+    body.light-mode #navbar {
+      background: rgba(244, 246, 249, 0.95);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    }
+    #navbar.scrolled {
+      box-shadow: var(--shadow-md);
+      background: rgba(11, 15, 25, 0.98);
+    }
+    body.light-mode #navbar.scrolled {
+      background: rgba(255, 255, 255, 0.98);
+    }
+    .nav-inner {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 18px;
+    }
+    .nav-logo svg {
+      fill: var(--secondary);
+      width: 32px;
+      height: 32px;
+    }
+    .nav-logo-badge {
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      border-left: 1px solid var(--border);
+      padding-left: 12px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--text);
+      opacity: 0.8;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+    .nav-links a:hover, .nav-links a.active {
+      opacity: 1;
+      background: rgba(218, 41, 28, 0.08);
+      color: var(--primary);
+    }
+    .nav-links a.cta-btn {
+      background: var(--primary);
+      color: #ffffff;
+      opacity: 1;
+      box-shadow: 0 4px 14px rgba(218, 41, 28, 0.3);
+    }
+    .nav-links a.cta-btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+      color: #ffffff;
+    }
+
+    /* Light/Dark Mode Switcher */
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .theme-toggle:hover {
+      background: rgba(218, 41, 28, 0.08);
+      border-color: var(--primary);
+    }
+
+    /* Mobile Drawer Toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      z-index: 998;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-lg);
+    }
+    .mobile-menu a {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      display: block;
+    }
+
+    /* ─── HERO SECTION ─── */
+    .hero {
+      padding-top: 140px;
+      padding-bottom: 80px;
+      background: radial-gradient(circle at 80% 20%, rgba(218, 41, 28, 0.08) 0%, transparent 60%),
+                  radial-gradient(circle at 10% 80%, rgba(255, 199, 44, 0.05) 0%, transparent 50%);
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(218, 41, 28, 0.1);
+      color: var(--primary-light);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      border: 1px solid rgba(218, 41, 28, 0.2);
+    }
+    body.light-mode .hero-eyebrow {
+      background: rgba(218, 41, 28, 0.06);
+      color: var(--primary);
+    }
+    .hero-eyebrow svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    body.light-mode .hero h1 {
+      background: linear-gradient(135deg, #0F172A 0%, #475569 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-bottom: 36px;
+      max-width: 600px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(218, 41, 28, 0.3);
+    }
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    body.light-mode .btn-secondary {
+      background: rgba(15, 23, 42, 0.02);
+      border-color: var(--border-light);
+    }
+    body.light-mode .btn-secondary:hover {
+      background: rgba(15, 23, 42, 0.05);
+    }
+
+    /* Floating Stats card */
+    .hero-badge-card {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    body.light-mode .hero-badge-card {
+      background: #ffffff;
+    }
+    .hero-badge-header {
+      color: var(--secondary);
+      font-weight: 900;
+      font-size: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-badge-header svg {
+      fill: var(--primary);
+      width: 24px;
+      height: 24px;
+    }
+    .hero-badge-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-badge-item:last-child {
+      border-bottom: none;
+    }
+    .hero-badge-label {
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .hero-badge-value {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ─── QUICK METRICS ─── */
+    .metrics {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.01);
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .metric-card {
+      text-align: center;
+      padding: 16px;
+    }
+    .metric-num {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--secondary);
+      margin-bottom: 4px;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .metric-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    /* ─── SECTION TITLE ─── */
+    .section-title-wrap {
+      text-align: center;
+      margin-bottom: 48px;
+      position: relative;
+    }
+    .section-title-wrap h2 {
+      font-size: 32px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .section-title-wrap p {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .section-title-decor {
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      margin: 16px auto 0 auto;
+      border-radius: 20px;
+    }
+
+    /* ─── OPTIONS & TABS SECTION ─── */
+    .tabs-section {
+      padding: 80px 0;
+    }
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 14px 28px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    body.light-mode .tab-btn {
+      background: #ffffff;
+    }
+    .tab-btn:hover {
+      background: rgba(218, 41, 28, 0.05);
+      border-color: var(--primary);
+    }
+    .tab-btn.active, body.light-mode .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(218, 41, 28, 0.3);
+    }
+    .tab-btn-badge {
+      background: var(--secondary);
+      color: var(--text-light);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .tab-btn.active .tab-btn-badge {
+      background: #ffffff;
+      color: var(--primary);
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Special styling for Orientation tab (different color to separate one-time lecture) */
+    .tab-btn-demo {
+      border-color: rgba(255, 199, 44, 0.4) !important;
+    }
+    .tab-btn-demo:hover {
+      background: rgba(255, 199, 44, 0.08) !important;
+      border-color: var(--secondary) !important;
+    }
+    .tab-btn-demo.active, body.light-mode .tab-btn-demo.active {
+      background: var(--secondary) !important;
+      color: #0B0F19 !important; /* dark text for contrast on gold background */
+      border-color: var(--secondary) !important;
+      box-shadow: 0 4px 14px rgba(255, 199, 44, 0.3) !important;
+    }
+    .tab-btn-demo.active .tab-btn-badge {
+      background: #0B0F19 !important;
+      color: var(--secondary) !important;
+    }
+    /* Gold highlight for Demo panel sidebar */
+    .panel-meta-card-demo {
+      border-top: 4px solid var(--secondary) !important;
+      background: rgba(255, 199, 44, 0.02) !important;
+    }
+    body.light-mode .panel-meta-card-demo {
+      background: rgba(255, 199, 44, 0.04) !important;
+    }
+    /* Gold badge for demo card */
+    .session-badge-demo {
+      background: rgba(255, 199, 44, 0.1) !important;
+      color: var(--secondary) !important;
+    }
+    body.light-mode .session-badge-demo {
+      background: rgba(255, 199, 44, 0.15) !important;
+      color: #b38600 !important; /* darker gold for readability on light bg */
+    }
+
+    /* Tab Layout Grid */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 0.7fr 1.3fr;
+      gap: 40px;
+    }
+    .panel-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .panel-meta-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+    }
+    .panel-meta-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-meta-stat {
+      margin-bottom: 16px;
+    }
+    .panel-meta-stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .panel-meta-stat-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .panel-meta-stat-val.price {
+      color: var(--secondary);
+      font-size: 28px;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .panel-meta-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+
+    /* Session List styling */
+    .session-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .session-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .session-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(218, 41, 28, 0.3);
+    }
+    .session-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary);
+    }
+    .session-card.recommended::before {
+      background: var(--secondary);
+    }
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 16px;
+    }
+    .session-badge {
+      background: rgba(218, 41, 28, 0.1);
+      color: var(--primary-light);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    body.light-mode .session-badge {
+      background: rgba(218, 41, 28, 0.05);
+      color: var(--primary);
+    }
+    .session-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .session-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 12px;
+    }
+    .session-content {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      padding-left: 12px;
+      border-left: 1px dashed var(--border);
+    }
+    .session-content strong {
+      color: var(--text);
+    }
+    .session-practice {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .session-practice strong {
+      color: #10B981;
+    }
+    .session-homework {
+      background: rgba(255, 199, 44, 0.05);
+      border: 1px solid rgba(255, 199, 44, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .session-homework strong {
+      color: var(--secondary);
+    }
+
+    /* ─── METHODOLOGY SECTION ─── */
+    .methodology {
+      padding: 80px 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(218, 41, 28, 0.02) 100%);
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(255, 199, 44, 0.2);
+    }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 199, 44, 0.1);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      color: var(--secondary);
+    }
+    .feature-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .feature-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ─── ROI & METRICS MEASUREMENT ─── */
+    .roi-section {
+      padding: 80px 0;
+    }
+    .roi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .roi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+    .roi-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+    .roi-card h4 {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .roi-card p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ─── TRAINER PROFILE ─── */
+    .trainer {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .trainer-grid {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .trainer-avatar-wrap {
+      text-align: center;
+      position: relative;
+    }
+    .trainer-badge {
+      width: 140px;
+      height: 140px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #ffffff;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      font-weight: 900;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 24px;
+    }
+    .trainer-certs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .cert-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+    }
+    body.light-mode .cert-item {
+      background: #ffffff;
+    }
+    .trainer-info h3 {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .trainer-title {
+      color: var(--secondary);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .trainer-bio {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .trainer-details {
+      list-style: none;
+    }
+    .trainer-details li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .trainer-details li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 900;
+    }
+
+    /* ─── FOOTER & NEXT STEPS ─── */
+    .cta-footer {
+      padding: 100px 0;
+      background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary) 100%);
+      color: #ffffff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-footer-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      z-index: 2;
+      position: relative;
+    }
+    .cta-footer h2 {
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+    .cta-footer p {
+      opacity: 0.8;
+      margin-bottom: 32px;
+    }
+    .cta-footer .btn-secondary {
+      background: #ffffff;
+      color: var(--primary-deep);
+      border: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    .cta-footer .btn-secondary:hover {
+      background: var(--secondary);
+      color: var(--text-light);
+      transform: translateY(-2px);
+    }
+
+    /* ─── RESPONSIVE STYLES ─── */
+    @media (max-width: 1024px) {
+      .hero-grid, .panel-grid, .trainer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .hero {
+        padding-top: 100px;
+      }
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .roi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .menu-toggle {
+        display: block;
+      }
+      .hero h1 {
+        font-size: 32px;
+      }
+      .roi-grid, .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── PROGRESS BAR ─── -->
+  <div id="progress-bar">
+    <div id="progress-bar-fill"></div>
+  </div>
+
+  <!-- ─── NAVIGATION BAR ─── -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 80 C10 40, 25 20, 35 20 C45 20, 50 60, 50 80 C50 60, 55 20, 65 20 C75 20, 90 40, 90 80" stroke="#FFC72C" stroke-width="12" stroke-linecap="round" fill="none"/>
+        </svg>
+        <div class="nav-logo-badge">MCD</div>
+        <span>AI ტრენინგი</span>
+      </div>
+      <div class="nav-links">
+        <a href="#hero">მთავარი</a>
+        <a href="#options">პროგრამები</a>
+        <a href="#methodology">მეთოდოლოგია</a>
+        <a href="#trainer">ტრენერი</a>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+          <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24">
+            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707M12 5a7 7 0 100 14 7 7 0 000-14z"/>
+          </svg>
+        </button>
+      </div>
+      <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Drawer -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#hero" onclick="toggleMobileMenu()">მთავარი</a>
+    <a href="#options" onclick="toggleMobileMenu()">პროგრამები</a>
+    <a href="#methodology" onclick="toggleMobileMenu()">მეთოდოლოგია</a>
+    <a href="#trainer" onclick="toggleMobileMenu()">ტრენერი</a>
+  </div>
+
+  <!-- ─── HERO SECTION ─── -->
+  <header class="hero" id="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-text">
+          <div class="hero-eyebrow">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+            მაკდონალდს საქართველო — მენეჯმენტის ტრენინგი
+          </div>
+          <h1>ხელოვნური ინტელექტის დანერგვა და <span>პრაქტიკული გამოყენება</span></h1>
+          <p class="hero-desc">
+            სპეციალურად მენეჯმენტის გუნდისთვის მორგებული პროგრამა, რომელიც აერთიანებს საოპერაციო ეფექტურობას, მონაცემთა Advanced Data Analysis ანალიტიკას და უსაფრთხო კორპორატიულ GDPR მოდელებს.
+          </p>
+          <div class="hero-ctas">
+            <a href="#options" class="btn btn-primary">პროგრამის ნახვა</a>
+            <a href="#trainer" class="btn btn-secondary">ტრენერის შესახებ</a>
+          </div>
+        </div>
+        <div class="hero-badge-wrap">
+          <div class="hero-badge-card">
+            <div class="hero-badge-header">
+              <svg viewBox="0 0 100 100">
+                <path d="M10 80 C10 40, 25 20, 35 20 C45 20, 50 60, 50 80 C50 60, 55 20, 65 20 C75 20, 90 40, 90 80" stroke="#DA291C" stroke-width="12" stroke-linecap="round" fill="none"/>
+              </svg>
+              AI Proposal 2026
+            </div>
+            <div class="hero-badge-item">
+              <div class="hero-badge-label">აუდიტორია</div>
+              <div class="hero-badge-value">კომპანიის მენეჯმენტი (12 კაცი)</div>
+            </div>
+            <div class="hero-badge-item">
+              <div class="hero-badge-label">ფორმატი</div>
+              <div class="hero-badge-value">2-საათიანი სესიები (ონლაინ)</div>
+            </div>
+            <div class="hero-badge-item">
+              <div class="hero-badge-label">საწყისი დონე</div>
+              <div class="hero-badge-value">თვითნასწავლი (ფასიანი ვერსიები)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── QUICK METRICS ─── -->
+  <section class="metrics">
+    <div class="container">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-num">12</div>
+          <div class="metric-label">მონაწილე მენეჯერი</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num">2 სთ</div>
+          <div class="metric-label">სესიის ხანგრძლივობა</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num">0%</div>
+          <div class="metric-label">მონაცემთა გაჟონვის რისკი (GDPR)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num">50%+</div>
+          <div class="metric-label">საოპერაციო დროის დაზოგვა</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── OPTIONS & TABS SECTION ─── -->
+  <section class="tabs-section" id="options">
+    <div class="container">
+      <div class="section-title-wrap">
+        <h2>სასწავლო პროგრამის ვარიანტები</h2>
+        <p>შეარჩიეთ თქვენს საორგანიზაციო მიზნებზე მორგებული პაკეტი. თითოეული ვარიანტი ითვალისწინებს პრაქტიკულ საშინაო დავალებებსა და ონლაინ რეჟიმში მუშაობას.</p>
+        <div class="section-title-decor"></div>
+      </div>
+
+      <div class="tabs-nav">
+        <button class="tab-btn tab-btn-demo" onclick="switchTab('optionDemo')">
+          საორიენტაციო ტრენინგი
+          <span class="tab-btn-badge">2 საათი</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('optionA')">
+          ოფცია A: Fast-Track
+          <span class="tab-btn-badge">6 საათი</span>
+        </button>
+        <button class="tab-btn active" onclick="switchTab('optionB')">
+          ოფცია B: Recommended
+          <span class="tab-btn-badge">10 საათი</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('optionC')">
+          ოფცია C: Full Mastery
+          <span class="tab-btn-badge">14 საათი</span>
+        </button>
+      </div>
+
+      <!-- ─── TAB PANEL DEMO ─── -->
+      <div class="tab-panel" id="optionDemo">
+        <div class="panel-grid">
+          <div class="panel-sidebar">
+            <div class="panel-meta-card panel-meta-card-demo">
+              <div class="panel-meta-title">საორიენტაციო ტრენინგი</div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">საერთო ხანგრძლივობა</div>
+                <div class="panel-meta-stat-val">2 სასწავლო საათი</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">სტრუქტურა</div>
+                <div class="panel-meta-stat-val">1 სესია (2-საათიანი)</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">ბიუჯეტი</div>
+                <div class="panel-meta-stat-val price">1,000 ლარი</div>
+              </div>
+              <div class="panel-meta-desc">
+                მოიცავს ხელოვნური ინტელექტის 2026 წლის ლანდშაფტის მიმოხილვას, R.O.L.E. და C.R.E.A.T.E. პრომპტინგის ჩარჩოებს, კორპორატიულ უსაფრთხოებასა და GDPR რეგულაციებს, ასევე Claude Projects-ის, Gemini Gems-ის, Notion AI-ის, Perplexity.ai-ის, NotebookLM-ისა და Make.com-ის პრაქტიკულ დემონსტრირებას.
+              </div>
+            </div>
+          </div>
+          <div class="panel-main">
+            <div class="session-list">
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 1: საკვლევი, საორიენტაციო და სადემონსტრაციო ტრენინგი</div>
+                  <span class="session-badge session-badge-demo">საორიენტაციო დემო</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  ხელოვნური ინტელექტის თანამედროვე ლანდშაფტი 2026 წელს (ChatGPT vs Claude vs Gemini): რომელი მოდელი რომელ მენეჯერულ ამოცანაშია წამყვანი. <strong>პრომპტინგის საფუძვლები:</strong> ეფექტური კომუნიკაცია ხელოვნურ ინტელექტთან, R.O.L.E. და C.R.E.A.T.E. ჩარჩოების გაცნობა. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა დაცვის სტანდარტები, რა ინფორმაცია არ უნდა გაიგზავნოს საჯარო ჩატებში მაკდონალდსის საოპერაციო, ფინანსური და რეცეპტების უსაფრთხოების დასაცავად. ახალი აგენტური ხელსაწყოების პრაქტიკული დემონსტრაცია (Claude Projects, Gemini Gems, Notion AI, Perplexity.ai, NotebookLM, Gamma AI, Make.com).
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> ხელსაწყოების გააქტიურება და პირველი პრომპტის შედგენა საკუთარი სამუშაოს მაგალითზე.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> 1 კონკრეტული ყოველდღიური მენეჯერული ამოცანის იდენტიფიცირება, რომლის ოპტიმიზაციაც AI-ით არის შესაძლებელი.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── TAB PANEL A ─── -->
+      <div class="tab-panel" id="optionA">
+        <div class="panel-grid">
+          <div class="panel-sidebar">
+            <div class="panel-meta-card">
+              <div class="panel-meta-title">საწყისი პრაქტიკული ტრენინგი</div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">საერთო ხანგრძლივობა</div>
+                <div class="panel-meta-stat-val">6 სასწავლო საათი</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">სტრუქტურა</div>
+                <div class="panel-meta-stat-val">3 სესია (2-საათიანი)</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">ბიუჯეტი</div>
+                <div class="panel-meta-stat-val price">3,000 ლარი</div>
+              </div>
+              <div class="panel-meta-desc">
+                საწყისი პრაქტიკული პროგრამა მენეჯერებისთვის, რომელიც პირდაპირ ფოკუსირდება AI-ის ბაზისურ სამუშაო ნაკადებზე და გვერდს უვლის ზოგად საორიენტაციო დემონსტრირებას.
+              </div>
+            </div>
+          </div>
+          <div class="panel-main">
+            <div class="session-list">
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 1: პრომპტინგის საფუძვლები, კორპორატიული უსაფრთხოება, AI წერითი ასისტენტი და Gemini Gems</div>
+                  <span class="session-badge">ბაზისი & წერითი</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირება. <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Gemini-ში საპასუხო Few-Shot Gem ასისტენტის შექმნა და Wolt/Bolt-ის ნეგატიური შეფასების პასუხის გენერირება.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> 1 ყოველდღიური მენეჯერული წერილობითი კომუნიკაციის დავალების ავტომატიზაცია საკუთარი Gem-ის საშუალებით.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 2: Notion AI, Claude Projects, Gemini Gems და საოპერაციო SOP მენეჯმენტი</div>
+                  <span class="session-badge">ოპერაციები & SOP</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება”: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> მენეჯერის ხმოვანი შენიშვნებისა (Voice Notes) და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია და Notion AI-ში სტრუქტურული ჩატვირთვა. <strong>Claude Projects:</strong> პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და <strong>Shared Artifacts</strong>-ის გამოყენება SOP-ების შესაქმნელად. <strong>Gemini Gems-ის გაფართოებული გამოყენება:</strong> პერსონალიზებული Gem ასისტენტების შექმნა საოპერაციო SOP-ების გენერირებისთვის. <strong>ტექნიკური მხარდაჭერის SOP-ები:</strong> სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა და Troubleshooting-ის ინსტრუქციების სწრაფი ძიება და სტრუქტურირება.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Claude Projects-სა და Gemini Gems-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების დამხმარე Gem-ის და <strong>Taylor ნაყინის აპარატის Troubleshooting SOP ასისტენტის</strong> შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> რესტორნის ჰიგიენისა და დასუფთავების მოკლე SOP-ის დრაფტის შექმნა Claude-ისა და განახლებული Gem-ის დახმარებით.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 3: მონაცემთა ანალიზი და Custom GPTs</div>
+                  <span class="session-badge">ანალიტიკა & GPTs</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  მონაცემთა Advanced ანალიტიკა <strong>Julius.ai</strong>-ით და ChatGPT Advanced Data Analysis-ით: გაყიდვების CSV მონაცემების, მაღაზიების (Stores) ეფექტურობისა და მომხმარებელთა უკუკავშირების ანალიზი. რთული Excel ფორმულების გენერირება მუშაობის დასაჩქარებლად. <strong>Custom GPTs (OpenAI):</strong> მაკდონალდსის მენეჯერის პერსონალური ასისტენტის აწყობა (მაგ. Shift Scheduler GPT), Gemini Gems-ის ინტეგრირება Google Workspace-ში და <strong>ახალი თანამშრომლების ონბორდინგის სიმულაციური ტრენერი (Crew Trainer GPT)</strong>.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცების ანალიზი და OpenAI-ის პლატფორმაზე <strong>Crew Trainer GPT</strong>-ის შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> გაყიდვების სიმულაციური მონაცემების CSV ფაილის ანალიზი Julius.ai-ით და 3 მთავარი საოპერაციო რეკომენდაციის გამოტანა.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── TAB PANEL B (RECOMMENDED) ─── -->
+      <div class="tab-panel active" id="optionB">
+        <div class="panel-grid">
+          <div class="panel-sidebar">
+            <div class="panel-meta-card">
+              <div class="panel-meta-title">საოპერაციო და ანალიტიკური ექსელენსი</div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">საერთო ხანგრძლივობა</div>
+                <div class="panel-meta-stat-val">10 სასწავლო საათი</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">სტრუქტურა</div>
+                <div class="panel-meta-stat-val">5 სესია (2-საათიანი)</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">ბიუჯეტი</div>
+                <div class="panel-meta-stat-val price">5,000 ლარი</div>
+              </div>
+              <div class="panel-meta-desc">
+                ოპტიმალური მოდელი კომპანიის მენეჯმენტისთვის. მოიცავს კრიტიკული აზროვნების ფრეიმვორქებს, Advanced Excel-ის ინტეგრაციას, SOP-ების ავტომატიზაციას და Custom GPTs-ის პერსონალურ აწყობას.
+              </div>
+            </div>
+          </div>
+          <div class="panel-main">
+            <div class="session-list">
+              <div class="session-card recommended">
+                <div class="session-header">
+                  <div class="session-title">სესია 1: პრომპტინგის საფუძვლები, კორპორატიული უსაფრთხოება, AI წერითი ასისტენტი და Gemini Gems</div>
+                  <span class="session-badge">ბაზისი & წერითი</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირება. <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Gemini-ში საპასუხო Few-Shot Gem ასისტენტის შექმნა და Wolt/Bolt-ის ნეგატიური შეფასების პასუხის გენერირება.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> 1 ყოველდღიური მენეჯერული წერილობითი კომუნიკაციის დავალების ავტომატიზაცია საკუთარი Gem-ის საშუალებით.
+                </div>
+              </div>
+
+              <div class="session-card recommended">
+                <div class="session-header">
+                  <div class="session-title">სესია 2: გაფართოებული პრომპტინგი, AI აზროვნების პარტნიორობა (SCAMPER), Gemini Gems და Claude Cowork</div>
+                  <span class="session-badge">კრეატიული აზროვნება</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  AI როგორც <strong>Thinking Partner</strong> სტრატეგიული გადაწყვეტილებების მისაღებად: SCAMPER ფრეიმვორქი საოპერაციო პროცესების ოპტიმიზაციისთვის (მაგ. Drive-Thru რიგების მართვა და საკვების ნარჩენების / Food Waste შემცირება). <strong>Gemini Gems-ის გაფართოებული კონფიგურაცია:</strong> პერსონალიზებული როლური მოდელების (SCAMPER / Brainstorming ასისტენტების) შექმნა. <strong>Claude Cowork:</strong> დესკტოპის აგენტური ასისტენტის გამოყენება ფაილების მართვის, ინბოქსის ავტომატური ტრიაჟისა და მომწოდებლების ინვოისების ორგანიზებისთვის.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Gemini Gems-ში სააზროვნო პარტნიორი Gem ასისტენტის აწყობა და Claude Cowork-ის დაყენება/ტესტირება საოპერაციო რეპორტებისა და მომწოდებლების ინვოისების ავტომატური ორგანიზებისთვის.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> SCAMPER ჩარჩოზე მორგებული Gem ასისტენტის გამოყენებით Drive-Thru ან სამზარეულოს პროცესის ოპტიმიზაციის 3 იდეის გენერირება.
+                </div>
+              </div>
+
+              <div class="session-card recommended">
+                <div class="session-header">
+                  <div class="session-title">სესია 3: Notion AI, Claude Projects და საოპერაციო SOP მენეჯმენტი</div>
+                  <span class="session-badge">ოპერაციები & SOP</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება“: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> შეხვედრის ჩანაწერებისა და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების გამოყოფა. <strong>Claude Projects:</strong> პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და <strong>Shared Artifacts</strong>-ის გამოყენება მაკდონალდსის საოპერაციო SOP-ების (სტანდარტული ოპერაციული პროცედურების) ინტერაქტიული გენერირებისა და სტრუქტურირებისთვის. <strong>ტექნიკური მხარდაჭერის SOP-ები:</strong> სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა და Troubleshooting-ის ინსტრუქციების ინტერაქტიული გენერირება და სტრუქტურირება.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Claude Projects-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების შაბლონის და <strong>Taylor ნაყინის აპარატის Troubleshooting SOP ასისტენტის</strong> შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> რესტორნის ჰიგიენისა და დასუფთავების მოკლე SOP-ის დრაფტის შექმნა Claude Projects-ში.
+                </div>
+              </div>
+
+              <div class="session-card recommended">
+                <div class="session-header">
+                  <div class="session-title">სესია 4: Perplexity.ai და NotebookLM კვლევებისა და HACCP აუდიტებისთვის</div>
+                  <span class="session-badge">ინტელექტი & HACCP</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Perplexity.ai-ის მოწინავე ოპერატორები და ბაზრის კვლევა (ფასწარმოქმნის ანალიზი, სწრაფი კვების ინდუსტრიის ტრენდები საქართველოში). <strong>NotebookLM:</strong> მაკდონალდსის მოცულობითი გლობალური ინსტრუქციების, HACCP-ის სტანდარტებისა და რეგულაციების ანალიზი, ინტერაქტიული კითხვა-პასუხი და პერსონალიზებული აუდიო-ბრიფინგების გენერირება.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> NotebookLM-ში HACCP-ის სტანდარტის ჩატვირთვა და საოპერაციო რისკების Checklist-ის გენერირება.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> NotebookLM-ის ბაზაზე მომზადებული, 10-კითხვიანი ტესტ-სახელმძღვანელოს შექმნა ახალი თანამშრომლებისთვის.
+                </div>
+              </div>
+
+              <div class="session-card recommended">
+                <div class="session-header">
+                  <div class="session-title">სესია 5: მონაცემთა Advanced ანალიტიკა (Julius.ai), Excel ავტომატიზაცია და Custom GPTs-ის შექმნა</div>
+                  <span class="session-badge">ანალიტიკა & GPTs</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  CSV ბაზების ანალიზი <strong>Julius.ai</strong>-ისა და ChatGPT Advanced Data Analysis-ის მეშვეობით (საათობრივი გაყიდვების პიკები, საშუალო ჩეკის ანალიზი, პოპულარული მენიუს კომბინაციები). Excel-ის რთული ფორმულების (XLOOKUP, Dynamic Arrays) აწყობა. <strong>პიკური საათების პროგნოზირება:</strong> ისტორიული გაყიდვების, ადგილობრივი ღონისძიებების, არდადეგების და ამინდის პროგნოზის გაერთიანება Julius.ai-ში ცვლის ოპტიმალური განრიგის დასაგეგმად. <strong>Custom GPTs (OpenAI):</strong> მაკდონალდსის მენეჯერის პერსონალური ასისტენტის აწყობა (მაგ. Shift Scheduler GPT), Gemini Gems-ის ინტეგრირება Google Workspace-ში და <strong>ახალი თანამშრომლების ონბორდინგის სიმულაციური ტრენერი (Crew Trainer GPT)</strong>.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცემების ანალიზი და პიკური საათების პროგნოზირება; OpenAI-ის პლატფორმაზე Custom GPT ასისტენტისა და <strong>Crew Trainer GPT</strong>-ის შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> საკუთარი დეპარტამენტისთვის ერთი Custom GPT ასისტენტის ან <strong>Crew Trainer GPT-ის სიმულატორის</strong> პროტოტიპის შექმნა და მისი ინსტრუქციის დოკუმენტირება.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ─── TAB PANEL C ─── -->
+      <div class="tab-panel" id="optionC">
+        <div class="panel-grid">
+          <div class="panel-sidebar">
+            <div class="panel-meta-card">
+              <div class="panel-meta-title">სრული Mastery მოდელი</div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">საერთო ხანგრძლივობა</div>
+                <div class="panel-meta-stat-val">14 სასწავლო საათი</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">სტრუქტურა</div>
+                <div class="panel-meta-stat-val">7 სესია (2-საათიანი)</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">ბიუჯეტი</div>
+                <div class="panel-meta-stat-val price">7,000 ლარი</div>
+              </div>
+              <div class="panel-meta-desc">
+                უზრუნველყოფს სრულ მენეჯერულ მომზადებას. მოიცავს ყველა წინა მოდულს, პლუს AI ვიზუალების გენერირებას ლოკალური სარეკლამო კამპანიებისთვის, workflow ავტომატიზაციას (Make/n8n) და კორპორატიულ AI პოლიტიკის შედგენას.
+              </div>
+            </div>
+          </div>
+          <div class="panel-main">
+            <div class="session-list">
+              <div style="background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+                სესია 1-დან სესია 4-მდე იდენტურია რეკომენდებული (10-საათიანი) ვარიანტისა.
+              </div>
+              
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 5: მონაცემთა Advanced ანალიტიკა და Excel ავტომატიზაცია (Julius.ai)</div>
+                  <span class="session-badge">Excel & მონაცემთა ანალიზი</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  CSV ბაზების ანალიზი <strong>Julius.ai</strong>-ისა და ChatGPT Advanced Data Analysis-ის მეშვეობით (საათობრივი გაყიდვების პიკები, საშუალო ჩეკის ანალიზი, პოპულარული მენიუს კომბინაციები). Excel-ის რთული ფორმულების (XLOOKUP, Dynamic Arrays) და დინამიკური დეშბორდების აწყობა AI-ის დახმარებით. საწყობის ოპტიმიზაცია (Economic Order Quantity) და მინიმალური მარაგების პროგნოზირება (მაგ. McCafe-ის მასალები, შესაფუთი ჭიქები, ყავის მარცვლები).
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> მაღაზიის კვირის რეპორტის ფაილიდან გაყიდვების დინამიკის ვიზუალიზაცია და ანომალიების ძებნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> Excel-ის დინამიკური ცხრილის მომზადება, სადაც AI-ის დახმარებით გამოთვლილია რეორდერის წერტილები (Reorder Point).
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 6: AI ფოტო/ვიდეოგენერაცია, Google Flow და კრეატიული Storytelling</div>
+                  <span class="session-badge">მარკეტინგი & Visuals</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Midjourney, Flux და Adobe Firefly მაკდონალდსის ლოკალური მარკეტინგისთვის (LSM) და სოციალური მედიის (Facebook/Instagram/TikTok) პოსტებისთვის (მაგ. Happy Meal-ის ახალი სათამაშოების, სეზონური ბურგერების ან McCafe-ის აქციები): პროდუქტის ვიზუალების (Key Visuals) გენერირება, სოციალური მედიის ბანერების იდეები. Photoshop Generative Fill-ის გამოყენება ვიზუალების სხვადასხვა ზომებზე ადაპტაციისთვის. <strong>Google Flow (Google Labs):</strong> AI-powered ვიდეოგენერაცია და მარკეტინგული storytelling (Veo-ს ძრავზე) სარეკლამო ვიდეორგოლების შესაქმნელად.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Midjourney-ში ახალი სეზონური პროდუქტის სარეკლამო ვიზუალის გენერირება და Google Flow-ში მოკლე სარეკლამო ვიდეოს აწყობა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> 2 სხვადასხვა ფორმატის სარეკლამო ვიზუალური და ვიდეო კონცეფციის შექმნა.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 7: WhatsApp/Telegram ავტომატიზაცია (Make.com), ხმოვანი AI (Whisper/Otter.ai) და AI Governance</div>
+                  <span class="session-badge">ავტომატიზაცია & Governance</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  <strong>WhatsApp/Telegram ავტომატიზაცია Make.com-ით:</strong> რეალური სამუშაო ნაკადების (Workflows) აწყობა — მომხმარებლის საჩივარი WhatsApp-ში → AI ანალიზი → ავტომატური შეტყობინება მენეჯერს Telegram-ში; ახალი Wolt/Bolt შეფასება → სენტიმენტის ანალიზი → კვირის Summary ანგარიში. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> მენეჯერის ხმოვანი შენიშვნებისა (Voice Notes) და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების (Action Items) გამოყოფა. <strong>AI Governance:</strong> Shadow AI-ის პრევენცია, მაკდონალდსის შიდა AI გამოყენების პოლიტიკა, ROI მეტრიკები და 90-დღიანი Roadmap. კურსის შეჯამება და სერტიფიკატების გადაცემა.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Make.com-ში WhatsApp → AI → Telegram Workflow-ის სიმულაცია; Whisper-ით ხმოვანი შენიშვნის ტრანსკრიფცია და Notion AI-ში სტრუქტურირება. მაკდონალდსის შიდა AI პოლიტიკის ძირითადი პუნქტების ერთობლივი დრაფტინგი.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> საკუთარი დეპარტამენტის 90-დღიანი AI დანერგვის Roadmap-ის და 3-ეტაპიანი ავტომატიზაციის იდეის ჩამოყალიბება.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── METHODOLOGY SECTION ─── -->
+  <section class="methodology" id="methodology">
+    <div class="container">
+      <div class="section-title-wrap">
+        <h2>სასწავლო მეთოდოლოგია</h2>
+        <p>როგორ ვაღწევთ მაქსიმალურ პრაქტიკულ შედეგს კორპორატიულ ტრენინგებზე.</p>
+        <div class="section-title-decor"></div>
+      </div>
+
+      <div class="grid-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          </div>
+          <h3>AI როგორც აზროვნების პარტნიორი</h3>
+          <p>ჩვენ მონაწილეებს ვასწავლით არა უბრალოდ ტექსტის გენერირებას, არამედ კრიტიკული აზროვნების ფრეიმვორქებს: SCAMPER მოდელს, Role Storming-სა და Reverse Brainstorming-ს რისკებისა და ინოვაციების შესაფასებლად.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/></svg>
+          </div>
+          <h3>Few-Shot სწავლება</h3>
+          <p>მონაწილეები პრაქტიკულად ეუფლებიან AI-სთვის კონკრეტული მაგალითებით სწავლებას (Few-Shot Prompting). ეს უზრუნველყოფს მაკდონალდსის ოფიციალური კომუნიკაციის ხმის ტონის (Tone of Voice) 100%-იან სიზუსტეს.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zm0-8h14V7H7v2z"/></svg>
+          </div>
+          <h3>Excel & მონაცემთა ანალიზი</h3>
+          <p>ChatGPT/Claude Advanced Data Analysis-ის, Microsoft Copilot-ისა და Julius AI-ის მეშვეობით მონაწილეები სწავლობენ CSV ფაილების ანალიზს, გაყიდვების დინამიკის პროგნოზირებას, საწყობის ოპტიმიზაციას (EOQ მოდელით) და Excel-ის დინამიკური დეშბორდების შექმნას.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ROI & METRICS MEASUREMENT ─── -->
+  <section class="roi-section">
+    <div class="container">
+      <div class="section-title-wrap">
+        <h2>შედეგების შეფასების ჩარჩო</h2>
+        <p>ტრენინგის ეფექტურობა ფასდება კონკრეტული კორპორატიული მეტრიკებით.</p>
+        <div class="section-title-decor"></div>
+      </div>
+
+      <div class="roi-grid">
+        <div class="roi-card">
+          <div class="roi-icon">📈</div>
+          <h4>ათვისების კოეფიციენტი</h4>
+          <p>მონაწილეთა 85%+ ყოველდღიურად იყენებს AI-ს (NotebookLM, Gemini Gems და Claude Projects) ყოველდღიურ საქმიანობაში 1 თვის თავზე.</p>
+        </div>
+
+        <div class="roi-card">
+          <div class="roi-icon">⏱</div>
+          <h4>დროითი ეფექტურობა</h4>
+          <p>საოპერაციო SOP-ების შედგენის, CSV რეპორტების ანალიზისა და კლიენტთა შეფასებების დამუშავების დრო მცირდება 50-60%-ით.</p>
+        </div>
+
+        <div class="roi-card">
+          <div class="roi-icon">🔒</div>
+          <h4>უსაფრთხოების დაცვა</h4>
+          <p>მონაწილეთა 100% იცავს მონაცემთა მასკირების წესებს და არ იყენებს საჯარო ჩატებს კონფიდენციალური ფინანსური ინფორმაციისთვის.</p>
+        </div>
+
+        <div class="roi-card">
+          <div class="roi-icon">🎓</div>
+          <h4>საბოლოო პროექტი</h4>
+          <p>თითოეული მენეჯერი ქმნის და მუშა რეჟიმში უშვებს მინიმუმ 1 Custom GPT / Gemini Gem ასისტენტს, რომელიც მორგებულია მაკდონალდსის საოპერაციო პროცესზე.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TRAINER PROFILE ─── -->
+  <section class="trainer" id="trainer">
+    <div class="container">
+      <div class="trainer-grid">
+        <div class="trainer-avatar-wrap">
+          <div class="trainer-badge">გბ</div>
+          <div class="trainer-certs-header" style="font-weight: 700; font-size: 13px; margin-top: 16px; color: var(--text-muted)">სერტიფიკატები (2026)</div>
+          <div class="trainer-certs-grid">
+            <div class="cert-item">Google Certified Educator L2</div>
+            <div class="cert-item">Gemini Certified Faculty</div>
+            <div class="cert-item">Gemini Certified Educator</div>
+            <div class="cert-item">Claude Code in Action</div>
+            <div class="cert-item">AI Fluency for Educators</div>
+            <div class="cert-item">AI Fluency Framework</div>
+          </div>
+        </div>
+        <div class="trainer-info">
+          <h3>გიორგი ბასილაია</h3>
+          <div class="trainer-title">ასოცირებული პროფესორი | AI დანერგვის კონსულტანტი</div>
+          <p class="trainer-bio">
+            10-წლიანი პრაქტიკული გამოცდილება მარკეტინგის, ბიზნესის განვითარებისა და ხელოვნური ინტელექტის ინტეგრაციის მიმართულებით ქართულ და საერთაშორისო ბაზარზე.
+          </p>
+          <ul class="trainer-details">
+            <li>თბილისის თავისუფალი უნივერსიტეტის ასოცირებული პროფესორი</li>
+            <li>Smart Academy-ის და სხვა წამყვანი პლატფორმების AI მიმართულების წამყვანი ლექტორი</li>
+            <li>Google Education-ის და Anthropic-ის სერტიფიცირებული ექსპერტი</li>
+            <li>პრაქტიკული AI ხელსაწყოების დანერგვის კონსულტანტი წამყვანი ქართული ბრენდებისთვის</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER & NEXT STEPS ─── -->
+  <footer class="cta-footer">
+    <div class="cta-footer-inner">
+      <h2>მზად ხართ AI ტრანსფორმაციისთვის?</h2>
+      <p>მოცემული წინადადება შექმნილია მაკდონალდს საქართველოს მენეჯმენტის გუნდის მოთხოვნებისა და მიზნების შესაბამისად.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme Toggle Function
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    }
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light-mode');
+    }
+
+    // Tab switcher Function
+    function switchTab(tabId) {
+      const panels = document.querySelectorAll('.tab-panel');
+      const buttons = document.querySelectorAll('.tab-btn');
+      
+      panels.forEach(panel => {
+        panel.classList.remove('active');
+      });
+      
+      buttons.forEach((btn, index) => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(tabId).classList.add('active');
+      
+      // Add active class to corresponding button
+      let btnIndex = 0;
+      if (tabId === 'optionDemo') btnIndex = 0;
+      if (tabId === 'optionA') btnIndex = 1;
+      if (tabId === 'optionB') btnIndex = 2;
+      if (tabId === 'optionC') btnIndex = 3;
+      buttons[btnIndex].classList.add('active');
+    }
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      if (menu.style.display === 'flex') {
+        menu.style.display = 'none';
+      } else {
+        menu.style.display = 'flex';
+      }
+    }
+
+    // Progress Bar on Scroll
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progress-bar-fill').style.width = scrolled + '%';
+      
+      const navbar = document.getElementById('navbar');
+      if (winScroll > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+  </script>
+</body>
+</html>
