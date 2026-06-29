@@ -202,7 +202,33 @@
       </div>
       <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
         <p class="font-bold text-navy-900 text-sm mb-1">2. Make.com Webhook Capture</p>
-        <p class="mb-1">Make.com-ში Custom Webhook-ის შექმნისას დააჭირეთ <strong>,,Redetermine data structure“</strong>. გაგზავნეთ სატესტო მოთხოვნა (request) Postman-იდან. Make ავტომატურად წაიკითხავს ველებსა და შექმნის შესაბამის ცვლადებს.</p>
+        <p class="mb-1">Make.com-ში Custom Webhook-ის შექმნისას დააჭირეთ <strong>,,Redetermine data structure”</strong>. გაგზავნეთ სატესტო მოთხოვნა (request) Postman-იდან. Make ავტომატურად წაიკითხავს ველებსა და შექმნის შესაბამის ცვლადებს.</p>
+      </div>
+      <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+        <p class="font-bold text-indigo-900 text-sm mb-2">3. Postman — ყველაზე მოსახერხებელი მეთოდი</p>
+        <p class="text-gray-700 mb-3">თუ გაქვთ Postman დაყენებული, გამოიყენეთ შემდეგი კონფიგურაცია:</p>
+        <div class="grid grid-cols-2 gap-2 text-[10.5px] mb-3">
+          <div class="bg-white border border-indigo-100 rounded p-2">
+            <p class="font-bold text-indigo-800 mb-0.5">Method</p>
+            <p class="font-mono text-green-700 font-bold">POST</p>
+          </div>
+          <div class="bg-white border border-indigo-100 rounded p-2">
+            <p class="font-bold text-indigo-800 mb-0.5">URL</p>
+            <p class="font-mono text-blue-700">შენი Make Webhook URL</p>
+          </div>
+          <div class="bg-white border border-indigo-100 rounded p-2 col-span-2">
+            <p class="font-bold text-indigo-800 mb-0.5">Body</p>
+            <p class="font-mono text-gray-700">Body → <strong>raw</strong> → Format: <strong>JSON</strong></p>
+          </div>
+        </div>
+        <p class="font-bold text-indigo-800 text-[10.5px] mb-1">ჩასვით შემდეგი JSON payload:</p>
+        <pre class="bg-slate-900 text-green-400 p-3 rounded font-mono text-[10px] leading-relaxed mb-3">{
+  "ticket_text": "ბანკომატმა მიიღო 150 ლარი მაგრამ ბალანსზე არ აისახა",
+  "location_name": "Station Square",
+  "location_type": "MALL",
+  "amount": 150
+}</pre>
+        <p class="text-[10.5px] text-gray-700">დააჭირეთ <strong class="text-indigo-800">Send</strong>. თუ Make-ში <strong>Run once</strong> ჩართულია, რამდენიმე წამში დაინახავთ, რომ Webhook-მა მიიღო მონაცემები — ყველა ველი ავტომატურად გამოჩნდება Make-ის მოდულის Output-ში.</p>
       </div>
     </div>
   </div>
@@ -556,9 +582,321 @@ JSON-პასუხის სქემა:
 }</pre>
   </div>
 
+  <!-- KYC + HITL Step-by-Step Build Instructions -->
+  <div class="topic-card bg-white rounded-xl p-6 shadow-sm mb-6">
+    <h3 class="font-bold text-navy-900 mb-4">📋 ნაბიჯ-ნაბიჯ ინსტრუქცია — KYC + HITL სცენარის აწყობა (≈20 წუთი)</h3>
+    <p class="text-gray-700 text-sm mb-4">ამ ინსტრუქციას თანმიმდევრულად მიყვებით და ააწყობთ <strong>ორ Make.com სცენარს</strong>, რომლებიც ერთად ავტომატიზაციას უკეთებენ მერჩანტის რეგისტრაციის სრულ ციკლს — AI შეფასება + ადამიანის ჩართვით ფინალური გააქტიურება. <span class="inline-block px-2 py-0.5 rounded bg-orange-100 text-orange-800 text-xs font-bold">💡 შენიშვნა:</span> სანამ რამეს შეცვლით პროდაქშენ-სცენარში, გახსობთ ნაბიჯ 7-ს (SEG 4-დან): OFF → ცვლილება → Run once → ლოგის შემოწმება → ON.</p>
+
+    <!-- PART A: Google Form + Sheets Setup -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-teal-600 text-white text-xs font-bold flex items-center justify-center">A</span>
+        <h4 class="font-bold text-navy-900 text-base">ნაწილი A — Google Form + Sheets Setup (≈4 წუთი)</h4>
+      </div>
+
+      <div class="relative pl-6 border-l-2 border-teal-500 space-y-4">
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-teal-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 1: Google Form-ის შექმნა (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">გახსენით <a href="https://forms.google.com" target="_blank" class="text-blue-600 underline font-semibold">forms.google.com</a> → დააჭირეთ <strong>"+ Blank form"</strong> (ცარიელი ფორმა). სათაურად ჩაწერეთ <code class="bg-gray-100 px-1 rounded">მერჩანტის რეგისტრაცია — OPPA</code>, Description-ში: <em>"შეავსეთ ყველა ველი ზუსტად. თქვენი განაცხადი ჯერ AI-ს, შემდეგ შესაბამისობის ოფიცერს გადამოწმდება."</em></p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-teal-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 2: ველების დამატება (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">დაამატეთ შემდეგი 6 ველი (თითოეულზე "+" ღილაკით):</p>
+          <ul class="text-xs text-gray-700 list-disc pl-5 mt-2 space-y-1">
+            <li><strong>ბიზნესის სახელი</strong> — Type: Short answer, Required ✓</li>
+            <li><strong>საიდენტიფიკაციო კოდი (Tax ID)</strong> — Short answer, Required ✓, Response validation: <code class="bg-gray-100 px-1 rounded text-[10px]">Regex matches \d{9,11}</code></li>
+            <li><strong>მესაკუთრის სახელი, გვარი</strong> — Short answer, Required ✓</li>
+            <li><strong>ბიზნესის ტიპი</strong> — Type: Dropdown, Required ✓ — Option-ები: <code class="bg-gray-100 px-1 rounded text-[10px]">RETAIL | SERVICE | RESTAURANT | GAMBLING | OTHER</code></li>
+            <li><strong>მდებარეობა (ქალაქი, მისამართი)</strong> — Short answer, Required ✓</li>
+            <li><strong>დოკუმენტების ლინკი</strong> — Short answer, <em>Optional</em></li>
+          </ul>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-teal-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 3: Sheets-თან მიერთება (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">Form-ის ზედა მენიუში გადადით <strong>"Responses"</strong> tab-ზე → დააჭირეთ მწვანე Sheets იკონს → აირჩიეთ <strong>"Create a new spreadsheet"</strong> → სახელი: <code class="bg-gray-100 px-1 rounded">OPPA KYC Applications</code> → <strong>Create</strong>. Sheets-ი ავტომატურად შეიქმნება პირველი row-ში form field names-ით.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-teal-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 4: AI სვეტების დამატება (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">Sheets-ში, row 1-ის მარჯვნივ (სვეტები F, G, H, I, J, K), დაამატეთ headers:</p>
+          <div class="overflow-x-auto mt-2">
+            <table class="text-[10.5px] text-left border border-gray-200 rounded-lg overflow-hidden w-full">
+              <thead class="bg-navy-900 text-white">
+                <tr>
+                  <th class="p-1.5">F</th><th class="p-1.5">G</th><th class="p-1.5">H</th><th class="p-1.5">I</th><th class="p-1.5">J</th><th class="p-1.5">K</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 bg-gray-50 font-mono text-gray-800">
+                <tr><td class="p-1.5">Status</td><td class="p-1.5">KYC_Score</td><td class="p-1.5">Risk_Level</td><td class="p-1.5">Recommendation</td><td class="p-1.5 bg-yellow-100">Approved ☑</td><td class="p-1.5">Activated_At</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-[10px] text-gray-500 mt-2"><strong>💡 Status</strong> (F) — სადაც AI ჩაწერს <code class="bg-gray-100 px-1 rounded">PENDING / APPROVED / REJECTED</code>. <strong>Approved</strong> (J) — ეს არის checkbox, რომელსაც ოფიცერი ხელით მონიშნავს.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART B: Scenario 1 - AI Triage -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600 text-white text-xs font-bold flex items-center justify-center">B</span>
+        <h4 class="font-bold text-navy-900 text-base">ნაწილი B — სცენარი 1: AI Triage (≈10 წუთი)</h4>
+      </div>
+
+      <div class="relative pl-6 border-l-2 border-violet-500 space-y-4">
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 5: ახალი სცენარის შექმნა (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">Make.com-ში, მარჯვნივ ზემოთ: <strong>"+ Create a new scenario"</strong> → სახელი: <code class="bg-gray-100 px-1 rounded">[KYC Auto-Evaluation]</code> → დააჭირეთ Save-ს ცენტრში.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 6: Google Sheets Trigger — Watch New Rows (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">ცენტრში დააჭირეთ <strong>"+"</strong> → ძებნა: <code class="bg-gray-100 px-1 rounded">sheets</code> → აირჩიეთ <strong>"Watch New Rows"</strong> (Google Sheets). პირველად დაგჭირდებათ OAuth ავტორიზაცია — <strong>"Add"</strong> → შედით Google ანგარიშით → ნება მისცით. შემდეგ: <strong>Workbook</strong>: <code class="bg-gray-100 px-1 rounded">OPPA KYC Applications</code> · <strong>Sheet</strong>: <code class="bg-gray-100 px-1 rounded">Form Responses 1</code> · <strong>Limit</strong>: <code class="bg-gray-100 px-1 rounded">1</code>. <strong>OK</strong>.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 7: Filter — მხოლოს ახალი, PENDING ჩანაწერები (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">Module 1-სა და Module 2-ს შორის დაამატეთ ⚡ <strong>"Filter"</strong> (Route-ის ნაცვლად). Condition: <code class="bg-gray-100 px-1 rounded">Status</code> (<code class="bg-gray-100 px-1 rounded">{{1.Status}}</code>) <strong>"does not exist"</strong> ან <strong>"is empty"</strong>. ეს გარანტირებულად გაატარებს მხოლოდ იმ row-ებს, სადაც AI-მ ჯერ არ ჩაწერა.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 8: HTTP → Claude API call (3 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">Module 2 (ფილტრის შემდეგ): <strong>"+"</strong> → ძებნა: <code class="bg-gray-100 px-1 rounded">http</code> → აირჩიეთ <strong>"HTTP"</strong> (Make a request). კონფიგურაცია:</p>
+          <div class="bg-slate-900 text-slate-300 p-3 rounded-lg font-mono text-[10px] mt-2 leading-relaxed overflow-x-auto">
+            <p class="text-teal-400 font-bold">Method: <span class="text-white">POST</span></p>
+            <p class="text-teal-400 font-bold mt-1">URL:</p>
+            <p class="text-white">https://api.anthropic.com/v1/messages</p>
+            <p class="text-teal-400 font-bold mt-2">Headers:</p>
+            <p>x-api-key: <span class="text-yellow-300">{{connection.anthropic_api_key}}</span></p>
+            <p>anthropic-version: <span class="text-white">2023-06-01</span></p>
+            <p>content-type: <span class="text-white">application/json</span></p>
+            <p class="text-teal-400 font-bold mt-2">Body type: <span class="text-white">Raw</span></p>
+            <p class="text-teal-400 font-bold mt-1">Content type: <span class="text-white">application/json</span></p>
+            <p class="text-teal-400 font-bold mt-2">Request content:</p>
+            <pre class="text-white">{<span class="text-violet-400">"model"</span>: <span class="text-green-400">"claude-3-5-sonnet-20241022"</span>,
+  <span class="text-violet-400">"max_tokens"</span>: <span class="text-orange-400">512</span>,
+  <span class="text-violet-400">"system"</span>: <span class="text-green-400">"შენ ხარ OPPA.GE-ის შესაბამისობის ოფიცერი. შეამოწმე ახალი მერჩანტი..."</span>,
+  <span class="text-violet-400">"messages"</span>: [{
+    <span class="text-violet-400">"role"</span>: <span class="text-green-400">"user"</span>,
+    <span class="text-violet-400">"content"</span>: <span class="text-green-400">"ბიზნესი: {{1.\"ბიზნესის სახელი\"}}, Tax ID: {{1.\"საიდენტიფიკაციო კოდი (Tax ID)\"}}, ტიპი: {{1.\"ბიზნესის ტიპი\"}}..."</span>
+  }]
+}</pre>
+          </div>
+          <p class="text-[10px] text-gray-500 mt-2">💡 სრული system prompt-ი ზემოთ არის <strong>copy-paste-ით ხელმისაწვდომი</strong> (KYC Verification Prompt block-ი), ანალოგიურად ისე, როგორც SEG 4-ის Triage prompt-ი.</p>
+
+          <!-- Step 8 Alternative: Make Native Anthropic Module -->
+          <div class="make-box p-4 rounded-r-lg mt-3 text-xs font-sans">
+            <p class="font-bold text-make-500 mb-2 text-sm">⚡ ალტერნატიული გზა (გამოცადებული): Make Native Anthropic Module</p>
+            <p class="text-gray-700 mb-2">ზემოთ HTTP-ით ხელით კონფიგურაცია საიმედოა, მაგრამ რთული. Make.com-ს 2024 წლიდან აქვს <strong>ანაშრებული (native) Anthropic Claude მოდული</strong>, რომელიც URL/Headers/JSON-ს თავად აგვარებს:</p>
+            <ol class="list-decimal pl-5 space-y-1.5 text-gray-700 mb-3">
+              <li>Module 2-ის ნაცვლად: <strong>"+"</strong> → ძებნა: <code class="bg-violet-100 px-1 rounded font-mono">claude</code> ან <code class="bg-violet-100 px-1 rounded font-mono">anthropic</code> → აირჩიეთ <strong>"Create a Message (Anthropic)"</strong> (ან <strong>"Anthropic Claude"</strong> — დამოკიდებულია Make.com-ის ვერსიაზე).</li>
+              <li><strong>Connection-ი:</strong> პირველად <strong>"Add"</strong> → ჩაწერეთ Anthropic API Key → დაასახელეთ (მაგ. <code class="bg-violet-100 px-1 rounded font-mono">"OPPA Anthropic Production"</code>) → Save.</li>
+              <li><strong>Model:</strong> Dropdown-დან აირჩიეთ <code class="bg-violet-100 px-1 rounded font-mono">claude-3-5-sonnet-20241022</code> (ან <code class="bg-violet-100 px-1 rounded font-mono">claude-3-5-haiku-20241022</code> თუ გინდათ იაფი, მაგრამ KYC-სთვის Sonnet სარგებლიანია).</li>
+              <li><strong>Max Tokens:</strong> <code class="bg-violet-100 px-1 rounded font-mono">512</code>.</li>
+              <li><strong>System Prompt:</strong> პირდაპირ paste-ით "KYC Verification Prompt"-იდან (ზემოთ code block-ი).</li>
+              <li><strong>Messages → Role:</strong> <code class="bg-violet-100 px-1 rounded font-mono">user</code> · <strong>Content:</strong> <code class="bg-violet-100 px-1 rounded font-mono">ბიზნესი: {{1."ბიზნესის სახელი"}}, Tax ID: {{1."საიდენტიფიკაციო კოდი (Tax ID)"}}, ტიპი: {{1."ბიზნესის ტიპი"}}...</code></li>
+            </ol>
+            <p class="font-bold text-make-500 mb-1">📤 Native Module Output-ი (განსხვავდება HTTP-ისგან!):</p>
+            <ul class="list-disc pl-5 space-y-1 text-gray-700 mb-3">
+              <li>Claude-ის response: <code class="bg-violet-100 px-1 rounded font-mono">{{2.text}}</code> (string, არა nested JSON!)</li>
+              <li>Token usage: <code class="bg-violet-100 px-1 rounded font-mono">{{2.usage.input_tokens}}</code> და <code class="bg-violet-100 px-1 rounded font-mono">{{2.usage.output_tokens}}</code> — ბიუჯეტის კონტროლისთვის</li>
+              <li>Stop reason: <code class="bg-violet-100 px-1 rounded font-mono">{{2.stop_reason}}</code></li>
+            </ul>
+            <p class="font-bold text-make-500 mb-1">⚖️ HTTP vs Native — რომელი როდის?</p>
+            <div class="overflow-x-auto mb-2">
+              <table class="text-[10.5px] text-left border border-violet-200 rounded-lg overflow-hidden w-full">
+                <thead class="bg-violet-700 text-white">
+                  <tr>
+                    <th class="p-1.5">ფაქტორი</th>
+                    <th class="p-1.5">HTTP (ხელით)</th>
+                    <th class="p-1.5">Native Module</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-violet-100 bg-violet-50/30">
+                  <tr><td class="p-1.5 font-bold">Setup სირთულე</td><td class="p-1.5 text-amber-700">⚠️ რთული (URL, headers, JSON)</td><td class="p-1.5 text-green-700">✅ მარტივი (dropdowns)</td></tr>
+                  <tr class="bg-white"><td class="p-1.5 font-bold">Variable names</td><td class="p-1.5 font-mono text-[10px]">{{3.data.content[0].text}}</td><td class="p-1.5 font-mono text-[10px]">{{2.text}}</td></tr>
+                  <tr><td class="p-1.5 font-bold">Token tracking</td><td class="p-1.5">❌ ცალკე ლოგიკა</td><td class="p-1.5 text-green-700">✅ built-in usage</td></tr>
+                  <tr class="bg-white"><td class="p-1.5 font-bold">Streaming</td><td class="p-1.5 text-green-700">✅ მხარდაჭერილია</td><td class="p-1.5">❌ (Stage I-სთვის არ არის საჭირო)</td></tr>
+                  <tr><td class="p-1.5 font-bold">Tools / Function calling</td><td class="p-1.5 text-green-700">✅ full control</td><td class="p-1.5 text-amber-700">⚠️ შეზღუდული</td></tr>
+                  <tr class="bg-white"><td class="p-1.5 font-bold">Maintenance</td><td class="p-1.5">თქვენ ცვლით API-ს</td><td class="p-1.5 text-green-700">Make.com ცვლის</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-gray-700 italic"><strong>რეკომენდაცია:</strong> Stage I-ისთვის და მოკლევადიანი production-ისთვის → <strong>Native Module</strong> (უფრო სწრაფი გაშვება, ნაკლები error-prone). Stage II-ში, tools/streaming რომ დაგჭირდებათ → HTTP.</p>
+          </div>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 9: JSON Parser (1 წთ) — <span class="text-[10px] text-amber-700 font-normal">⚠️ მხოლოდ HTTP გზისთვის</span></p>
+          <p class="text-xs text-gray-600 mt-1"><strong>HTTP გზა:</strong> Module 3 (HTTP-ის შემდეგ): <strong>"+"</strong> → <code class="bg-gray-100 px-1 rounded">json</code> → <strong>"Parse JSON"</strong>. JSON string: <code class="bg-gray-100 px-1 rounded">{{3.data.content[0].text}}</code> → Make ავტომატურად შექმნის data structure-ს Claude-ის response-დან. შეინახეთ — ახლა <code class="bg-gray-100 px-1 rounded">{{4.kyc_status}}</code>, <code class="bg-gray-100 px-1 rounded">{{4.kyc_score}}</code>, <code class="bg-gray-100 px-1 rounded">{{4.risk_level}}</code>, <code class="bg-gray-100 px-1 rounded">{{4.recommendation_ka}}</code> ხელმისაწვდომია.</p>
+          <p class="text-xs text-violet-700 mt-2"><strong>Native Module გზა:</strong> ⚡ <em>ეს ნაბიჯი გამოტოვეთ!</em> Native Anthropic Module უკვე აბრუნებს სუფთა <code class="bg-violet-100 px-1 rounded font-mono">{{2.text}}</code> string-ს (არა nested JSON). პირდაპირ გადადით ნაბიჯი 10-ზე, ოღონდ <code class="bg-gray-100 px-1 rounded">{{4.xxx}}</code> ცვლადების ნაცვლად გამოიყენეთ <code class="bg-violet-100 px-1 rounded font-mono">{{2.text}}</code>, შემდეგ JSON Parser-ი დაამატეთ პირდაპირ <code class="bg-violet-100 px-1 rounded font-mono">{{2.text}}</code>-ზე (Module 3). მარტივი გზაა: <strong>"+" → JSON → Parse JSON → Source: {{2.text}}</strong> — ცვლადები მაინც გახდება <code class="bg-violet-100 px-1 rounded font-mono">{{3.kyc_status}}</code>, უბრალოდ მე-3 module-ში.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 10: Sheets → Update Row (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">Module 4 (JSON-ის შემდეგ): <strong>"+"</strong> → Google Sheets → <strong>"Update a Row"</strong>. <strong>Row number-ისთვის</strong> აირჩიეთ <code class="bg-gray-100 px-1 rounded">{{1.__ROW_NUMBER__}}</code> (ფრთხობის სვეტი). Value mapping:</p>
+          <ul class="text-xs text-gray-700 list-disc pl-5 mt-2 space-y-0.5">
+            <li><strong>Status</strong> → <code class="bg-gray-100 px-1 rounded">{{4.kyc_status}}</code></li>
+            <li><strong>KYC_Score</strong> → <code class="bg-gray-100 px-1 rounded">{{4.kyc_score}}</code></li>
+            <li><strong>Risk_Level</strong> → <code class="bg-gray-100 px-1 rounded">{{4.risk_level}}</code></li>
+            <li><strong>Recommendation</strong> → <code class="bg-gray-100 px-1 rounded">{{4.recommendation_ka}}</code></li>
+          </ul>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 11: Slack notification (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">Module 5 (Update Row-ის შემდეგ): <strong>"+"</strong> → Slack → <strong>"Create Message"</strong>. Channel: <code class="bg-gray-100 px-1 rounded">#compliance</code>. Text:</p>
+          <div class="bg-slate-50 border border-slate-200 rounded p-2 font-mono text-[10.5px] mt-2 text-gray-700">
+🆕 <strong>ახალი KYC განაცხადი</strong><br>
+ბიზნესი: <em>{{1."ბიზნესის სახელი"}}</em><br>
+Risk Level: <em>{{4.risk_level}}</em> · Score: <em>{{4.kyc_score}}</em><br>
+სტატუსი: <em>{{4.kyc_status}}</em><br>
+📝 {{4.recommendation_ka}}
+          </div>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-violet-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 12: Save + Test + ON (1 წთ)</p>
+          <p class="text-xs text-gray-600 mt-1">ქვედა მარცხნივ: <strong>Save</strong> (Ctrl/Cmd+S) → <strong>"Run once"</strong> → გახსენით Form-ი, შეავსეთ ერთი სატესტო row-ით → Sheets-ში შეამოწმეთ, რომ Status F, KYC_Score G და Recommendation I შეივსო → თუ ყველაფერი სწორია, გადართეთ <strong>Scheduling → ON</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART C: Scenario 2 - HITL Activation -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center">C</span>
+        <h4 class="font-bold text-navy-900 text-base">ნაწილი C — სცენარი 2: HITL Activation (≈5 წუთი)</h4>
+      </div>
+
+      <div class="relative pl-6 border-l-2 border-green-500 space-y-4">
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-green-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 13: მეორე სცენარის შექმნა</p>
+          <p class="text-xs text-gray-600 mt-1">Make.com-ში <strong>"+ Create a new scenario"</strong> → სახელი: <code class="bg-gray-100 px-1 rounded">[KYC HITL Activation]</code> → Save.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-green-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 14: Watch Changes trigger (J სვეტზე)</p>
+          <p class="text-xs text-gray-600 mt-1">Module 1: Google Sheets → <strong>"Watch Changes"</strong>. Workbook: <code class="bg-gray-100 px-1 rounded">OPPA KYC Applications</code>, Sheet: <code class="bg-gray-100 px-1 rounded">Form Responses 1</code>, <strong>Watch column-ები</strong>: მონიშნეთ მხოლოდ <strong>J (Approved)</strong> (არა მთელი Sheet), <strong>Trigger when</strong>: <code class="bg-gray-100 px-1 rounded">value changes from FALSE to TRUE</code>.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-green-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 15: Filter — Approved = TRUE</p>
+          <p class="text-xs text-gray-600 mt-1">Module 1-სა და Module 2-ს შორის: ⚡ <strong>"Filter"</strong>. Condition: <code class="bg-gray-100 px-1 rounded">{{1.Approved}}</code> <strong>"equals"</strong> <code class="bg-gray-100 px-1 rounded">true</code>.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-green-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 16: HTTP → OPPA Billing API</p>
+          <p class="text-xs text-gray-600 mt-1">Module 2 (ფილტრის შემდეგ): <strong>"+"</strong> → HTTP → <strong>"Make a request"</strong>. Method: <code class="bg-gray-100 px-1 rounded">POST</code>, URL: <code class="bg-gray-100 px-1 rounded text-blue-700">https://api.oppa.ge/v1/merchants/activate</code>, Headers: <code class="bg-gray-100 px-1 rounded">Authorization: Bearer {{connection.oppa_api_token}}</code>, Body: <code class="bg-gray-100 px-1 rounded">{"tax_id": "{{1.'საიდენტიფიკაციო კოდი (Tax ID)'}}", "business_name": "{{1.'ბიზნესის სახელი'}}", "activated_at": "{{now}}"}</code>.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-green-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 17: Slack notification — success</p>
+          <p class="text-xs text-gray-600 mt-1">Module 3 (HTTP-ის შემდეგ): <strong>"+"</strong> → Slack → <strong>"Create Message"</strong>. Channel: <code class="bg-gray-100 px-1 rounded">#merchant-onboarding</code>. Text: <em>"✅ მერჩანტი გააქტიურდა! {{1.'ბიზნესის სახელი'}} (Tax ID: {{1.'საიდენტიფიკაციო კოდი (Tax ID)'}})."</em></p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-green-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 18: Sheets-ში timestamp-ის ჩაწერა</p>
+          <p class="text-xs text-gray-600 mt-1">Module 4: Google Sheets → <strong>"Update a Row"</strong>. Row: <code class="bg-gray-100 px-1 rounded">{{1.__ROW_NUMBER__}}</code>. Column K (Activated_At): <code class="bg-gray-100 px-1 rounded">{{now}}</code> (ფორმატი: YYYY-MM-DD HH:mm:ss).</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-green-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 19: ⚠️ Error Handler — Resume (ნაბიჯი 7-ის იდეოლოგია)</p>
+          <p class="text-xs text-gray-600 mt-1">Module 16 (HTTP)-ზე მარჯვენა კლიკი → <strong>"Add error handler"</strong> → აირჩიეთ <strong>"Resume"</strong>. Fallback branch-ში დაამატეთ Slack module: Channel <code class="bg-gray-100 px-1 rounded">#ops-critical</code>, Text: <em>"❌ Merchant activation failed: {{1.'ბიზნესის სახელი'}} — Tax ID {{1.'საიდენტიფიკაციო კოდი (Tax ID)'}}"</em>. Save.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART D: End-to-end Testing -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center">D</span>
+        <h4 class="font-bold text-navy-900 text-base">ნაწილი D — End-to-End ტესტირება (≈5 წუთი)</h4>
+      </div>
+
+      <div class="relative pl-6 border-l-2 border-amber-500 space-y-4">
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-amber-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 20: სატესტო განაცხადის შევსება</p>
+          <p class="text-xs text-gray-600 mt-1">გახსენით Google Form → შეავსეთ ერთი row-ით (სატესტო: "Demo Cafe", Tax ID <code class="bg-gray-100 px-1 rounded">123456789</code>, Type: RETAIL). <em>სარეკომენდაციოა მეორე row GAMBLING ტიპით — ნახავთ, რომ Claude-ი Risk_Level=HIGH-ს მისცემს.</em></p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-amber-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 21: სცენარი 1-ის Execution History-ს შემოწმება</p>
+          <p class="text-xs text-gray-600 mt-1">Make → Scenario 1 → History → უახლესი run → გახსენით. <strong>ვამოწმებთ:</strong> ① Filter passed ✓ ② HTTP call → response with kyc_status, kyc_score, risk_level, recommendation_ka ✓ ③ Sheets Update → Status F, KYC_Score G შეივსო ✓ ④ Slack message #compliance-ში მოვიდა ✓</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-amber-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 22: Approved-ის მონიშვნა Sheets-ში</p>
+          <p class="text-xs text-gray-600 mt-1">Sheets-ში თქვენი სატესტო row-ის J სვეტში (Approved) → Insert → Checkbox → მონიშნეთ ☑️.</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-amber-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 23: სცენარი 2-ის Execution History</p>
+          <p class="text-xs text-gray-600 mt-1">Make → Scenario 2 → History → ბოლო run → ვამოწმებთ: Watch Changes triggered? Filter passed? OPPA API call successful (HTTP 200)? Slack notification #merchant-onboarding-ში? Sheets-ში K (Activated_At) შეივსო?</p>
+        </div>
+
+        <div>
+          <span class="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-amber-500"></span>
+          <p class="text-sm font-bold text-navy-900">ნაბიჯი 24: End-to-End Smoke Test ✅</p>
+          <p class="text-xs text-gray-600 mt-1">თუ ორივე სცენარი გამართულად მუშაობს, თქვენ წარმატებით ააწყვეთ <strong>HITL KYC workflow</strong>. <span class="inline-block px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-bold">გილოცავთ!</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Troubleshooting Section -->
+    <div class="danger-box p-4 rounded-r-lg text-xs font-sans">
+      <p class="text-sm font-bold text-red-800 mb-2">🔧 Troubleshooting — თუ რამე არ მუშაობს</p>
+      <ul class="space-y-1.5 list-disc pl-5 text-red-900">
+        <li><strong>"Filter ბლოკავს ყველაფერს":</strong> Make-sheets-column-ის სახელი Sheets-ში <em>ზუსტად</em> უნდა ემთხვეოდეს <code class="bg-red-100 px-1 rounded">{{1.Status}}</code>-ს; case-sensitive-ია!</li>
+        <li><strong>"Claude returns 401":</strong> <code class="bg-red-100 px-1 rounded">x-api-key</code> ცვლადი არასწორია; Anthropic Console-ში შეამოწმეთ API key — გადაამზადეთ თუ ძველია.</li>
+        <li><strong>"Sheets Update ცარიელ row-ს ეძებს":</strong> <code class="bg-red-100 px-1 rounded">__ROW_NUMBER__</code> გამოიყენეთ row number-ის ნაცვლად (ეს Make-ის სპეციალური variable-ია, არა Sheets-ის).</li>
+        <li><strong>"Watch Changes არ ემუშავება":</strong> Make-ში "Watch Changes" trigger-ს სჭირდება 1-2 წუთი delay (webhook propagation); არ იჩქაროთ.</li>
+        <li><strong>"Slack message არ მოდის":</strong> Make-ში Slack connection → "+ Add" → OAuth re-auth → შეამოწმეთ, რომ Bot არის invited #compliance / #merchant-onboarding არხებში.</li>
+        <li><strong>"OPPA API 403 Forbidden":</strong> Token არ არის valid; დაუკავშირდით OPPA-ს IT-ს, request ახალი merchant activation token.</li>
+        <li><strong>"JSON Parse failed":</strong> Claude-მა დააბრუნა ტექსტი JSON-ის გარეშე (broken). Error Handler → Resume-ით fallback data-თი (PENDING/UNKNOWN) დაამატეთ.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bonus: alternative n8n path -->
+  <div class="activity-box p-4 rounded-r-lg font-sans bg-teal-50/50 border-l-4 border-teal-500 mt-4">
+    <p class="text-sm font-bold text-teal-800 mb-1">🔄 ალტერნატიული ვარიანტი — n8n + Gemini (NBG-friendly)</p>
+    <p class="text-sm text-teal-900 mb-2">თუ გსურთ ამ სცენარის გაშვება <strong>ლოკალურ, დაცულ</strong> გარემოში (NBG Compliance-ის სრული დასაცავად), გამოიყენეთ n8n (Docker):</p>
+    <ol class="text-sm text-teal-900 list-decimal pl-5 space-y-1">
+      <li><strong>Trigger:</strong> n8n Webhook Node → POST <code class="bg-teal-100 px-1 rounded text-[10px]">{{Google Sheets Webhook via Make}}</code> (ან Google Sheets Watch Rows n8n native module-ით).</li>
+      <li><strong>AI:</strong> n8n <strong>Gemini 1.5 Flash Node</strong> (Google AI Studio-ს უფასო API გასაღებით) — system prompt-ი იგივე, Claude-ის ნაცვლად.</li>
+      <li><strong>Output:</strong> n8n Telegram Node ან Discord Webhook — პირდაპირ თქვენს არხში.</li>
+    </ol>
+  </div>
+
   <div class="activity-box p-4 rounded-r-lg font-sans bg-yellow-50/50 border-l-4 border-yellow-500 mt-4">
-    <p class="text-sm font-bold text-yellow-800 mb-1">🎯 სავარჯიშო — 10 წუთი (KYC და HITL)</p>
-    <p class="text-sm text-yellow-900">შექმენით Google-ის ფორმა (Google Form) მერჩანტის მონაცემებით (ბიზნესის სახელი, საიდენტიფიკაციო კოდი, ბიზნესის ტიპი) და დააკავშირეთ სატესტო Google Sheets-თან. Make.com-ში ააწყეთ სცენარი, რომელიც ახალი მერჩანტის დამატებისას ჩაწერს AI შეფასებას და სტატუსს (PENDING) შესაბამის სვეტებში. კომპლაიანს ოფიცრის მიერ ჩექბოქსის მონიშვნის (Approved = true) შემდეგ კი ავტომატურად გააგზავნის Slack-შეტყობინებას მერჩანტის გააქტიურებაზე.</p>
+    <p class="text-sm font-bold text-yellow-800 mb-1">🎯 სავარჯიშო — 20 წუთი (KYC და HITL)</p>
+    <p class="text-sm text-yellow-900">ზემოთ მოცემული დეტალური ინსტრუქცია გაიარეთ ნაბიჯ-ნაბიშ, შექმენით Google Form + Sheets, ააწყეთ ორი Make.com სცენარი, გაიარეთ End-to-End ტესტირება. დროის ბიუჯეტი: Form/Sheets ≈4 წთ, Scenario 1 ≈10 წთ, Scenario 2 ≈5 წთ, ტესტი ≈5 წთ. თუ 20 წუთში ვერ მოასწრეთ, ნაბიჯები 21-23 (ტესტირება) სახლში დაამთავრეთ.</p>
   </div>
 </section>
 
