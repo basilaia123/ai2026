@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI პრომპტების ბიბლიოთეკა - AI ინსტრუმენტები სტარტაპერებისთვის | GITA 5h</title>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet"/>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --primary-color: #f59e0b;
+        --primary-dark: #d97706;
+        --accent-color: #ef4444;
+        --success-color: #10b981;
+        --info-color: #3b82f6;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+        --bg-light: #f8fafc;
+    }
+    body {
+        font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background: var(--bg-light);
+    }
+    .top-nav {
+        position: sticky; top: 0; z-index: 100;
+        background: white;
+        border-bottom: 3px solid var(--primary-color);
+        padding: 0.8rem 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 1rem;
+    }
+    .top-nav .logo { font-weight: 700; color: var(--primary-dark); text-decoration: none; }
+    .top-nav a { color: var(--text-secondary); text-decoration: none; margin-left: 1rem; font-size: 0.9rem; }
+    .top-nav a:hover { color: var(--primary-color); }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { color: var(--primary-dark); margin-bottom: 0.5rem; font-size: 2rem; }
+    .lead { color: var(--text-secondary); margin-bottom: 2rem; }
+
+    .intro {
+        background: linear-gradient(135deg, #fef9e7 0%, #fff 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-left: 4px solid var(--primary-color);
+        margin-bottom: 2rem;
+    }
+    .intro p { color: var(--text-secondary); margin-bottom: 0.5rem; }
+    .intro ul { padding-left: 1.5rem; color: var(--text-secondary); }
+
+    .category {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border-left: 5px solid var(--primary-color);
+    }
+    .category h2 {
+        color: var(--primary-dark);
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--bg-light);
+    }
+    .category > p { color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem; }
+
+    .prompt-card {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 3px solid var(--info-color);
+    }
+    .prompt-card h3 {
+        color: var(--text-primary);
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+        display: flex; align-items: center; gap: 0.4rem;
+    }
+    .prompt-card .use-when {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        font-style: italic;
+    }
+    .prompt-box {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        position: relative;
+        margin-top: 0.5rem;
+    }
+    .copy-btn {
+        position: absolute; top: 0.5rem; right: 0.5rem;
+        background: var(--primary-color); color: white;
+        border: none; padding: 0.3rem 0.8rem; border-radius: 5px;
+        font-size: 0.75rem; cursor: pointer;
+        font-family: 'FiraGO', sans-serif;
+    }
+    .copy-btn:hover { background: var(--primary-dark); }
+    .copy-btn.copied { background: var(--success-color); }
+
+    .tool-tag {
+        display: inline-block;
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 0.15rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .tip-box {
+        background: #d1fae5;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border-left: 4px solid var(--success-color);
+        color: #065f46;
+        font-size: 0.9rem;
+    }
+
+    footer { text-align: center; color: var(--text-secondary); padding: 2rem; font-size: 0.85rem; margin-top: 2rem; }
+
+    @media print {
+        body { background: white; }
+        .top-nav { display: none; }
+        .copy-btn { display: none; }
+        .prompt-box { background: white; color: black; border: 1px solid #ddd; }
+        .category { page-break-after: avoid; }
+    }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <a href="index.html" class="logo">⬅ GITA 5h AI for Startups</a>
+    <div>
+        <a href="v2-lecture-ideation-slides.html">📊 სლაიდები</a>
+        <a href="v2-lecture-ideation-exercises.html">✏️ სავარჯიშო</a>
+        <a href="v2-lecture-ideation-quick-ref.html">📄 Quick Ref</a>
+        <a href="prompt-library.html">🤖 პრომპტები</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>🤖 AI პრომპტების ბიბლიოთეკა: AI ინსტრუმენტები სტარტაპერებისთვის</h1>
+    <p class="lead">25+ პრომპტი ყოველკვირეული გამოყენებისთვის. ყოველ პრომპტს აქვს კოპირების ღილაკი, რეკომენდებული ხელსაწყო და "როდის გამოვიყენოთ" მინიშნება.</p>
+
+    <div class="intro">
+        <p><strong>💡 როგორ გამოვიყენოთ ეს ბიბლიოთეკა:</strong></p>
+        <ul>
+            <li>1) აირჩიეთ პრომპტი, რომელიც შეესაბამება თქვენს მიმდინარე ამოცანას</li>
+            <li>2) დააკოპირეთ "📋 Copy" ღილაკით</li>
+            <li>3) ჩასწორეთ [...] თქვენი კონკრეტული კონტექსტით</li>
+            <li>4) გახსენით რეკომენდებული AI ხელსაწყო და ჩასწორეთ პრომპტი</li>
+            <li>5) მიიღეთ პასუხი, დახვეწეთ, გამოიყენეთ</li>
+        </ul>
+    </div>
+
+    <!-- CATEGORY 1: BRAINSTORMING -->
+    <div class="category">
+        <h2>💡 კატეგორია 1: Brainstorming & Ideation</h2>
+        <p>იდეების გენერაცია, მუტაცია და ვალიდაცია.</p>
+
+        <div class="prompt-card">
+            <h3>1. SCAMPER Framework <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: ახალი იდეის 7 მუტაციის მიღება ერთ პრომპტში.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+გამოიყენე SCAMPER ჩარჩო ჩემი იდეისთვის: [შენი იდეის აღწერა - 2-3 წინადადება].
+
+ყოველი 7 ნაბიჯისთვის მიცე 2-3 წინადადებიანი მუტაცია:
+
+S - Substitute (ჩანაცვლება): რა შეიძლება ჩავანაცვლოთ?
+C - Combine (გაერთიანება): რა ორი იდეა გავაერთიანოთ?
+A - Adapt (ადაპტაცია): რა მსგავსი პროდუქტი არსებობს სხვა ინდუსტრიაში?
+M - Modify (მოდიფიკაცია): როგორ გავადიდოთ/შევამციროთ?
+P - Put to other use: ვინ კიდევ შეძლებს გამოყენებას?
+E - Eliminate: რა შეგვიძლია მოვაშოროთ?
+R - Rearrange: რა თუ პროცესის ნაწილებს შევცვლით ადგილებით?
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>2. 5 Whys Root Cause <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: პრობლემის ფესვური მიზეზის პოვნა.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+მე ვამჩნევ პრობლემას: [შენი პრობლემის ზედაპირული ფორმულირება].
+
+დამეხმარე 5 Whys ტექნიკით ფესვური მიზეზის პოვნაში.
+
+ყოველ 'რატომ'-ზე მიპასუხე 2-3 წინადადებით.
+ბოლოს მითხარი: რა არის ფესვური მიზეზი და რა არის მისი გადაჭრის 3 გზა.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>3. What If Scenarios <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: კლიშეებისგან თავისუფლება, ახალი პერსპექტივების პოვნა.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+მე მაქვს იდეა: [შენი იდეა].
+
+შემომთავაზე 5 "What If" სცენარი, რომლებიც რადიკალურად განსხვავდება ჩემი იდეისგან:
+
+1. "რა იქნებოდა, თუ ეს პროდუქტი არ არსებობდეს?"
+2. "რა იქნებოდა, თუ მომხმარებელს უფასო ყოფილიყო?"
+3. "რა იქნებოდა, თუ 10x ძვირი ღირდეს?"
+4. "რა იქნებოდა, თუ ბავშვებისთვის იყოს?"
+5. "რა იქნებოდა, თუ მომხმარებელი თავად აწყობდეს?"
+
+თითოეული 2-3 წინადადებით. ახსენი, რატომ შეიძლება იყოს წარმატებული.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>4. Six Thinking Hats <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: იდეის 6 პერსპექტივიდან ანალიზი ერთ პრომპტში.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+მე მაქვს იდეა: [შენი იდეა].
+
+განიხილე ის Six Thinking Hats-ის მეთოდით. თითოეული ქუროთისთვის მიცე 3-4 ძირითადი პუნქტი:
+
+⚪ თეთრი (ფაქტები): რა ფაქტები და მონაცემები გვაქვს?
+🔴 წითელი (ემოციები): რა გრძნობებს იწვევს?
+⚫ შავი (კრიტიკა): რა შეიძლება ჩავარდეს?
+🟡 ყვითელი (ოპტიმიზმი): რა სარგებელი მოიტანს?
+🟢 მწვანე (კრეატიულობა): რა ალტერნატივები არსებობს?
+🔵 ლურჯი (პროცესი): რა ნაბიჯები უნდა გადავდგათ?
+
+ბოლოს შეაჯამე 3 ძირითადი დასკვნა.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>5. 10x Ideas Sprint <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: 10 რადიკალურად განსხვავებული იდეის სწრაფი გენერაცია.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+შემომთავაზე 10 რადიკალურად განსხვავებული იდეა შემდეგი პრობლემის გადასაჭრელად: [პრობლემა].
+
+ყოველი იდეა 1-2 წინადადებით. წესი: პირველი 3 იდეა ნაცნობი იქნება, 6-10 უნდა იყოს მოულოდნელი.
+
+ფორმატი:
+1. [იდეა]
+2. [იდეა]
+...
+10. [იდეა]
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>6. Contrarian Thinking <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: ყველასგან განსხვავებული მიდგომის პოვნა.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი იდეა: [შენი იდეა].
+
+შემომთავაზე 3 საპირისპირო მიდგომა, რომლებიც რადიკალურად განსხვავდება ჩემი იდეისგან:
+
+1. [მიდგომა + რატომ შეიძლება იყოს წარმატებული]
+2. [მიდგომა + რატომ]
+3. [მიდგომა + რატომ]
+
+თითოეული 2-3 წინადადებით. იყავი კრიტიკული - თუ რომელიმე ცუდი იდეაა, მითხარი.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>7. Analogical Cross-Industry <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: სხვა ინდუსტრიიდან იდეის გადატანა.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი იდეა: [შენი იდეა].
+
+მოიყვანე 5 ანალოგიური მაგალითი სხვა ინდუსტრიებიდან (ტექნოლოგია, მედიცინა, განათლება, სპორტი, ფინანსები), სადაც მსგავსი მიდგომამ წარმატებას მიაღწია.
+
+თითოეული 2-3 წინადადებით. ბოლოს ახსენი, როგორ შეიძლება ეს ანალოგია ჩემს იდეაზე გადავიტანოთ.
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY 2: VALIDATION -->
+    <div class="category">
+        <h2>📊 კატეგორია 2: ვალიდაცია & Lean Canvas</h2>
+        <p>იდეის ბიზნეს მოდელად ქცევა.</p>
+
+        <div class="prompt-card">
+            <h3>8. Lean Canvas Auto-Fill <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: 1-გვერდიანი ბიზნეს მოდელის შევსება.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+მე მაქვს ბიზნეს იდეა: [იდეის სახელი + 1-2 წინადადებიანი აღწერა].
+
+შემომთავაზე Lean Canvas-ის 9 ბლოკის შევსება ჩემი იდეისთვის. თითოეულ ბლოკში 2-3 წინადადება. იყავი კრიტიკული - თუ რამე არ ჯდება, მითხარი.
+
+1. Problem (პრობლემა)
+2. Solution (გადაწყვეტა)
+3. Key Metrics (მეტრიკები)
+4. Unique Value Proposition (უნიკალური ღირებულება)
+5. Unfair Advantage (უპირატესობა)
+6. Channels (არხები)
+7. Customer Segments (სეგმენტები)
+8. Cost Structure (ხარჯები)
+9. Revenue Streams (შემოსავალი)
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>9. Jobs-to-be-Done (3 პერსონა) <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: მომხმარებლის "სამუშაოს" ღრმა გაგება.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+მე მაქვს პროდუქტი: [აღწერა].
+
+შექმენი 3 დეტალური პერსონა:
+1. სახელი, ასაკი, პროფესია
+2. ყოველდღიური რუტინა
+3. ძირითადი პრობლემები
+4. სად ატარებს დროს
+5. რა მოტივაციით ყიდულობს
+
+ყოველი პერსონისთვის, ფორმულირე "სამუშაო" JTBD ფორმულით:
+"როცა [სიტუაცია], მე მინდა [მოტივაცია], რომ [შედეგი]."
+
+თითოეული პერსონა უნდა იყოს რეალური და კონკრეტული.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>10. Value Proposition Statement <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: 1-წინადადებიანი განცხადება, რომელიც ყველას 5 წამში ესმის.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+აი ჩემი Lean Canvas: [ბმული]
+
+დამეხმარე Value Proposition Canvas-ის შევსებაში:
+1) მომხმარებლის სამუშაოები (Customer Jobs)
+2) ტკივილები (Pains)
+3) სარგებელი (Gains)
+
+შემდეგ შემომთავაზე 3 Value Proposition Statement ვარიანტი:
+
+"ჩვენი [პროდუქტი] ეხმარება [მომხმარებელს], რომელსაც აქვს [პრობლემა], რადგან [უპირატესობა] - განსხვავებით [ალტერნატივისგან]."
+
+თითოეული ვარიანტი უნდა იყოს: კონკრეტული, ემოციური, გასაზომი.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>11. Market Size Research <span class="tool-tag">Perplexity.ai</span></h3>
+            <p class="use-when">როდის: TAM, SAM, SOM-ის განსაზღვრა წყაროებით.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი პროდუქტი: [აღწერა]
+ჩემი სამიზნე ბაზარი: [ქვეყანა / რეგიონი / სეგმენტი]
+
+მომეცი ბაზრის ზომის შეფასება:
+- TAM (Total Addressable Market): გლობალური ბაზარი
+- SAM (Serviceable Addressable Market): რეგიონული / ქვეყნის ბაზარი
+- SOM (Serviceable Obtainable Market): რეალურად მისაწვდომი ბაზარი ჩვენი რესურსებით
+
+მოიყვანე წყაროები (links, statistics, reports). ფაქტები რიცხვებით, არა შეფასებები.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>12. Competition Analysis <span class="tool-tag">Perplexity.ai</span></h3>
+            <p class="use-when">როდის: 3-5 მთავარი კონკურენტის ანალიზი.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი პროდუქტი: [აღწერა]
+
+მომეცი 3-5 მთავარი კონკურენტის ანალიზი:
+- სახელი, URL, რა აკეთებს
+- მათი ძლიერი მხარეები
+- მათი სისუსტეები
+- ჩვენი კონკურენტული უპირატესობა
+
+მოიყვანე წყაროები (links, reviews, public info).
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY 3: BRAND & VISUAL -->
+    <div class="category">
+        <h2>🎨 კატეგორია 3: ბრენდი & Visual</h2>
+        <p>ბრენდის ტონი, ვიზუალური იდენტობა.</p>
+
+        <div class="prompt-card">
+            <h3>13. Brand Voice (5 ტონი) <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: ბრენდის ტონის შერჩევა.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი პროდუქტი: [აღწერა]
+ჩემი სამიზნე აუდიტორია: [ასაკი, ინტერესები]
+
+შემომთავაზე 5 ბრენდის ტონის ვარიანტი (მაგ: playful, professional, rebellious, warm, minimalistic).
+
+თითოეული ტონისთვის:
+1. ტონის სახელი
+2. მაგალითი: "როგორ მივესალმოთ მომხმარებელს?"
+3. მაგალითი: "როგორ ვუთხრათ ფასი?"
+4. მაგალითი: "როგორ ვუთხრათ პრობლემა?"
+
+ბოლოს: რომელი ტონი შეესაბამება საუკეთესოდ ჩემს პროდუქტს და აუდიტორიას?
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>14. Visual Prompt S+A+E+L+C+V <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: AI-სთან ვიზუალის ზუსტი აღწერა.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+შექმენი ვიზუალი ჩემი ბრენდისთვის: [ბრენდის აღწერა].
+
+გამოიყენე Visual Prompt Formula:
+
+S (Subject): რა არის მთავარი ობიექტი?
+A (Action): რა ხდება / რა მდგომარეობაა?
+E (Environment): სად ხდება? (ფონი, გარემო)
+L (Lighting): რა ტიპის განათება? (ბუნებრივი, სტუდიური, dramatic)
+C (Composition): როგორ არის კომპოზიცია? (ცენტრში, rule of thirds)
+V (View): რა ხედვიდან? (წინა, გვერდითი, bird's eye)
+
+შემდეგ ეს აღწერა გამოვიყენოთ Ideogram, Canva AI ან Midjourney-ში.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>15. Brand Name Generator <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: ბრენდის 5-10 სახელის ვარიანტი.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი პროდუქტი: [აღწერა]
+ჩემი სამიზნე აუდიტორია: [X]
+ჩემი ბრენდის ტონი: [playful / professional / etc.]
+
+შემომთავაზე 10 ბრენდის სახელის ვარიანტი:
+
+კრიტერიუმები:
+- მარტივი წარმოთქმა (ქართულად და ინგლისურად)
+- მარტივი დამახსოვრება
+- დომენი (URL) ხელმისაწვდომია (შემოწმების გარეშე)
+- ტრადმარკი (trademark) პრობლემა არ არის
+
+თითოეული სახელისთვის: 1 წინადადებით რატომ არის კარგი.
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY 4: NO-CODE TOOLS -->
+    <div class="category">
+        <h2>🌐 კატეგორია 4: Lovable + Make + Gamma</h2>
+        <p>No-Code ხელსაწყოების პრომპტები.</p>
+
+        <div class="prompt-card">
+            <h3>16. Lovable Landing Page <span class="tool-tag">Lovable.dev</span></h3>
+            <p class="use-when">როდის: Landing Page-ის შექმნა ტექსტური პრომპტით.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+შექმენი Landing Page პროდუქტისთვის [პროდუქტის სახელი], რომელიც აგვარებს [პრობლემას] [სამიზნე აუდიტორიისთვის].
+
+დაამატე:
+- Hero Section (სათაური, ქვესათაური, CTA ღილაკი)
+- Features (3-4 ძირითადი ფუნქცია)
+- How It Works (3 ნაბიჯი)
+- Testimonials (3 მომხმარებლის ციტატა)
+- Pricing (3 tier)
+- Footer with contact
+
+დიზაინი: მინიმალისტური, თანამედროვე, [ფერები] ფერის პალიტრით.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>17. Lovable Email Sign-up Form <span class="tool-tag">Lovable.dev</span></h3>
+            <p class="use-when">როდის: ელ-ფოსტის შეგროვების ფორმის დამატება.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემს Landing Page-ს დაამატე Email Sign-up სექცია:
+
+- სათაური: "მიიღე ექსკლუზიური შეთავაზებები"
+- ფორმა: სახელი + Email + "გამოწერა" ღილაკი
+- Validation: Email ფორმატი
+- წარმატების შეტყობინება: "გმადლობთ! შეამოწმეთ თქვენი ელ-ფოსტა"
+- Submit-ის შემდეგ: Email-ი შეინახე Supabase-ის "subscribers" ცხრილში
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>18. Lovable Testimonials Section <span class="tool-tag">Lovable.dev</span></h3>
+            <p class="use-when">როდის: Testimonials სექციის დამატება.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემს Landing Page-ს დაამატე Testimonials სექცია:
+
+- სათაური: "რას ამბობენ ჩვენი მომხმარებლები"
+- 3 ციტატა: სახელი, პროფესია, ციტატა (2-3 წინადადება)
+- ვიზუალი: ავატარი (placeholder image), 5 ვარსკვლავი rating
+- Carousel: ავტომატური გადასვლა 5 წამში
+
+ტონი: ნამდვილი, ემოციური, არა მარკეტინგული.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>19. Gamma Pitch Deck Outline <span class="tool-tag">Gamma.app</span></h3>
+            <p class="use-when">როდის: 5-სლაიდიანი Pitch Deck-ის outline.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+აი ჩემი 1-წინადადებიანი Pitch Statement: [X]
+აი ჩემი Lean Canvas: [ბმული]
+
+შემომთავაზე 5-სლაიდიანი Pitch Deck-ის outline. თითოეულ სლაიდზე:
+- სათაური
+- 3-4 ძირითადი ბულეტი
+- ვიზუალის შეთავაზება (რა უნდა იყოს Hero Image-ად)
+
+ფორმატი: Markdown.
+
+სლაიდები:
+1. Hook + Problem
+2. Solution + MVP
+3. Market + Customer
+4. Team + Why Us
+5. Ask + Next Steps (25,000 ლარი)
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>20. Gamma Pitch Deck Expansion (5 → 10) <span class="tool-tag">Gamma.app</span></h3>
+            <p class="use-when">როდის: Demo Day-მდე 5 სლაიდიდან 10-მდე გაფართოება.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+აი ჩემი 5-სლაიდიანი Pitch Deck: [URL]
+აი ჩემი Lean Canvas: [ბმული]
+
+დაამატე 5 ახალი სლაიდი:
+
+6. MARKET SIZE: TAM, SAM, SOM (მსოფლიო, რეგიონი, საქართველო)
+7. COMPETITION: 3 მთავარი კონკურენტი + რა გამარჯვების უპირატესობა გვაქვს
+8. FINANCIALS: Revenue Model + Unit Economics (CAC, LTV, Payback Period)
+9. ROADMAP: 12-თვიანი გეგმა (Q1, Q2, Q3, Q4)
+10. TEAM BIOS: 3-5 წევრი (სახელი, როლი, გამოცდილება)
+
+ფორმატი: Markdown.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>21. Make.com Scenario Description <span class="tool-tag">Make.com</span></h3>
+            <p class="use-when">როდის: Workflow-ის კონფიგურაციის აღწერა.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+მე მინდა ავაწყო Make.com-ში ავტომატიზაცია:
+
+მიზანი: [მაგ: "როცა მომხმარებელი შეავსებს Landing Page-ის ფორმას, მიიღოს Email და Lead დაემატოს CRM-ს"]
+
+Trigger: [მაგ: "Landing Page Form submission via Webhook"]
+
+Actions:
+1. [მაგ: "Send Email via Gmail"]
+2. [მაგ: "Add row to Google Sheets"]
+
+Filters / Error Handling:
+- [მაგ: "Skip if Email is empty"]
+
+მომეცი ნაბიჯ-ნაბიჯ ინსტრუქცია Make.com-ის Scenario Editor-ში.
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY 5: RESEARCH & DEEP WORK -->
+    <div class="category">
+        <h2>🔬 კატეგორია 5: კვლევა & Deep Work</h2>
+        <p>ბაზრის კვლევა, ტრენდების ანალიზი.</p>
+
+        <div class="prompt-card">
+            <h3>22. Customer Interview Questions <span class="tool-tag">Claude.ai</span></h3>
+            <p class="use-when">როდის: 5-10 მომხმარებლის ინტერვიუსთვის კითხვების მომზადება.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი პროდუქტი: [აღწერა]
+ჩემი სამიზნე მომხმარებელი: [X]
+
+შემომთავაზე 10 კითხვა მომხმარებლის ინტერვიუსთვის:
+
+კატეგორიები:
+- პრობლემის ვალიდაცია (3 კითხვა)
+- გადაწყვეტის მიმღებლობა (3 კითხვა)
+- ფასის მზაობა (2 კითხვა)
+- ალტერნატივები (2 კითხვა)
+
+წესი: კითხვები ღია იყოს (არა "კი/არა"), მინიმუმ "რატომ" შეიცავდეს.
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>23. Customer Review Mining <span class="tool-tag">Perplexity.ai</span></h3>
+            <p class="use-when">როდის: კონკურენტის მომხმარებელთა მიმოხილვების ანალიზი.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+კონკურენტი: [სახელი, URL]
+
+მომეცი ამ კონკურენტის მომხმარებელთა 5 მიმოხილვის ანალიზი:
+
+ყოველი მიმოხილვისთვის:
+1. წყარო (Google Reviews, Trustpilot, Facebook, etc.)
+2. რეიტინგი
+3. ძირითადი პრობლემა / კრიტიკა
+4. ძირითადი სარგებელი / ქება
+
+ბოლოს: რა 3 ინსაითი გამოვიტანე ჩემი პროდუქტისთვის?
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>24. Trend Analysis 2026 <span class="tool-tag">Perplexity.ai</span></h3>
+            <p class="use-when">როდის: 2026 წლის ტრენდების ანალიზი ჩემი ინდუსტრიაში.</p>
+            <div class="prompt-box">
+<button class="copy-btn" onclick="copyPrompt(this)">📋 Copy</button>
+ჩემი ინდუსტრია: [X]
+
+მომეცი 2026 წლის 5 მნიშვნელოვანი ტრენდი ამ ინდუსტრიაში.
+
+თითოეული ტრენდისთვის:
+1. ტრენდის სახელი
+2. რატომ არის მნიშვნელოვანი
+3. როგორ შეუძლია ჩემს პროდუქტს გამოიყენოს ეს ტრენდი
+
+მოიყვანე წყაროები (McKinsey, Gartner, Forbes, etc.).
+            </div>
+        </div>
+
+        <div class="prompt-card">
+            <h3>25. NotebookLM Knowledge Base <span class="tool-tag">NotebookLM</span></h3>
+            <p class="use-when">როდის: 3-5 დოკუმენტის ატვირთვა და AI-სთან ინტერაქცია.</p>
+            <div class="tip-box">
+                <strong>💡 NotebookLM-ის გამოყენება:</strong>
+                <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>გახსენით <a href="https://notebooklm.google.com" target="_blank">notebooklm.google.com</a></li>
+                    <li>შექმენით ახალი Notebook: "[პროდუქტის სახელი] - Research"</li>
+                    <li>ატვირთეთ 3-5 დოკუმენტი: ბაზრის კვლევა, კონკურენტების ანალიზი, Lean Canvas, Customer Interviews</li>
+                    <li>ჰკითხეთ AI-ს: "რა არის ჩემი პროდუქტის ძირითადი უპირატესობა?" / "რა რისკები აქვს?" / "რომელი ბაზრის სეგმენტია ყველაზე პერსპექტიული?"</li>
+                    <li>AI პასუხობს მხოლოდ თქვენი დოკუმენტების საფუძველზე (არა ზოგადი ცოდნით).</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="tip-box">
+        <strong>💡 პრომპტების გამოყენების რჩევები:</strong>
+        <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+            <li><strong>Iterative Refinement:</strong> პირველი პასუხი საწყისია. დაამატეთ "გაამარტივე", "შეცვალე ტონი", "დაამატე მაგალითი".</li>
+            <li><strong>Context Matters:</strong> რაც მეტ კონტექსტს მისცემთ (ბიუჯეტი, ვადები, სამიზნე), მით უკეთესი იქნება პასუხი.</li>
+            <li><strong>Different AI Tools:</strong> Claude.ai და ChatGPT მსგავსია, მაგრამ Perplexity.ai უკეთესია კვლევისთვის (წყაროებით). Lovable.dev / Gamma.app / Make.com სპეციალიზებულია.</li>
+            <li><strong>კონფიდენციალურობა:</strong> არასოდეს ჩაწეროთ პერსონალური ან ფინანსური მონაცემები AI-ში.</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>🤖 AI პრომპტების ბიბლიოთეკა - Brainstorming & Ideation AI | GITA Pre-Acceleration 5h</p>
+        <p>25+ პრომპტი ყოველკვირეული გამოყენებისთვის | © 2026 გიორგი ბასილაია</p>
+    </footer>
+
+</div>
+
+<script>
+function copyPrompt(btn) {
+    const promptBox = btn.parentElement;
+    const text = promptBox.textContent.replace('📋 Copy', '').replace('✓ Copied!', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = '📋 Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+
+</body>
+</html>
