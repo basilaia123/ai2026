@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ორი ნაბიჯით წინ AI-თან ერთად | საოპერაციო მასტერკლასი</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            950: '#001a0c', // Extremely dark green
+                            900: '#003318', // Deep green
+                            800: '#004d24', // Forest green
+                            700: '#007a3e', // 2 Nabiji Brand Green (Primary)
+                            600: '#00994e', // Vibrant green
+                            500: '#00bf62',
+                            400: '#198754', // Standard green
+                            300: '#a7f3d0',
+                            200: '#d1fae5',
+                            100: '#e6f7ef',
+                            50:  '#f0faf5',
+                        },
+                        orange: {
+                            600: '#d44300',
+                            500: '#fe5000', // 2 Nabiji Brand Orange (Accent/Promo)
+                            400: '#ff732e',
+                            300: '#ff9661',
+                            200: '#ffb994',
+                            100: '#ffdcc7',
+                            50:  '#fff0e6',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'FiraGO', 'Segoe UI', sans-serif; }
+        html { scroll-behavior: smooth; font-size: 17px; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link.active { background: rgba(255,255,255,0.12); border-left: 3px solid #fe5000; }
+        .nav-link:hover { background: rgba(255,255,255,0.08); }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .topic-card { border-left: 4px solid #007a3e; }
+
+        #backToTop {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #backToTop.visible { opacity: 1; pointer-events: auto; }
+        #backToTop:hover { transform: translateY(-2px); }
+
+        #fontControls {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            z-index: 45;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(0, 122, 62, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border: 1px solid rgba(254, 80, 0, 0.3);
+        }
+        #fontControls button {
+            width: 34px; height: 34px;
+            display: flex; align-items: center; justify-content: center;
+            background: transparent; color: #fff;
+            border: none; border-radius: 8px;
+            cursor: pointer; font-size: 13px; font-weight: 700;
+            transition: background 0.2s ease;
+        }
+        #fontControls button:hover { background: rgba(255,255,255,0.15); }
+
+        .prompt-box {
+            background: #18181b;
+            border: 1px solid rgba(0, 122, 62, 0.3);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            position: relative;
+        }
+        .prompt-box pre {
+            color: #d1fae5;
+            font-size: 0.82rem;
+            line-height: 1.65;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem; right: 0.5rem;
+            background: rgba(0, 122, 62, 0.25);
+            color: #a7f3d0;
+            border: none;
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover { background: rgba(0, 122, 62, 0.45); }
+
+        .warning-box {
+            background: #fff0e6;
+            border-left: 4px solid #fe5000;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        .tip-box {
+            background: #f0faf5;
+            border-left: 4px solid #007a3e;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        @media print {
+            #sidebar, #menuBtn, #overlay, #backToTop, #fontControls { display: none !important; }
+            main, #mainContent { margin-left: 0 !important; }
+            body { background: white; }
+            .topic-card { break-inside: avoid; }
+            @page { margin: 1.5cm; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<div id="overlay" class="hidden fixed inset-0 bg-black/50 z-30 transition-opacity" aria-hidden="true"></div>
+
+<!-- Toggle button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-brand-700 text-white p-2.5 rounded-lg shadow-lg hover:bg-brand-800 transition-colors border border-orange-500/30" title="მენიუ">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-zinc-950 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300 border-r border-brand-900/40">
+<div class="px-5 py-6 border-b border-white/10">
+    <div class="flex items-center gap-2 mb-2">
+        <span class="bg-brand-700 text-white text-xs font-bold px-2 py-0.5 rounded">ორი ნაბიჯი</span>
+        <span class="text-orange-400 text-xs font-medium">AI მასტერკლასი</span>
+    </div>
+    <h1 class="text-base font-bold leading-tight">2 ნაბიჯით წინ AI-თან ერთად</h1>
+    <p class="text-gray-400 text-xs mt-1.5">სესია 0 · 1-დღიანი პრაქტიკული ვორქშოპი</p>
+</div>
+<div class="px-5 py-3 bg-brand-900/20 border-b border-white/10">
+    <p class="text-[10px] font-semibold uppercase tracking-wider text-orange-400 mb-2">სწრაფი მარშრუტი</p>
+    <p class="text-xs text-gray-300 leading-relaxed mb-1"><span class="text-green-400 font-bold">✅ ძირითადი:</span> AI საცალო სექტორში, Prompt Engineering, კატეგორიები, მომწოდებლები, დოკუმენტები, ავტომატიზაცია</p>
+    <p class="text-xs text-red-300/80 leading-relaxed"><span class="text-orange-400 font-bold">⚠️ კრიტიკული:</span> მონაცემთა უსაფრთხოება – რა მონაცემები არ უნდა გაუგზავნოთ AI-ს</p>
+</div>
+<nav class="py-3">
+    <a href="#seg-intro" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-intro">
+        <span class="leading-snug pr-2">შესავალი – AI საცალო სექტორში</span>
+        <span class="shrink-0 text-[10px] bg-brand-600/20 text-brand-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-activity" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-activity">
+        <span class="leading-snug pr-2">2 ნაბიჯის გამოწვევები & AI</span>
+        <span class="shrink-0 text-[10px] bg-orange-600/20 text-orange-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-security" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-security">
+        <span class="leading-snug pr-2">⚠️ მონაცემთა უსაფრთხოება & ეთიკა</span>
+        <span class="shrink-0 text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-compare" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-compare">
+        <span class="leading-snug pr-2">ChatGPT vs Claude vs Gemini vs Perplexity</span>
+        <span class="shrink-0 text-[10px] bg-brand-600/20 text-brand-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-prompting" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-prompting">
+        <span class="leading-snug pr-2">პრომპტ-ინჟინერია (Prompt Engineering)</span>
+        <span class="shrink-0 text-[10px] bg-brand-600/20 text-brand-300 px-1.5 py-0.5 rounded">25 წთ</span>
+    </a>
+    <a href="#seg-content" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-content">
+        <span class="leading-snug pr-2">კომუნიკაცია, მომწოდებლები & კონტენტი</span>
+        <span class="shrink-0 text-[10px] bg-brand-600/20 text-brand-300 px-1.5 py-0.5 rounded">20 წთ</span>
+    </a>
+    <a href="#seg-customgpt" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-customgpt">
+        <span class="leading-snug pr-2">Gemini Gems – 2 ნაბიჯის AI ასისტენტი</span>
+        <span class="shrink-0 text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-claudecowork" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-claudecowork">
+        <span class="leading-snug pr-2">Claude Projects & Cowork</span>
+        <span class="shrink-0 text-[10px] bg-orange-600/20 text-orange-300 px-1.5 py-0.5 rounded">15 წთ</span>
+    </a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-break">
+        <span class="leading-snug pr-2">☕ შესვენება</span>
+        <span class="shrink-0 text-[10px] bg-orange-600/20 text-orange-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-docs" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-docs">
+        <span class="leading-snug pr-2">დოკუმენტები, ხელშეკრულებები & Excel</span>
+        <span class="shrink-0 text-[10px] bg-brand-600/20 text-brand-300 px-1.5 py-0.5 rounded">12 წთ</span>
+    </a>
+    <a href="#seg-notebook" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-notebook">
+        <span class="leading-snug pr-2">NotebookLM – მაღაზიის SOP ბაზა</span>
+        <span class="shrink-0 text-[10px] bg-teal-500/20 text-teal-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-gamma" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-gamma">
+        <span class="leading-snug pr-2">Gamma – სწრაფი კატეგორიის პრეზენტაცია</span>
+        <span class="shrink-0 text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-automation" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-automation">
+        <span class="leading-snug pr-2">ავტომატიზაცია – Make.com</span>
+        <span class="shrink-0 text-[10px] bg-brand-600/20 text-brand-300 px-1.5 py-0.5 rounded">15 წთ</span>
+    </a>
+    <a href="#seg-adoption" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-adoption">
+        <span class="leading-snug pr-2">💼 დანერგვა & შემდეგი ნაბიჯები</span>
+        <span class="shrink-0 text-[10px] bg-brand-500/20 text-brand-300 px-1.5 py-0.5 rounded">18 წთ</span>
+    </a>
+</nav>
+
+<div class="px-5 py-4 border-t border-white/10 mt-2">
+    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">ტრენერი</p>
+    <p class="text-sm font-semibold text-white">გიორგი ბასილაია</p>
+    <p class="text-xs text-orange-400">Smart Academy · 2026</p>
+</div>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+<!-- Header -->
+<header class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-900 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10 border-b border-brand-700/30">
+    <div class="max-w-5xl">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">ორი ნაბიჯი</span>
+            <span class="text-orange-200 text-sm font-medium">კორპორატიული AI მასტერკლასი</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">2 ნაბიჯით წინ AI-თან ერთად<br><span class="text-orange-300">საოპერაციო ეფექტურობის მასტერკლასი</span></h1>
+        <p class="text-gray-200 text-base max-w-2xl leading-relaxed mb-5">ეს არის კომპანია „ორი ნაბიჯი“-სთვის ადაპტირებული 1-დღიანი ინტენსიური მასტერკლასი. ვორქშოპი აერთიანებს AI მოდელების პრაქტიკულ გამოყენებას, პრომპტინგის ფორმულებს საქმიანობის სხვადასხვა სეგმენტისთვის (კატეგორიის მენეჯმენტი, მომწოდებლები, მარკეტინგი და ლოგისტიკა), დოკუმენტების ანალიზსა და Make.com-ის ავტომატიზაციებს, რათა გუნდმა მინიმუმამდე შეამციროს რუტინული ამოცანების დრო. 175 წუთი სასწავლო დრო + 5 წუთი ინტერაქტიული კითხვა-პასუხი.</p>
+        <div class="flex flex-wrap gap-4">
+            <span class="inline-flex items-center gap-1.5 text-sm text-gray-200">
+                <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                180 წუთი (სრული)
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-gray-200">
+                <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                ლაივ დემო & სავარჯიშოები
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-gray-200">
+                <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                13 სეგმენტი
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-sm text-orange-300 font-semibold">
+                <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                პრაქტიკული
+            </span>
+        </div>
+    </div>
+</header>
+
+<div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
+
+        <!-- Route Table -->
+    <div class="bg-brand-950 text-white rounded-2xl p-6 md:p-8 mb-12 shadow-md border border-brand-900/50">
+        <h2 class="text-xl font-bold mb-4 text-orange-300">მასტერკლასის გეგმა და სეგმენტები</h2>
+        
+        <p class="text-xs font-semibold uppercase tracking-wider text-orange-400 mb-2">ნაწილი I · AI საფუძვლები, მოდელები და პრომპტინგი</p>
+        <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-white/20">
+                        <th class="text-left py-2 pr-3 text-orange-400 font-semibold w-6">#</th>
+                        <th class="text-left py-2 pr-4 text-orange-400 font-semibold">სეგმენტი</th>
+                        <th class="text-left py-2 pr-3 text-orange-400 font-semibold">დრო</th>
+                        <th class="text-left py-2 text-orange-400 font-semibold">ტიპი</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-300">
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">1</td>
+                        <td class="py-2 pr-4">შესავალი – AI საცალო ვაჭრობაში: შესაძლებლობები და მდგომარეობა 2026 წლისთვის</td>
+                        <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                        <td class="py-2"><span class="bg-brand-700/20 text-brand-300 text-xs px-2 py-0.5 rounded border border-brand-700/40">დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">2</td>
+                        <td class="py-2 pr-4">საოპერაციო გამოწვევები – რა ამოცანები გაქვთ „ორი ნაბიჯი“-ს ყოველდღიურ ოპერაციებში?</td>
+                        <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                        <td class="py-2"><span class="bg-orange-500/20 text-orange-300 text-xs px-2 py-0.5 rounded border border-orange-700/40">ქეისის გარჩევა</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-red-500 font-bold">3</td>
+                        <td class="py-2 pr-4">⚠️ მონაცემთა უსაფრთხოება და ეთიკა – რა მონაცემები არ უნდა გაუგზავნოთ AI-ს</td>
+                        <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                        <td class="py-2"><span class="bg-red-500/20 text-red-300 text-xs px-2 py-0.5 rounded border border-red-800/40">კრიტიკული</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">4</td>
+                        <td class="py-2 pr-4">ChatGPT vs Claude vs Gemini vs Perplexity – რომელი გამოვიყენოთ და რისთვის?</td>
+                        <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                        <td class="py-2"><span class="bg-brand-700/20 text-brand-300 text-xs px-2 py-0.5 rounded border border-brand-700/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">5</td>
+                        <td class="py-2 pr-4">პრომპტ-ინჟინერია (Prompt Engineering) – 5 ოქროს წესი ოპერაციებში</td>
+                        <td class="py-2 pr-3 font-semibold text-white">25 წთ</td>
+                        <td class="py-2"><span class="bg-brand-700/20 text-brand-300 text-xs px-2 py-0.5 rounded border border-brand-700/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">6</td>
+                        <td class="py-2 pr-4">კომუნიკაცია, მომწოდებლებთან მოლაპარაკება, სარეკლამო კონტენტი</td>
+                        <td class="py-2 pr-3 font-semibold text-white">20 წთ</td>
+                        <td class="py-2"><span class="bg-brand-700/20 text-brand-300 text-xs px-2 py-0.5 rounded border border-brand-700/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">7</td>
+                        <td class="py-2 pr-4">Gemini Gems – 2 ნაბიჯის პერსონალური AI ასისტენტის მაგალითი</td>
+                        <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                        <td class="py-2"><span class="bg-green-500/20 text-green-300 text-xs px-2 py-0.5 rounded border border-green-800/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">8</td>
+                        <td class="py-2 pr-4">Claude Projects & Cowork – ერთობლივი მუშაობა და ფაილების მართვა</td>
+                        <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+                        <td class="py-2"><span class="bg-orange-500/20 text-orange-300 text-xs px-2 py-0.5 rounded border border-orange-700/40">ქეისის გარჩევა</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex items-center gap-3 my-5 py-2 px-4 bg-white/10 rounded-lg border border-white/10">
+            <span class="text-orange-400 font-bold text-sm">☕</span>
+            <p class="text-sm text-orange-300 font-semibold">შესვენება – 10 წუთი (პრომპტების ტესტირება და კითხვები)</p>
+        </div>
+
+        <p class="text-xs font-semibold uppercase tracking-wider text-orange-400 mb-2">ნაწილი II · დოკუმენტები, ანალიტიკა და ავტომატიზაცია</p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <tbody class="text-gray-300">
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">9</td>
+                        <td class="py-2 pr-4">დოკუმენტები, PDF და Excel – AI ანალიზი (მარაგები, კონტრაქტები, ჩამოწერები)</td>
+                        <td class="py-2 pr-3 font-semibold text-white">12 წთ</td>
+                        <td class="py-2"><span class="bg-brand-700/20 text-brand-300 text-xs px-2 py-0.5 rounded border border-brand-700/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">10</td>
+                        <td class="py-2 pr-4">NotebookLM – მაღაზიის შიდა ინსტრუქციების (SOP) და მომსახურების სტანდარტების ბაზა</td>
+                        <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                        <td class="py-2"><span class="bg-teal-500/20 text-teal-300 text-xs px-2 py-0.5 rounded border border-teal-800/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">11</td>
+                        <td class="py-2 pr-4">Gamma – AI სლაიდები და პრეზენტაციები კატეგორიების მიმოხილვისთვის</td>
+                        <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+                        <td class="py-2"><span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded border border-purple-800/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr class="border-b border-white/10">
+                        <td class="py-2 pr-3 text-brand-600 font-bold">12</td>
+                        <td class="py-2 pr-4">ავტომატიზაცია – Make.com: კონკურენტების ფასების მონიტორინგი და ალერტები</td>
+                        <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+                        <td class="py-2"><span class="bg-brand-700/20 text-brand-300 text-xs px-2 py-0.5 rounded border border-brand-700/40">ლაივ დემო</span></td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 pr-3 text-brand-600 font-bold">13</td>
+                        <td class="py-2 pr-4">💼 დანერგვა & შემდეგი ნაბიჯები – სტრატეგია, რეკომენდაციები და Q&A</td>
+                        <td class="py-2 pr-3 font-semibold text-white">18 წთ</td>
+                        <td class="py-2"><span class="bg-brand-700/20 text-brand-300 text-xs px-2 py-0.5 rounded border border-brand-700/40">სტრატეგია</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    <!-- ═══ SEGMENT 1: INTRO ═══ -->
+    <section id="seg-intro" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6 mb-4">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-base border border-orange-500/30">1</div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-brand-700">10 წუთი · შესავალი & თეორია</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900">შესავალი – AI საცალო სექტორში: შესაძლებლობები და მდგომარეობა 2026 წლისთვის</h2>
+                    <p class="text-gray-500 text-sm mt-1">საცალო ვაჭრობა, თავისი დინამიკური ბუნებით (SKU-ების რაოდენობა, მარაგები, ლოგისტიკა და ყოველდღიური გაყიდვები), ყველაზე მეტად სარგებლობს ხელოვნური ინტელექტით. ამ ბლოკში განვიხილავთ AI-ს მუშაობის პრინციპებს, შესაძლებლობებსა და კრიტიკულ უსაფრთხოებას.</p>
+                </div>
+            </div>
+
+            <div class="warning-box p-4 mb-5 flex gap-3 items-center">
+                <span class="text-2xl shrink-0">🛡️</span>
+                <div>
+                    <p class="text-sm font-bold text-orange-950">უსაფრთხოების ოქროს წესი (2 ნაბიჯი):</p>
+                    <p class="text-xs text-orange-800 leading-relaxed">არასოდეს გაუგზავნოთ ხელოვნურ ინტელექტს მომხმარებელთა ლოიალობის ბარათის ნომრები, პირადი მონაცემები, კონკრეტული ფილიალების რეალური შემოსავლების დაუცველი დოკუმენტები ან მომწოდებლებთან ხელმოწერილი ფასდაკლების პირობები. ყოველთვის გამოიყენეთ ანონიმიზაცია. დეტალები მე-3 სეგმენტში.</p>
+                </div>
+            </div>
+
+            <!-- HISTORY & ELIZA EFFECT -->
+            <div class="mb-6">
+                <span class="inline-block bg-orange-100 text-orange-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">⏳ ისტორიული კონტექსტი</span>
+                <h3 class="text-base font-bold text-gray-900 mb-2">AI-ის ისტორია და ELIZA-ს ეფექტი</h3>
+                <p class="text-sm text-gray-600 leading-relaxed mb-3">ხელოვნური ინტელექტი 2022 წელს ChatGPT-ის გამოსვლით არ დაბადებულა. მისი გზა 1956 წლიდან იწყება. პირველი მნიშვნელოვანი ჩატბოტი იყო **ELIZA (1966 წელს)**, რომელიც ადამიანის ნათქვამს მარტივი შაბლონებითა და პატერნებით პასუხობდა.</p>
+                
+                <div class="grid md:grid-cols-2 gap-3 mb-4">
+                    <div class="bg-gray-50 border-l-4 border-orange-500 rounded-r-lg p-3">
+                        <p class="text-xs font-bold text-gray-900 mb-1">ELIZA-ს ეფექტი</p>
+                        <p class="text-xs text-gray-600 leading-relaxed">ELIZA-ს არანაირი „აზროვნება“ არ გააჩნდა, თუმცა ადამიანებს მაინც უჩნდებოდათ ემოციური მიჯაჭვულობა და განცდა, რომ მას „ესმოდა“ მათი. ამ ილუზიას მეცნიერებამ **ELIZA-ს ეფექტი** უწოდა.</p>
+                    </div>
+                    <div class="bg-gray-50 border-l-4 border-brand-700 rounded-r-lg p-3">
+                        <p class="text-xs font-bold text-gray-900 mb-1">რატომ არის ეს მნიშვნელოვანი დღეს?</p>
+                        <p class="text-xs text-gray-600 leading-relaxed">დღევანდელი მოდელები (Claude, ChatGPT) ბევრად უფრო რთულია, მაგრამ პრინციპი იგივეა: **დამაჯერებელი, გამართული ტექსტი არ ნიშნავს, რომ მას ნამდვილად ესმის რეალობა.** ეს პირდაპირ ხსნის AI-ს ჰალუცინაციებს.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WHAT IS GEN AI & COMPARISON -->
+            <div class="mb-6 border-t border-gray-150 pt-5">
+                <span class="inline-block bg-brand-100 text-brand-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">🤖 რა არის გენერაციული AI?</span>
+                <p class="text-sm text-gray-600 leading-relaxed mb-4">გენერაციული AI არის პროგრამა, რომელიც **ქმნის სრულიად ახალ კონტენტს** (ტექსტს, იდეებს, შეფასების კრიტერიუმებს, სარეკლამო პოსტებს) ჩვენს მიერ მიცემული ინსტრუქციების (პრომპტების) საფუძველზე.</p>
+                
+                <div class="grid md:grid-cols-2 gap-3 mb-4">
+                    <div class="bg-red-50/50 border border-red-100 rounded-lg p-4">
+                        <h4 class="text-xs font-bold text-red-700 uppercase mb-2 flex items-center gap-1.5">
+                            <span>❌</span> ტრადიციული პროგრამა
+                        </h4>
+                        <ul class="text-xs text-gray-600 space-y-1.5">
+                            <li>• მუშაობს წინასწარ გაწერილი მკაცრი კოდით და წესებით</li>
+                            <li>• აკეთებს მხოლოდ იმას, რაც პირდაპირაა დაპროგრამებული</li>
+                            <li>• ვერ ახდენს ადაპტაციას ახალ სიტუაციებთან და ვერ ესმის კონტექსტი</li>
+                        </ul>
+                    </div>
+                    <div class="bg-brand-50/50 border border-brand-100 rounded-lg p-4">
+                        <h4 class="text-xs font-bold text-brand-700 uppercase mb-2 flex items-center gap-1.5">
+                            <span>✅</span> გენერაციული AI (LLM)
+                        </h4>
+                        <ul class="text-xs text-gray-600 space-y-1.5">
+                            <li>• კარგად ესმის ჩვეულებრივი ადამიანური ენა (მათ შორის ქართული)</li>
+                            <li>• ადვილად ერგება ნებისმიერ ახალ ბიზნეს სიტუაციასა და ქეისს</li>
+                            <li>• ახდენს ახალი, უნიკალური შინაარსის გენერირებას</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOW AI WORKS: TOKENS, CONTEXT & VERSIONS -->
+            <div class="mb-6 border-t border-gray-150 pt-5">
+                <span class="inline-block bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">⚙️ როგორ მუშაობს AI? ძირითადი ცნებები</span>
+                <h3 class="text-base font-bold text-gray-900 mb-2">მუშაობის პრინციპი, ტოკენები და კონტექსტი</h3>
+                <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                    დღევანდელი ენობრივი მოდელები (LLM) რეალურად მუშაობენ **შემდეგი სიტყვის ალბათური წინასწარმეტყველების პრინციპით**. მათ წაკითხული აქვთ მილიარდობით ტექსტი და პრომპტის მიღებისას ეძებენ ყველაზე ლოგიკურ გაგრძელებას.
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-3 mb-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <p class="text-xs font-bold text-gray-900 mb-1">🪙 ტოკენები (Tokens)</p>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            AI ტექსტს აღიქვამს არა სიტყვებად, არამედ ნაწილებად – **ტოკენებად**. 1 ტოკენი საშუალოდ 4 სიმბოლოა. ქართულ ენაში, ასოების სპეციფიკიდან გამომდინარე, 1 სიტყვა შეიძლება რამდენიმე ტოკენად დაიყოს, რაც ნიშნავს, რომ ქართული ტექსტი უფრო სწრაფად ხარჯავს ლიმიტს, ვიდრე ინგლისური.
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <p class="text-xs font-bold text-gray-900 mb-1">🧠 კონტექსტის ფანჯარა</p>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            ეს არის AI-ს **„მოკლევადიანი მეხსიერება“** – მაქსიმალური მოცულობის ინფორმაცია (პრომპტი + პასუხი), რომელიც მოდელს ერთდროულად ახსოვს ჩატის დროს. მაგალითად, Claude 3.7/3.5-ის კონტექსტის ფანჯარა არის 200,000 ტოკენი (დაახლოებით 1 დიდი წიგნი).
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <p class="text-xs font-bold text-gray-900 mb-1">💰 უფასო vs ფასიანი</p>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            <strong>უფასო:</strong> აქვს მკაცრი ლიმიტები (მაგ. Claude 3.5 Sonnet-ზე 5-8 წერილი რამდენიმე საათში) და იყენებს უფრო სუსტ მოდელებს.<br>
+                            <strong>ფასიანი ($20):</strong> 5-ჯერ მეტი ლიმიტი, წვდომა უახლეს მოდელებთან (GPT-4o, Claude 3.5), პერსონალური ასისტენტების (Gems, Projects) შექმნის შესაძლებლობა.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RETAIL APPLICATIONS TABLE -->
+            <div class="mb-6 border-t border-gray-150 pt-5">
+                <span class="inline-block bg-cyan-100 text-cyan-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">📋 პრაქტიკული გამოყენება</span>
+                <h3 class="text-base font-bold text-gray-900 mb-2">სად გამოდგება AI „ორი ნაბიჯის“ ყოველდღიურ ოპერაციებში?</h3>
+                
+                <div class="overflow-x-auto my-3">
+                    <table class="w-full text-xs text-left border-collapse bg-white rounded-lg overflow-hidden border border-gray-200">
+                        <thead>
+                            <tr class="bg-zinc-950 text-white">
+                                <th class="p-3">როლი ოფისში / მაღაზიაში</th>
+                                <th class="p-3">კონკრეტული გამოყენების ქეისი</th>
+                                <th class="p-3 text-center">დაზოგილი დრო</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <tr class="border-b border-gray-100">
+                                <td class="p-3 font-semibold text-brand-700">📋 კატეგორიის მენეჯერი</td>
+                                <td class="p-3">მომწოდებლების წერილები, B2B შეთავაზებების ანალიზი, ფასდაკლების აქციების იდეები</td>
+                                <td class="p-3 text-center"><span class="bg-brand-100 text-brand-800 font-bold px-2 py-0.5 rounded">3-5 სთ/კვ</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-100 bg-gray-50/50">
+                                <td class="p-3 font-semibold text-brand-700">📱 მარკეტინგის სპეციალისტი</td>
+                                <td class="p-3">კვირის კატალოგის პოსტები, ლოიალობის აპლიკაციის შეტყობინებები, სარეკლამო სლოგანები</td>
+                                <td class="p-3 text-center"><span class="bg-brand-100 text-brand-800 font-bold px-2 py-0.5 rounded">4-6 სთ/კვ</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="p-3 font-semibold text-brand-700">🏪 მაღაზიის მენეჯერი / კოორდინატორი</td>
+                                <td class="p-3">ინციდენტების ოფიციალური რეპორტები, თანამშრომელთა განრიგის გეგმა, შიდა წერილები</td>
+                                <td class="p-3 text-center"><span class="bg-brand-100 text-brand-800 font-bold px-2 py-0.5 rounded">3-4 სთ/კვ</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-100 bg-gray-50/50">
+                                <td class="p-3 font-semibold text-brand-700">🤝 HR და ტრენერი</td>
+                                <td class="p-3">ახალი მოლარეების ონბორდინგის გეგma, შიდა SOP ინსტრუქციების FAQ კითხვები</td>
+                                <td class="p-3 text-center"><span class="bg-brand-100 text-brand-800 font-bold px-2 py-0.5 rounded">3-5 სთ/კვ</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="p-3 font-semibold text-brand-700">💼 ადმინისტრაციული გუნდი / იურისტი</td>
+                                <td class="p-3">სადისტრიბუციო და საიჯარო ხელშეკრულებების პირობების შეჯამება და შედარება</td>
+                                <td class="p-3 text-center"><span class="bg-brand-100 text-brand-800 font-bold px-2 py-0.5 rounded">2-4 სთ/კვ</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- First Prompt Blueprint -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-3">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">🏁 პირველი პრომპტი — „AI-ის გაცნობა ორი ნაბიჯისთვის“ (ლაივ დემო)</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>გამარჯობა! ვარ „ორი ნაბიჯი“-ს [ჩემი როლი, მაგ: კატეგორიის მენეჯერი].
+ჩვენი ქსელი შედგება უბნის მაღაზიებისგან, სადაც მომხმარებლებს ვთავაზობთ ხელმისაწვდომ ფასებსა და სწრაფ მომსახურებას.
+ეს ჩვენი პირველი კავშირია. გთხოვ, მოგვესალმო ქართულად და მოკლედ ჩამომიწერო — ყოველდღიურ საოპერაციო ამოცანებში რა საქმის შესრულებაში შეგიძლია ჩემი დახმარება?</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOW LLM WORKS -->
+            <div class="mb-6 border-t border-gray-150 pt-5">
+                <span class="inline-block bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">⚙️ მუშაობის პრინციპი</span>
+                <h3 class="text-base font-bold text-gray-900 mb-2">როგორ მუშაობს ენობრივი მოდელი (LLM)?</h3>
+                <p class="text-sm text-gray-600 leading-relaxed mb-3">დიდი ენობრივი მოდელები (LLM) მუშაობენ **შემდეგი სიტყვის ალბათური პროგნოზირების (Next-Word Prediction)** პრინციპით. ისინი არ იაზრებენ სამყაროს ისე, როგორც ადამიანი, არამედ აწყობენ პასუხს სტატისტიკური ალბათობით.</p>
+
+                <div class="grid md:grid-cols-3 gap-3 mb-4">
+                    <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-3 text-center">
+                        <span class="text-2xl mb-1 block">📚</span>
+                        <p class="text-xs font-bold text-gray-950 mb-0.5">1. ტრენგი</p>
+                        <p class="text-[10px] text-gray-600 leading-relaxed">მოდელმა შეისწავლა ინტერნეტში არსებული მილიარდობით ტექსტი.</p>
+                    </div>
+                    <div class="bg-purple-50/50 border border-purple-100 rounded-lg p-3 text-center">
+                        <span class="text-2xl mb-1 block">🎲</span>
+                        <p class="text-xs font-bold text-gray-950 mb-0.5">2. ალბათობა</p>
+                        <p class="text-[10px] text-gray-600 leading-relaxed">ითვლის, თუ რა სიტყვა მოჰყვება ლოგიკურად თქვენს შეკითხვას.</p>
+                    </div>
+                    <div class="bg-brand-50/50 border border-brand-100 rounded-lg p-3 text-center">
+                        <span class="text-2xl mb-1 block">💬</span>
+                        <p class="text-xs font-bold text-gray-950 mb-0.5">3. გენერაცია</p>
+                        <p class="text-[10px] text-gray-600 leading-relaxed">მყისიერად აწყობს ტექსტს მიღებული ალბათობების მიხედვით.</p>
+                    </div>
+                </div>
+
+                <!-- Vision capability -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-xs font-bold text-gray-900 mb-1 flex items-center gap-1.5">
+                        <span>👁️</span> Vision: AI ხედავს და აანალიზებს სურათებს
+                    </h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        თანამედროვე მოდელებს (GPT-4o, Claude 3.7 Sonnet) აქვთ მულტიმოდალური მხარდაჭერა. თქვენ შეგიძლიათ ატვირთოთ ფოტოები. საცალოের ქეისი: **მაღაზიის თაროს ფოტოს ატვირთვა** – AI აფასებს პროდუქტების განლაგებას (პლანოგრამასთან შესაბამისობას), ან **ხელით ნაწერი ინვენტარიზაციის ფურცლის ფოტოს ატვირთვა** – AI წამში აქცევს მას რიცხვით Excel-ცხრილად.
+                    </p>
+                </div>
+            </div>
+
+            <!-- HALLUCINATIONS AND MITIGATION -->
+            <div class="mb-6 border-t border-gray-150 pt-5">
+                <span class="inline-block bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-2">⚠️ ყველაზე დიდი რისკი</span>
+                <h3 class="text-base font-bold text-gray-900 mb-2">ჰალუცინაციები – AI-ის ყველაზე სახიფათო ხარვეზი</h3>
+                <p class="text-sm text-gray-600 leading-relaxed mb-3">ხელოვნური ინტელექტი **ყოველთვის იძლევა პასუხს** — მაშინაც კი, როცა ზუსტი ფაქტი არ იცის. ის შეეცდება დაწეროს ძალიან დამაჯერებელი, მაგრამ სრულიად მოგონილი ინფორმაცია.</p>
+
+                <div class="grid md:grid-cols-2 gap-3 mb-4">
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <p class="text-xs font-bold text-red-800 mb-1">🔴 პრაქტიკული მაგალითი (ჰალუცინაცია):</p>
+                        <p class="text-xs text-gray-700 leading-relaxed">
+                            კითხავთ AI-ს: <em>„რა უწერია 'ორი ნაბიჯი'-ს N82 შიდა დებულებას მომწოდებლის დაჯარიმებაზე?“</em><br>
+                            AI არ ფლობს ამ შიდა ფაილს, მაგრამ მაინც დაგიწერთ დამაჯერებელ პასუხს: <em>„N82 დებულებით დაგვიანებაზე გათვალისწინებულია 150 ლარი ჯარიმა...“</em> – ეს არის **ჰალუცინაცია** (აბსოლუტურად მოგონილი ინფორმაცია).
+                        </p>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <p class="text-xs font-bold text-green-800 mb-1">✅ როგორ ავიცილოთ თავიდან?</p>
+                        <p class="text-xs text-gray-700 leading-relaxed">
+                            სამართლებრივი, ფინანსური ან ოფიციალური ინფორმაციის მოთხოვნისას ყოველთვის თავად მიაწოდეთ დოკუმენტის ფაილი (PDF ან ტექსტი). AI უნდა გამოიყენოთ მონაცემების **გასაანალიზებლად და დასამუშავებლად**, და არა როგორც აბსოლუტური ფაქტების საძიებო ენციკლოპედია.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Mitigation Prompt -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">🛠️ ჰალუცინაციის შეზღუდვის ფორმულა (პრომპტის ნაწილი):</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>მიპასუხე მხოლოდ იმ ინფორმაციაზე დაყრდნობით, რომელიც პირდაპირ მოცემულია ტექსტში.
+თუ კითხვაზე ზუსტი ინფორმაცია არ წერია, არაფერი გამოიგონო. პირდაპირ დაწერე: „მოცემულ მასალაში ეს ინფორმაცია არ არის“.
+
+კითხვა: [ჩასვით თქვენი შეკითხვა]</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GEORGIAN IMPORTANCE -->
+            <div class="white border border-gray-200 rounded-lg p-4 mt-4 bg-white">
+                <p class="text-sm font-semibold text-gray-900 mb-2">🇬🇪 მნიშვნელობა „ორი ნაბიჯისთვის“, როგორც ქართული კომპანიისთვის</p>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• AI-მ უნდა დაწეროს ბუნებრივი, ცოცხალი და მომხმარებლისთვის სასიამოვნო ქართული ენით (არა პირდაპირი Google Translate თარგმანი).</li>
+                    <li>• უნდა გაითვალისწინოს ადგილობრივი ბაზრის თავისებურებები და ქართველი მომხმარებლის ქცევა.</li>
+                    <li>• მომწოდებლებთან კომუნიკაციისას უნდა შეინარჩუნოს მკაცრი, მაგრამ პარტნიორული ტონი.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 2: საოპერაციო გამოწვევები ═══ -->
+    <section id="seg-activity" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #fe5000;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-base">2</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-orange-600">10 წუთი · საოპერაციო გამოწვევების ანალიზი</span>
+                    <h2 class="text-xl font-bold text-gray-900">„ორი ნაბიჯი“-ს საოპერაციო გამოწვევები და AI გადაწყვეტები</h2>
+                    <p class="text-gray-500 text-sm mt-1">ყოველდღიური რუტინული საქმეების ანალიზი, რომლებიც ყველაზე მეტ დროს მოითხოვს და მათი ოპტიმიზაციის გზები.</p>
+                </div>
+            </div>
+
+            <div class="bg-orange-50 border border-orange-200 rounded-lg p-5 mb-4">
+                <p class="font-semibold text-orange-950 mb-2">⏱️ დროის მთავარი „მფლანგველები“ საოფისე საქმიანობაში:</p>
+                <div class="bg-white border border-orange-300 rounded-lg p-4">
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        კომპანია **„ორი ნაბიჯი“**-ს სათაო ოფისის საოპერაციო კვლევამ აჩვენა, რომ თანამშრომლების სამუშაო დროის მნიშვნელოვანი ნაწილი იხარჯება განმეორებად კომუნიკაციაზე (მომწოდებლებთან), მონაცემების ხელით დამუშავებასა და რეპორტების მომზადებაზე. მასტერკლასის მიზანია ამ ამოცანების ავტომატიზაცია AI-ს მეშვეობით.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-3">
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">ტიპური პასუხები „ორი ნაბიჯი“-ს გუნდებში</p>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>✉️ მომწოდებლებთან ფასებზე ან მიწოდების შეფერხებებზე მიწერა</li>
+                        <li>📄 სადისტრიბუციო და საიჯარო ხელშეკრულებების პირობების შემოწმება</li>
+                        <li>📊 გაყიდვების დინამიკის და ჩამოწერების რეპორტინგი</li>
+                        <li>📱 კვირის ფასდაკლებების კატალოგის სოც-ქსელების ტექსტები</li>
+                        <li>🔍 ახალი პროდუქტების კატეგორიების და კონკურენტების შესწავლა</li>
+                    </ul>
+                </div>
+                <div class="bg-brand-50 rounded-lg p-4 border border-brand-100">
+                    <p class="text-xs font-bold text-brand-600 uppercase mb-2">როგორ პასუხობს ტრენინგი ამ გამოწვევებს:</p>
+                    <ul class="text-sm text-brand-900 space-y-1">
+                        <li>✅ მომწოდებლის წერილი – მე-6 სეგმენტი</li>
+                        <li>✅ ხელშეკრულებები & PDF ანალიზი – მე-9 სეგმენტი</li>
+                        <li>✅ გაყიდვები & Excel ანალიტიკა – მე-9 სეგმენტი</li>
+                        <li>✅ კატალოგის პოსტები/კონტენტი – მე-6 სეგმენტი</li>
+                        <li>✅ კონკურენტების მონიტორინგი – მე-12 სეგმენტი</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- ═══ SEGMENT 3: SECURITY ═══ -->
+    <section id="seg-security" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #ef4444;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-base">3</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-red-600">10 წუთი · კრიტიკული</span>
+                    <h2 class="text-xl font-bold text-gray-900">⚠️ მონაცემთა უსაფრთხოება და ეთიკა</h2>
+                    <p class="text-gray-500 text-sm mt-1">უსაფრთხოება საცალო სექტორში უმნიშვნელოვანესია, რადგან ჩვენ ყოველდღიურად ვმუშაობთ მომხმარებლებისა და მომწოდებლების მონაცემებთან.</p>
+                </div>
+            </div>
+
+            <!-- ETHICS TOPIC -->
+            <div class="bg-gray-50 border border-red-200 rounded-lg p-5 mb-5">
+                <p class="font-bold text-red-950 text-base mb-3">🚫 არასოდეს გაუგზავნოთ ხელოვნურ ინტელექტს (უფასო ვერსიებში):</p>
+                <div class="grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm text-red-900">
+                    <div>❌ მომხმარებელთა პირადი მონაცემები (სახელი, ტელეფონი, ლოიალობის ბარათი)</div>
+                    <div>❌ ფილიალების ინდივიდუალური გაყიდვების დეტალური ციფრები</div>
+                    <div>❌ მომწოდებლებთან გაფორმებული ხელშეკრულებების ფინანსური დანართები</div>
+                    <div>❌ თანამშრომლების ხელფასები და HR შეფასებები</div>
+                    <div>❌ შიდა პროგრამების პაროლები, API გასაღებები</div>
+                    <div>❌ დაგეგმილი ახალი ფილიალების კონკრეტული ლოკაციები გახსნამდე</div>
+                </div>
+            </div>
+
+            <!-- Samsung Case Study -->
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-5">
+                <p class="text-sm font-bold text-red-900 mb-2">🛑 რეალური შემთხვევა: Samsung-ის გაკვეთილი</p>
+                <p class="text-xs text-red-800 leading-relaxed mb-2">
+                    ტექნოლოგიური გიგანტის Samsung-ის თანამშრომლებმა უფასო ChatGPT-ში ატვირთეს საიდუმლო პროგრამული კოდი შეცდომების გასასწორებლად და შიდა შეხვედრის ჩანაწერები შეჯამებისთვის. ვინაიდან უფასო ვერსიები ამ მონაცემებს მოდელების სწავლებისთვის იყენებენ, ეს საიდუმლო ინფორმაცია კომპანიის გარეთ გავიდა. ამ შემთხვევის შემდეგ Samsung-მა და ბევრმა სხვა კომპანიამ მკაცრი წესები შემოიღო.
+                </p>
+                <p class="text-xs font-semibold text-red-900">გაკვეთილი: რაც იწერება უფასო ChatGPT/Claude-ში, ხდება საჯარო სწავლების ბაზის ნაწილი.</p>
+            </div>
+
+            <!-- Anonymization Example -->
+            <p class="text-sm font-bold text-gray-900 mb-3">🔄 პრაქტიკული ანონიმიზაციის მაგალითი საცალო სექტორში</p>
+            <div class="grid md:grid-cols-2 gap-4 mb-5">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 opacity-75">
+                    <p class="text-xs font-bold text-red-750 mb-2 text-red-700">❌ დაუცველი ტექსტი (არ ატვირთოთ):</p>
+                    <p class="text-xs text-gray-700 italic">"მომწოდებელმა <strong>შპს 'ჯორჯიან დეირი'</strong> (ს/კ <strong>204XXXXXX</strong>) ყოველკვირეულ <strong>ყველის</strong> მოწოდებაზე მოგვცა <strong>15%-იანი ფასდაკლება</strong> 2 ნაბიჯისთვის, ოღონდ თაროზე ფასი უნდა იყოს <strong>7.50 ლარი</strong>."</p>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="text-xs font-bold text-green-750 mb-2 text-green-700">✅ ანონიმიზებული ტექსტი (სრულიად უსაფრთხოა):</p>
+                    <p class="text-xs text-gray-700 italic">"მომწოდებელმა <strong>[მომწოდებელი A]</strong>-მ <strong>[პროდუქტის კატეგორია]</strong>-ს მოწოდებაზე მოგვცა <strong>[ფასდაკლების პროცენტი]</strong>-იანი ფასდაკლება, ოღონდ თაროზე ფასი უნდა იყოს <strong>[ფასი]</strong>."</p>
+                </div>
+            </div>
+
+            <!-- Cases -->
+            <div class="bg-zinc-950 text-white rounded-xl p-6 mb-6 border border-brand-900/40">
+                <p class="font-bold text-orange-400 text-base mb-4">🎤 ეთიკური დილემები 2 ნაბიჯში (ცოცხალი დისკუსია):</p>
+                <div class="space-y-4">
+                    <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+                        <p class="text-xs font-bold text-orange-300 mb-2">ქეისი 1: „ფარული ავტომატიზაცია“</p>
+                        <p class="text-[11px] text-gray-300 leading-relaxed">კატეგორიის მენეჯერი ყოველკვირეულ ანგარიშს, რომელსაც ადრე 4 საათი უნდებოდა, AI-ის დახმარებით 15 წუთში ამზადებს. ის ამას მენეჯმენტს არ ეუბნება, რათა არ მოსთხოვონ მეტი საქმის გაკეთება.<br><strong>კითხვა:</strong> რამდენად სწორია ეს ქცევა? უნდა იყოს თუ არა AI-ის გამოყენება გამჭვირვალე?</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+                        <p class="text-xs font-bold text-orange-300 mb-2">ქეისი 2: „AI-ის დაშვებული შეცდომა აქციაში“</p>
+                        <p class="text-[11px] text-gray-300 leading-relaxed">მარკეტინგის გუნდმა AI-ს დააწერინა აქციის პირობები. AI-მ შეცდომით დაწერა, რომ 2 ყუთის ყიდვისას მესამე უფასოა (ორიგინალში 3 ყუთის ყიდვისას იყო გათვალისწინებული). პოსტი გამოქვეყნდა. მომხმარებლები მოითხოვენ პირობის შესრულებას.<br><strong>კითხვა:</strong> ვინ არის პასუხისმგებელი ამ შეცდომაზე?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 4: COMPARE ═══ -->
+    <section id="seg-compare" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-base border border-orange-500/30">4</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-brand-700">10 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">ChatGPT vs Claude vs Gemini vs Perplexity – რომელი გამოვიყენოთ და რისთვის?</h2>
+                    <p class="text-gray-500 text-sm mt-1">2026 წლის უახლესი მოდელების შედარება და გამოყენება საოპერაციო ამოცანებში.</p>
+                </div>
+            </div>
+
+            <!-- Model Comparison Table (from Green Lecture 1 & Oppa Session 0) -->
+            <div class="mb-6 border-t border-gray-100 pt-4">
+                <p class="text-xs font-bold text-brand-700 uppercase tracking-wider mb-3">🏆 მოდელების შესაძლებლობების შედარება (2026 წლის მონაცემები):</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse border border-gray-200 rounded-lg overflow-hidden bg-white">
+                        <thead>
+                            <tr class="bg-brand-950 text-white text-xs">
+                                <th class="p-3 border border-brand-900">დავალება / საჭიროება</th>
+                                <th class="p-3 border border-brand-900 text-center w-1/4">Claude</th>
+                                <th class="p-3 border border-brand-900 text-center w-1/4">ChatGPT</th>
+                                <th class="p-3 border border-brand-900 text-center w-1/4">Gemini</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <tr class="border-b border-gray-200">
+                                <td class="p-3 font-semibold bg-gray-50/50">✍️ ქართული ტექსტის წერა და სტილი</td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">უზადო & ბუნებრივი</span><br><span class="text-[9px] text-gray-500">საუკეთესოა წერილებისა და კატალოგის პოსტებისთვის</span></td>
+                                <td class="p-3 text-center">⭐⭐<br><span class="text-[10px] font-bold text-amber-600">კარგი, მაგრამ ხელოვნური</span><br><span class="text-[9px] text-gray-500">ხშირად იყენებს კალკირებულ თარგმანს</span></td>
+                                <td class="p-3 text-center">⭐⭐<br><span class="text-[10px] font-bold text-amber-600">სწრაფი, სტანდარტული</span><br><span class="text-[9px] text-gray-500">გრამატიკულად სწორი, თუმცა აკლია სინაზე</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-200 bg-brand-50/5">
+                                <td class="p-3 font-semibold bg-gray-50/50">🔍 ინტერნეტ-ძიება და ფაქტები</td>
+                                <td class="p-3 text-center">⭐⭐<br><span class="text-[10px] font-bold text-amber-600">ბაზისური ძიება</span><br><span class="text-[9px] text-gray-500">ინტეგრირებულია, მაგრამ შედარებით ნელი</span></td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">SearchGPT-ის სიჩქარე</span><br><span class="text-[9px] text-gray-500">ინტერნეტ-ძიების უსწრაფესი და სიღრმისეული ანალიზი</span></td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">Google-ის ეკოსისტემა</span><br><span class="text-[9px] text-gray-500">ლიდერი. რეალურ დროში ფაქტების შემოწმება Google Search-ით</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-200">
+                                <td class="p-3 font-semibold bg-gray-50/50">📊 Excel და მონაცემთა ანალიზი</td>
+                                <td class="p-3 text-center">⭐⭐<br><span class="text-[10px] font-bold text-amber-600">ვიზუალიზაცია</span><br><span class="text-[9px] text-gray-500">სტრუქტურას კარგად ხსნის, აკლია Python კოდი</span></td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">Advanced Data Analysis</span><br><span class="text-[9px] text-gray-500">საუკეთესოა. უშვებს Python-ს რთული გათვლებისთვის</span></td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">Google Sheets კავშირი</span><br><span class="text-[9px] text-gray-500">სუპერ ინტეგრაცია Drive/Sheets-თან, უსწრაფესი რეპორტები</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-200 bg-brand-50/5">
+                                <td class="p-3 font-semibold bg-gray-50/50">📖 გრძელი დოკუმენტების ანალიზი</td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">200K კონტექსტი</span><br><span class="text-[9px] text-gray-500">უმაღლესი სიზუსტე დეტალების დამახსოვრებაში</span></td>
+                                <td class="p-3 text-center">⭐⭐<br><span class="text-[10px] font-bold text-amber-600">128K კონტექსტი</span><br><span class="text-[9px] text-gray-500">ხანდახან კარგავს დეტალებს ფაილის შუაში</span></td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">2+ მილიონი კონტექსტი</span><br><span class="text-[9px] text-gray-500">ლიდერი. იტევს მთელ კატალოგებს, საათობრივ ვიდეოებს</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-200">
+                                <td class="p-3 font-semibold bg-gray-50/50">🎨 სურათების გენერაცია</td>
+                                <td class="p-3 text-center text-red-500 font-semibold">❌ არ აქვს</td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">DALL-E 3</span><br><span class="text-[9px] text-gray-500">იდეალურად ესმის დეტალური პრომპტები და წარწერები</span></td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">Imagen 3</span><br><span class="text-[9px] text-gray-500">უმაღლესი ფოტორეალიზმი და გენერაციის სიჩქარე</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-200 bg-brand-50/5">
+                                <td class="p-3 font-semibold bg-gray-50/50">🧠 ლოგიკა და მსჯელობა (Reasoning)</td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">Claude 3.7 Sonnet (Thinking)</span><br><span class="text-[9px] text-gray-500">სიღრმისეული, აკადემიური და უსაფრთხო მსჯელობის რეჟიმი</span></td>
+                                <td class="p-3 text-center">⭐⭐⭐<br><span class="text-[10px] font-bold text-green-600">o1 / o3-mini / GPT-4o</span><br><span class="text-[9px] text-gray-500">რთული მათემატიკური და პროგრამული ლოგიკის ამოხსნა</span></td>
+                                <td class="p-3 text-center">⭐⭐<br><span class="text-[10px] font-bold text-amber-600">Gemini 2.0 Pro / Flash</span><br><span class="text-[9px] text-gray-500">სწრაფი ლოგიკური მსჯელობა, საორიენტაციო რეჟიმი</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Model Cards (Futuristic 2026 data from Oppa S0 & Green L1) -->
+            <div class="grid md:grid-cols-2 gap-4 mb-5">
+                <div class="border-2 border-green-200 rounded-xl p-4 bg-green-50/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">🤖</span>
+                        <p class="font-bold text-green-700">ChatGPT (OpenAI)</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-2">o1 / o3-mini / GPT-4o / GPT-4o-mini</p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>✅ <strong>Advanced Data Analysis:</strong> საუკეთესოა Excel რეპორტებისა და გრაფიკებისთვის (უშვებს Python კოდს)</li>
+                        <li>✅ <strong>ავტონომიური აგენტები:</strong> GPT-ების შექმნა შიდა რუტინული პროცესების გასამარტივებლად</li>
+                        <li>✅ <strong>Voice & Video (Sora):</strong> რეალურ დროში ხმოვანი კომუნიკაცია და ვიდეოს გენერაცია</li>
+                        <li>⚠️ <em>შეზღუდვა:</em> უფასო ვერსიაზე ქართული ტექსტი ზოგჯერ კალკირებულ თარგმანს ჰგავს</li>
+                    </ul>
+                </div>
+                <div class="border-2 border-orange-200 rounded-xl p-4 bg-orange-50/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">🟠</span>
+                        <p class="font-bold text-orange-700">Claude (Anthropic)</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-2">Claude 3.7 Sonnet / 3.5 Sonnet / 3.5 Opus</p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>✅ <strong>უნაკლო ქართული ენა:</strong> ყველაზე ბუნებრივი, მდიდარი და დახვეწილი ტექსტის წერა/რედაქტირება</li>
+                        <li>✅ <strong>დიდი კონტექსტი:</strong> 200,000+ ტოკენი რთული ხელშეკრულებებისა და SOP ბაზების წასაკითხად</li>
+                        <li>✅ <strong>Computer Use:</strong> კომპიუტერის ეკრანის აღქმა და რთული პროგრამული კოდის წერა</li>
+                        <li>⚠️ <em>შეზღუდვა:</em> უფასო ვერსიაზე დღიური ლიმიტები შედარებით სწრაფად იწურება</li>
+                    </ul>
+                </div>
+                <div class="border-2 border-blue-200 rounded-xl p-4 bg-blue-50/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">💎</span>
+                        <p class="font-bold text-blue-700">Gemini (Google)</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-2">Gemini 2.0 Pro / Flash / Gemini 3.1 Pro</p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>✅ <strong>Workspace ინტეგრაცია:</strong> სრულყოფილი კავშირი Google Docs, Drive და Gmail-თან</li>
+                        <li>✅ <strong>2 მილიონი ტოკენი:</strong> ინდუსტრიის ლიდერი. იტევს გიგანტური მოცულობის ფაილებს, ვიდეოებსა და აუდიოს</li>
+                        <li>✅ <strong>Gem Manager / Gems:</strong> პერსონალური ასისტენტების შექმნა საერთო სამუშაოების მოსაგვარებლად</li>
+                        <li>⚠️ <em>შეზღუდვა:</em> ხანდახან ზედმეტად მკაცრია უსაფრთხოებისა და კონფიდენციალობის ფილტრები</li>
+                    </ul>
+                </div>
+                <div class="border-2 border-purple-200 rounded-xl p-4 bg-purple-50/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">🔍</span>
+                        <p class="font-bold text-purple-700">Perplexity AI</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-2">Perplexity Pro · ვებკვლევა</p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>✅ <strong>Deep Research:</strong> საუკეთესო ინსტრუმენტი ბაზრისა და კონკურენტების შესასწავლად</li>
+                        <li>✅ <strong>ოფიციალური წყაროები:</strong> პასუხში პირდაპირ უთითებს ვებ-გვერდების ლინკებსა და ფაქტებს</li>
+                        <li>✅ <strong>Pro Search:</strong> მრავალსაფეხურიანი კვლევა, რომელიც თავად გეკითხება დამაზუსტებელ შეკითხვებს</li>
+                        <li>⚠️ <em>შეზღუდვა:</em> ნაკლებად არის განკუთვნილი კრეატიული ტექსტებისა და Excel ფაილების ანალიზისთვის</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Recommendation -->
+            <div class="bg-zinc-950 text-white rounded-xl p-5 mb-5 border border-brand-900/40">
+                <p class="font-semibold text-orange-300 text-sm mb-2">🎯 საოპერაციო რეკომენდაცია „ორი ნაბიჯი“-სთვის:</p>
+                <div class="grid md:grid-cols-2 gap-2 text-xs text-gray-300">
+                    <div>📄 <strong>Claude</strong> – ხელშეკრულებების დეტალური ანალიზი, ოფიციალური წერილები მომწოდებლებთან</div>
+                    <div>📊 <strong>ChatGPT</strong> – რთული Excel რეპორტები, გაყიდვების მონაცემების მათემატიკური ანალიზი</div>
+                    <div>🔍 <strong>Gemini</strong> – Google Drive-თან ინტეგრაცია, ყოველდღიური საოპერაციო Gems ასისტენტები</div>
+                    <div>🎯 <strong>Perplexity</strong> – კონკურენტების ფასების კვლევა, ახალი პროდუქტების კატეგორიების შესწავლა</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 4: PROMPTING ═══ -->
+    <section id="seg-prompting" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-base border border-orange-500/30">5</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-brand-700">25 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">პრომპტ-ინჟინერია (Prompt Engineering) – პრაქტიკული მაგალითებით</h2>
+                    <p class="text-gray-500 text-sm mt-1">სწორი პრომპტი განსაზღვრავს პასუხის ხარისხს. ამ ბლოკში ვისწავლით, როგორ მოვაცილოთ AI-ს ზოგადი პასუხები და მივიღოთ ზუსტი სამუშაო მასალა.</p>
+                </div>
+            </div>
+
+            <!-- Formula -->
+            <div class="bg-zinc-950 text-white rounded-xl p-5 mb-5 border border-brand-900/40">
+                <p class="text-orange-400 text-xs font-bold uppercase tracking-wider mb-3">🧮 პრომპტის ფორმულა</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
+                    <div class="bg-white/10 rounded-lg p-3">
+                        <p class="text-2xl mb-1">🎭</p>
+                        <p class="font-bold text-orange-400">როლი</p>
+                        <p class="text-xs text-gray-300 mt-1">„თქვენ ხართ კატეგორიის მენეჯერი"</p>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3">
+                        <p class="text-2xl mb-1">📋</p>
+                        <p class="font-bold text-orange-400">კონტექსტი</p>
+                        <p class="text-xs text-gray-300 mt-1">„ვმუშაობთ 'ორი ნაბიჯი'-ს სადისტრიბუციო ქსელში"</p>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3">
+                        <p class="text-2xl mb-1">🎯</p>
+                        <p class="font-bold text-orange-400">ამოცანა</p>
+                        <p class="text-xs text-gray-300 mt-1">„შეადგინეთ წერილი რძის პროდუქტების მომწოდებლისთვის"</p>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3">
+                        <p class="text-2xl mb-1">📐</p>
+                        <p class="font-bold text-orange-400">ფორმატი</p>
+                        <p class="text-xs text-gray-300 mt-1">„პარტნიორული, მკაცრი, ქართულად, 150 სიტყვა"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bad vs Good -->
+            <p class="text-sm font-bold text-gray-900 mb-3">❌ სუსტი vs ✅ ძლიერი პრომპტი – ლაივ შედარება (მომწოდებელთან მოლაპარაკება)</p>
+            <div class="grid md:grid-cols-2 gap-4 mb-5">
+                <div>
+                    <p class="text-xs font-bold text-red-500 mb-2">❌ ასე არ ღირს</p>
+                    <div class="prompt-box">
+                        <pre>„დაწერე წერილი დისტრიბუტორს ფასდაკლებაზე“</pre>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2 italic text-gray-500">შედეგი იქნება შაბლონური, გაურკვეველი და გამოუყენებელი.</p>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-green-600 mb-2">✅ ასე ღირს (პრომპტის ფორმულით)</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>თქვენ ხართ სუპერმარკეტების ქსელი „ორი ნაბიჯი“-ს შესყიდვებისა და კატეგორიის მენეჯერი.
+
+ჩვენი პარტნიორი კომპანია [[მომწოდებლის_სახელი]] გვაწვდის [[პროდუქტის_კატეგორია]]-ს. ბოლო 2 თვის განმავლობაში მათი გაყიდვები შემცირდა 15%-ით, რადგან თაროზე ფასი გაიზარდა.
+
+დაწერეთ წერილი მომწოდებლისთვის, სადაც:
+- აღნიშნავთ, რომ ჩვენი მიზანია გაყიდვების ერთობლივი ზრდა
+- სთავაზობთ, რომ მომდევნო 1 თვის განმავლობაში მათ მოგვცენ 10%-იანი ფასდაკლება შესყიდვაზე, რასაც ჩვენ მხარს დავუჭერთ კატალოგში წინა პოზიციაზე განთავსებით (Promo Leaflet)
+- ტონი იყოს კორექტული, პროფესიონალური და პარტნიორული
+- დაიწერება გამართული ქართულით, მოკლედ და გასაგებად</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Prompting Techniques -->
+            <div class="bg-teal-50 border-l-4 border-teal-500 p-5 mb-5 shadow-sm">
+                <p class="text-sm font-bold text-teal-950 mb-3">🛠️ სიღრმისეული ტექნიკები (Advanced Prompting)</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white p-3 rounded border border-teal-100">
+                        <p class="text-xs font-bold text-gray-900 mb-1">🔄 იტერაციული პრომპტინგი (Iterative Prompting)</p>
+                        <p class="text-[11px] text-gray-700 leading-relaxed">AI-სთან მუშაობა არის დიალოგი. პირველივე პასუხის შემდეგ მიეცით კრიტიკული უკუკავშირი: <em>"ეს წინადადება ზედმეტად აგრესიულია, შეარბილე"</em> ან <em>"დაამატე პუნქტი მიწოდების პირობებზე"</em>.</p>
+                    </div>
+                    <div class="bg-white p-3 rounded border border-teal-100">
+                        <p class="text-xs font-bold text-gray-900 mb-1">⛓️ Chain of Thought (აზროვნების ჯაჭვი)</p>
+                        <p class="text-[11px] text-gray-700 leading-relaxed">რთული ამოცანების დროს (მაგ: ახალი ფილიალის გახსნის ხარჯების გათვლა) სთხოვეთ AI-ს: <strong>"იფიქრე ნაბიჯ-ნაბიჯ"</strong>. ეს ამცირებს ჰალუცინაციებს და აჩვენებს გათვლების ლოგიკას.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 Live Demos -->
+            <p class="text-sm font-bold text-gray-900 mb-3">🎬 ლაივ დემო – 3 პრაქტიკული პრომპტი</p>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-1">დემო 1 – მაღაზიაში მომხდარი ინციდენტის შეჯამება</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>თქვენ ხართ „ორი ნაბიჯი“-ს მაღაზიების მხარდაჭერის გუნდის ხელმძღვანელი.
+გადააკეთეთ მაღაზიის მენეჯერის მიერ დაწერილი ქაოტური ინციდენტის აღწერა ოფიციალურ რეპორტად მენეჯმენტისთვის.
+
+მოითხოვეთ:
+- ინციდენტის მოკლე აღწერა (რა მოხდა)
+- კონფლიქტის გადაჭრის გზა
+- 3 პრევენციული რეკომენდაცია სხვა ფილიალებისთვის
+
+ტექსტი: [[ჩასვით მაღაზიიდან მიღებული ნედლი ინფორმაცია, მაგ: კლიენტმა იჩხუბა ვადაგასულ პროდუქტზე]]</pre>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-1">დემო 2 – კონკურენტების შედარება (ნიკორა vs ორი ნაბიჯი)</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>მოახდინეთ „ორი ნაბიჯი“-სა და „ნიკორა ტრეიდი“-ს პოზიციონირების შედარებითი ანალიზი უბნის მაღაზიების (Convenience Store) ფორმატში.
+
+გააანალიზეთ:
+- ასორტიმენტის ფოკუსი
+- საფასო სტრატეგია
+- ლოიალობის პროგრამის უპირატესობები
+- სად აქვს „ორი ნაბიჯი“-ს ზრდის ყველაზე დიდი პოტენციალი
+
+ფორმატი: შედარებითი ცხრილი + 3 პრაქტიკული რეკომენდაცია კატეგორიის მენეჯერებისთვის.</pre>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-1">დემო 3 – ახალ მომწოდებელთან შეხვედრის ბრიფი</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>ხვალ გვაქვს შეხვედრა ახალ ქართულ საოჯახო მარნების სადისტრიბუციო კომპანიასთან, რომელსაც სურს თავისი ღვინის განთავსება „ორი ნაბიჯი“-ს პრემიუმ თაროებზე.
+
+მოამზადეთ ჩვენი გუნდისთვის:
+1. 5 კრიტიკული კითხვა შესყიდვის ფასზე, მიწოდების სიხშირესა და პროდუქტის დაბრუნების პირობებზე (ვადაგასულის ჩამოწერა)
+2. ჩვენი ძირითადი არგუმენტები, თუ რატომ არის ჩვენი ქსელი მათთვის ხელსაყრელი (ფილიალების რაოდენობა, მაღალი გამტარობა)
+3. 3 შესაძლო წინააღმდეგობა მათი მხრიდან (მაგ: დაბალი მარჟა) და ჩვენი კონტრარგუმენტები</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 5: CONTENT ═══ -->
+    <section id="seg-content" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #8b5cf6;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-base">6</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-purple-600">20 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">კომუნიკაცია, მომწოდებლები და კატალოგის კონტენტი</h2>
+                    <p class="text-gray-500 text-sm mt-1">როგორ დავზოგოთ დრო ყოველდღიურ წერილებზე, მაღაზიის შიდა განცხადებებსა და სარეკლამო აქციების აღწერებზე.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-5">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-2">დემო 1 – წერილის ტონის ადაპტაცია სხვადასხვა მიზნისთვის</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>გავაკეთოთ ეს შეტყობინება 3 სხვადასხვა ვარიანტად:
+1. ოფიციალური წერილი (დისტრიბუტორი კომპანიის დირექტორისთვის)
+2. შიდა შეტყობინება (მაღაზიის მენეჯერების საერთო ჩატისთვის)
+3. მეგობრული, მაგრამ კონკრეტული (ლოგისტიკის გუნდისთვის)
+
+ორიგინალი შეტყობინება: [[მომწოდებელმა დააგვიანა პროდუქციის მოწოდება, რის გამოც თაროები ცარიელია. სასწრაფოდ უნდა მოხდეს რეაგირება]]</pre>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-555 text-gray-500 uppercase mb-2">დემო 2 – სოც-ქსელის პოსტი 2 ნაბიჯის ყოველკვირეულ აქციაზე</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>დაწერეთ Facebook და Instagram პოსტი „ორი ნაბიჯი“-ს ყოველკვირეულ ფასდაკლებებზე.
+აქციაშია: [[პროდუქტები და ფასდაკლების პროცენტი, მაგ: ყველი 20% ფასდაკლებით, ზეთი -15%]].
+
+მოთხოვნები:
+- პირველივე წინადადებაში ყურადღების მიმქცევი კაუჭი (Hook)
+- აქცენტი იმაზე, რომ ეს არის უბნის მაღაზიაში, სახლთან ახლოს
+- მოქმედებისკენ მოწოდება (CTA): „მოდი შენს უბნის ორ ნაბიჯში!“
+- 4 შესაბამისი ჰეშთეგი და სადღესასწაულო/სადისკონტო ემოჯები</pre>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-2">დემო 3 – შიდა ინსტრუქცია მაღაზიის პერსონალისთვის</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>თქვენ ხართ HR და ტრენინგების დეპარტამენტი. 
+მოცემულია ახალი წესი: [[მოლარეებმა ყოველთვის უნდა შესთავაზონ მომხმარებელს პარკი და ლოიალობის აპლიკაციის გატარება]].
+
+დაწერეთ შიდა მემორანდუმი (Memo) მაღაზიის თანამშრომლებისთვის:
+- მარტივი, მოტივაციური და არა დიქტატორული ტონით
+- ახსენით „რატომ“ არის ეს მნიშვნელოვანი (კლიენტის კმაყოფილება, გაყიდვები)
+- ჩამოაყალიბეთ მოკლე დიალოგის მაგალითი მოლარესთვის</pre>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-555 text-gray-500 uppercase mb-2">დემო 4 – loyalty აპლიკაციის FAQ ბაზის შექმნა</p>
+                    <div class="prompt-box">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>შექმენით 5 ხშირი კითხვა-პასუხი (FAQ) „ორი ნაბიჯი“-ს მობილური აპლიკაციის შესახებ მომხმარებლებისთვის.
+პასუხები უნდა ეხებოდეს: ქულების დაგროვებას, ფასდაკლების აქტივაციას და ვირტუალურ ბარათს.
+
+ტონი: ძალიან მარტივი, გასაგები (ყოველგვარი ტექნიკური ჟარგონების გარეშე), თბილი.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 6: GEMINI GEMS ═══ -->
+    <section id="seg-customgpt" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #22c55e;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-base">7</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-green-600">10 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">Gemini Gems – 2 ნაბიჯის პერსონალური AI ასისტენტი</h2>
+                    <p class="text-gray-500 text-sm mt-1">როგორ შევქმნათ მუდმივი ასისტენტი Gemini-ში, რომელმაც ყოველთვის იცის „ორი ნაბიჯი“-ს კონტექსტი და არ გვჭირდება ინფორმაციის თავიდან შეყვანა ყოველ ჯერზე.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5 mb-5">
+                <div>
+                    <p class="text-sm font-semibold text-gray-900 mb-3">🛠 როგორ იქმნება პერსონალური Gem</p>
+                    <ol class="space-y-2 text-sm text-gray-700">
+                        <li class="flex gap-2"><span class="font-bold text-green-600 shrink-0">1.</span> Gemini-ის ინტერფეისში დააჭირეთ <strong>"Gem Manager"</strong>-ს</li>
+                        <li class="flex gap-2"><span class="font-bold text-green-600 shrink-0">2.</span> აირჩიეთ <strong>"Create a Gem"</strong></li>
+                        <li class="flex gap-2"><span class="font-bold text-green-600 shrink-0">3.</span> დაარქვით სახელი: <em>„2 ნაბიჯის საოპერაციო ასისტენტი“</em></li>
+                        <li class="flex gap-2"><span class="font-bold text-green-600 shrink-0">4.</span> Instructions-ის ველში ჩაწერეთ ქვემოთ მოცემული ტექსტი</li>
+                        <li class="flex gap-2"><span class="font-bold text-green-600 shrink-0">5.</span> შეინახეთ და დაიწყეთ გამოყენება</li>
+                    </ol>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-gray-900 mb-3">💡 რატომ არის ეს მნიშვნელოვანი?</p>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> ინარჩუნებს ერთიან კორპორატიულ სტილს წერილებში</li>
+                        <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> აღარ გიწევთ კომპანიის პროფილის განმარტება</li>
+                        <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> ავტომატურად იყენებს შესაბამის ქართულ ტერმინოლოგიას</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="text-xs font-semibold text-gray-500 uppercase mb-2">სისტემური პრომპტი 2 ნაბიჯისთვის (ჩასვით Instructions-ში):</p>
+            <div class="prompt-box mb-4">
+                <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                <pre>თქვენ ხართ „ორი ნაბიჯი“-ს (სუპერმარკეტების ქსელი საქართველოში) AI ოპერაციული ასისტენტი.
+
+კომპანიის კონტექსტი:
+- ფორმატი: უბნის მაღაზიები (FMCG, საკვები პროდუქტები, საყოფაცხოვრებო საქონელი)
+- ძირითადი აქცენტი: ხელმისაწვდომი ფასები, მაღაზია სახლთან ახლოს, სწრაფი მომსახურება, ყოველკვირეული ფასდაკლებების კატალოგი
+- სამიზნე აუდიტორია: უბნის მოსახლეობა, ყოველდღიური მყიდველები
+
+კომუნიკაციის სტილი:
+- მომხმარებლებთან: თბილი, მეგობრული, დამხმარე, მოკლე
+- მომწოდებლებთან: პროფესიონალური, საქმიანი, მკაფიო, პარტნიორული
+- შიდა გუნდთან: მარტივი, მოტივაციური, კონკრეტული
+- ენა: ყოველთვის გამართული ქართული, უცხოური ტერმინები თარგმნეთ ან დატოვეთ მხოლოდ პროფესიულ კონტექსტში (მაგ: SKU, Promo, Inventory)
+
+უსაფრთხოების წესი: არასოდეს გამოიყენო რეალური კლიენტების პირადი მონაცემები ან კონფიდენციალური ფინანსური ციფრები.</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 8: CLAUDE PROJECTS & COWORK ═══ -->
+    <section id="seg-claudecowork" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #fe5000;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-base">8</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-orange-600">15 წუთი · ქეისის გარჩევა</span>
+                    <h2 class="text-xl font-bold text-gray-900">Claude Projects & Cowork – ერთობლივი მუშაობა და ფაილების მართვა</h2>
+                    <p class="text-gray-500 text-sm mt-1">როგორ გამოვიყენოთ Claude Projects დიდი ზომის დოკუმენტებთან სამუშაოდ და გუნდური კოლაბორაციისთვის.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5 mb-5">
+                <div>
+                    <p class="text-sm font-semibold text-gray-900 mb-3">🛠️ რა არის Claude Project?</p>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex gap-2"><span class="text-orange-500 font-bold">✓</span> <strong>Knowledge Base:</strong> პროექტში შეგიძლიათ ატვირთოთ 200,000 ტოკენამდე ინფორმაცია (კონტრაქტები, SOP-ები, კატალოგები).</li>
+                        <li class="flex gap-2"><span class="text-orange-500 font-bold">✓</span> <strong>Custom Instructions:</strong> თითოეულ პროექტს შეგიძლიათ გაუწეროთ ინდივიდუალური წესები და კომუნიკაციის სტილი.</li>
+                        <li class="flex gap-2"><span class="text-orange-500 font-bold">✓</span> <strong>გუნდური მუშაობა:</strong> პროექტის გაზიარება შეგიძლიათ კოლეგებთან საერთო ჩატებისა და მასალების გამოსაყენებლად.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-gray-900 mb-3">💡 გამოყენება საოპერაციო საქმეში</p>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> სარეკლამო კამპანიების მასალების ერთ სივრცეში შენახვა</li>
+                        <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> მომწოდებლებთან მოლაპარაკებების ისტორიის ანალიზი</li>
+                        <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> ახალი თანამშრომლებისთვის საინფორმაციო ბაზის შექმნა</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Practical Example -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-5">
+                <p class="font-bold text-gray-900 text-sm mb-2">📋 პრაქტიკული სცენარი:</p>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    შექმენით პროექტი სახელწოდებით <em>„Q3 კატალოგის დაგეგმვა“</em>. ატვირთეთ წინა კვარტლის გაყიდვების რეპორტი, მომწოდებელთა აქციების პირობები და ძველი სარეკლამო პოსტები. გუნდის წევრებს გაუზიარეთ პროექტი და ერთობლივად სთხოვეთ Claude-ს: <em>„წინა რეპორტზე დაყრდნობით, რომელი კატეგორიები იყო ყველაზე წარმატებული და რა პრომო პოსტები დავწეროთ Q3-ისთვის?“</em>.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ BREAK ═══ -->
+    <section id="seg-break" class="scroll-mt-20 mb-12">
+        <div class="bg-orange-50 border-2 border-brand-800/30 rounded-xl p-6 text-center shadow-sm">
+            <p class="text-3xl mb-2 text-orange-500">☕</p>
+            <h2 class="text-xl font-bold text-brand-900">შესვენება – 10 წუთი</h2>
+            <p class="text-gray-600 text-sm mt-1">რეკომენდაცია: შედით ChatGPT ან Claude-ის უფასო ვერსიაზე და სცადეთ მომწოდებელთან წერილის დაწერის პრომპტი (Segment 5-დან).</p>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 9: DOCUMENTS & EXCEL ═══ -->
+    <section id="seg-docs" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #0891b2;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-base">9</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-cyan-600">12 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">დოკუმენტები, PDF და Excel – AI ანალიზი საცალო სექტორში</h2>
+                    <p class="text-gray-500 text-sm mt-1">საცალო ვაჭრობაში ყველაზე დიდი დრო იხარჯება მონაცემების დამუშავებაზე. განვიხილავთ, როგორ შეუძლია AI-ს ხელშეკრულებებისა და Excel გაყიდვების ფაილების წამებში გაანალიზება.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5 mb-5">
+                <!-- PDF Contract -->
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p class="font-semibold text-gray-900 mb-2">📄 სადისტრიბუციო ხელშეკრულების ანალიზი – Claude</p>
+                    <p class="text-xs text-gray-500 mb-3">ატვირთეთ ხელშეკრულების PDF და გაუშვით პრომპტი:</p>
+                    <div class="prompt-box mb-3">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>ეს არის სადისტრიბუციო ხელშეკრულება ახალ მომწოდებელთან. 
+გააანალიზეთ ტექსტი და გამოყავით:
+1. რა არის პროდუქციის მოწოდების მაქსიმალური ვადა შეკვეთიდან?
+2. რა პირობით ხდება ვადაგასული ან დაზიანებული პროდუქციის ჩამოწერა/დაბრუნება?
+3. რა ჯარიმებია გათვალისწინებული მომწოდებლის მხრიდან მიწოდების დაგვიანებაზე?
+4. მიუთითეთ 3 ყველაზე სარისკო პუნქტი, რომელიც ხელს უშლის „ორი ნაბიჯი“-ს ინტერესებს
+
+პასუხი ჩამოაყალიბეთ მოკლედ, პუნქტებად, გამართული ქართულით.</pre>
+                    </div>
+                </div>
+
+                <!-- Excel Report -->
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p class="font-semibold text-gray-900 mb-2">📊 გაყიდვებისა და ჩამოწერების ანალიზი – ChatGPT</p>
+                    <p class="text-xs text-gray-500 mb-3">ატვირთეთ გაყიდვების Excel ფაილი და გამოიყენეთ პრომპტი:</p>
+                    <div class="prompt-box mb-3">
+                        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                        <pre>მოცემულია მაღაზიების გაყიდვების, ნაშთებისა და ჩამოწერების (waste/shrinkage) მონაცემები.
+
+გთხოვთ გააანალიზოთ და მომამზადოთ:
+1. ტოპ 5 SKU (პროდუქტი) ყველაზე მაღალი ჩამოწერის მაჩვენებლით
+2. რომელ კატეგორიაში გვაქვს მარაგების ყველაზე დაბალი ბრუნვადობა?
+3. მოამზადეთ ვიზუალური გრაფიკი ჩამოწერების დინამიკის საჩვენებლად
+4. 3 ძირითადი რეკომენდაცია შესყიდვების ოპტიმიზაციისთვის</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analytics & Data Processing Rules (Stocks, Contracts, Write-offs) -->
+            <div class="bg-brand-950 text-white rounded-xl p-5 border border-brand-900/40">
+                <p class="font-semibold text-orange-300 text-sm mb-3">🛠️ მონაცემთა დამუშავების წესები AI ანალიზისას (მარაგები, კონტრაქტები, ჩამოწერები):</p>
+                <div class="grid md:grid-cols-3 gap-4 text-xs">
+                    <div class="bg-white/5 p-3.5 rounded-lg border border-white/10">
+                        <p class="font-bold text-orange-400 mb-1.5 flex items-center gap-1.5">
+                            <span>🛡️</span> 1. უსაფრთხოება & ანონიმიზაცია
+                        </p>
+                        <p class="text-gray-300 leading-relaxed">
+                            Excel ფაილებიდან ან ხელშეკრულებებიდან წაშალეთ მოლარეების/მომხმარებლების სახელები, პირადი ნომრები და საბანკო რეკვიზიტები. ანალიზისთვის დატოვეთ მხოლოდ SKU, კატეგორია, რაოდენობები და ფასები.
+                        </p>
+                    </div>
+                    <div class="bg-white/5 p-3.5 rounded-lg border border-white/10">
+                        <p class="font-bold text-orange-400 mb-1.5 flex items-center gap-1.5">
+                            <span>📊</span> 2. Excel სტრუქტურის მომზადება
+                        </p>
+                        <p class="text-gray-300 leading-relaxed">
+                            სვეტების სათაურები გახადეთ მკაფიო (მაგ. "მარაგები", "ჩამოწერები", "ბრუნვადობა"). წაშალეთ ცარიელი ხაზები და გაერთიანებული უჯრები (merged cells), რათა AI-მ მონაცემები ზუსტად წაიკითხოს.
+                        </p>
+                    </div>
+                    <div class="bg-white/5 p-3.5 rounded-lg border border-white/10">
+                        <p class="font-bold text-orange-400 mb-1.5 flex items-center gap-1.5">
+                            <span>🔍</span> 3. გამოთვლების გადამოწმება
+                        </p>
+                        <p class="text-gray-300 leading-relaxed">
+                            AI-ის გამოთვლები (ჯამები, საშუალოები, ტოპ SKU-ები) ყოველთვის გადაამოწმეთ ხელით, სანამ მარაგების შეკვეთას ან ოფიციალურ ჩამოწერას დაადასტურებთ. AI კარგი ასისტენტია, მაგრამ საბოლოო კონტროლი თქვენზეა.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 10: NOTEBOOKLM ═══ -->
+    <section id="seg-notebook" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #0f9d58;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-base">10</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-teal-600">10 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">NotebookLM – მაღაზიის შიდა ინსტრუქციებისა (SOP) და სტანდარტების ბაზა</h2>
+                    <p class="text-gray-500 text-sm mt-1">Google NotebookLM-ის საშუალებით შეგვიძლია ავტვირთოთ „ორი ნაბიჯი“-ს შიდა რეგულაციები და პერსონალს მივცეთ წამიერი წვდომა პასუხებზე, ჰალუცინაციების გარეშე.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5 mb-5">
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p class="font-semibold text-gray-900 mb-2">🎯 რატომ არის ეს რევოლუციური მაღაზიებისთვის?</p>
+                    <ul class="text-xs text-gray-700 space-y-2">
+                        <li>• <strong>მხოლოდ თქვენს მასალებზე დაყრდნობით:</strong> AI პასუხობს მხოლოდ ატვირთული დოკუმენტებიდან და არ იგონებს ფაქტებს.</li>
+                        <li>• <strong>ზუსტი ციტირება:</strong> ყოველ პასუხს თან ახლავს დოკუმენტის კონკრეტული გვერდი და აბზაცი.</li>
+                        <li>• <strong>მოლარეების ონბორდინგი:</strong> ახალ თანამშრომლებს შეუძლიათ სწრაფად დაუსვან კითხვები აპლიკაციას მაღაზიის წესებზე.</li>
+                    </ul>
+                </div>
+                <div class="bg-teal-50 border border-teal-200 rounded-xl p-4">
+                    <p class="font-semibold text-teal-900 mb-1">🎧 Audio Overview (აუდიო მიმოხილვა)</p>
+                    <p class="text-xs text-teal-800 leading-relaxed mb-3">NotebookLM-ს შეუძლია თქვენი დოკუმენტების საფუძველზე შექმნას ორმხრივი დისკუსია (ინგლისურენოვანი პოდკასტი), სადაც ორი ექსპერტი განიხილავს თქვენს საოპერაციო ინსტრუქციებს.</p>
+                    <div class="bg-white p-2 rounded text-[10px] text-gray-500 italic">
+                        💡 იდეალურია მაღაზიის ახალი სტანდარტების სწრაფად გასაცნობად გზაში ყოფნისას.
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-sm font-bold text-gray-900 mb-2">🎬 ლაივ დემო – NotebookLM-ის გამოყენება 2 ნაბიჯში:</p>
+            <div class="space-y-3">
+                <div class="bg-white p-3 rounded border border-gray-200 shadow-sm">
+                    <p class="text-xs font-bold text-teal-700 mb-1">ნაბიჯი 1: წყაროების ატვირთვა</p>
+                    <p class="text-xs text-gray-700 font-medium">ვატვირთავთ ფაილებს: „მოლარის მომსახურების სტანდარტი.pdf“, „მაღაზიის გახსნა-დახურვის წესი.docx“.</p>
+                </div>
+                <div class="bg-white p-3 rounded border border-gray-200 shadow-sm">
+                    <p class="text-xs font-bold text-teal-700 mb-1">ნაბიჯი 2: კითხვა-პასუხი</p>
+                    <p class="text-xs text-gray-700 font-medium">ვწერთ კითხვას: „რა უნდა გავაკეთოთ, თუ მომხმარებელს პროდუქტის დაბრუნება სურს ჩეკის გარეშე?“ – AI წამში პოულობს ზუსტ წესს.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 11: GAMMA ═══ -->
+    <section id="seg-gamma" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #a855f7;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-base">11</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-purple-600">10 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">Gamma – AI პრეზენტაციები და სლაიდები 60 წამში</h2>
+                    <p class="text-gray-500 text-sm mt-1">PowerPoint-ში სლაიდების დიზაინზე საათების ხარჯვა დასრულდა. gamma.app-ის მეშვეობით მხოლოდ ტექსტის ჩასმით მიიღებთ სრულყოფილ პრეზენტაციას.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4 mb-5">
+                <div class="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                    <p class="text-2xl mb-1">⚡</p>
+                    <p class="font-semibold text-purple-800 text-sm">წამიერი გენერაცია</p>
+                    <p class="text-xs text-purple-600 mt-1">სრული სლაიდები მხოლოდ 1 მოთხოვნის საფუძველზე</p>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                    <p class="text-2xl mb-1">🎨</p>
+                    <p class="font-semibold text-purple-800 text-sm">ავტომატური დიზაინი</p>
+                    <p class="text-xs text-purple-600 mt-1">ფერების, განლაგებისა და სურათების ავტომატური შერჩევა</p>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
+                    <p class="text-2xl mb-1">📤</p>
+                    <p class="font-semibold text-purple-800 text-sm">მარტივი ექსპორტი</p>
+                    <p class="text-xs text-purple-600 mt-1">ჩამოტვირთვა PDF ან PowerPoint ფაილის სახით</p>
+                </div>
+            </div>
+
+            <p class="text-sm font-semibold text-gray-900 mb-2">🎬 ლაივ დემო – კატეგორიის პრეზენტაციის მონახაზი (Gamma-სთვის):</p>
+            <div class="prompt-box mb-4">
+                <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+                <pre>შექმენით 6-სლაიდიანი პრეზენტაცია თემაზე: „ორგანული და ადგილობრივი პროდუქტების კატეგორიის განვითარება ორი ნაბიჯის მაღაზიებში“.
+
+სლაიდების სტრუქტურა:
+1. სათაური – ადგილობრივი წარმოების მხარდაჭერა და ახალი შესაძლებლობები
+2. ბაზრის ტენდენცია – რატომ იზრდება მოთხოვნა საოჯახო და ნატურალურ პროდუქტებზე საქართველოში
+3. სამიზნე სეგმენტი – ჩვენი მომხმარებელი, ვისაც სურს ჯანსაღი კვება ხელმისაწვდომ ფასად
+4. თაროების განლაგება (Merchandising) – როგორ გამოვაჩინოთ პროდუქცია სწორად
+5. ფასწარმოქმნა და მარჟა – როგორ შევინარჩუნოთ ხელმისაწვდომობა
+6. შემდეგი ნაბიჯები – საპილოტე პროექტი 10 ფილიალში
+
+დიზაინის სტილი: მინიმალისტური, თბილი ტონები, მაღაზიის თემატიკის ფოტოებით.</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ SEGMENT 12: AUTOMATION ═══ -->
+    <section id="seg-automation" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #7c3aed;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-violet-700 text-white flex items-center justify-center font-bold text-base">12</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-violet-600">15 წუთი · ლაივ დემო</span>
+                    <h2 class="text-xl font-bold text-gray-900">ავტომატიზაცია – Make.com-ის სცენარი საცალო სექტორში</h2>
+                    <p class="text-gray-500 text-sm mt-1">განმეორებადი პროცესების ავტომატიზაცია კოდის წერის გარეშე. აწყობთ ერთხელ – მუშაობს ყოველდღე.</p>
+                </div>
+            </div>
+
+            <!-- ROI Calculator -->
+            <div class="bg-brand-950 text-white rounded-xl p-5 mb-6 border border-brand-900/40 shadow-md">
+                <p class="text-orange-400 text-xs font-bold uppercase mb-3">📈 დაზოგილი დროისა და თანხის კალკულატორი (2 ნაბიჯის გუნდისთვის)</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="text-[10px] text-gray-300 uppercase block mb-1">დღიურად დაზოგილი დრო (წუთი)</label>
+                        <input type="number" id="roi-mins" value="45" class="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-600" oninput="calculateROI()">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-300 uppercase block mb-1">საშუალო საათობრივი ტარიფი (₾)</label>
+                        <input type="number" id="roi-rate" value="18" class="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-600" oninput="calculateROI()">
+                    </div>
+                    <div class="flex items-end">
+                        <div class="bg-brand-700 rounded px-4 py-2 w-full text-center border border-brand-600">
+                            <p class="text-[10px] text-brand-200 font-bold uppercase">წლიური დაზოგილი ბიუჯეტი</p>
+                            <p class="text-xl font-black text-white" id="roi-result">₾ 3,240</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-400 italic text-center">გაანგარიშება ეფუძნება 240 სამუშაო დღეს წელიწადში ერთ თანამშრომელზე</p>
+            </div>
+
+            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5 mb-5">
+                <p class="font-semibold text-violet-900 mb-3">🔧 რა არის Make.com?</p>
+                <div class="grid md:grid-cols-3 gap-3 text-sm">
+                    <div class="bg-white rounded-lg p-3 text-center border border-violet-100">
+                        <p class="text-xl mb-1">🔌</p>
+                        <p class="font-semibold text-gray-700">აპლიკაციების კავშირი</p>
+                        <p class="text-xs text-gray-500">Gmail, Google Sheets, Slack, Asana, Telegram და ა.შ.</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 text-center border border-violet-100">
+                        <p class="text-xl mb-1">🤖</p>
+                        <p class="font-semibold text-gray-700">AI მოდულები</p>
+                        <p class="text-xs text-gray-500">ChatGPT-ისა და Claude-ის ჩაშენება ავტომატური გადაწყვეტილებებისთვის</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 text-center border border-violet-100">
+                        <p class="text-xl mb-1">🆓</p>
+                        <p class="font-semibold text-gray-700">უფასო სასტარტო</p>
+                        <p class="text-xs text-gray-500">1000 ოპერაცია თვეში უფასოდ – სრულიად საკმარისია საწყის ეტაპზე</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live scenario -->
+            <p class="text-sm font-bold text-gray-900 mb-3">🎬 ლაივ ავტომატიზაციის სცენარი საცალო სექტორისთვის</p>
+            <div class="bg-zinc-950 text-white rounded-xl p-5 mb-4 border border-brand-900/40 shadow-md">
+                <p class="text-orange-400 text-xs font-bold uppercase mb-3">სცენარი: კონკურენტების ფასების მონიტორინგი და კატეგორიის მენეჯერის გაფრთხილება</p>
+                <div class="flex items-center gap-2 flex-wrap text-sm">
+                    <div class="bg-white/10 rounded-lg px-3 py-2 text-center">
+                        <p class="text-lg">📡</p>
+                        <p class="text-xs font-semibold">Competitor API</p>
+                        <p class="text-[10px] text-gray-400">ფასების მონაცემები</p>
+                    </div>
+                    <div class="text-orange-500 font-bold">→</div>
+                    <div class="bg-white/10 rounded-lg px-3 py-2 text-center">
+                        <p class="text-lg">🤖</p>
+                        <p class="text-xs font-semibold">ChatGPT</p>
+                        <p class="text-[10px] text-gray-400">ფასების შედარება & სხვაობის გათვლა (JSON)</p>
+                    </div>
+                    <div class="text-orange-500 font-bold">→</div>
+                    <div class="bg-white/10 rounded-lg px-3 py-2 text-center">
+                        <p class="text-lg">🔀</p>
+                        <p class="text-xs font-semibold">Filter</p>
+                        <p class="text-[10px] text-gray-400">თუ სხვაობა > 5%-ზე</p>
+                    </div>
+                    <div class="text-orange-500 font-bold">→</div>
+                    <div class="bg-white/10 rounded-lg px-3 py-2 text-center">
+                        <p class="text-lg">📢</p>
+                        <p class="text-xs font-semibold">Telegram Bot</p>
+                        <p class="text-[10px] text-gray-400">ალერტი კატეგორიის მენეჯერს</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">სხა სასარგებლო სცენარები 2 ნაბიჯისთვის</p>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li>🧾 <strong>ინვოისების ექსტრაქცია:</strong> Gmail-ში მიღებული მომწოდებლის ინვოისი (PDF) → AI კითხულობს დეტალებს → Google Sheets-ში შეყვანა.</li>
+                        <li>✉️ <strong>საჩივრების ტრიაჟი:</strong> აპლიკაციიდან შემოსული საჩივარი → AI განსაზღვრავს კატეგორიას (Freshness, Service, Price) → ავტომატურად უგზავნის შესაბამის დეპარტამენტს Slack-ში.</li>
+                        <li>📅 <strong>მაღაზიების რეპორტები:</strong> ყოველდღიური გაყიდვების რეზიუმეები ფილიალებიდან → AI აერთიანებს → უგზავნის დირექტორს იმეილზე.</li>
+                    </ul>
+                </div>
+                <div class="bg-violet-50 rounded-lg p-4 border border-violet-200">
+                    <p class="text-xs font-bold text-violet-600 uppercase mb-2">როგორ დავიწყოთ – 3 ნაბიჯი</p>
+                    <ol class="text-sm text-violet-900 space-y-2 list-decimal list-inside">
+                        <li>make.com → გაიარეთ რეგისტრაცია უფასოდ</li>
+                        <li>Templates მენიუში მოძებნეთ „Google Sheets to Telegram“</li>
+                        <li>დაუკავშირეთ თქვენი ანგარიშები და გაუშვით პირველი ტესტი</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- ═══ SEGMENT 13: AI ADOPTION IN COMPANIES ═══ -->
+    <section id="seg-adoption" class="scroll-mt-20 mb-12">
+        <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color: #007a3e;">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="shrink-0 w-10 h-10 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-base">13</div>
+                <div class="flex-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-brand-600">18 წუთი · სტრატეგია, რეკომენდაციები და Q&A</span>
+                    <h2 class="text-xl font-bold text-gray-900">💼 AI დანერგვა კომპანიაში & შემდეგი ნაბიჯები</h2>
+                    <p class="text-gray-500 text-sm mt-1">ხელოვნური ინტელექტის წარმატებული ინტეგრირება ორგანიზაციულ სტრუქტურაში, საოპერაციო პროცესების ოპტიმიზაცია და პრაქტიკული რეკომენდაციები.</p>
+                </div>
+            </div>
+
+            <!-- ADOPTION STAGES -->
+            <div class="mb-6">
+                <h3 class="text-base font-bold text-gray-900 mb-3">🚀 AI დანერგვის 5 ძირითადი ეტაპი</h3>
+                <div class="space-y-4">
+                    <div class="flex gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div class="shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">1</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">საჭიროებების განსაზღვრა და მზაობის შეფასება (Discovery & Audit)</p>
+                            <p class="text-xs text-gray-600 mt-1">პრიორიტეტული მიმართულებების შერჩევა (მაგ. მარკეტინგი, კატეგორიების მენეჯმენტი, მომხმარებელთა მხარდაჭერა) და იმ რუტინული ამოცანების იდენტიფიცირება, რომელთა გაუმჯობესებაც შესაძლებელია AI-ის დახმარებით.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div class="shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">2</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">პილოტირება და სწრაფი მოგებები (Pilot & Quick Wins)</p>
+                            <p class="text-xs text-gray-600 mt-1">მცირე, დაბალი რისკის მქონე პროექტებით დაწყება სწრაფი შედეგის საჩვენებლად (მაგ. ChatGPT/Claude-ის დანერგვა კოლეგების ყოველდღიურ წერილებში, ან SOP ბაზის NotebookLM-ში შექმნა). ეს გუნდს აძლევს პირველად პრაქტიკულ გამოცდილებას.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div class="shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">3</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">უსაფრთხოების ჩარჩოსა და AI პოლიტიკის შექმნა (AI Policy & Security)</p>
+                            <p class="text-xs text-gray-600 mt-1">კომპანიის შიდა წესების დადგენა (მაგ. Samsung-ის ქეისის თავიდან ასაცილებლად). კორპორატიული (Enterprise) ან Team ლიცენზიებზე გადასვლა, რათა ატვირთული მონაცემები არ გამოიყენებოდეს მოდელების საჯარო სწავლებისთვის.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div class="shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">4</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">სისტემური ინტეგრაცია და ავტომატიზაცია (Integration & Automation)</p>
+                            <p class="text-xs text-gray-600 mt-1">ხელოვნური ინტელექტის ინტეგრირება არსებულ სისტემებთან (ERP, CRM, Excel) API-ების ან ავტომატიზაციის პლატფორმების (Make.com, Power Automate) გამოყენებით, რათა მინიმუმამდე დავიყვანოთ ხელით შესასრულებელი სამუშაო.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div class="shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm">5</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">მასშტაბირება და კულტურის ტრანსფორმაცია (Scaling & AI Culture)</p>
+                            <p class="text-xs text-gray-600 mt-1">რეგულარული ტრენინგები თანამშრომლებისთვის, "AI ჩემპიონების" (AI Champions) შერჩევა, რომლებიც დაეხმარებიან სხვებს AI-ის ათვისებაში, და პროცესების მუდმივი განახლება უახლესი მოდელების გამოსვლის კვალდაკვალ.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECOMMENDATIONS -->
+            <div class="bg-brand-50 border border-brand-200 rounded-xl p-5 mb-5">
+                <p class="font-bold text-brand-900 text-base mb-3">💡 ოქროს რეკომენდაციები წარმატებული დანერგვისთვის:</p>
+                <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
+                    <div class="bg-white p-4 rounded-lg border border-brand-100 shadow-sm">
+                        <p class="font-bold text-brand-800 mb-1">🐢 დაიწყეთ მარტივად (Crawl, Walk, Run)</p>
+                        <p class="text-xs text-gray-600">ნუ შეეცდებით პირველივე დღეს საკუთარი რთული AI სისტემების კოდინგს. დაიწყეთ მზა LLM ხელსაწყოების (ChatGPT, Claude) აქტიური გამოყენებით რუტინულ წერილებში, რეპორტებში და Excel ფაილებში.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-brand-100 shadow-sm">
+                        <p class="font-bold text-brand-800 mb-1">🔒 მონაცემთა დაცვა უპირველეს ყოვლისა</p>
+                        <p class="text-xs text-gray-600">გამოიყენეთ კორპორატიული ანგარიშები მგრძნობიარე ინფორმაციის დამუშავებისას, ან ხელით მოახდინეთ მონაცემების ანონიმიზაცია (მაგ. კლიენტის სახელი ჩაანაცვლეთ სიტყვით [კლიენტი A]).</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-brand-100 shadow-sm">
+                        <p class="font-bold text-brand-800 mb-1">🤝 ადამიანი როგორც ფილტრი (Human-in-the-loop)</p>
+                        <p class="text-xs text-gray-600">AI-ის შეუძლია შეცდომის დაშვება (ჰალუცინაცია). ნებისმიერი დოკუმენტი, ხელშეკრულების ანალიზი ან ფასდაკლების აქციის პირობა საჯაროდ გამოქვეყნებამდე აუცილებლად უნდა გადამოწმდეს თანამშრომლის მიერ.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-brand-100 shadow-sm">
+                        <p class="font-bold text-brand-800 mb-1">🎓 მუდმივი განათლება და კოლაბორაცია</p>
+                        <p class="text-xs text-gray-600">ხელოვნური ინტელექტი სწრაფად ვითარდება. შექმენით შიდა საკომუნიკაციო არხი (მაგ. Teams-ში ან Slack-ში), სადაც თანამშრომლები ერთმანეთს გაუზიარებენ საუკეთესო პრომპტებს და წარმატებულ ქეისებს.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROI CALCULATOR OR PRACTICAL TIP -->
+            <div class="bg-zinc-950 text-white rounded-xl p-5 border border-brand-900/40">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl text-orange-500">🎯</span>
+                    <h3 class="text-base font-bold">გახსოვდეთ: AI არ ანაცვლებს ადამიანებს. AI-ის მქონე ადამიანები ანაცვლებენ მათ, ვინც მას არ იყენებს.</h3>
+                </div>
+                <p class="text-gray-300 text-xs leading-relaxed">
+                    დანერგვის პროცესში ყველაზე დიდი ბარიერი ხშირად არის არა ტექნოლოგია, არამედ ჩვევა. წაახალისეთ გუნდი, რომ ყოველდღიურად დაუთმონ 10-15 წუთი ახალი პრომპტების ტესტირებას და რუტინული საქმეების დელეგირებას ხელოვნურ ინტელექტზე.
+                </p>
+            </div>
+        </div>
+    
+            <!-- Merged Segment 14: Next Steps & Q&A -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-5 mt-6">
+                <p class="font-bold text-slate-800 mb-3">📈 პრაქტიკული სამოქმედო გეგმა მასტერკლასის შემდეგ:</p>
+                <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li>🚀 <strong>ნაბიჯი 1:</strong> შექმენით თქვენი პერსონალური Gem (სეგმენტი 7) და დააყენეთ საცალო ვაჭრობის კონტექსტი.</li>
+                        <li>📊 <strong>ნაბიჯი 2:</strong> გაატარეთ თქვენი შემდეგი სადისტრიბუციო ხელშეკრულება Claude-ში სწრაფი ანალიზისთვის (სეგმენტი 9).</li>
+                        <li>🤖 <strong>ნაბიჯი 3:</strong> შეამოწმეთ Make.com-ის სასტარტო შაბლონები ფასების მონიტორინგისთვის (სეგმენტი 12).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Resources & Links -->
+            <div class="grid md:grid-cols-2 gap-4 mb-5">
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">🔗 სასარგებლო ბმულები (2026 წლის ივლისი)</p>
+                    <ul class="text-sm space-y-2">
+                        <li><a href="https://chatgpt.com" target="_blank" class="text-brand-700 hover:underline font-bold">chatgpt.com</a> – ChatGPT (o1 & o3-mini & GPT-4o)</li>
+                        <li><a href="https://claude.ai" target="_blank" class="text-orange-600 hover:underline font-bold">claude.ai</a> – Claude (3.7 Sonnet & 3.5 Sonnet)</li>
+                        <li><a href="https://gemini.google.com" target="_blank" class="text-blue-600 hover:underline font-bold">gemini.google.com</a> – Gemini (2.0 Pro & 2.0 Flash)</li>
+                        <li><a href="https://perplexity.ai" target="_blank" class="text-purple-700 hover:underline font-bold">perplexity.ai</a> – Perplexity (Deep Research)</li>
+                        <li><a href="https://gamma.app" target="_blank" class="text-purple-600 hover:underline font-bold">gamma.app</a> – პრეზენტაციები AI-ით</li>
+                        <li><a href="https://make.com" target="_blank" class="text-violet-600 hover:underline font-bold">make.com</a> – ავტომატიზაცია</li>
+                    </ul>
+                </div>
+                <div class="bg-brand-50 rounded-lg p-4 border border-brand-100">
+                    <p class="text-xs font-bold text-brand-600 uppercase mb-2">📌 რეკომენდაციები გვერდის გამოსაყენებლად</p>
+                    <ul class="text-sm text-brand-900 space-y-1">
+                        <li>✅ ყველა მოცემული პრომპტი მორგებულია 2 ნაბიჯის საოპერაციო პროცესებზე.</li>
+                        <li>✅ გამოიყენეთ "კოპირება" ღილაკი სწრაფი მუშაობისთვის.</li>
+                        <li>✅ გაუზიარეთ გვერდი თქვენს კოლეგებს ფილიალებსა და სათაო ოფისში.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Q&A -->
+            <div class="bg-zinc-950 text-white rounded-xl p-5 border border-brand-900/40">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl text-orange-500">❓</span>
+                    <h3 class="text-lg font-bold">კითხვა-პასუხი და დისკუსია (5 წუთი)</h3>
+                </div>
+                <p class="text-gray-300 text-sm mb-3">ნებისმიერი შეკითხვა ხელოვნური ინტელექტის საოპერაციო დანერგვასთან დაკავშირებით.</p>
+                <div class="grid md:grid-cols-2 gap-2 text-xs text-gray-400">
+                    <div>💭 "რომელი მოდელის ფასიანი ვერსიაა ყველაზე ეფექტური 2 ნაბიჯის ოფისისთვის?"</div>
+                    <div>💭 "როგორ ავირიდოთ თავიდან AI-ის ჰალუცინაციები მონაცემთა დამუშავებისას?"</div>
+                    <div>💭 "სად გადის ზღვარი საცალო ოპერაციების ავტომატიზაციასა და ადამიანურ კონტროლს შორის?"</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 pt-8 pb-12 text-center text-sm text-gray-400">
+        <div class="flex items-center justify-center gap-3 mb-3">
+            <span class="bg-brand-700 text-white text-xs font-bold px-2 py-0.5 rounded">ორი ნაბიჯი</span>
+            <span class="text-gray-300">×</span>
+            <span class="font-semibold text-gray-800">Smart Academy</span>
+        </div>
+        <p class="mb-1">ტრენერი: <strong>გიორგი ბასილაია</strong> – ტექნოლოგიური ტრენინგები და AI ინტეგრაცია</p>
+        <p class="text-gray-400">გვერდი შექმნილია პრაქტიკულ სახელმძღვანელოდ გამოსაყენებლად · © 2026 Smart Academy</p>
+    </footer>
+
+</div>
+</main>
+
+<!-- Back to top -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-50 bg-brand-700 hover:bg-brand-800 text-white w-11 h-11 rounded-full shadow-lg flex items-center justify-center transition-colors border border-orange-500/20" title="დასაწყისი">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+<!-- Font size controls -->
+<div id="fontControls">
+    <button onclick="changeFontSize(1)" title="შრიფტი +" style="font-size:15px">A+</button>
+    <button onclick="changeFontSize(-1)" title="შრიფტი -" style="font-size:11px">A-</button>
+</div>
+
+<script>
+    // Sidebar toggle
+    let sidebarOpen = false;
+    function toggleSidebar() {
+        sidebarOpen = !sidebarOpen;
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('mainContent');
+        const menuIcon = document.getElementById('menuIcon');
+        const closeIcon = document.getElementById('closeIcon');
+        const overlay = document.getElementById('overlay');
+        if (sidebarOpen) {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+            main.style.marginLeft = window.innerWidth >= 1024 ? '18rem' : '0';
+            menuIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            main.style.marginLeft = '0';
+            menuIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        }
+    }
+
+    // Close sidebar on overlay click
+    document.getElementById('overlay').addEventListener('click', () => {
+        if (sidebarOpen) toggleSidebar();
+    });
+
+    // ROI Calculation
+    function calculateROI() {
+        const mins = document.getElementById('roi-mins').value || 0;
+        const rate = document.getElementById('roi-rate').value || 0;
+        const yearlySavings = (mins / 60) * rate * 240;
+        document.getElementById('roi-result').textContent = '₾ ' + Math.round(yearlySavings).toLocaleString();
+    }
+
+    // Immediate active state on click
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            if (window.innerWidth < 1024) toggleSidebar();
+        });
+    });
+
+    // Active nav link on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link[data-topic]');
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px -20% -60% 0px',
+        threshold: 0
+    };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                navLinks.forEach(link => {
+                    if (link.getAttribute('data-topic') === id) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => observer.observe(section));
+
+    // Copy prompt
+    function copyPrompt(btn) {
+        const pre = btn.nextElementSibling;
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            const originalText = btn.textContent;
+            btn.textContent = '✓ კოპირებულია';
+            btn.style.background = '#22c55e';
+            btn.style.color = '#fff';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+                btn.style.color = '';
+            }, 2000);
+        });
+    }
+
+    // Font size control
+    let baseFontSize = 17;
+    function changeFontSize(direction) {
+        baseFontSize += direction;
+        if (baseFontSize < 14) baseFontSize = 14;
+        if (baseFontSize > 22) baseFontSize = 22;
+        document.documentElement.style.fontSize = baseFontSize + 'px';
+    }
+
+    // Back to top visibility
+    window.addEventListener('scroll', () => {
+        const backToTop = document.getElementById('backToTop');
+        if (window.scrollY > 300) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
+    });
+
+    // Initialize ROI Calculator
+    calculateROI();
+</script>
+
+</body>
+</html>

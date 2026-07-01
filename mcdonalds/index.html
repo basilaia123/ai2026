@@ -466,13 +466,20 @@
     .tabs-nav {
       display: flex;
       justify-content: center;
-      gap: 12px;
+      gap: 8px;
       margin-bottom: 40px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
     }
     .tab-btn {
-      padding: 14px 28px;
-      font-size: 14px;
+      padding: 10px 18px;
+      font-size: 13px;
       font-weight: 700;
       border-radius: 50px;
       cursor: pointer;
@@ -482,7 +489,9 @@
       transition: var(--transition);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     body.light-mode .tab-btn {
       background: #ffffff;
@@ -942,6 +951,156 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ─── REVEAL PRICE MODULE ─── */
+    .price-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 48px;
+    }
+    .price.blurred {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+      opacity: 0.25;
+      transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .price.revealed {
+      filter: blur(0);
+      user-select: text;
+      pointer-events: auto;
+      opacity: 1;
+    }
+    .reveal-btn {
+      position: absolute;
+      background: var(--primary);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    body.light-mode .reveal-btn {
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(218, 41, 28, 0.15);
+    }
+    .reveal-btn:hover {
+      background: var(--primary-deep);
+      transform: scale(1.05);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    }
+    .reveal-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+    .price-container.is-revealed .reveal-btn {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.9);
+    }
+
+    /* ─── TOOLS TAGS & RESPONSIVE TABS MODULE ─── */
+    .panel-meta-tools {
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+    .panel-meta-tools-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+    }
+    .tools-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .tool-tag {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: var(--transition);
+      cursor: default;
+    }
+    body.light-mode .tool-tag {
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(15, 23, 42, 0.07);
+      color: var(--text-muted-light);
+    }
+    .tool-tag:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    
+    /* Ensure tabs are perfectly in one row on desktop and tablet */
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 6px !important;
+      margin-bottom: 40px;
+      flex-wrap: nowrap !important;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: visible !important;
+    }
+    .tab-btn {
+      padding: 8px 14px !important;
+      font-size: 12px !important;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 5px !important;
+      white-space: nowrap;
+      flex-shrink: 1 !important; /* Allow small shrink to fit perfectly */
+    }
+    
+    @media (max-width: 900px) {
+      /* Scroll on smaller screens */
+      .tabs-nav {
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .tabs-nav::-webkit-scrollbar {
+        display: none;
+      }
+      .tab-btn {
+        flex-shrink: 0 !important;
+        padding: 8px 12px !important;
+        font-size: 11.5px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1076,6 +1235,10 @@
           ოფცია B: Recommended
           <span class="tab-btn-badge">10 საათი</span>
         </button>
+        <button class="tab-btn" onclick="switchTab('optionBPlus')">
+          ოფცია B+: Advanced
+          <span class="tab-btn-badge">12 საათი</span>
+        </button>
         <button class="tab-btn" onclick="switchTab('optionC')">
           ოფცია C: Full Mastery
           <span class="tab-btn-badge">14 საათი</span>
@@ -1098,10 +1261,30 @@
               </div>
               <div class="panel-meta-stat">
                 <div class="panel-meta-stat-label">ბიუჯეტი</div>
-                <div class="panel-meta-stat-val price">1,000 ლარი</div>
+                <div class="price-container">
+                  <div class="panel-meta-stat-val price blurred">1,000 ლარი</div>
+                  <button class="reveal-btn" onclick="revealPrice(this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    ფასის ჩვენება
+                  </button>
+                </div>
               </div>
               <div class="panel-meta-desc">
                 მოიცავს ხელოვნური ინტელექტის 2026 წლის ლანდშაფტის მიმოხილვას, R.O.L.E. და C.R.E.A.T.E. პრომპტინგის ჩარჩოებს, კორპორატიულ უსაფრთხოებასა და GDPR რეგულაციებს, ასევე Claude Projects-ის, Gemini Gems-ის, Notion AI-ის, Perplexity.ai-ის, NotebookLM-ისა და Make.com-ის პრაქტიკულ დემონსტრირებას.
+              </div>
+              <div class="panel-meta-tools">
+                <div class="panel-meta-tools-title">სასწავლო ხელსაწყოები:</div>
+                <div class="tools-tags">
+                  <span class="tool-tag">ChatGPT</span>
+                  <span class="tool-tag">Claude</span>
+                  <span class="tool-tag">Gemini</span>
+                  <span class="tool-tag">Copilot</span>
+                  <span class="tool-tag">Notion AI</span>
+                  <span class="tool-tag">Perplexity</span>
+                  <span class="tool-tag">NotebookLM</span>
+                  <span class="tool-tag">Gamma AI</span>
+                  <span class="tool-tag">Make.com</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1114,7 +1297,7 @@
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  ხელოვნური ინტელექტის თანამედროვე ლანდშაფტი 2026 წელს (ChatGPT vs Claude vs Gemini): რომელი მოდელი რომელ მენეჯერულ ამოცანაშია წამყვანი. <strong>პრომპტინგის საფუძვლები:</strong> ეფექტური კომუნიკაცია ხელოვნურ ინტელექტთან, R.O.L.E. და C.R.E.A.T.E. ჩარჩოების გაცნობა. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა დაცვის სტანდარტები, რა ინფორმაცია არ უნდა გაიგზავნოს საჯარო ჩატებში მაკდონალდსის საოპერაციო, ფინანსური და რეცეპტების უსაფრთხოების დასაცავად. ახალი აგენტური ხელსაწყოების პრაქტიკული დემონსტრაცია (Claude Projects, Gemini Gems, Notion AI, Perplexity.ai, NotebookLM, Gamma AI, Make.com).
+                  ხელოვნური ინტელექტის თანამედროვე ლანდშაფტი 2026 წელს (ChatGPT vs Claude vs Gemini vs Microsoft Copilot): რომელი მოდელი რომელ მენეჯერულ ამოცანაშია წამყვანი. <strong>პრომპტინგის საფუძვლები:</strong> ეფექტური კომუნიკაცია ხელოვნურ ინტელექტთან, R.O.L.E. და C.R.E.A.T.E. ჩარჩოების გაცნობა. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა დაცვის სტანდარტები, რა ინფორმაცია არ უნდა გაიგზავნოს საჯარო ჩატებში მაკდონალდსის საოპერაციო, ფინანსური და რეცეპტების უსაფრთხოების დასაცავად. ახალი აგენტური ხელსაწყოების პრაქტიკული დემონსტრაცია (Claude Projects, Gemini Gems, Notion AI, Perplexity.ai, NotebookLM, Gamma AI, Make.com).
                 </div>
                 <div class="session-practice">
                   <strong>პრაქტიკა:</strong> ხელსაწყოების გააქტიურება და პირველი პრომპტის შედგენა საკუთარი სამუშაოს მაგალითზე.
@@ -1144,7 +1327,13 @@
               </div>
               <div class="panel-meta-stat">
                 <div class="panel-meta-stat-label">ბიუჯეტი</div>
-                <div class="panel-meta-stat-val price">3,000 ლარი</div>
+                <div class="price-container">
+                  <div class="panel-meta-stat-val price blurred">3,600 ლარი</div>
+                  <button class="reveal-btn" onclick="revealPrice(this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    ფასის ჩვენება
+                  </button>
+                </div>
               </div>
               <div class="panel-meta-desc">
                 საწყისი პრაქტიკული პროგრამა მენეჯერებისთვის, რომელიც პირდაპირ ფოკუსირდება AI-ის ბაზისურ სამუშაო ნაკადებზე და გვერდს უვლის ზოგად საორიენტაციო დემონსტრირებას.
@@ -1155,49 +1344,49 @@
             <div class="session-list">
               <div class="session-card">
                 <div class="session-header">
-                  <div class="session-title">სესია 1: პრომპტინგის საფუძვლები, კორპორატიული უსაფრთხოება, AI წერითი ასისტენტი და Gemini Gems</div>
+                  <div class="session-title">სესია 1: პრომპტინგის საფუძვლები, კორპორატიული უსაფრთხოება, AI წერითი ასისტენტი და Gemini Gems (წერითი კომუნიკაციის ასისტენტი)</div>
                   <span class="session-badge">ბაზისი & წერითი</span>
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  <strong>AI-ის ლანდშაფტი 2026:</strong> ChatGPT vs Claude vs Gemini — რომელი პლატფორმა რომელ მენეჯერულ ამოცანაში ჯობია; ცოცხალი დემო — ერთი პრომპტი სამ AI-ში ერთდროულად. ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირება. <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია. <strong>AI-ის შეზღუდვები:</strong> როდის ცდება AI — ჰალუცინაციების კონკრეტული მაგალითები საოპერაციო კონტექსტში; რა კატეგორიულად არ უნდა გაუზიაროთ AI-ს (ფარული მაკდონალდსის რეცეპტები, საფინანსო ანგარიშები, თანამშრომლების პირადი მონაცემები); საბოლოო გადაწყვეტილება ყოველთვის მენეჯერისაა.
+                  <strong>AI-ის ლანდშაფტი 2026:</strong> ChatGPT vs Claude vs Gemini vs Microsoft Copilot — რომელი პლატფორმა რომელ მენეჯერულ ამოცანაში ჯობია; ცოცხალი დემო — ერთი პრომპტი სამ AI-ში ერთდროულად. ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>Microsoft Copilot:</strong> პირველადი დოკუმენტების დრაფტინგი Word-ში და Outlook იმეილების სწრაფი ტრიაჟი. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირებისთვის (წერითი კომუნიკაციის ასისტენტის შექმნა). <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია. <strong>AI-ის შეზღუდვები:</strong> როდის ცდება AI — ჰალუცინაციების კონკრეტული მაგალითები საოპერაციო კონტექსტში; რა კატეგორიულად არ უნდა გაუზიაროთ AI-ს (ფარული მაკდონალდსის რეცეპტები, საფინანსო ანგარიშები, თანამშრომლების პირადი მონაცემები); საბოლოო გადაწყვეტილება ყოველთვის მენეჯერისაა.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> ერთი რეალური მენეჯერული ამოცანის ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად ტესტირება და შედეგების შედარება; Gemini-ში Few-Shot Gem ასისტენტის შექმნა Wolt/Bolt შეფასებებზე სწრაფი რეაგირებისთვის.
+                  <strong>პრაქტიკა:</strong> ერთი რეალური მენეჯერული ამოცანის ChatGPT-ში, Claude-sa და Gemini-ში ერთდროულად ტესტირება და შედეგების შედარება; Gemini-ში Few-Shot Gem ასისტენტის (წერითი კომუნიკაციის ასისტენტი) შექმნა Wolt/Bolt შეფასებებზე სწრაფი რეაგირებისთვის.
                 </div>
                 <div class="session-homework">
-                  <strong>საშინაო დავალება:</strong> 1 ყოველდღიური მენეჯერული წერილობითი კომუნიკაციის დავალების ავტომატიზაცია საკუთარი Gem-ის საშუალებით.
+                  <strong>საშინაო დავალება:</strong> 1 ყოველდღიური მენეჯერული წერილობითი კომუნიკაციის დავალების ავტომატიზაცია საკუთარი წერითი კომუნიკაციის Gem-ის საშუალებით.
                 </div>
               </div>
 
-              <div class="session-card">
+                            <div class="session-card">
                 <div class="session-header">
-                  <div class="session-title">სესია 2: Notion AI, Claude Projects, Gemini Gems და საოპერაციო SOP მენეჯმენტი</div>
+                  <div class="session-title">სესია 2: Notion AI, Claude Projects, Gemini Gems (SOP ასისტენტი), Prompt Library და საოპერაციო SOP მენეჯმენტი</div>
                   <span class="session-badge">ოპერაციები & SOP</span>
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება”: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> მენეჯერის ხმოვანი შენიშვნებისა (Voice Notes) და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია და Notion AI-ში სტრუქტურული ჩატვირთვა. <strong>Claude Projects:</strong> პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და <strong>Shared Artifacts</strong>-ის გამოყენება SOP-ების შესაქმნელად. <strong>Gemini Gems-ის გაფართოებული გამოყენება:</strong> პერსონალიზებული Gem ასისტენტების შექმნა საოპერაციო SOP-ების გენერირებისთვის. <strong>ტექნიკური მხარდაჭერის SOP-ები:</strong> სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა და Troubleshooting-ის ინსტრუქციების სწრაფი ძიება და სტრუქტურირება.
+                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება“: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>Microsoft Copilot in Teams/Word:</strong> შეხვედრებისა და ვორქშოფების ავტომატური რეზიუმირება, დავალებების (Action Items) სინთეზი. <strong>McDonald's Prompt Library & SOP Wiki:</strong> Notion-ში საერთო მენეჯერული პრომპტების ბიბლიოთეკისა და საოპერაციო SOP-ების ერთიანი ვიკის შექმნა. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> მენეჯერის ხმოვანი შენიშვნებისა (Voice Notes) და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია და Notion AI-ში სტრუქტურირება. <strong>Claude Projects:</strong> პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და <strong>Shared Artifacts</strong>-ის გამოყენება SOP-ების შესაქმნელად. <strong>Gemini Gems-ის გაფართოებული გამოყენება:</strong> პერსონალიზებული Gem ასისტენტების შექმნა საოპერაციო SOP-ების გენერირებისთვის (საოპერაციო SOP ასისტენტი). <strong>ტექნიკური მხარდაჭერა და ვიზუალური დიაგნოსტიკა (Multimodal AI):</strong> სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა (Error Codes) და დაზიანებული ნაწილების ამოცნობა ფოტოსურათების მეშვეობით და Troubleshooting ინსტრუქციების სწრაფი ძიება და სტრუქტურირება.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> Claude Projects-სა და Gemini Gems-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების დამხმარე Gem-ის და <strong>Taylor ნაყინის აპარატის Troubleshooting SOP ასისტენტის</strong> შექმნა.
+                  <strong>პრაქტიკა:</strong> Notion-ში Prompt Library-ის აწყობა; Microsoft Copilot-ის ინტეგრირება საოფისე დოკუმენტებში; Claude Projects-სა და Gemini Gems-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების დამხმარე Gem-ის და <strong>Taylor ნაყინის აპარატის Troubleshooting-ის ვიზუალური ასისტენტის (Multimodal AI)</strong> შექმნა.
                 </div>
                 <div class="session-homework">
-                  <strong>საშინაო დავალება:</strong> რესტორნის ჰიგიენისა და დასუფთავების მოკლე SOP-ის დრაფტის შექმნა Claude-ისა და განახლებული Gem-ის დახმარებით.
+                  <strong>საშინაო დავალება:</strong> რესტორნის ჰიგიენისა და დასუფთავების მოკლე SOP-ის დრაფტის შექმნა Claude-ისა და განახლებული საოპერაციო Gem-ის დახმარებით.
                 </div>
               </div>
 
-              <div class="session-card">
+                            <div class="session-card">
                 <div class="session-header">
-                  <div class="session-title">სესია 3: მონაცემთა ანალიზი და Custom GPTs</div>
+                  <div class="session-title">სესია 3: მონაცემთა ანალიზი (Julius.ai), ფინანსური შეჯერება და Custom GPTs</div>
                   <span class="session-badge">ანალიტიკა & GPTs</span>
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  მონაცემთა Advanced ანალიტიკა <strong>Julius.ai</strong>-ით და ChatGPT Advanced Data Analysis-ით: გაყიდვების CSV მონაცემების, მაღაზიების (Stores) ეფექტურობისა და მომხმარებელთა უკუკავშირების ანალიზი. რთული Excel ფორმულების გენერირება მუშაობის დასაჩქარებლად. <strong>Custom GPTs (OpenAI):</strong> მაკდონალდსის მენეჯერის პერსონალური ასისტენტის აწყობა (მაგ. Shift Scheduler GPT), Gemini Gems-ის ინტეგრირება Google Workspace-ში და <strong>ახალი თანამშრომლების ონბორდინგის სიმულაციური ტრენერი (Crew Trainer GPT)</strong>.
+                  მონაცემთა Advanced ანალიტიკა <strong>Julius.ai</strong>-ით, ChatGPT Advanced Data Analysis-ით და <strong>Microsoft Copilot in Excel</strong>-ით: გაყიდვების CSV მონაცემების, მაღაზიების (Stores) ეფექტურობისა და მომხმარებელთა უკუკავშირების ანალიზი. **ფინანსური შეჯერება (Reconciliation):** სალაროს (POS), ნაღდი ფულის რეესტრის და Wolt/Bolt-ის გაყიდვების რეპორტების ავტომატური შედარება Julius.ai-ის/Python Sandbox-ის დახმარებით ცდომილებების გამოსავლენად. რთული Excel ფორმულების გენერირება მუშაობის დასაჩქარებლად. <strong>Custom GPTs (OpenAI):</strong> მაკდონალდსის მენეჯერის პერსონალური ასისტენტის აწყობა (მაგ. Shift Scheduler GPT), Gemini Gems-ის ინტეგრირება Google Workspace-ში და <strong>ახალი თანამშრომლების ონბორდინგის სიმულაციური ტრენერი (Crew Trainer GPT)</strong>.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცების ანალიზი და OpenAI-ის პლატფორმაზე <strong>Crew Trainer GPT</strong>-ის შექმნა.
+                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცემების ანალიზი და Microsoft Copilot in Excel-ის ფორმულების გენერაცია, POS vs Wolt/Bolt ფინანსური შეჯერება; OpenAI-ის პლატფორმაზე **Crew Trainer GPT**-ის შექმნა.
                 </div>
                 <div class="session-homework">
                   <strong>საშინაო დავალება:</strong> გაყიდვების სიმულაციური მონაცემების CSV ფაილის ანალიზი Julius.ai-ით და 3 მთავარი საოპერაციო რეკომენდაციის გამოტანა.
@@ -1224,7 +1413,13 @@
               </div>
               <div class="panel-meta-stat">
                 <div class="panel-meta-stat-label">ბიუჯეტი</div>
-                <div class="panel-meta-stat-val price">5,000 ლარი</div>
+                <div class="price-container">
+                  <div class="panel-meta-stat-val price blurred">5,500 ლარი</div>
+                  <button class="reveal-btn" onclick="revealPrice(this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    ფასის ჩვენება
+                  </button>
+                </div>
               </div>
               <div class="panel-meta-desc">
                 ოპტიმალური მოდელი კომპანიის მენეჯმენტისთვის. მოიცავს კრიტიკული აზროვნების ფრეიმვორქებს, Advanced Excel-ის ინტეგრაციას, SOP-ების ავტომატიზაციას და Custom GPTs-ის პერსონალურ აწყობას.
@@ -1240,24 +1435,24 @@
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  <strong>AI-ის ლანდშაფტი 2026:</strong> ChatGPT vs Claude vs Gemini — რომელი პლატფორმა რომელ მენეჯერულ ამოცანაში ჯობია; ცოცხალი დემო — ერთი პრომპტი სამ AI-ში ერთდროულად. ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირება. <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია. <strong>AI-ის შეზღუდვები:</strong> როდის ცდება AI — ჰალუცინაციების კონკრეტული მაგალითები საოპერაციო კონტექსტში; რა კატეგორიულად არ უნდა გაუზიაროთ AI-ს (ფარული მაკდონალდსის რეცეპტები, საფინანსო ანგარიშები, თანამშრომლების პირადი მონაცემები); საბოლოო გადაწყვეტილება ყოველთვის მენეჯერისაა.
+                  <strong>AI-ის ლანდშაფტი 2026:</strong> ChatGPT vs Claude vs Gemini vs Microsoft Copilot — რომელი პლატფორმა რომელ მენეჯერულ ამოცანაში ჯობია; ცოცხალი დემო — ერთი პრომპტი სამ AI-ში ერთდროულად. ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>Microsoft Copilot:</strong> პირველადი დოკუმენტების დრაფტინგი Word-ში და Outlook იმეილების სწრაფი ტრიაჟი. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირება. <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია. <strong>AI-ის შეზღუდვები:</strong> როდის ცდება AI — ჰალუცინაციების კონკრეტული მაგალითები საოპერაციო კონტექსტში; რა კატეგორიულად არ უნდა გაუზიაროთ AI-ს (ფარული მაკდონალდსის რეცეპტები, საფინანსო ანგარიშები, თანამშრომლების პირადი მონაცემები); საბოლოო გადაწყვეტილება ყოველთვის მენეჯერისაა.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> ერთი რეალური მენეჯერული ამოცანის ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად ტესტირება და შედეგების შედარება; Gemini-ში Few-Shot Gem ასისტენტის შექმნა Wolt/Bolt შეფასებებზე სწრაფი რეაგირებისთვის.
+                  <strong>პრაქტიკა:</strong> ერთი რეალური მენეჯერული ამოცანის ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად ტესტირება და შედეგების შედარება; Microsoft Copilot-ით იმეილების სწრაფი გენერირება; Gemini-ში Few-Shot Gem ასისტენტის შექმნა Wolt/Bolt შეფასებებზე სწრაფი რეაგირებისთვის.
                 </div>
                 <div class="session-homework">
                   <strong>საშინაო დავალება:</strong> 1 ყოველდღიური მენეჯერული წერილობითი კომუნიკაციის დავალების ავტომატიზაცია საკუთარი Gem-ის საშუალებით.
                 </div>
               </div>
 
-              <div class="session-card recommended">
+                            <div class="session-card recommended">
                 <div class="session-header">
                   <div class="session-title">სესია 2: გაფართოებული პრომპტინგი, AI აზროვნების პარტნიორობა (SCAMPER), Gemini Gems და Claude Cowork</div>
                   <span class="session-badge">კრეატიული აზროვნება</span>
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  AI როგორც <strong>Thinking Partner</strong> სტრატეგიული გადაწყვეტილებების მისაღებად: SCAMPER ფრეიმვორქი საოპერაციო პროცესების ოპტიმიზაციისთვის (მაგ. Drive-Thru რიგების მართვა და საკვების ნარჩენების / Food Waste შემცირება). <strong>Gemini Gems-ის გაფართოებული კონფიგურაცია:</strong> პერსონალიზებული როლური მოდელების (SCAMPER / Brainstorming ასისტენტების) შექმნა. <strong>Claude Cowork:</strong> დესკტოპის აგენტური ასისტენტის გამოყენება ფაილების მართვის, ინბოქსის ავტომატური ტრიაჟისა და მომწოდებლების ინვოისების ორგანიზებისთვის.
+                  AI როგორც <strong>Thinking Partner</strong> სტრატეგიული გადაწყვეტილებების მისაღებად: SCAMPER ფრეიმვორქი საოპერაციო პროცესების ოპტიმიზაციისთვის (მაგ. Drive-Thru რიგების მართვა და საკვების ნარჩენების / Food Waste შემცირება). <strong>Gemini Gems-ის გაფართოებული კონფიგურაცია:</strong> პერსონალიზებული როლური მოდელების (SCAMPER / Brainstorming ასისტენტების) შექმნა. <strong>Claude Cowork:</strong> დესკტოპის აგენტური ასისტენტის გამოყენება ფაილების მართვის, ინბოქსის ავტომატური ტრიაჟისა და მომწოდებლების ინვოისებისა და საწყობის დოკუმენტების დამუშავება-ორგანიზებისთვის.
                 </div>
                 <div class="session-practice">
                   <strong>პრაქტიკა:</strong> Gemini Gems-ში სააზროვნო პარტნიორი Gem ასისტენტის აწყობა და Claude Cowork-ის დაყენება/ტესტირება საოპერაციო რეპორტებისა და მომწოდებლების ინვოისების ავტომატური ორგანიზებისთვის.
@@ -1267,17 +1462,17 @@
                 </div>
               </div>
 
-              <div class="session-card recommended">
+                            <div class="session-card recommended">
                 <div class="session-header">
-                  <div class="session-title">სესია 3: Notion AI, Claude Projects და საოპერაციო SOP მენეჯმენტი</div>
+                  <div class="session-title">სესია 3: Notion AI, Claude Projects, Prompt Library და საოპერაციო SOP მენეჯმენტი</div>
                   <span class="session-badge">ოპერაციები & SOP</span>
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება“: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> შეხვედრის ჩანაწერებისა და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების გამოყოფა. <strong>Claude Projects:</strong> პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და <strong>Shared Artifacts</strong>-ის გამოყენება მაკდონალდსის საოპერაციო SOP-ების (სტანდარტული ოპერაციული პროცედურების) ინტერაქტიული გენერირებისა და სტრუქტურირებისთვის. <strong>ტექნიკური მხარდაჭერის SOP-ები:</strong> სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა და Troubleshooting-ის ინსტრუქციების ინტერაქტიული გენერირება და სტრუქტურირება.
+                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება“: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>Microsoft Copilot in Teams/Word:</strong> შეხვედრებისა და ვორქშოფების ავტომატური რეზიუმირება, დავალებების (Action Items) სინთეზი. <strong>McDonald's Prompt Library & SOP Wiki:</strong> Notion-ში საერთო მენეჯერული პრომპტების ბიბლიოთეკისა და საოპერაციო SOP-ების ერთიანი ვიკის შექმნა. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> შეხვედრის ჩანაწერებისა და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების გამოყოფა. <strong>Claude Projects:</strong> პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და <strong>Shared Artifacts</strong>-ის გამოყენება მაკდონალდსის საოპერაციო SOP-ების (სტანდარტული ოპერაციული პროცედურების) ინტერაქტიული გენერირებისა და სტრუქტურირებისთვის. <strong>ტექნიკური მხარდაჭერა და ვიზუალური დიაგნოსტიკა (Multimodal AI):</strong> სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა და დაზიანებული ნაწილების ამოცნობა ფოტოსურათების მეშვეობით და Troubleshooting-ის ინსტრუქციების ინტერაქტიული გენერირება და სტრუქტურირება.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> Claude Projects-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების შაბლონის და <strong>Taylor ნაყინის აპარატის Troubleshooting SOP ასისტენტის</strong> შექმნა.
+                  <strong>პრაქტიკა:</strong> Notion-ში Prompt Library-ის აწყობა; Microsoft Copilot-ის ინტეგრირება საოფისე დოკუმენტებში; Claude Projects-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების შაბლონის და <strong>Taylor ნაყინის აპარატის Troubleshooting-ის ვიზუალური ასისტენტის (Multimodal AI)</strong> შექმნა.
                 </div>
                 <div class="session-homework">
                   <strong>საშინაო დავალება:</strong> რესტორნის ჰიგიენისა და დასუფთავების მოკლე SOP-ის დრაფტის შექმნა Claude Projects-ში.
@@ -1301,17 +1496,17 @@
                 </div>
               </div>
 
-              <div class="session-card recommended">
+                            <div class="session-card recommended">
                 <div class="session-header">
-                  <div class="session-title">სესია 5: მონაცემთა Advanced ანალიტიკა (Julius.ai), Excel ავტომატიზაცია და Custom GPTs-ის შექმნა</div>
-                  <span class="session-badge">ანალიტიკა & GPTs</span>
+                  <div class="session-title">სესია 5: მონაცემთა Advanced ანალიტიკა (Julius.ai), ფინანსური შეჯერება, HR AI და Custom GPTs-ის შექმნა</div>
+                  <span class="session-badge">Excel & მონაცემთა ანალიზი</span>
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  CSV ბაზების ანალიზი <strong>Julius.ai</strong>-ისა და ChatGPT Advanced Data Analysis-ის მეშვეობით (საათობრივი გაყიდვების პიკები, საშუალო ჩეკის ანალიზი, პოპულარული მენიუს კომბინაციები). Excel-ის რთული ფორმულების (XLOOKUP, Dynamic Arrays) აწყობა. <strong>პიკური საათების პროგნოზირება:</strong> ისტორიული გაყიდვების, ადგილობრივი ღონისძიებების, არდადეგების და ამინდის პროგნოზის გაერთიანება Julius.ai-ში ცვლის ოპტიმალური განრიგის დასაგეგმად. <strong>Custom GPTs (OpenAI):</strong> მაკდონალდსის მენეჯერის პერსონალური ასისტენტის აწყობა (მაგ. Shift Scheduler GPT), Gemini Gems-ის ინტეგრირება Google Workspace-ში და <strong>ახალი თანამშრომლების ონბორდინგის სიმულაციური ტრენერი (Crew Trainer GPT)</strong>.
+                  CSV ბაზების ანალიზი <strong>Julius.ai</strong>-ისა და ChatGPT Advanced Data Analysis-ის მეშვეობით (საჭიროებისამებრ Microsoft Copilot-ის გამოყენებით) (საათობრივი გაყიდვების პიკები, საშუალო ჩეკის ანალიზი, პოპულარული მენიუს კომბინაციები). **ფინანსური შეჯერება (Reconciliation):** სალაროს (POS), ნაღდი ფულის რეესტრის და Wolt/Bolt-ის გაყიდვების რეპორტების ავტომატური შედარება Julius.ai-ის/Python Sandbox-ის დახმარებით ცდომილებების გამოსავლენად. **HR AI და CV სკრინინგი:** ეკიპაჟის რეზიუმეების ავტომატური გაფილტვრა კადრების მაღალი დენადობის პირობებში და მონაცემებზე დაფუძნებული Performance Review-ების მომზადება. **პიკური საათების პროგნოზირება:** ისტორიული გაყიდვების, ადგილობრივი ღონისძიებების, არდადეგების და ამინდის პროგნოზის გაერთიანება Julius.ai-ში ცვლის ოპტიმალური განრიგის დასაგეგმად. **Custom GPTs (OpenAI):** მაკდონალდსის მენეჯერის პერსონალური ასისტენტის აწყობა (მაგ. Shift Scheduler GPT), Gemini Gems-ის ინგეგრირება Google Workspace-ში და <strong>ახალი თანამშრომლების ონბორდინგის სიმულაციური ტრენერი (Crew Trainer GPT)</strong>.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცემების ანალიზი და პიკური საათების პროგნოზირება; OpenAI-ის პლატფორმაზე Custom GPT ასისტენტისა და <strong>Crew Trainer GPT</strong>-ის შექმნა.
+                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცემების ანალიზი, POS vs Wolt/Bolt ფინანსური შეჯერება და CV სკრინინგი; OpenAI-ის პლატფორმაზე Custom GPT ასისტენტისა და <strong>Crew Trainer GPT</strong>-ის შექმნა.
                 </div>
                 <div class="session-homework">
                   <strong>საშინაო დავალება:</strong> საკუთარი დეპარტამენტისთვის ერთი Custom GPT ასისტენტის ან <strong>Crew Trainer GPT-ის სიმულატორის</strong> პროტოტიპის შექმნა და მისი ინსტრუქციის დოკუმენტირება.
@@ -1321,6 +1516,163 @@
           </div>
         </div>
       </div>
+
+      <!-- ─── TAB PANEL B+ ─── -->
+      <div class="tab-panel" id="optionBPlus">
+        <div class="panel-grid">
+          <div class="panel-sidebar">
+            <div class="panel-meta-card">
+              <div class="panel-meta-title">Advanced საოპერაციო მოდელი</div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">საერთო ხანგრძლივობა</div>
+                <div class="panel-meta-stat-val">12 სასწავლო საათი</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">სტრუქტურა</div>
+                <div class="panel-meta-stat-val">6 სესია (2-საათიანი)</div>
+              </div>
+              <div class="panel-meta-stat">
+                <div class="panel-meta-stat-label">ბიუჯეტი</div>
+                <div class="price-container">
+                  <div class="panel-meta-stat-val price blurred">6,300  ლარი</div>
+                  <button class="reveal-btn" onclick="revealPrice(this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    ფასის ჩვენება
+                  </button>
+                </div>
+              </div>
+              <div class="panel-meta-desc">
+                გაფართოებული საოპერაციო პაკეტი მენეჯერებისთვის. ოფცია B-ს ემატება Midjourney-ის კრეატიული AI სარეკლამო ვიზუალების შექმნა, Make.com-ით ინციდენტების ავტომატიზაცია და Lovable No-Code პლატფორმაზე შიდა საოპერაციო ხელსაწყოების სწრაფი აწყობა.
+              </div>
+              <div class="panel-meta-tools">
+                <div class="panel-meta-tools-title">სასწავლო ხელსაწყოები:</div>
+                <div class="tools-tags">
+                  <span class="tool-tag">ChatGPT</span>
+                  <span class="tool-tag">Copilot</span>
+                  <span class="tool-tag">Claude Projects</span>
+                  <span class="tool-tag">Claude Cowork</span>
+                  <span class="tool-tag">Gemini Gems</span>
+                  <span class="tool-tag">Notion AI</span>
+                  <span class="tool-tag">Perplexity</span>
+                  <span class="tool-tag">NotebookLM</span>
+                  <span class="tool-tag">Julius.ai</span>
+                  <span class="tool-tag">Custom GPTs</span>
+                  <span class="tool-tag">Midjourney</span>
+                  <span class="tool-tag">Adobe Firefly</span>
+                  <span class="tool-tag">Make.com</span>
+                  <span class="tool-tag">Lovable</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-main">
+            <div class="session-list">
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 1: პრომპტინგის საფუძვლები, კორპორატიული უსაფრთხოება, AI წერითი ასისტენტი და Gemini Gems (წერითი კომუნიკაციის ასისტენტი)</div>
+                  <span class="session-badge">ბაზისი & წერითი</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  <strong>AI-ის ლანდშაფტი 2026:</strong> ChatGPT vs Claude vs Gemini vs Microsoft Copilot — რომელი პლატფორმა რომელ მენეჯერულ ამოცანაში ჯობია; ცოცხალი დემო — ერთი პრომპტი სამ AI-ში ერთდროულად. ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>Microsoft Copilot:</strong> პირველადი დოკუმენტების დრაფტინგი Word-ში და Outlook იმეილების სწრაფი ტრიაჟი. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირება. <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია. <strong>AI-ის შეზღუდვები:</strong> როდის ცდება AI — ჰალუცინაციების კონკრეტული მაგალითები საოპერაციო კონტექსტში; რა კატეგორიულად არ უნდა გაუზიაროთ AI-ს (ფარული მაკდონალდსის რეცეპტები, საფინანსო ანგარიშები, თანამშრომლების პირადი მონაცემები); საბოლოო გადაწყვეტილება ყოველთვის მენეჯერისაა.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> ერთი რეალური მენეჯერული ამოცანის ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად ტესტირება და შედეგების შედარება; Microsoft Copilot-ით იმეილების სწრაფი გენერირება; Gemini-ში Few-Shot Gem ასისტენტის შექმნა Wolt/Bolt შეფასებებზე სწრაფი რეაგირებისთვის.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> 1 ყოველდღიური მენეჯერული წერილობითი კომუნიკაციის დავალების ავტომატიზაცია საკუთარი Gem-ის საშუალებით.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 2: გაფართოებული პრომპტინგი, AI აზროვნების პარტნიორობა (SCAMPER), Gemini Gems და Claude Cowork</div>
+                  <span class="session-badge">კრეატიული აზროვნება</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  AI როგორც <strong>Thinking Partner</strong> სტრატეგიული გადაწყვეტილებების მისაღებად: SCAMPER ფრეიმვორქი საოპერაციო პროცესების ოპტიმიზაციისთვის (მაგ. Drive-Thru რიგების მართვა და საკვების ნარჩენების / Food Waste შემცირება). <strong>Gemini Gems-ის გაფართოებული კონფიგურაცია:</strong> პერსონალიზებული როლური მოდელების (SCAMPER / Brainstorming ასისტენტების) შექმნა. <strong>Claude Cowork:</strong> დესკტოპის აგენტური ასისტენტის გამოყენება ფაილების მართვის, ინბოქსის ავტომატური ტრიაჟისა და მომწოდებლების ინვოისებისა და საწყობის დოკუმენტების დამუშავება-ორგანიზებისთვის.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Gemini Gems-ში სააზროვნო პარტნიორი Gem ასისტენტის აწყობა და Claude Cowork-ის დაყენება/ტესტირება საოპერაციო რეპორტებისა და მომწოდებლების ინვოისების ავტომატური ორგანიზებისთვის.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> SCAMPER ჩარჩოზე მორგებული Gem ასისტენტის გამოყენებით Drive-Thru ან სამზარეულოს პროცესის ოპტიმიზაციის 3 იდეის გენერირება.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 3: Notion AI, Claude Projects, Prompt Library და საოპერაციო SOP მენეჯმენტი</div>
+                  <span class="session-badge">ოპერაციები & SOP</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება“: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>Microsoft Copilot in Teams/Word:</strong> შეხვედრებისა და ვორქშოფების ავტომატური რეზიუმირება, დავალებების (Action Items) სინთეზი. <strong>McDonald's Prompt Library & SOP Wiki:</strong> Notion-ში საერთო მენეჯერული პრომპტების ბიბლიოთეკისა და საოპერაციო SOP-ების ერთიანი ვიკის შექმნა. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> შეხვედრის ჩანაწერებისა და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების გამოყოფა. **Claude Projects:** პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და **Shared Artifacts**-ის გამოყენება მაკდონალდსის საოპერაციო SOP-ების (სტანდარტული ოპერაციული პროცედურების) ინტერაქტიული გენერირებისა და სტრუქტურირებისთვის. **ტექნიკური მხარდაჭერა და ვიზუალური დიაგნოსტიკა (Multimodal AI):** სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა და დაზიანებული ნაწილების ამოცნობა ფოტოსურათების მეშვეობით და Troubleshooting-ის ინსტრუქციების ინტერაქტიული გენერირება და სტრუქტურირება.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Notion-ში Prompt Library-ის აწყობა; Microsoft Copilot-ის ინტეგრირება საოფისე დოკუმენტებში; Claude Projects-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების შაბლონის და <strong>Taylor ნაყინის აპარატის Troubleshooting-ის ვიზუალური ასისტენტის (Multimodal AI)</strong> შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> რესტორნის ჰიგიენისა და დასუფთავების მოკლე SOP-ის დრაფტის შექმნა Claude Projects-ში.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 4: Perplexity.ai, NotebookLM (HACCP) და კრეატიული AI ვიზუალები (Midjourney, Adobe Firefly)</div>
+                  <span class="session-badge">ინტელექტი & HACCP</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Perplexity.ai-ის მოწინავე ოპერატორები და ბაზრის კვლევა (ფასწარმოქმნის ანალიზი, სწრაფი კვების ინდუსტრიის ტრენდები საქართველოში). <strong>NotebookLM:</strong> მაკდონალდსის მოცულობითი გლობალური ინსტრუქციების, HACCP-ის სტანდარტებისა და რეგულაციების ანალიზი, ინტერაქტიული კითხვა-პასუხი და პერსონალიზებული აუდიო-ბრიფინგების გენერირება. <strong>კრეატიული AI ლოკალური მარკეტინგისთვის (LSM):</strong> Midjourney, Flux და Adobe Firefly მაკდონალდსის ლოკალური სარეკლამო კამპანიებისთვის, სოციალური მედიის პოსტებისთვის, ახალი აქციებისა და Happy Meal-ის სათამაშოების სარეკლამო ვიზუალების (Key Visuals) შესაქმნელად. Photoshop Generative Fill-ის გამოყენება.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> NotebookLM-ში HACCP-ის სტანდარტის ჩატვირთვა და საოპერაციო რისკების Checklist-ის გენერირება; Midjourney-ში ახალი პროდუქტის LSM სარეკლამო ბანერის შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> NotebookLM-ის ბაზაზე მომზადებული, 10-კითხვიანი ტესტ-სახელმძღვანელოს შექმნა ახალი თანამშრომლებისთვის და Midjourney-ში გენერირებული 1 სარეკლამო პოსტი.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 5: მონაცემთა Advanced ანალიტიკა და Excel ავტომატიზაცია (Julius.ai), ფინანსური შეჯერება, HR AI და Custom GPTs</div>
+                  <span class="session-badge">Excel & მონაცემთა ანალიზი</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  CSV ბაზების ანალიზი <strong>Julius.ai</strong>-ისა და ChatGPT Advanced Data Analysis-ის მეშვეობით (საჭიროებისამებრ Microsoft Copilot-ის გამოყენებით) (საათობრივი გაყიდვების პიკები, საშუალო ჩეკის ანალიზი, პოპულარული მენიუს კომბინაციები). **ფინანსური შეჯერება (Reconciliation):** სალაროს (POS), ნაღდი ფულის რეესტრის და Wolt/Bolt-ის გაყიდვების რეპორტების ავტომატური შედარება Julius.ai-ის/Python Sandbox-ის დახმარებით ცდომილებების გამოსავლენად. **HR AI და CV სკრინინგი:** ეკიპაჟის რეზიუმეების ავტომატური გაფილტვრა კადრების მაღალი დენადობის პირობებში და მონაცემებზე დაფუძნებული Performance Review-ების მომზადება. **პიკური საათების პროგნოზირება:** ისტორიული გაყიდვების, ადგილობრივი ღონისძიებების, არდადეგების და ამინდის პროგნოზის გაერთიანება Julius.ai-ში ცვლის ოპტიმალური განრიგის დასაგეგმად. **Custom GPTs (OpenAI):** მაკდონალდსის მენეჯერის პერსონალური ასისტენტის აწყობა (მაგ. Shift Scheduler GPT), Gemini Gems-ის ინგეგრირება Google Workspace-ში და <strong>ახალი თანამშრომლების ონბორდინგის სიმულაციური ტრენერი (Crew Trainer GPT)</strong>.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცემების ანალიზი, POS vs Wolt/Bolt ფინანსური შეჯერება და CV სკრინინგი; OpenAI-ის პლატფორმაზე Custom GPT ასისტენტისა და <strong>Crew Trainer GPT</strong>-ის შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> Excel-ის დინამიკური ცხრილის მომზადება, სადაც AI-ის დახმარებით გამოთვლილია რეორდერის წერტილები (Reorder Point).
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 6: Make.com ავტომატიზაციები, Lovable (No-Code აპლიკაციები) და AI Governance</div>
+                  <span class="session-badge">ავტომატიზაცია & პოლიტიკა</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  <strong>WhatsApp/Telegram ავტომატიზაცია Make.com-ით:</strong> რეალური სამუშაო ნაკადების (Workflows) აწყობა — მომხმარებლის საჩივარი WhatsApp-ში → AI ანალიზი → ავტომატური შეტყობინება მენეჯერს Telegram-ში; ახალი Wolt/Bolt შეფასება → სენტიმენტის ანალიზი → კვირის Summary ანგარიში. **ინციდენტების მართვა და Support Triage:** Wolt/Bolt ნეგატიური შეფასების შემოსვლისას Telegram-ში ავტომატური შეტყობინება და პრიორიტეტიზაცია. **Lovable (No-Code App Builder):** კოდის გარეშე შიდა საოპერაციო ხელსაწყოების (მაგ. ცვლების გაცვლის Tracker, HACCP-ის ციფრული ჩეკლისტი, ტექნიკის მომსახურების ჟურნალი) აწყობა 45 წუთში Supabase/Google Sheets-ის ინტეგრაციით. კურსის შეჯამება და სამომავლო გეგმები.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Make.com-ში WhatsApp → AI → Telegram Workflow-ის სიმულაცია; Lovable-ში შიდა საოპერაციო ხელსაწყოს აწყობა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> საკუთარი დეპარტამენტისთვის 3-ეტაპიანი ავტომატიზაციის იდეის ჩამოყალიბება.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ─── TAB PANEL C ─── -->
       <div class="tab-panel" id="optionC">
         <div class="panel-grid">
@@ -1337,30 +1689,121 @@
               </div>
               <div class="panel-meta-stat">
                 <div class="panel-meta-stat-label">ბიუჯეტი</div>
-                <div class="panel-meta-stat-val price">7,000 ლარი</div>
+                <div class="price-container">
+                  <div class="panel-meta-stat-val price blurred">7,000 ლარი</div>
+                  <button class="reveal-btn" onclick="revealPrice(this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    ფასის ჩვენება
+                  </button>
+                </div>
               </div>
               <div class="panel-meta-desc">
                 უზრუნველყოფს სრულ მენეჯერულ მომზადებას. მოიცავს ყველა წინა მოდულს, პლუს AI ვიზუალების გენერირებას ლოკალური სარეკლამო კამპანიებისთვის, workflow ავტომატიზაციას (Make/n8n) და კორპორატიულ AI პოლიტიკის შედგენას.
+              </div>
+              <div class="panel-meta-tools">
+                <div class="panel-meta-tools-title">სასწავლო ხელსაწყოები:</div>
+                <div class="tools-tags">
+                  <span class="tool-tag">ChatGPT</span>
+                  <span class="tool-tag">Copilot</span>
+                  <span class="tool-tag">Claude Projects</span>
+                  <span class="tool-tag">Claude Cowork</span>
+                  <span class="tool-tag">Claude Code</span>
+                  <span class="tool-tag">Gemini Gems</span>
+                  <span class="tool-tag">Notion AI</span>
+                  <span class="tool-tag">Perplexity</span>
+                  <span class="tool-tag">NotebookLM</span>
+                  <span class="tool-tag">Julius.ai</span>
+                  <span class="tool-tag">Midjourney</span>
+                  <span class="tool-tag">Adobe Firefly</span>
+                  <span class="tool-tag">Google Flow (Veo)</span>
+                  <span class="tool-tag">Make.com</span>
+                  <span class="tool-tag">Lovable</span>
+                  <span class="tool-tag">Custom GPTs</span>
+                </div>
               </div>
             </div>
           </div>
           <div class="panel-main">
             <div class="session-list">
-              <div style="background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:var(--radius);padding:16px;text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:16px;">
-                სესია 1-დან სესია 4-მდე იდენტურია რეკომენდებული (10-საათიანი) ვარიანტისა.
-              </div>
-              
               <div class="session-card">
                 <div class="session-header">
-                  <div class="session-title">სესია 5: მონაცემთა Advanced ანალიტიკა და Excel ავტომატიზაცია (Julius.ai)</div>
+                  <div class="session-title">სესია 1: პრომპტინგის საფუძვლები, კორპორატიული უსაფრთხოება, AI წერითი ასისტენტი და Gemini Gems</div>
+                  <span class="session-badge">ბაზისი & წერითი</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  <strong>AI-ის ლანდშაფტი 2026:</strong> ChatGPT vs Claude vs Gemini vs Microsoft Copilot — რომელი პლატფორმა რომელ მენეჯერულ ამოცანაში ჯობია; ცოცხალი დემო — ერთი პრომპტი სამ AI-ში ერთდროულად. ეფექტური პრომპტინგი პრაქტიკაში: R.O.L.E. და C.R.E.A.T.E. ჩარჩოების მენეჯერული გამოყენება. <strong>Microsoft Copilot:</strong> პირველადი დოკუმენტების დრაფტინგი Word-ში და Outlook იმეილების სწრაფი ტრიაჟი. <strong>კორპორატიული უსაფრთხოება და GDPR:</strong> მონაცემთა მასკირება და დაცვის წესები (რეცეპტების, საოპერაციო და ფინანსური მონაცემების დასაცავად). <strong>Gemini Gems-ის შესავალი:</strong> პერსონალური Gem ასისტენტის აწყობა წერითი სამუშაოებისთვის — მომხმარებელთა გამოხმაურებებზე (Bolt Food, Wolt, Google Reviews) და საჩივრებზე ბრენდის ხმის ტონით (Tone of Voice) სწრაფი რეაგირება. <strong>შეფასებების სისტემური აგრეგაცია:</strong> Bolt Food, Wolt და Google Reviews-ის ყველა შეფასების ერთ სამართველო პანელად გაერთიანება — სენტიმენტის ანალიზი, განმეორებადი საჩივრების ავტომატური კატეგორიზაცია და კვირის Summary ანგარიშის Gemini-ით გენერაცია. <strong>AI-ის შეზღუდვები:</strong> როდის ცდება AI — ჰალუცინაციების კონკრეტული მაგალითები საოპერაციო კონტექსტში; რა კატეგორიულად არ უნდა გაუზიაროთ AI-ს (ფარული მაკდონალდსის რეცეპტები, საფინანსო ანგარიშები, თანამშრომლების პირადი მონაცემები); საბოლოო გადაწყვეტილება ყოველთვის მენეჯერისაა.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> ერთი რეალური მენეჯერული ამოცანის ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად ტესტირება და შედეგების შედარება; Microsoft Copilot-ით იმეილების სწრაფი გენერირება; Gemini-ში Few-Shot Gem ასისტენტის შექმნა Wolt/Bolt შეფასებებზე სწრაფი რეაგირებისთვის.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> 1 ყოველდღიური მენეჯერული წერილობითი კომუნიკაციის დავალების ავტომატიზაცია საკუთარი Gem-ის საშუალებით.
+                </div>
+              </div>
+
+                            <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 2: გაფართოებული პრომპტინგი, AI აზროვნების პარტნიორობა (SCAMPER), Gemini Gems და Claude Cowork</div>
+                  <span class="session-badge">კრეატიული აზროვნება</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  AI როგორც <strong>Thinking Partner</strong> სტრატეგიული გადაწყვეტილებების მისაღებად: SCAMPER ფრეიმვორქი საოპერაციო პროცესების ოპტიმიზაციისთვის (მაგ. Drive-Thru რიგების მართვა და საკვების ნარჩენების / Food Waste შემცირება). **Gemini Gems-ის გაფართოებული კონფიგურაცია:** პერსონალიზებული როლური მოდელების (SCAMPER / Brainstorming ასისტენტების) შექმნა. **Claude Cowork:** დესკტოპის აგენტური ასისტენტის გამოყენება ფაილების მართვის, ინბოქსის ავტომატური ტრიაჟისა და მომწოდებლების ინვოისებისა და საწყობის დოკუმენტების დამუშავება-ორგანიზებისთვის.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Gemini Gems-ში სააზროვნო პარტნიორი Gem ასისტენტის აწყობა და Claude Cowork-ის დაყენება/ტესტირება საოპერაციო რეპორტებისა და მომწოდებლების ინვოისების ავტომატური ორგანიზებისთვის.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> SCAMPER ჩარჩოზე მორგებული Gem ასისტენტის გამოყენებით Drive-Thru ან სამზარეულოს პროცესის ოპტიმიზაციის 3 იდეის გენერირება.
+                </div>
+              </div>
+
+                            <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 3: Notion AI, Claude Projects, Prompt Library და საოპერაციო SOP მენეჯმენტი</div>
+                  <span class="session-badge">ოპერაციები & SOP</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Notion AI-ის გამოყენება როგორც კომპანიის „ცოცხალი მეხსიერება“: შეხვედრის ოქმებისა (Meeting Minutes) და ცვლის გადაბარების (Shift Handover) ანგარიშების სინთეზი. <strong>Microsoft Copilot in Teams/Word:</strong> შეხვედრებისა და ვორქშოფების ავტომატური რეზიუმირება, დავალებების (Action Items) სინთეზი. <strong>McDonald's Prompt Library & SOP Wiki:</strong> Notion-ში საერთო მენეჯერული პრომპტების ბიბლიოთეკისა და საოპერაციო SOP-ების ერთიანი ვიკის შექმნა. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> შეხვედრის ჩანაწერებისა და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების გამოყოფა. **Claude Projects:** პროექტზე მორგებული სამუშაო სივრცის შექმნა, შიდა გაიდლაინების ატვირთვა და **Shared Artifacts**-ის გამოყენება მაკდონალდსის საოპერაციო SOP-ების (სტანდარტული ოპერაციული პროცედურების) ინტერაქტიული გენერირებისა და სტრუქტურირებისთვის. **ტექნიკური მხარდაჭერა და ვიზუალური დიაგნოსტიკა (Multimodal AI):** სამზარეულოს კრიტიკული დანადგარების (მაგ. Taylor ნაყინის აპარატის, გრილის, ფრიტურის) შეცდომის კოდებისა და დაზიანებული ნაწილების ამოცნობა ფოტოსურათების მეშვეობით და Troubleshooting-ის ინსტრუქციების ინტერაქტიული გენერირება და სტრუქტურირება.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> Notion-ში Prompt Library-ის აწყობა; Microsoft Copilot-ის ინტეგრირება საოფისე დოკუმენტებში; Claude Projects-ში ახალი თანამშრომლის (მაგ. დარბაზის ან სამზარეულოს პერსონალის) Onboarding SOP-ის, ცვლის გადაბარების შაბლონის და **Taylor ნაყინის აპარატის Troubleshooting-ის ვიზუალური ასისტენტის (Multimodal AI)** შექმნა.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> რესტორნის ჰიგიენისა და დასუფთავების მოკლე SOP-ის დრაფტის შექმნა Claude Projects-ში.
+                </div>
+              </div>
+
+              <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 4: Perplexity.ai და NotebookLM კვლევებისა და HACCP აუდიტებისთვის</div>
+                  <span class="session-badge">ინტელექტი & HACCP</span>
+                </div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-content">
+                  Perplexity.ai-ის მოწინავე ოპერატობები და ბაზრის კვლევა (ფასწარმოქმნის ანალიზი, სწრაფი კვების ინდუსტრიის ტრენდები საქართველოში). <strong>NotebookLM:</strong> მაკდონალდსის მოცულობითი გლობალური ინსტრუქციების, HACCP-ის სტანდარტებისა და რეგულაციების ანალიზი, ინტერაქტიული კითხვა-პასუხი და პერსონალიზებული აუდიო-ბრიფინგების გენერირება.
+                </div>
+                <div class="session-practice">
+                  <strong>პრაქტიკა:</strong> NotebookLM-ში HACCP-ის სტანდარტის ჩატვირთვა და საოპერაციო რისკების Checklist-ის გენერირება.
+                </div>
+                <div class="session-homework">
+                  <strong>საშინაო დავალება:</strong> NotebookLM-ის ბაზაზე მომზადებული, 10-კითხვიანი ტესტ-სახელმძღვანელოს შექმნა ახალი თანამშრომლებისთვის.
+                </div>
+              </div>
+              
+                            <div class="session-card">
+                <div class="session-header">
+                  <div class="session-title">სესია 5: მონაცემთა Advanced ანალიტიკა და Excel ავტომატიზაცია (Julius.ai), ფინანსური შეჯერება, HR AI და Custom GPTs</div>
                   <span class="session-badge">Excel & მონაცემთა ანალიზი</span>
                 </div>
                 <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
                 <div class="session-content">
-                  CSV ბაზების ანალიზი <strong>Julius.ai</strong>-ისა და ChatGPT Advanced Data Analysis-ის მეშვეობით (საათობრივი გაყიდვების პიკები, საშუალო ჩეკის ანალიზი, პოპულარული მენიუს კომბინაციები). Excel-ის რთული ფორმულების (XLOOKUP, Dynamic Arrays) და დინამიკური დეშბორდების აწყობა AI-ის დახმარებით. საწყობის ოპტიმიზაცია (Economic Order Quantity) და მინიმალური მარაგების პროგნოზირება (მაგ. McCafe-ის მასალები, შესაფუთი ჭიქები, ყავის მარცვლები). <strong>პიკური საათების პროგნოზირება:</strong> ისტორიული გაყიდვების, ადგილობრივი ღონისძიებების, არდადეგების და ამინდის პროგნოზის გაერთიანება Julius.ai-ში ცვლის ოპტიმალური განრიგის დასაგეგმად.
+                  CSV ბაზების ანალიზი <strong>Julius.ai</strong>-ისა და ChatGPT Advanced Data Analysis-ის მეშვეობით (საჭიროებისამებრ Microsoft Copilot-ის გამოყენებით) (საათობრივი გაყიდვების პიკები, საშუალო ჩეკის ანალიზი, პოპულარული მენიუს კომბინაციები). Excel-ის რთული ფორმულების (XLOOKUP, Dynamic Arrays) და დინამიკური დეშბორდების აწყობა AI-ის დახმარებით. **Microsoft Copilot in Excel:** ექსელის მონაცემთა ბაზების სწრაფი ანალიზი, ფორმულების ავტომატური წერა და დეშბორდების გენერირება. საწყობის ოპტიმიზაცია (Economic Order Quantity) და მინიმალური მარაგების პროგნოზირება (მაგ. McCafe-ის მასალები, შესაფუთი ჭიქები, ყავის მარცვლები). **ფინანსური შეჯერება (Reconciliation):** სალაროს (POS), ნაღდი ფულის რეესტრის და Wolt/Bolt-ის გაყიდვების რეპორტების ავტომატური შედარება Julius.ai-ის/Python Sandbox-ის დახმარებით ცდომილებების გამოსავლენად. **HR AI და CV სკრინინგი:** ეკიპაჟის რეზიუმეების ავტომატური გაფილტვრა კადრების მაღალი დენადობის პირობებში და მონაცემებზე დაფუძნებული Performance Review-ების მომზადება. **პიკური საათების პროგნოზირება:** ისტორიული გაყიდვების, ადგილობრივი ღონისძიებების, არდადეგების და ამინდის პროგნოზის გაერთიანება Julius.ai-ში ცვლის ოპტიმალური განრიგის დასაგეგმად.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> მაღაზიის კვირის რეპორტის ფაილიდან გაყიდვების დინამიკის ვიზუალიზაცია და ანომალიების ძებნა, და <strong>ეკიპაჟის ვირტუალური ტრენერის (Crew Trainer GPT)</strong> პროტოტიპის შექმნა.
+                  <strong>პრაქტიკა:</strong> Julius.ai-ში მონაცემების ანალიზი, POS vs Wolt/Bolt ფინანსური შეჯერება და CV სკრინინგი; OpenAI-ის პლატფორმაზე Custom GPT ასისტენტისა და **Crew Trainer GPT**-ის პროტოტიპის შექმნა.
                 </div>
                 <div class="session-homework">
                   <strong>საშინაო დავალება:</strong> Excel-ის დინამიკური ცხრილის მომზადება, სადაც AI-ის დახმარებით გამოთვლილია რეორდერის წერტილები (Reorder Point).
@@ -1384,17 +1827,17 @@
                 </div>
               </div>
 
-              <div class="session-card">
+                            <div class="session-card">
                 <div class="session-header">
-                  <div class="session-title">სესია 7: WhatsApp/Telegram ავტომატიზაცია (Make.com), ხმოვანი AI (Whisper/Otter.ai) და AI Governance</div>
-                  <span class="session-badge">ავტომატიზაცია & Governance</span>
+                  <div class="session-title">სესია 7: Make.com ავტომატიზაციები, Lovable (No-Code აპლიკაციები) და AI Governance</div>
+                  <span class="session-badge">ავტომატიზაცია & პოლიტიკა</span>
                 </div>
-                <div class="session-time">ხანგრძლივობა: 2 საათი (ონლაინ)</div>
+                <div class="session-time">ხანგრძლივობა: 2 საათი (დასწრებით)</div>
                 <div class="session-content">
-                  <strong>WhatsApp/Telegram ავტომატიზაცია Make.com-ით:</strong> რეალური სამუშაო ნაკადების (Workflows) აწყობა — მომხმარებლის საჩივარი WhatsApp-ში → AI ანალიზი → ავტომატური შეტყობინება მენეჯერს Telegram-ში; ახალი Wolt/Bolt შეფასება → სენტიმენტის ანალიზი → კვირის Summary ანგარიში. <strong>ხმოვანი AI (Otter.ai / Whisper):</strong> მენეჯერის ხმოვანი შენიშვნებისა (Voice Notes) და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების (Action Items) გამოყოფა. <strong>AI Governance:</strong> Shadow AI-ის პრევენცია, მაკდონალდსის შიდა AI გამოყენების პოლიტიკა, ROI მეტრიკები და 90-დღიანი Roadmap. კურსის შეჯამება და სერტიფიკატების გადაცემა.
+                  <strong>WhatsApp/Telegram ავტომატიზაცია Make.com-ით:</strong> რეალური სამუშაო ნაკადების (Workflows) აწყობა — მომხმარებლის საჩივარი WhatsApp-ში → AI ანალიზი → ავტომატური შეტყობინება მენეჯერს Telegram-ში; ახალი Wolt/Bolt შეფასება → სენტიმენტის ანალიზი → კვირის Summary ანგარიში. **ინციდენტების მართვა და Support Triage:** Wolt/Bolt ნეგატიური შეფასების შემოსვლისას Telegram-ში ავტომატური შეტყობინება და პრიორიტეტიზაცია. **Lovable (No-Code App Builder):** კოდის გარეშე შიდა საოპერაციო ხელსაწყოების (მაგ. ცვლების გაცვლის Tracker, HACCP-ის ციფრული ჩეკლისტი, ტექნიკის მომსახურების ჟურნალი) აწყობა 45 წუთში Supabase/Google Sheets-ის ინტეგრაციით. **ხმოვანი AI (Otter.ai / Whisper):** მენეჯერის ხმოვანი შენიშვნებისა (Voice Notes) და ცვლის ზეპირი ანგარიშების ავტომატური ტრანსკრიფცია, Notion AI-ში სტრუქტურირება და სამოქმედო აიტემების (Action Items) გამოყოფა. **AI Governance:** Shadow AI-ის პრევენცია, მაკდონალდსის შიდა AI გამოყენების პოლიტიკა, ROI მეტრიკები, Google Workspace-ის AI უსაფრთხოების პარამეტრები და 90-დღიანი Roadmap. კურსის შეჯამება და სერტიფიკატების გადაცემა.
                 </div>
                 <div class="session-practice">
-                  <strong>პრაქტიკა:</strong> Make.com-ში WhatsApp → AI → Telegram Workflow-ის სიმულაცია; Whisper-ით ხმოვანი შენიშვნის ტრანსკრიფცია და Notion AI-ში სტრუქტურირება. მაკდონალდსის შიდა AI პოლიტიკის ძირითადი პუნქტების ერთობლივი დრაფტინგი.
+                  <strong>პრაქტიკა:</strong> Make.com-ში WhatsApp → AI → Telegram Workflow-ის სიმულაცია; Lovable-ში შიდა საოპერაციო ხელსაწყოს აწყობა; Whisper-ით ხმოვანი შენიშვნის ტრანსკრიფცია და Notion AI-ში სტრუქტურირება. მაკდონალდსის შიდა AI პოლიტიკის ძირითადი პუნქტების ერთობლივი დრაფტინგი.
                 </div>
                 <div class="session-homework">
                   <strong>საშინაო დავალება:</strong> საკუთარი დეპარტამენტის 90-დღიანი AI დანერგვის Roadmap-ის და 3-ეტაპიანი ავტომატიზაციის იდეის ჩამოყალიბება.
@@ -1554,7 +1997,8 @@
       if (tabId === 'optionDemo') btnIndex = 0;
       if (tabId === 'optionA') btnIndex = 1;
       if (tabId === 'optionB') btnIndex = 2;
-      if (tabId === 'optionC') btnIndex = 3;
+      if (tabId === 'optionBPlus') btnIndex = 3;
+      if (tabId === 'optionC') btnIndex = 4;
       buttons[btnIndex].classList.add('active');
     }
 
@@ -1566,6 +2010,19 @@
       } else {
         menu.style.display = 'flex';
       }
+    }
+
+
+    // Reveal Price Function
+    function revealPrice(btn) {
+      const container = btn.closest('.price-container');
+      const price = container.querySelector('.price');
+      price.classList.remove('blurred');
+      price.classList.add('revealed');
+      container.classList.add('is-revealed');
+      setTimeout(() => {
+        btn.remove();
+      }, 400);
     }
 
     // Progress Bar on Scroll
