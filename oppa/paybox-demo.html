@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPPA PayBox Terminal Simulator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #0d6efd;
+      --deep-blue: #0037d0;
+      --oppa-orange: #ff661c;
+      --charcoal: #1e1e24;
+      --light-gray: #f4f6f9;
+      --success-green: #2ec4b6;
+      --terminal-bg: #111116;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fira GO', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: #1a1a24;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Outer PayBox Hardware Wrapper */
+    .paybox-machine {
+      background: linear-gradient(145deg, #2b2b36, #15151c);
+      border: 8px solid #3a3a4a;
+      border-radius: 40px;
+      width: 1000px;
+      height: 750px;
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 
+                  inset 0 0 20px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .paybox-machine::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--oppa-orange));
+    }
+
+    /* Left Side: Touch Screen */
+    .terminal-screen {
+      background-color: var(--charcoal);
+      border-right: 6px solid #3a3a4a;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen-header {
+      background: linear-gradient(to right, var(--deep-blue), var(--primary-blue));
+      padding: 18px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .brand-logo {
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-logo span {
+      color: var(--oppa-orange);
+    }
+
+    .terminal-id {
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 20px;
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+
+    .screen-content {
+      flex: 1;
+      padding: 25px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .welcome-text {
+      margin-bottom: 20px;
+    }
+
+    .welcome-text h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .welcome-text p {
+      color: #a0a0b0;
+      font-size: 13px;
+    }
+
+    /* Grid of Services */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .service-card {
+      background: #252530;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .service-card:hover {
+      background: #2d2d3a;
+      transform: translateY(-2px);
+      border-color: var(--primary-blue);
+    }
+
+    .service-card.active {
+      background: rgba(13, 110, 253, 0.15);
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 15px rgba(13, 110, 253, 0.25);
+    }
+
+    .service-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .service-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Flow States (Inputs/Details) */
+    .flow-container {
+      display: none;
+      background: #252530;
+      border-radius: 20px;
+      padding: 20px;
+      flex: 1;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .flow-container.active {
+      display: flex;
+    }
+
+    .flow-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--oppa-orange);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      color: #a0a0b0;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .terminal-input {
+      width: 100%;
+      background: #191922;
+      border: 2px solid #3a3a4a;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .terminal-input:focus {
+      border-color: var(--primary-blue);
+    }
+
+    /* Keyboard / Numpad inside screen */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 240px;
+      margin: 15px auto 0;
+    }
+
+    .num-btn {
+      background: #1c1c25;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+    }
+
+    .num-btn:active {
+      background: var(--primary-blue);
+    }
+
+    /* Screen Footer */
+    .screen-footer {
+      padding: 15px 25px;
+      background: #181822;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-screen {
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-back {
+      background: #2e2e3e;
+      color: #fff;
+    }
+
+    .btn-next {
+      background: var(--primary-blue);
+      color: #fff;
+    }
+
+    .btn-next:disabled {
+      background: #333;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    /* Right Side: Hardware Slots (LED highlights) */
+    .hardware-side {
+      background-color: var(--terminal-bg);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .hardware-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #a0a0b0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .hardware-device {
+      width: 100%;
+      background: #1d1d24;
+      border: 3px solid #333;
+      border-radius: 18px;
+      padding: 20px 15px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: border-color 0.3s;
+    }
+
+    .hardware-device.active {
+      border-color: var(--oppa-orange);
+      box-shadow: 0 0 15px rgba(255, 102, 28, 0.2);
+    }
+
+    .slot-led {
+      width: 80%;
+      height: 6px;
+      background-color: #222;
+      border-radius: 3px;
+      margin-bottom: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hardware-device.active .slot-led {
+      background-color: var(--oppa-orange);
+      box-shadow: 0 0 10px var(--oppa-orange);
+      animation: ledPulse 1s infinite alternate;
+    }
+
+    @keyframes ledPulse {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    .hardware-btn-group {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-hw {
+      flex: 1;
+      padding: 8px;
+      background: #2d2d3a;
+      border: 1px solid #444;
+      color: #ccc;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-hw:hover {
+      background: #3d3d4e;
+      color: #fff;
+    }
+
+    /* Voice Assistant Ring */
+    .voice-device {
+      width: 100%;
+      background: #1d1d24;
+      border: 3px solid #333;
+      border-radius: 18px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .voice-ring {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(13, 110, 253, 0.1);
+      border: 3px solid var(--primary-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .voice-ring.listening {
+      animation: ripple 1.2s infinite ease-in-out;
+      background: rgba(255, 102, 28, 0.2);
+      border-color: var(--oppa-orange);
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 28, 0.4); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(255, 102, 28, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 28, 0); }
+    }
+
+    /* Receipts / Status area */
+    .status-summary {
+      width: 100%;
+      background: #191920;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #2e2e38;
+      font-size: 12px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .status-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-label {
+      color: #888;
+    }
+
+    .status-val {
+      font-weight: 700;
+    }
+
+    .status-val.highlight {
+      color: var(--oppa-orange);
+    }
+
+    /* Live Logs overlay */
+    .demo-console {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 320px;
+      height: 120px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 10px;
+      color: #00ffcc;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .console-line {
+      margin-bottom: 4px;
+    }
+
+    .console-tag {
+      color: var(--oppa-orange);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Outer PayBox Hardware Wrapper -->
+  <div class="paybox-machine">
+    
+    <!-- Touch Screen Panel -->
+    <div class="terminal-screen">
+      
+      <!-- Screen Header -->
+      <div class="screen-header">
+        <div class="brand-logo">OPPA<span>.ge</span></div>
+        <div class="terminal-id">PAYBOX #2984</div>
+      </div>
+
+      <!-- Main Interactive Space -->
+      <div class="screen-content">
+        
+        <!-- Welcome / Service Selector State -->
+        <div id="state-home" class="screen-state">
+          <div class="welcome-text">
+            <h1>გამარჯობა!</h1>
+            <p>აირჩიეთ სასურველი სერვისი ან გამოიყენეთ ხმოვანი ასისტენტი მარჯვნივ.</p>
+          </div>
+
+          <div class="services-grid">
+            <div class="service-card" onclick="selectService('bog', '🏦 საქართველოს ბანკი')">
+              <span class="service-icon">🏦</span>
+              <span class="service-name">საქართველოს ბანკი</span>
+            </div>
+            <div class="service-card" onclick="selectService('energo', '🔌 ენერგო-პრო')">
+              <span class="service-icon">🔌</span>
+              <span class="service-name">ენერგო-პრო ჯორჯია</span>
+            </div>
+            <div class="service-card" onclick="selectService('magti', '📱 მაგთიკომი')">
+              <span class="service-icon">📱</span>
+              <span class="service-name">მაგთიკომი</span>
+            </div>
+            <div class="service-card" onclick="selectService('silknet', '🌐 სილქნეტი')">
+              <span class="service-icon">🌐</span>
+              <span class="service-name">სილქნეტი</span>
+            </div>
+            <div class="service-card" onclick="selectService('gwp', '💧 GWP წყალი')">
+              <span class="service-icon">💧</span>
+              <span class="service-name">GWP</span>
+            </div>
+            <div class="service-card" onclick="selectService('municipal', '🚌 მუნიციპალური')">
+              <span class="service-icon">🚌</span>
+              <span class="service-name">ტრანსპორტი</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Details State -->
+        <div id="state-details" class="flow-container">
+          <div>
+            <div class="flow-title">
+              <span id="details-icon">🏦</span>
+              <span id="details-title">საქართველოს ბანკი</span>
+            </div>
+            <div class="input-group">
+              <span class="input-label" id="label-account">ანგარიშის / პირადი ნომერი</span>
+              <input type="text" id="input-account" class="terminal-input" placeholder="შეიყვანეთ მნიშვნელობა" readonly>
+            </div>
+            <div class="numpad">
+              <button class="num-btn" onclick="pressNum('1')">1</button>
+              <button class="num-btn" onclick="pressNum('2')">2</button>
+              <button class="num-btn" onclick="pressNum('3')">3</button>
+              <button class="num-btn" onclick="pressNum('4')">4</button>
+              <button class="num-btn" onclick="pressNum('5')">5</button>
+              <button class="num-btn" onclick="pressNum('6')">6</button>
+              <button class="num-btn" onclick="pressNum('7')">7</button>
+              <button class="num-btn" onclick="pressNum('8')">8</button>
+              <button class="num-btn" onclick="pressNum('9')">9</button>
+              <button class="num-btn" onclick="pressNum('C')">C</button>
+              <button class="num-btn" onclick="pressNum('0')">0</button>
+              <button class="num-btn" onclick="pressNum('OK')">OK</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Wait State -->
+        <div id="state-payment" class="flow-container">
+          <div>
+            <div class="flow-title">💳 გადახდის მოლოდინი</div>
+            <p class="text-sm text-gray-400 mb-4">ჩააგდეთ კუპიურები მიმღებში ან მიადეთ ბარათი POS ტერმინალს მარჯვნივ.</p>
+            
+            <div class="status-summary" style="margin-top: 20px; font-size: 14px; padding: 18px;">
+              <div class="status-row" style="margin-bottom: 12px;">
+                <span class="status-label">სერვისი:</span>
+                <span id="summary-service" class="status-val">საქართველოს ბანკი</span>
+              </div>
+              <div class="status-row" style="margin-bottom: 12px;">
+                <span class="status-label">მომხმარებელი:</span>
+                <span id="summary-account" class="status-val">GE92BG0000000129</span>
+              </div>
+              <div class="status-row">
+                <span class="status-label">მიღებული თანხა:</span>
+                <span id="summary-amount" class="status-val highlight" style="font-size: 18px;">0.00 ₾</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="state-success" class="flow-container" style="align-items: center; justify-content: center; text-align: center;">
+          <span style="font-size: 60px; color: var(--success-green); margin-bottom: 15px;">✓</span>
+          <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 10px;">გადახდა წარმატებით დასრულდა!</h2>
+          <p style="color: #a0a0b0; font-size: 13px; margin-bottom: 20px;">ქვითარი იბეჭდება. გმადლობთ, რომ სარგებლობთ OPPA-თი.</p>
+          <button class="btn-screen btn-next" onclick="resetTerminal()">მთავარი გვერდი</button>
+        </div>
+
+      </div>
+
+      <!-- Screen Footer Navigation -->
+      <div class="screen-footer">
+        <button id="btn-footer-back" class="btn-screen btn-back" onclick="goBack()" style="visibility: hidden;">უკან</button>
+        <button id="btn-footer-next" class="btn-screen btn-next" onclick="goNext()" disabled style="visibility: hidden;">გაგრძელება</button>
+      </div>
+    </div>
+
+    <!-- Right Side: Hardware Slots / Interactions -->
+    <div class="hardware-side">
+      
+      <!-- Voice Interaction -->
+      <div class="voice-device">
+        <div class="hardware-title">AI Voice Assistant</div>
+        <div class="voice-ring" id="mic-ring" onclick="toggleVoiceAssistant()">🎤</div>
+        <div style="font-size: 10px; color: #aaa; text-align: center;" id="voice-status">ხმოვანი მართვა</div>
+        <div class="hardware-btn-group">
+          <button class="btn-hw" onclick="simulateVoice('BOG')">"50ლ BOG-ზე"</button>
+          <button class="btn-hw" onclick="simulateVoice('Energo')">"დენი 20ლ"</button>
+        </div>
+      </div>
+
+      <!-- Bill Acceptor -->
+      <div class="hardware-device" id="device-bills">
+        <div class="hardware-title">კუპიურის მიმღები</div>
+        <div class="slot-led"></div>
+        <div class="hardware-btn-group">
+          <button class="btn-hw" onclick="insertBill(10)">10 ₾</button>
+          <button class="btn-hw" onclick="insertBill(20)">20 ₾</button>
+          <button class="btn-hw" onclick="insertBill(50)">50 ₾</button>
+        </div>
+      </div>
+
+      <!-- POS Terminal (Card Reader) -->
+      <div class="hardware-device" id="device-pos">
+        <div class="hardware-title">ბარათის POS ტერმინალი</div>
+        <div class="slot-led" style="background-color: #222;"></div>
+        <div class="hardware-btn-group">
+          <button class="btn-hw" style="background: var(--primary-blue); color: white;" onclick="tapCard()">💳 Tap Card</button>
+        </div>
+      </div>
+
+      <!-- Status / Receipts -->
+      <div class="status-summary">
+        <div class="status-row">
+          <span class="status-label">ქაღალდი:</span>
+          <span class="status-val" style="color: var(--success-green);">კარგი</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">კავშირი:</span>
+          <span class="status-val" style="color: var(--success-green);">LTE Online</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Console overlay (Console logs for OPPA devs) -->
+    <div class="demo-console" id="console-logs">
+      <div class="console-line"><span class="console-tag">[System]</span> PayBox Emulator initialized.</div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentState = 'home';
+    let currentService = null;
+    let currentServiceName = '';
+    let accountValue = '';
+    let insertedAmount = 0;
+    let isListening = false;
+
+    const states = {
+      home: document.getElementById('state-home'),
+      details: document.getElementById('state-details'),
+      payment: document.getElementById('state-payment'),
+      success: document.getElementById('state-success')
+    };
+
+    const footerBack = document.getElementById('btn-footer-back');
+    const footerNext = document.getElementById('btn-footer-next');
+    const logs = document.getElementById('console-logs');
+
+    function log(message, tag = 'System') {
+      const line = document.createElement('div');
+      line.className = 'console-line';
+      line.innerHTML = `<span class="console-tag">[${tag}]</span> ${message}`;
+      logs.appendChild(line);
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    function switchState(stateName) {
+      currentState = stateName;
+      // Hide all states
+      Object.keys(states).forEach(key => {
+        states[key].style.display = 'none';
+      });
+      // Show current state
+      states[stateName].style.display = 'block';
+
+      // Adjust footer buttons
+      if (stateName === 'home') {
+        footerBack.style.visibility = 'hidden';
+        footerNext.style.visibility = 'hidden';
+      } else if (stateName === 'details') {
+        footerBack.style.visibility = 'visible';
+        footerNext.style.visibility = 'visible';
+        footerNext.disabled = accountValue.length < 4;
+      } else if (stateName === 'payment') {
+        footerBack.style.visibility = 'visible';
+        footerNext.style.visibility = 'visible';
+        footerNext.textContent = 'გადახდა';
+        footerNext.disabled = insertedAmount <= 0;
+      } else if (stateName === 'success') {
+        footerBack.style.visibility = 'hidden';
+        footerNext.style.visibility = 'hidden';
+      }
+      log(`Switched state to: ${stateName}`);
+    }
+
+    function selectService(id, name) {
+      currentService = id;
+      currentServiceName = name;
+      document.getElementById('details-title').textContent = name;
+      
+      // Update inputs / labels based on service type
+      const iconSpan = document.getElementById('details-icon');
+      const labelAcc = document.getElementById('label-account');
+      const inputAcc = document.getElementById('input-account');
+      
+      accountValue = '';
+      inputAcc.value = '';
+
+      if (id === 'bog') {
+        iconSpan.textContent = '🏦';
+        labelAcc.textContent = 'ანგარიშის ან პირადი ნომერი';
+        inputAcc.placeholder = 'მაგ: 0102409... ან GE92BG...';
+      } else if (id === 'energo') {
+        iconSpan.textContent = '🔌';
+        labelAcc.textContent = 'აბონენტის ნომერი';
+        inputAcc.placeholder = 'მაგ: 198429...';
+      } else {
+        iconSpan.textContent = '📱';
+        labelAcc.textContent = 'ტელეფონის ნომერი';
+        inputAcc.placeholder = 'მაგ: 599...';
+      }
+
+      switchState('details');
+    }
+
+    function pressNum(val) {
+      const input = document.getElementById('input-account');
+      if (val === 'C') {
+        accountValue = '';
+      } else if (val === 'OK') {
+        if (accountValue.length >= 4) {
+          goNext();
+        }
+        return;
+      } else {
+        accountValue += val;
+      }
+      input.value = accountValue;
+      footerNext.disabled = accountValue.length < 4;
+    }
+
+    function goBack() {
+      if (currentState === 'details') {
+        switchState('home');
+      } else if (currentState === 'payment') {
+        switchState('details');
+      }
+    }
+
+    function goNext() {
+      if (currentState === 'details') {
+        // Set values for summary
+        document.getElementById('summary-service').textContent = currentServiceName;
+        document.getElementById('summary-account').textContent = accountValue;
+        document.getElementById('summary-amount').textContent = '0.00 ₾';
+        insertedAmount = 0;
+        
+        // Highlight cash slot
+        document.getElementById('device-bills').classList.add('active');
+        document.getElementById('device-pos').classList.add('active');
+        
+        switchState('payment');
+      } else if (currentState === 'payment') {
+        if (insertedAmount > 0) {
+          // Process finish
+          log(`Processing transaction of ${insertedAmount}₾...`, 'Server');
+          document.getElementById('device-bills').classList.remove('active');
+          document.getElementById('device-pos').classList.remove('active');
+          
+          setTimeout(() => {
+            switchState('success');
+            log(`Success! Transaction approved. ID: TXN-${Math.floor(Math.random()*90000)+10000}`, 'Server');
+          }, 1000);
+        }
+      }
+    }
+
+    function insertBill(amount) {
+      if (currentState !== 'payment') {
+        log(`Ignored cash insertion: terminal not in payment state.`, 'Hardware');
+        return;
+      }
+      insertedAmount += amount;
+      document.getElementById('summary-amount').textContent = `${insertedAmount}.00 ₾`;
+      log(`Inserted Bill: ${amount} ₾`, 'Hardware');
+      footerNext.disabled = false;
+    }
+
+    function tapCard() {
+      if (currentState !== 'payment') {
+        log(`Ignored card tap: terminal not in payment state.`, 'Hardware');
+        return;
+      }
+      log(`Card POS Tap detected. Processing card authorization...`, 'Hardware');
+      insertedAmount = 50; // Mock card charge
+      document.getElementById('summary-amount').textContent = `${insertedAmount}.00 ₾`;
+      footerNext.disabled = false;
+      goNext();
+    }
+
+    function toggleVoiceAssistant() {
+      const ring = document.getElementById('mic-ring');
+      const status = document.getElementById('voice-status');
+      isListening = !isListening;
+
+      if (isListening) {
+        ring.classList.add('listening');
+        status.textContent = 'გისმენთ...';
+        log('Voice assistant microphone opened. Listening for Georgian commands...', 'Voice');
+      } else {
+        ring.classList.remove('listening');
+        status.textContent = 'ხმოვანი მართვა';
+        log('Voice assistant microphone closed.', 'Voice');
+      }
+    }
+
+    function simulateVoice(command) {
+      log(`Received voice input simulation: "${command}"`, 'Voice');
+      isListening = true;
+      const ring = document.getElementById('mic-ring');
+      const status = document.getElementById('voice-status');
+      ring.classList.add('listening');
+      status.textContent = 'ამუშავებს...';
+
+      setTimeout(() => {
+        isListening = false;
+        ring.classList.remove('listening');
+        status.textContent = 'ხმოვანი მართვა';
+        
+        if (command === 'BOG') {
+          log('Voice Parser: Identified target service "BOG", amount 50₾', 'AI');
+          selectService('bog', '🏦 საქართველოს ბანკი');
+          pressNum('3'); pressNum('2'); pressNum('9'); pressNum('8');
+          setTimeout(() => {
+            goNext();
+            setTimeout(() => {
+              insertBill(50);
+            }, 800);
+          }, 800);
+        } else if (command === 'Energo') {
+          log('Voice Parser: Identified target service "Energo-Pro", amount 20₾', 'AI');
+          selectService('energo', '🔌 ენერგო-პრო');
+          pressNum('1'); pressNum('9'); pressNum('8'); pressNum('4');
+          setTimeout(() => {
+            goNext();
+            setTimeout(() => {
+              insertBill(20);
+            }, 800);
+          }, 800);
+        }
+      }, 1500);
+    }
+
+    function resetTerminal() {
+      currentService = null;
+      currentServiceName = '';
+      accountValue = '';
+      insertedAmount = 0;
+      document.getElementById('input-account').value = '';
+      switchState('home');
+    }
+  </script>
+
+</body>
+</html>

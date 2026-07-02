@@ -96,6 +96,7 @@ This index map shows the chronological structure of the **OPPA.GE Generative AI 
 - [[Tool - Telegram]]
 - [[Tool - Netlify]]
 - [[Tool - Stripe]]
+- [[Tool - ElevenLabs]] (Voice TTS)
 
 ## 🧠 Core Cross-Cutting Concepts
 - [[Concept - PII Compliance & Security]]
@@ -103,6 +104,7 @@ This index map shows the chronological structure of the **OPPA.GE Generative AI 
 - [[Concept - Event-Driven Alerts]]
 - [[Concept - Data Warehousing & Analytics]]
 - [[Concept - Low-Code UI Prototyping]]
+- [[Concept - Real-Time Voice Agents]] 🎙️
 
 ## 📑 Stage II Departmental Tracks
 - [[Track - Customer Support]]

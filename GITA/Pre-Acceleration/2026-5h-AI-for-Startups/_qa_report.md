@@ -3,7 +3,7 @@
 **Date:** 2026-07-02
 **Package:** `C:\Users\GBASILAIA\claude\ai2026\GITA\Pre-Acceleration\2026-5h-AI-for-Startups\`
 **Trainer:** გიორგი ბასილაია
-**Version:** v2 (7-ბლოკიანი სტრუქტურა)
+**Version:** v3 (8-ბლოკიანი სტრუქტურა + Tech Spec Block)
 
 ## Files in Package (3 total)
 
@@ -73,7 +73,7 @@ Both are grammatically correct (AI-ს used as object of verb that takes dative)
 
 ---
 
-## Program Structure (5 hours, 7 blocks)
+## Program Structure (5 hours, 8 blocks)
 
 | ბლოკი | თემა | წუთი |
 |---|---|---|
@@ -81,11 +81,12 @@ Both are grammatically correct (AI-ს used as object of verb that takes dative)
 | II | AI ინსტრუმენტები სტარტაპერებისთვის | 20 |
 | ☕ | შესვენება | 10 |
 | III | იდეის ვალიდაცია + Lean Canvas (SCAMPER, 5 Whys, Six Hats, JTBD) | 45 |
-| IV | ბრენდი და ვიზუალური იდენტობა + Gamma Pitch Deck | 50 |
-| V | No-Code MVP Lovable-ით + Supabase | 65 |
-| VI | ავტომატიზაცია (Make.com) | 30 |
+| IV | ბრენდი და ვიზუალური იდენტობა + Gamma Pitch Deck | 40 |
+| **V 🔴** | **ტექნიკური დავალების მომზადება (Tech Spec + Lovable Prompt)** | **20** |
+| VI | No-Code MVP Lovable-ით + Supabase | 55 |
+| VII | ავტომატიზაცია (Make.com) | 30 |
 | ☕ | შესვენება | 10 |
-| VII | Pitch Deck + Demo Day + Q&A | 40 |
+| VIII | Pitch Deck + Demo Day + Q&A | 40 |
 | **სულ კონტენტი** | | **280** |
 | **სულ შესვენებები** | | **20** |
 | **სულ დრო** | | **300 (5 საათი)** |
