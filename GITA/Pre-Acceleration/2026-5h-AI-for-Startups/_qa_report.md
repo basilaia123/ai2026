@@ -1,106 +1,58 @@
-# Georgian QA Report — GITA Pre-Acceleration 5h AI for Startups
+# Georgian QA Report — GITA Pre-Acceleration 10h AI for Startups
 
-**Date:** 2026-07-02
-**Package:** `C:\Users\GBASILAIA\claude\ai2026\GITA\Pre-Acceleration\2026-5h-AI-for-Startups\`
 **Trainer:** გიორგი ბასილაია
-**Version:** v3 (8-ბლოკიანი სტრუქტურა + Tech Spec Block)
+**Version:** 2-day 10h (10-ბლოკიანი სტრუქტურა)
 
-## Files in Package (3 total)
+## Files in Package
 
-| File | Type | Size | Purpose |
+| File | Type | Purpose |
+|---|---|---|
+| `day_plan.md` | Markdown | ორდღიანი 10-საათიანი ტრენინგის სრული გეგმა |
+| `day1-content.html` | HTML | Day 1 დეტალური ლექციის მასალები და რეფერენსები |
+| `day2-content.html` | HTML | Day 2 დეტალური ლექციის მასალები და რეფერენსები |
+| `prompt-library.html` | HTML | 45+ AI პრომპტის სრული ბიბლიოთეკა |
+| `v2-lecture-ideation-slides.html` | HTML | საპრეზენტაციო სლაიდები (Slide 1-26) |
+| `homework-ideation.html` | HTML | საშინაო დავალება (Part A + Part B) |
+| `day1_homework_template.md` | Markdown | დავალების გაგზავნის შაბლონი |
+| `pre_post_quiz.md` | Markdown | პრე და პოსტ ტესტი შეფასებისთვის |
+
+---
+
+## Program Structure (10 hours, 10 blocks)
+
+### Day 1: AI Foundation & Validation (5 საათი = 300 წუთი)
+
+| ბლოკი | თემა | წუთი | კუმულაციური |
 |---|---|---|---|
-| `day_plan.md` | Markdown | 28 KB | ერთი გაერთიანებული 5-საათიანი დღე LAB ფორმატში |
-| `pre_post_quiz.md` | Markdown | 18 KB | 10+10 კითხვიანი პრე და პოსტ ტესტი შეფასებისთვის |
+| 🆕 Welcome | მონაწილეთა იდეების პრეზენტაცია | 20 | 0:20 |
+| I | AI-ის სტრატეგიული ჩარჩო + Customer Interview Basics | 40 | 1:00 |
+| II | AI ინსტრუმენტები | 30 | 1:10 |
+| ☕ | შესვენება (ერთჯერადი) | 30 | 1:40 |
+| III | Brainstorming + AI-ით იდეაცია | 65 | 3:05 |
+| IV | ვალიდაცია + Lean Canvas + 2 Personas + Competitor Matrix | 55 | 4:00 |
+| V | Day 1 Wrap-up + Homework Setup | 60 | 5:00 |
 
-**Total: ~46 KB** | **Ready for delivery** ✅
+### Day 2: Product & Launch (5 საათი = 300 წუთი)
 
----
-
-## Step 6.5: 6-Check Georgian QA Results
-
-### Check 1: Em-dashes (`—`) — 0 instances
-**Status:** ✅ PASS
-
-### Check 2: En-dashes (`–`) — 0 instances
-**Status:** ✅ PASS
-
-### Check 3: Forbidden Abbreviations (`მაგ.`, `სთ.`, `გვ.`, `შპს`) — 0 instances
-**Status:** ✅ PASS
-
-### Check 4: AI-ს in genitive context — 2 instances (False positives)
-**Status:** ✅ PASS
-
-Both instances are **dative** (correct form), NOT genitive:
-- Line 69: "AI-ს ეუბნებით" — dative object of "ეუბნებით" (you tell)
-- Line 186: "AI-ს აძლევთ" — dative object of "აძლევთ" (you give)
-
-Both are grammatically correct (AI-ს used as object of verb that takes dative).
-
-### Check 5: Foreign-word genitive — 0 instances
-**Status:** ✅ PASS
-**Check words:** workflow, Copilot, NotebookLM, Claude, Perplexity, Lovable, Make.com, Canva, SharePoint, ChatGPT, Gemini, Gamma
-
-### Check 6: Unwanted brands — 0 instances
-**Status:** ✅ PASS
-
----
-
-## Training-Checker Audit Results
-
-| File | H1 | H2 | H3 | Practical | AI Prompts | Score |
-|---|---|---|---|---|---|---|
-| day_plan.md | 1 ✅ | 5 ✅ | 25+ ✅ | 8 ✅ | 25+ ✅ | ⭐⭐⭐⭐⭐ |
-| pre_post_quiz.md | 1 ✅ | 6 ✅ | 10 ✅ | N/A (quiz) | 0 (by design) | ⭐⭐⭐⭐⭐ |
-
-**Overall Score: 5.0 / 5.0** ✅ SHIP
+| ბლოკი | თემა | წუთი | კუმულაციური |
+|---|---|---|---|
+| VI | Brand + Photo + Copywriting + Gamma | 65 | 1:05 |
+| ☕ | შესვენება (ერთჯერადი) | 30 | 1:35 |
+| VII | Technical Specification | 20 | 1:55 |
+| VIII | Lovable MVP + GDPR + Export | 80 | 3:15 |
+| IX | ავტომატიზაცია (Make.com) - გამარტივებული Workflow | 45 | 4:00 |
+| X | Pitch Deck + Demo Day + AI Grill Session | 60 | 5:00 |
 
 ---
 
 ## Verification Checklist (Project Standards)
 
-- [x] No em-dashes in body text (0 found)
-- [x] No en-dashes (0 found)
-- [x] No forbidden abbreviations
-- [x] AI-ს dative correct (2 verified, no genitive errors)
-- [x] AI-ის genitive used correctly throughout
-- [x] No unwanted brand references
-- [x] At least one framework referenced (SCAMPER, 5 Whys, Six Thinking Hats, JTBD, Lean Canvas, Value Proposition)
-- [x] AI tools use 🟢 GO rating (Claude, Perplexity, NotebookLM, Lovable, Gamma, Make.com)
-- [x] Each block has explicit minute timing
-- [x] ☕ Break markers present in day_plan.md (2 breaks × 10 min)
-- [x] 📋 Homework section in day_plan.md
-- [x] Trainer can reference C.R.E.A.T.E. patterns from prior projects
-
----
-
-## Program Structure (5 hours, 8 blocks)
-
-| ბლოკი | თემა | წუთი |
-|---|---|---|
-| I | AI-ის სტრატეგიული ჩარჩო მეწარმეებისთვის (AI Landscape, C.R.E.A.T.E., AI Security) | 30 |
-| II | AI ინსტრუმენტები სტარტაპერებისთვის | 20 |
-| ☕ | შესვენება | 10 |
-| III | იდეის ვალიდაცია + Lean Canvas (SCAMPER, 5 Whys, Six Hats, JTBD) | 45 |
-| IV | ბრენდი და ვიზუალური იდენტობა + Gamma Pitch Deck | 40 |
-| **V 🔴** | **ტექნიკური დავალების მომზადება (Tech Spec + Lovable Prompt)** | **20** |
-| VI | No-Code MVP Lovable-ით + Supabase | 55 |
-| VII | ავტომატიზაცია (Make.com) | 30 |
-| ☕ | შესვენება | 10 |
-| VIII | Pitch Deck + Demo Day + Q&A | 40 |
-| **სულ კონტენტი** | | **280** |
-| **სულ შესვენებები** | | **20** |
-| **სულ დრო** | | **300 (5 საათი)** |
-
----
-
-## Final Status
-
-✅ **READY FOR DELIVERY**
-
-Both files pass the Georgian QA standards. The package is complete and internally consistent. The pre/post quiz uses the same 10 questions for measurable progress tracking.
-
-**Next steps:**
-1. Send `day_plan.md` to trainer (Giorgi) for review 1 week before training
-2. Create Google Form for pre-test (sent 3-5 days before) and post-test (after training)
-3. Optionally create HTML lecture materials (slides, exercises, quick-ref) following the same Recipe 8 pattern as 2026-5h-MVP-Day
-4. Old `2026-5h-Brainstorming-Day/` folder preserved as backup — user to confirm deletion
+- [x] No em-dashes or en-dashes in body text (all verified)
+- [x] No forbidden abbreviations (მაგ., სთ., გვ., შპს.)
+- [x] AI-ს context-dative checked and correct
+- [x] AI-ის genitive checked and correct
+- [x] All file links and cross-references verified
+- [x] Day 1 content is exactly 300 minutes (including 30-min break)
+- [x] Day 2 content is exactly 300 minutes (including 30-min break)
+- [x] Homework Part A & Part B updated and aligned
+- [x] 45+ Prompts in Prompt Library mapped with unique IDs
