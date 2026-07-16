@@ -19,25 +19,25 @@ from lxml import etree
 
 # ---------- Theme ----------
 THEME = {
-    "primary": RGBColor(0xF5, 0x9E, 0x0B),       # amber-500
-    "primary_dark": RGBColor(0xD9, 0x77, 0x06),  # amber-600
-    "primary_light": RGBColor(0xFD, 0xF3, 0xD8), # amber-100  bg for highlight
-    "accent": RGBColor(0xEF, 0x44, 0x44),        # red-500
-    "success": RGBColor(0x10, 0xB9, 0x81),       # emerald-500
+    "primary": RGBColor(0x4F, 0x46, 0xE5),       # indigo-600
+    "primary_dark": RGBColor(0x37, 0x30, 0xA3),  # indigo-800
+    "primary_light": RGBColor(0xEE, 0xF2, 0xFF), # indigo-50
+    "accent": RGBColor(0xF4, 0x3F, 0x5E),        # rose-500
+    "success": RGBColor(0x05, 0x96, 0x69),       # emerald-600
     "info": RGBColor(0x3B, 0x82, 0xF6),          # blue-500
-    "warning": RGBColor(0xF5, 0x9E, 0x0B),       # amber (alias)
-    "danger": RGBColor(0xEF, 0x44, 0x44),
-    "text": RGBColor(0x1E, 0x29, 0x3B),          # slate-800
+    "warning": RGBColor(0x4F, 0x46, 0xE5),       # alias to primary
+    "danger": RGBColor(0xF4, 0x3F, 0x5E),
+    "text": RGBColor(0x0F, 0x17, 0x2A),          # slate-900
     "text_secondary": RGBColor(0x47, 0x55, 0x69),# slate-600
     "text_muted": RGBColor(0x94, 0xA3, 0xB8),    # slate-400
     "bg": RGBColor(0xFF, 0xFF, 0xFF),
     "bg_light": RGBColor(0xF8, 0xFA, 0xFC),      # slate-50
     "border": RGBColor(0xE2, 0xE8, 0xF0),        # slate-200
-    "highlight": RGBColor(0xFD, 0xF3, 0xD8),     # amber-100
-    "warning_bg": RGBColor(0xFF, 0xF3, 0xE0),    # amber-50 warning box bg
-    "danger_bg": RGBColor(0xFE, 0xE2, 0xE2),     # red-100
-    "success_bg": RGBColor(0xD1, 0xFA, 0xE5),    # emerald-100
-    "info_bg": RGBColor(0xDB, 0xEA, 0xFE),       # blue-100
+    "highlight": RGBColor(0xEE, 0xF2, 0xFF),     # indigo-50
+    "warning_bg": RGBColor(0xFF, 0xF7, 0xED),    # orange-50
+    "danger_bg": RGBColor(0xFF, 0xF1, 0xF2),     # rose-50
+    "success_bg": RGBColor(0xEC, 0xFD, 0xF5),    # emerald-50
+    "info_bg": RGBColor(0xEF, 0xF6, 0xFF),       # blue-50
 }
 
 FONT_TITLE = "Sylfaen"   # ships with Windows; renders Georgian well

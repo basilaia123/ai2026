@@ -34,6 +34,10 @@ def block_to_dict(el: Tag):
     if name == "div" and "slide" in cls:
         return None
 
+    # Skip goal/benefit boxes to prevent PPTX slide overflows
+    if "goal-benefit-box" in cls:
+        return None
+
     if name == "h3":
         return {"type": "h3", "text": text_of(el)}
     if name == "h4":
