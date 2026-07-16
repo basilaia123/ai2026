@@ -11,7 +11,8 @@
 | `day1-content.html` | HTML | Day 1 დეტალური ლექციის მასალები და რეფერენსები |
 | `day2-content.html` | HTML | Day 2 დეტალური ლექციის მასალები და რეფერენსები |
 | `prompt-library.html` | HTML | 45+ AI პრომპტის სრული ბიბლიოთეკა |
-| `v2-lecture-ideation-slides.html` | HTML | საპრეზენტაციო სლაიდები (Slide 1-26) |
+| `day1-slides.html` | HTML | Day 1 საპრეზენტაციო სლაიდები (19 სლაიდი) |
+| `day2-slides.html` | HTML | Day 2 საპრეზენტაციო სლაიდები (13 სლაიდი) |
 | `homework-ideation.html` | HTML | საშინაო დავალება (Part A + Part B) |
 | `day1_homework_template.md` | Markdown | დავალების გაგზავნის შაბლონი |
 | `pre_post_quiz.md` | Markdown | პრე და პოსტ ტესტი შეფასებისთვის |

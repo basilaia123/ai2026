@@ -13,7 +13,8 @@
 |---|---|---|---|---|
 | 1 | **index.html** | HTML | 21 KB | 🌟 **Landing page** — პირველი შთაბერწვისი (გახსენით ეს!) |
 | 2 | **day_plan.md** | Markdown | 58 KB | 📅 **სრული ტრენინგის გეგმა** — 10 ბლოკი, 5+5 საათი |
-| 3 | **v2-lecture-ideation-slides.html** | HTML | 50 KB | 📊 **სლაიდები** — 24 slides (Welcome + Day 1 + Day 2) |
+| 3 | **day1-slides.html** | HTML | - | 📊 **Day 1 სლაიდები** (Welcome + AI Foundation & Validation) |
+| 3.1 | **day2-slides.html** | HTML | - | 📊 **Day 2 სლაიდები** (Product & Launch) |
 | 4 | **prompt-library.html** | HTML | 67 KB | 🤖 **35+ AI პრომპტი** — Brainstorming, Brand, Tech Spec, etc. |
 | 5 | **homework-ideation.html** | HTML | 32 KB | 📝 **საშინაო დავალება** — Part A (20 წთ) + Part B (1 კვირა) |
 
@@ -43,7 +44,7 @@
 
 ### 🎓 **ტრენერისთვის:**
 - **day_plan.md** → "როგორ წავიდე ტრენინგს?"
-- **v2-lecture-ideation-slides.html** → "რა ვაჩვენო მონაწილეებს?"
+- **day1-slides.html** / **day2-slides.html** → "რა ვაჩვენო მონაწილეებს?"
 - **prompt-library.html** → "რა პრომპტით ვიმუშაო AI-სთან?"
 - **pre_post_quiz.md** → "როგორ გავიგო პროგრესი?"
 - **_qa_report.md** → "რა უნდა გამოვისწორო ფაილებში?"
@@ -120,7 +121,8 @@
 |---|---|---|
 | index.html | ✅ 2-დღიანი | Hero + schedule + outcomes |
 | day_plan.md | ✅ სრული | 10 ბლოკი + Part A/B homework |
-| v2-lecture-ideation-slides.html | ✅ 24 slides | Welcome (22-24) + Days 1-2 |
+| day1-slides.html | ✅ 19 slides | Welcome (22-24) + Day 1 |
+| day2-slides.html | ✅ 13 slides | Day 2 |
 | prompt-library.html | ✅ 35+ prompts | 8 კატეგორია |
 | homework-ideation.html | ✅ Part A + B | 2-ნაწილადი |
 | v2-lecture-ideation-quick-ref.html | ✅ 2-დღიანი | Day 1 + Day 2 tables |
