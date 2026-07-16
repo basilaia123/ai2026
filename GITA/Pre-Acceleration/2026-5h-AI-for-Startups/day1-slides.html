@@ -35,10 +35,14 @@
         position: sticky; top: 0; z-index: 1000;
         background: white;
         border-bottom: 3px solid var(--primary-color);
-        padding: 0.8rem 15.5rem 0.8rem 1.5rem;
+        padding: 0.8rem 15.5rem 0.8rem 4.5rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         display: flex; justify-content: space-between; align-items: center;
         flex-wrap: wrap; gap: 1rem;
+        transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body.navigator-collapsed .top-nav {
+        padding-left: 4.5rem;
     }
     body.dark .top-nav {
         background: #1e293b;
@@ -54,11 +58,45 @@
     body.dark .top-nav a { color: #cbd5e1; }
     body.dark .top-nav a:hover, body.dark .top-nav a.active { color: #818cf8; }
 
-    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; transition: margin-left 0.3s; }
+    .navigator-toggle-btn {
+        position: absolute;
+        left: 1.5rem;
+        top: 0.75rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 1100;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+    body.dark .navigator-toggle-btn {
+        background: #818cf8;
+    }
+    .navigator-toggle-btn:hover {
+        transform: scale(1.05);
+        background: var(--primary-dark);
+    }
+    body.dark .navigator-toggle-btn:hover {
+        background: #6366f1;
+    }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     @media (min-width: 1400px) {
         .container {
             margin-left: calc(3rem + 260px + 3rem);
             max-width: 1000px;
+        }
+        body.navigator-collapsed .container {
+            margin-left: auto;
+            margin-right: auto;
         }
     }
 
@@ -336,7 +374,11 @@
         overflow-y: auto;
         z-index: 999;
         scrollbar-width: thin;
-        transition: all 0.3s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .slide-navigator.collapsed {
+        transform: translateX(-320px);
+        box-shadow: none;
     }
     body.dark .slide-navigator {
         background: rgba(30, 41, 59, 0.85);
@@ -396,8 +438,14 @@
     }
 
     @media (max-width: 1400px) {
-        .slide-navigator {
+        .slide-navigator, .navigator-toggle-btn {
             display: none;
+        }
+        .top-nav {
+            padding-left: 1.5rem;
+        }
+        body.navigator-collapsed .top-nav {
+            padding-left: 1.5rem;
         }
     }
 
@@ -461,6 +509,7 @@
 </div>
 
 <nav class="top-nav">
+    <button class="navigator-toggle-btn" id="navigatorToggle" title="ნავიგაციის დამალვა">✕</button>
     <a href="index.html" class="logo"> GITA 10h AI for Startups</a>
     <div>
         <a href="day1-slides.html" class="active">📊 Day 1 სლაიდები</a>
@@ -1762,6 +1811,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // Sidebar Collapsible Logic
+    const toggleBtn = document.getElementById('navigatorToggle');
+    const sidebar = document.getElementById('slideNavigator');
+
+    function setNavigatorState(collapsed) {
+        if (collapsed) {
+            sidebar.classList.add('collapsed');
+            document.body.classList.add('navigator-collapsed');
+            toggleBtn.innerHTML = '🧭';
+            toggleBtn.title = 'ნავიგაციის ჩვენება';
+            localStorage.setItem('navigator-collapsed', 'true');
+        } else {
+            sidebar.classList.remove('collapsed');
+            document.body.classList.remove('navigator-collapsed');
+            toggleBtn.innerHTML = '✕';
+            toggleBtn.title = 'ნავიგაციის დამალვა';
+            localStorage.setItem('navigator-collapsed', 'false');
+        }
+    }
+
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            setNavigatorState(!isCollapsed);
+        });
+
+        // Initialize state from localStorage
+        const storedState = localStorage.getItem('navigator-collapsed');
+        if (storedState === 'true') {
+            setNavigatorState(true);
+        } else {
+            setNavigatorState(false);
+        }
+    }
 });
 
 // Search and Filter functionality
