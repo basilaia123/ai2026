@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>მონაწილე გუნდები - AI ინსტრუმენტები სტარტაპერებისთვის | GITA 5h</title>
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet"/>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --primary-color: #4f46e5;       /* Indigo-600 */
+        --primary-dark: #3730a3;        /* Indigo-800 */
+        --accent-color: #f43f5e;        /* Rose-500 */
+        --success-color: #059669;       /* Emerald-600 */
+        --info-color: #3b82f6;          /* Blue-500 */
+        --text-primary: #0f172a;        /* Slate-900 */
+        --text-secondary: #475569;      /* Slate-600 */
+        --bg-light: #f8fafc;            /* Slate-50 */
+        --border-color: #e2e8f0;        /* Slate-200 */
+    }
+    body {
+        font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background: var(--bg-light);
+    }
+    .top-nav {
+        position: sticky; top: 0; z-index: 100;
+        background: white;
+        border-bottom: 3px solid var(--primary-color);
+        padding: 0.8rem 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 1rem;
+    }
+    .top-nav .logo { font-weight: 700; color: var(--primary-dark); text-decoration: none; }
+    .top-nav a { color: var(--text-secondary); text-decoration: none; margin-left: 1rem; font-size: 0.9rem; font-weight: 500; }
+    .top-nav a:hover, .top-nav a.active { color: var(--primary-color); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { color: var(--primary-dark); margin-bottom: 0.5rem; font-size: 2.2rem; font-weight: 800; }
+    .lead { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; }
+
+    /* Search Bar */
+    .search-container {
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+    .search-input {
+        width: 100%;
+        padding: 1rem 1.5rem 1rem 3rem;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 1.05rem;
+        font-family: 'FiraGO', sans-serif;
+        background: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+    }
+    .search-input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+    }
+    .search-icon {
+        position: absolute;
+        left: 1.1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        pointer-events: none;
+    }
+
+    /* Grid of Teams */
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2rem;
+    }
+    @media (max-width: 768px) {
+        .teams-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Team Card */
+    .team-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        padding: 1.8rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -2px rgba(0, 0, 0, 0.01);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        border-color: rgba(79, 70, 229, 0.2);
+    }
+    
+    /* Header Area of Card */
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.2rem;
+        gap: 1rem;
+    }
+    .team-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    .tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    /* Sector Tags Colors */
+    .tag-healthtech { background-color: #ecfdf5; color: #065f46; }
+    .tag-medtech { background-color: #f0fdf4; color: #166534; }
+    .tag-social { background-color: #f5f3ff; color: #5b21b6; }
+    .tag-legaltech { background-color: #e0f2fe; color: #075985; }
+    .tag-fintech { background-color: #fef3c7; color: #92400e; }
+    .tag-edtech { background-color: #eff6ff; color: #1e40af; }
+    .tag-saas { background-color: #faf5ff; color: #6b21a8; }
+    .tag-traveltech { background-color: #fff7ed; color: #9a3412; }
+
+    /* Content Area */
+    .card-section {
+        margin-bottom: 1rem;
+    }
+    .section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin-bottom: 0.3rem;
+        letter-spacing: 0.05em;
+    }
+    .section-content {
+        font-size: 0.95rem;
+        color: var(--text-primary);
+    }
+    
+    /* Pitch Box */
+    .pitch-box {
+        background: #f8fafc;
+        border-left: 4px solid var(--primary-color);
+        padding: 0.8rem 1rem;
+        border-radius: 0 8px 8px 0;
+        margin-top: 1.2rem;
+        position: relative;
+        font-size: 0.9rem;
+        font-style: italic;
+        color: var(--text-secondary);
+    }
+    .copy-btn {
+        position: absolute; top: 0.4rem; right: 0.4rem;
+        background: white; border: 1px solid var(--border-color);
+        color: var(--text-secondary); padding: 0.2rem 0.5rem;
+        border-radius: 4px; font-size: 0.7rem; cursor: pointer;
+        font-family: 'FiraGO', sans-serif; font-style: normal;
+        transition: all 0.2s ease;
+    }
+    .copy-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    .copy-btn.copied {
+        background: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+    }
+
+    footer {
+        text-align: center;
+        padding: 3rem 0 1rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+    <a href="index.html" class="logo"> GITA 5h AI for Startups</a>
+    <div>
+        <a href="day1-slides.html">📊 Day 1 სლაიდები</a>
+        <a href="day2-slides.html">📊 Day 2 სლაიდები</a>
+        <a href="teams.html" class="active">👥 გუნდები</a>
+        <a href="v2-lecture-ideation-quick-ref.html">📄 Quick Ref</a>
+        <a href="prompt-library.html">🤖 პრომპტები</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>👥 მონაწილე გუნდები &amp; სტარტაპები</h1>
+    <p class="lead">GITA Pre-Acceleration 2026-ის 10 მონაწილე სტარტაპის სრული სია, იდეები და Elevator Pitch-ები.</p>
+
+    <!-- Search input -->
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="teamSearch" class="search-input" oninput="searchTeams(this.value)" placeholder="მოძებნე გუნდი, იდეა, სფერო ან Pitch..."/>
+    </div>
+
+    <!-- Grid of teams -->
+    <div class="teams-grid" id="teamsGrid">
+        <!-- Team 1 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 1</h3>
+                    <span class="tag tag-healthtech">HealthTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">აპლიკაცია, რომელიც მომხმარებლებს დროებით ან სწრაფად აწვდის აფთიაქის პროდუქტებსა და მედიკამენტებს.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">აქვთ გარკვეული საწყისი დაფინანსება. გვინდა ინოვაციური მიდგომა.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                სამედიცინო დახმარების აპლიკაცია და დროითი მედიკამენტების მიწოდება
+            </div>
+        </div>
+
+        <!-- Team 2 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 2</h3>
+                    <span class="tag tag-medtech">MedTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">პლატფორმა, რომელიც მომხმარებელს საშუალებას აძლევს შეინახოს რეცეპტები დისტანციურად და საჭიროების შემთხვევაში პროფესიონალის დახმარება მიიღოს.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">აქვთ უკვე არსებული საიტი, რომლის გაუმჯობესებაც სურთ.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                ექიმთან ვირტუალური კონსულტაცია, რომელიც აკავშირებს მომხმარებელსა და სააფთიაქო ქსელს
+            </div>
+        </div>
+
+        <!-- Team 3 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 3</h3>
+                    <span class="tag tag-social">Social / AI</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">AI აპლიკაცია, რომელიც უზრუნველყოფს ორმხრივ რეალურ დროში კომუნიკაციას (ტექსტის ხმად გარდაქმნა და პირიქით) სმენადაქვეითებულთათვის ქართულ ენაზე.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">გუნდს აქვს უკვე მიღებული ერთი გრანტი და პარტნიორები ასოციაციებიდან.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                აპლიკაცია და კითხვა სმენადაქვეითებული ადამიანებისთვის, რომელიც დაეხმარებათ შშმ პირებს
+            </div>
+        </div>
+
+        <!-- Team 4 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 4</h3>
+                    <span class="tag tag-legaltech">LegalTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">AI ასისტენტი იურიდიული დოკუმენტების (კონტრაქტები, წესები, პირობები) ავტომატური გენერირებისა და ანალიზისთვის ქართულ ენაზე.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">სტარტაპს უკვე ჰყავს რამდენიმე კლიენტი და აქვთ მზა ტექნოლოგიური ბაზა.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                გენერაციულ AI იურიდიულ წყაროებზე პირდაპირი წვდომით, რომელიც უზრუნველყოფს მიწოდებული ინფორმაციის ზუსტ შესაბამისობას წყაროსთან
+            </div>
+        </div>
+
+        <!-- Team 5 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 5</h3>
+                    <span class="tag tag-fintech">FinTech / RegTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">Compliance Copilot — AI ასისტენტი ფინანსური ორგანიზაციებისთვის AML/CFT კომპლაენსის გასამარტივებლად.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">აქვთ ძლიერი გამოცდილება ფინანსური კომპლაენსის სფეროში.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                AI პლატფორმა, რომელიც კომპანიებს ფინანსური პროცესების გამარტივებაში დაეხმარება
+            </div>
+        </div>
+
+        <!-- Team 6 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 6</h3>
+                    <span class="tag tag-edtech">EdTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">SPARK AI მობილური/web აპლიკაცია, რომელიც საუნივერსიტეტო მოსამზადებელ პროცესს აქცევს ინტერაქტიულ სასწავლო თავგადასავლად.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">სკოლებთან მუშაობის მრავალწლიანი გამოცდილება.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                პირველი ქართული AI-powered გზამკვლევი საზღვარგარეთ სწავლის გასაგრძელებლად; SPARK AI არის მობილური/web აპლიკაცია, რომელიც საუნივერსიტეტო მოსამზადებელ პროცესს აქცევს ინტერაქტიულ, სისტემურ და მეთოდოლოგიურ თავგადასავლად
+            </div>
+        </div>
+
+        <!-- Team 7 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 7</h3>
+                    <span class="tag tag-saas">SaaS</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">Tasky — AI-ზე დაფუძნებული ინტელექტუალური დღიური და პროდუქტიულობის ასისტენტი მცირე ბიზნესებისთვის.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">გუნდი აქტიურად მუშაობს პროტოტიპზე და აქვთ პირველადი ტექნიკური ბაზა.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                აპლიკაცია ან საიტი რომელიც მომხმარებელს დაეხმარება ამოცანების დაგეგმვაში (მცირე და საშუალო ბიზნესებს) და მათ მართვაში
+            </div>
+        </div>
+
+        <!-- Team 8 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 8</h3>
+                    <span class="tag tag-edtech">EdTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">LiveSchool — ვებ-პლატფორმა და ეკოსისტემა აბიტურიენტებისთვის, რეპეტიტორებისა და მშობლებისთვის.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">დამფუძნებელი არის ისტორიის მასწავლებელი, რომელმაც იცის სფეროს რეალური პრობლესები.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                LiveSchool არის თანამედროვე საგანმანათლებლო ეკოსისტემა აბიტურიენტებისთვის, რეპეტიტორებისა და მშობლებისთვის. „ისწავლე ჭკვიანურად, ჩააბარე მარტივად“
+            </div>
+        </div>
+
+        <!-- Team 9 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 9</h3>
+                    <span class="tag tag-traveltech">TravelTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">Scutum — მოგზაურთა AI ასისტენტი, რომელიც ორიენტირებულია მომხმარებლის ფსიქოლოგიურ უსაფრთხოებასა და პანიკის პრევენციაზე.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">ძლიერი ტექნოლოგიური გუნდი დეველოპერებით.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                პროექტი "Your Safe Travel Assistant" წარმოადგენს ერთიან ციფრულ ეკოსისტემას, რომელიც სცილდება სტანდარტული სამოგზაურო აპლიკაციის ჩარჩოებს. ჩვენი ხედვაა შევქმნათ ინტელექტუალური "ასისტენტი" მეგზურის სახით, რომელიც ორიენტირებულია მომხმარებლის ფსიქოლოგიურ უსაფრთხოებასა და პანიკის პრევენციაზე.
+            </div>
+        </div>
+
+        <!-- Team 10 -->
+        <div class="team-card">
+            <div>
+                <div class="card-header">
+                    <h3 class="team-title">Team 10</h3>
+                    <span class="tag tag-traveltech">TravelTech</span>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">სტარტაპ იდეა:</div>
+                    <p class="section-content">GidAI — პლატფორმა, რომელიც ოკუპირებულ სამაჩაბლოზე მუშაობას და ხელოვნურ ინტელექტს ერთ სივრცეში აერთიანებს.</p>
+                </div>
+                <div class="card-section">
+                    <div class="section-label">გამოცდილება &amp; რესურსები:</div>
+                    <p class="section-content">სტარტაპი უკვე არსებობს და აქვთ მზა ისტორიული ბაზა.</p>
+                </div>
+            </div>
+            <div class="pitch-box">
+                <button class="copy-btn" onclick="copyPitch(this)">📋 Copy</button>
+                საქართველოს პირველი AI პლატფორმა, რომელიც ოკუპირებულ სამაჩაბლოზე მუშაობას და ხელოვნურ ინტელექტს ერთ სივრცეში აერთიანებს
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>GITA Pre-Acceleration 2026 · AI for Startups · გიორგი ბასილაია</p>
+    </footer>
+</div>
+
+<script>
+function copyPitch(btn) {
+    const box = btn.parentElement;
+    const text = box.textContent.replace('📋 Copy', '').replace('✓ დაკოპირდა!', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ დაკოპირდა!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = '📋 Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function searchTeams(query) {
+    const cleanQuery = query.toLowerCase().trim();
+    const cards = document.querySelectorAll('.team-card');
+    
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(cleanQuery)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+</script>
+
+</body>
+</html>
