@@ -266,7 +266,49 @@
         margin: 1.5rem 0;
         border-left: 5px solid var(--primary-color);
         white-space: pre-wrap;
+        position: relative; /* For copy button positioning */
     }
+    .copy-btn {
+        position: absolute; top: 0.5rem; right: 0.5rem;
+        background: var(--primary-color); color: white;
+        border: none; padding: 0.3rem 0.8rem; border-radius: 6px;
+        font-size: 0.75rem; cursor: pointer; font-weight: 600;
+        font-family: 'FiraGO', sans-serif;
+        transition: all 0.2s ease;
+    }
+    .copy-btn:hover { background: var(--primary-dark); }
+    .copy-btn.copied { background: var(--success-color); }
+    body.dark .copy-btn { background: #818cf8; }
+    body.dark .copy-btn:hover { background: #6366f1; }
+    body.dark .copy-btn.copied { background: #22c55e; }
+
+    /* Exercise countdown timer (injected after the h2 of practice/exercise slides) */
+    .timer-widget {
+        display: inline-flex; align-items: center; gap: 0.6rem;
+        background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px;
+        padding: 0.5rem 1rem; margin: -0.5rem 0 1.5rem;
+    }
+    body.dark .timer-widget { background: #0f172a; border-color: #475569; }
+    .timer-widget .timer-display {
+        font-family: 'Courier New', monospace;
+        font-size: 1.3rem; font-weight: 700; color: var(--primary-color);
+        min-width: 4.5rem; text-align: center;
+    }
+    body.dark .timer-widget .timer-display { color: #818cf8; }
+    .timer-widget.expired .timer-display {
+        color: var(--accent-color);
+        animation: timer-pulse 1s infinite;
+    }
+    @keyframes timer-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+    .timer-widget button {
+        background: var(--primary-color); color: white;
+        border: none; padding: 0.35rem 0.9rem; border-radius: 6px;
+        cursor: pointer; font-size: 0.8rem; font-weight: 600;
+        font-family: 'FiraGO', sans-serif;
+    }
+    .timer-widget button:hover { background: var(--primary-dark); }
+    body.dark .timer-widget button { background: #818cf8; }
+    body.dark .timer-widget button:hover { background: #6366f1; }
     body.dark .prompt-box { background: #0f172a; border-left-color: #818cf8; }
     .prompt-label { color: var(--primary-color); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 0.5rem; }
 
@@ -1683,6 +1725,104 @@ document.querySelectorAll('.prompt-box').forEach(box => {
     btn.onclick = () => copyPromptBox(btn);
     box.insertBefore(btn, box.firstChild);
 });
+
+
+// Countdown timer widget on every practice/exercise slide whose h2 title
+// contains a "(N წუთი)" duration, e.g. "🛠️ ... (10 წუთი)".
+function initExerciseTimers() {
+    function formatTime(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const s = (totalSeconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    document.querySelectorAll('.slide h2').forEach(h2 => {
+        const match = h2.textContent.match(/\((\d+)\s*წუთი\)/);
+        if (!match) return;
+
+        const totalSeconds = parseInt(match[1], 10) * 60;
+        let remaining = totalSeconds;
+        let intervalId = null;
+
+        const widget = document.createElement('div');
+        widget.className = 'timer-widget';
+
+        const display = document.createElement('span');
+        display.className = 'timer-display';
+        display.textContent = formatTime(remaining);
+
+        const startBtn = document.createElement('button');
+        startBtn.textContent = '▶ დაწყება';
+
+        const resetBtn = document.createElement('button');
+        resetBtn.textContent = '↺ თავიდან';
+
+        function tick() {
+            remaining--;
+            display.textContent = formatTime(Math.max(remaining, 0));
+            if (remaining <= 0) {
+                clearInterval(intervalId);
+                intervalId = null;
+                widget.classList.add('expired');
+                startBtn.textContent = '▶ დაწყება';
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+                startBtn.textContent = '▶ გაგრძელება';
+                return;
+            }
+            if (remaining <= 0) return;
+            widget.classList.remove('expired');
+            intervalId = setInterval(tick, 1000);
+            startBtn.textContent = '⏸ პაუზა';
+        });
+
+        resetBtn.addEventListener('click', () => {
+            clearInterval(intervalId);
+            intervalId = null;
+            remaining = totalSeconds;
+            display.textContent = formatTime(remaining);
+            widget.classList.remove('expired');
+            startBtn.textContent = '▶ დაწყება';
+        });
+
+        widget.appendChild(display);
+        widget.appendChild(startBtn);
+        widget.appendChild(resetBtn);
+        h2.insertAdjacentElement('afterend', widget);
+    });
+}
+initExerciseTimers();
+
+// Persist checklist checkboxes in localStorage
+function initChecklistPersistence() {
+    const STORAGE_KEY = 'day2-checklist-state';
+    let saved = {};
+    try {
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch (e) {
+        saved = {};
+    }
+
+    document.querySelectorAll('.slide').forEach(slide => {
+        const checkboxes = slide.querySelectorAll('.checklist input[type="checkbox"]');
+        checkboxes.forEach((checkbox, index) => {
+            const key = `${slide.id}-${index}`;
+            if (saved[key]) {
+                checkbox.checked = true;
+            }
+            checkbox.addEventListener('change', () => {
+                saved[key] = checkbox.checked;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+            });
+        });
+    });
+}
+initChecklistPersistence();
 
 // Dynamic Slide Navigator Generation & Scroll Progress & Keyboard Nav
 document.addEventListener('DOMContentLoaded', () => {
