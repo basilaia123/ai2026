@@ -59,11 +59,18 @@
 
 შიდა კვლევისა და მოთხოვნების გათვალისწინებით, მომზადდა **სპეციალურად 10-12 თანამშრომელზე** (Construction, BIM, Engineering, Commercial/Procurement) მორგებული პრაქტიკული ინტენსივი, სადაც თითოეული სესია გრძელდება **2 საათი** და მთლიანად დაფუძნებულია რეალურ სამშენებლო და კომერციულ მაგალითებზე.
 
-#### 📌 ძირითადი ფოკუსის 4 მიმართულება და სპეციალიზებული AI ინსტრუმენტები:
-1. **Engineering & BIM Integration:** ნახაზებისა და PDF-ების ვერსიების (Rev A vs Rev B) ავტომატური შედარება (**Helonic, Pivotly, Bluebeam Smart Overlay**), ტექნიკური შენიშვნების შედგენა/გაუმჯობესება (RFI), 3D კონცეპტუალური ვიზუალიზაცია, BIM/CAD კოლიზიების კოორდინაცია (**Tuuli**) და Revit, AutoCAD, Archicad workflows (AutoCAD LISP & Revit Python სკრიპტინგი).
-2. **Project & Commercial Operations:** სატენდერო დოკუმენტაციისა და კონტრაქტების ავტომატური რისკ-ანალიზი (**Document Crunch, Provision**), საფასო შეთავაზებებისა და BOQ-ის ავტომატური შედარება (**Togal.AI, Kreo Takeoff**), ინვოისების აუდიტი, ყოველდღიური სამშენებლო რეპორტების (**Buildots, OpenSpace AI**) და ტაბელების (Timesheets) მართვა.
-3. **Excel & Data Analysis:** რთული Excel ფორმულების (`XLOOKUP`, `INDEX/MATCH`, `SUMIFS`, `NESTED IF`) წერა **Microsoft Copilot for Excel**-ით, არასტრუქტურირებული მონაცემების გასუფთავება/სტრუქტურირება, ავტომატური რეპორტინგი და ანალიტიკა.
-4. **Advanced Prompting & Workflows:** ეფექტური პრომპტინგი (PARTS & CREATE ჩარჩოები), დოკუმენტების შეჯამება/ანალიზი (**Google NotebookLM, Perplexity.ai**), პროფესიული ელფოსტების შედგენა, მრავალეტაპიანი AI პროცესები (**Claude Projects, Custom GPTs, Make.com/Notion**).
+#### 📌 ძირითადი ფოკუსის 4 მიმართულება და 10 სპეციალიზებული AI ტექნოლოგია:
+
+1. **Reasoning & LLM Core (Claude 3.7 Sonnet, GPT-5.5 & Gemini 2.0 Pro):** მოწინავე აზროვნების ძრავები, Claude Projects & Artifacts, 2M ტოკენიანი კონტექსტი მასშტაბური ნახაზების დასამუშავებლად.
+2. **Knowledge Hubs & Search (Google NotebookLM & Perplexity.ai):** ნულოვანი გაჟონვის RAG ბაზები, ISO/EN ნორმების, სამშენებლო რეგულაციებისა და აღჭურვილობის Data Sheets-ის რეალურ დროში ინდექსირება.
+3. **Blueprint Revision Diffing (Helonic, Pivotly & Bluebeam Smart Overlay):** PDF ნახაზების Rev A vs Rev B ვერსიების სემანტიკური შედარება, ცვლილებების ლოგის (Change Log) ექსტრაქცია და RFI-ების შედგენა.
+4. **Automated Takeoff & BOQ (Togal.AI & Kreo Takeoff):** ხარჯთაღრიცხვების (BOQ) და მომწოდებელთა საფასო შეთავაზებების მყისიერი ექსტრაქცია და შედარებითი მატრიცების აგება.
+5. **Tender & Contract Risk Audit (Document Crunch & Provision AI):** სატენდერო დოკუმენტაციისა და კონტრაქტების რისკ-ანალიზი (პირგასამტეხლოები, საგარანტიო პირობები, დაფარული ხარჯები).
+6. **Site Reporting & MEP Clash (Buildots, OpenSpace AI & Tuuli):** ინჟინრის ხმოვანი ჩანაწერებიდან (Voice-to-Report) ყოველდღიური სამშენებლო რეპორტებისა და ტაბელების (Timesheets) გენერირება.
+7. **Excel & Data Analytics (Microsoft Copilot for Excel & Python Data AI):** რთული ფორმულების (`XLOOKUP`, `INDEX/MATCH`, `SUMIFS`) წერა, არასტრუქტურირებული ცხრილების გასუფთავება და ბიუჯეტის აუდიტი.
+8. **No-Code CAD/BIM Scripting (AutoCAD AutoLISP & Revit Python AI):** პროგრამირების გარეშე `.lsp` და Revit Dynamo/Python სკრიპტების წერა (შრეების გადარქმევა, ფართობების ექსტრაქცია, ბლოკები).
+9. **Databases & Workflows (Notion AI & Make.com):** ცენტრალური რელაციური ბაზები და მრავალეტაპიანი ავტომატიზაციები (`ელფოსტა/ინვოისი` ➔ `AI ანალიზი` ➔ `Notion` ➔ `Slack/Outlook alert`).
+10. **Custom Web App Prototyping (Lovable.app & Supabase):** Full-stack შიდა ვებ-პორტალების პროტოტიპირება ბუნებრივი ენით (React/Vite) Supabase ბაზებთან ინტეგრაციით.
 
 ---
 
