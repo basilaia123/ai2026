@@ -59,11 +59,11 @@
 
 შიდა კვლევისა და მოთხოვნების გათვალისწინებით, მომზადდა **სპეციალურად 10-12 თანამშრომელზე** (Construction, BIM, Engineering, Commercial/Procurement) მორგებული პრაქტიკული ინტენსივი, სადაც თითოეული სესია გრძელდება **1.5 – 2 საათი** და მთლიანად დაფუძნებულია რეალურ სამშენებლო და კომერციულ მაგალითებზე.
 
-#### 📌 ძირითადი ფოკუსის 4 მიმართულება:
-1. **Engineering & BIM Integration:** ნახაზებისა და PDF-ების ვერსიების შედარება, ტექნიკური შენიშვნების შედგენა/გაუმჯობესება, 3D კონცეპტუალური ვიზუალიზაცია, BIM/CAD კოლიზიების კოორდინაცია და ხარისხის კონტროლი (Revit, AutoCAD, Archicad პრომპტები და სკრიპტინგი).
-2. **Project & Commercial Operations:** სატენდერო და საფასო წინადადებების ავტომატური შედარება, ინვოისების შემოწმება და აუდიტი, ტენდერების ანალიზი, ყოველდღიური სამშენებლო რეპორტებისა და ტაბელების (Timesheets) მართვა და ავტომატიზაცია.
-3. **Excel & Data Analysis:** რთული Excel ფორმულების (XLOOKUP, INDEX/MATCH, SUMIFS, NESTED IF) წერა და გაგება AI-ის დახმარებით, მონაცემების გასუფთავება/სტრუქტურირება, ავტომატური რეპორტინგი და ანალიტიკა.
-4. **Advanced Prompting & Workflows:** ეფექტური პრომპტინგი (PARTS & CREATE ჩარჩოები), დოკუმენტების შეჯამება/ანალიზი (NotebookLM, Perplexity), პროფესიული ელფოსტების შედგენა, მრავალეტაპიანი AI პროცესები (Claude Projects, Custom GPTs, Make.com/Notion).
+#### 📌 ძირითადი ფოკუსის 4 მიმართულება და სპეციალიზებული AI ინსტრუმენტები:
+1. **Engineering & BIM Integration:** ნახაზებისა და PDF-ების ვერსიების (Rev A vs Rev B) ავტომატური შედარება (**Helonic, Pivotly, Bluebeam Smart Overlay**), ტექნიკური შენიშვნების შედგენა/გაუმჯობესება (RFI), 3D კონცეპტუალური ვიზუალიზაცია, BIM/CAD კოლიზიების კოორდინაცია (**Tuuli**) და Revit, AutoCAD, Archicad workflows (AutoCAD LISP & Revit Python სკრიპტინგი).
+2. **Project & Commercial Operations:** სატენდერო დოკუმენტაციისა და კონტრაქტების ავტომატური რისკ-ანალიზი (**Document Crunch, Provision**), საფასო შეთავაზებებისა და BOQ-ის ავტომატური შედარება (**Togal.AI, Kreo Takeoff**), ინვოისების აუდიტი, ყოველდღიური სამშენებლო რეპორტების (**Buildots, OpenSpace AI**) და ტაბელების (Timesheets) მართვა.
+3. **Excel & Data Analysis:** რთული Excel ფორმულების (`XLOOKUP`, `INDEX/MATCH`, `SUMIFS`, `NESTED IF`) წერა **Microsoft Copilot for Excel**-ით, არასტრუქტურირებული მონაცემების გასუფთავება/სტრუქტურირება, ავტომატური რეპორტინგი და ანალიტიკა.
+4. **Advanced Prompting & Workflows:** ეფექტური პრომპტინგი (PARTS & CREATE ჩარჩოები), დოკუმენტების შეჯამება/ანალიზი (**Google NotebookLM, Perplexity.ai**), პროფესიული ელფოსტების შედგენა, მრავალეტაპიანი AI პროცესები (**Claude Projects, Custom GPTs, Make.com/Notion**).
 
 ---
 
