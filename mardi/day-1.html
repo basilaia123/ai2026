@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>დღე 1 — AI საფუძვლები, PII უსაფრთხოება & Advanced Prompting | Mardi AI Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --mardi-orange: #E5703A;
+      --gold: #B8860B;
+      --navy-dark: #0F172A;
+      --navy-mid: #1E293B;
+      --bg-light: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-sub: #F1F5F9;
+      --text-1: #0F172A;
+      --text-2: #334155;
+      --text-3: #64748B;
+      --border: #E2E8F0;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --sky: #0EA5E9;
+      --green: #22C55E;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Noto Sans Georgian', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-1);
+      line-height: 1.7;
+    }
+
+    /* HEADER & NAV */
+    header {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      padding: 18px 0;
+      border-bottom: 3px solid var(--mardi-orange);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .nav-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      text-decoration: none;
+    }
+    .brand span { color: var(--mardi-orange); }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav-link {
+      color: #CBD5E1;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--mardi-orange);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* LAYOUT WRAPPER */
+    .layout-wrapper {
+      max-width: 1380px;
+      margin: 32px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 36px;
+    }
+    @media (max-width: 1024px) {
+      .layout-wrapper { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* SIDEBAR TOC */
+    .sidebar {
+      position: sticky;
+      top: 95px;
+      height: calc(100vh - 120px);
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .toc-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+    .toc-group-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--mardi-orange);
+      text-transform: uppercase;
+      margin: 16px 0 8px;
+    }
+    .toc-list { list-style: none; }
+    .toc-list li { margin-bottom: 6px; }
+    .toc-list a {
+      color: var(--text-2);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: block;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .toc-list a:hover {
+      background: var(--surface-sub);
+      color: var(--mardi-orange);
+      border-left-color: var(--mardi-orange);
+    }
+
+    /* HERO MINI */
+    .hero-mini {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, #1E1B4B 100%);
+      color: #FFFFFF;
+      padding: 48px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+      border-left: 6px solid var(--mardi-orange);
+      box-shadow: var(--shadow);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(229, 112, 58, 0.22);
+      border: 1px solid var(--mardi-orange);
+      color: var(--mardi-orange);
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-mini h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.3rem;
+      line-height: 1.3;
+      margin-bottom: 14px;
+    }
+    .hero-mini p {
+      color: #94A3B8;
+      font-size: 1.05rem;
+      max-width: 840px;
+      line-height: 1.7;
+    }
+    .hero-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .meta-item {
+      font-size: 0.88rem;
+      color: #CBD5E1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    /* CONTENT CARDS */
+    .content-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 95px;
+    }
+    .section-tag {
+      color: var(--mardi-orange);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--text-1);
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+    h3 {
+      font-size: 1.25rem;
+      color: var(--navy-dark);
+      margin: 24px 0 12px;
+      font-weight: 700;
+    }
+
+    /* TIMETABLE BOX */
+    .timetable-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .time-slot {
+      background: var(--surface-sub);
+      border-left: 4px solid var(--navy-dark);
+      padding: 20px 24px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .time-slot.break {
+      border-left-color: #CBD5E1;
+      background: #FFFDF5;
+    }
+    .time-slot.workshop {
+      border-left-color: var(--mardi-orange);
+      background: #FFFDF9;
+    }
+    .time-badge {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .time-slot.workshop .time-badge { background: var(--mardi-orange); }
+    .time-slot.break .time-badge { background: #94A3B8; color: #FFFFFF; }
+    .time-info h4 { font-size: 1.05rem; margin-bottom: 6px; color: var(--text-1); }
+    .time-info p { font-size: 0.9rem; color: var(--text-2); }
+
+    /* CALLOUT BOXES */
+    .highlight-box {
+      background: #F0F9FF;
+      border-left: 4px solid #0EA5E9;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 0.94rem;
+      color: var(--text-2);
+    }
+    .warning-box {
+      background: #FFF7ED;
+      border-left: 4px solid #F97316;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 0.94rem;
+      color: var(--text-2);
+    }
+    .success-box {
+      background: #F0FDF4;
+      border-left: 4px solid #22C55E;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 0.94rem;
+      color: var(--text-2);
+    }
+
+    /* TABLES */
+    .data-table-wrapper {
+      overflow-x: auto;
+      margin: 24px 0;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background: #FFFFFF;
+    }
+    table.data-table th {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      padding: 14px 18px;
+      text-align: left;
+      font-weight: 700;
+    }
+    table.data-table td {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    table.data-table tr:hover { background: var(--surface-sub); }
+
+    /* PROMPT BLUEPRINT CODE BOX */
+    .prompt-blueprint {
+      background: #0F172A;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+      position: relative;
+    }
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #1E293B;
+    }
+    .prompt-label {
+      color: var(--mardi-orange);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .copy-btn {
+      background: rgba(229, 112, 58, 0.18);
+      color: var(--mardi-orange);
+      border: 1px solid rgba(229, 112, 58, 0.4);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--mardi-orange);
+      color: #FFFFFF;
+    }
+    .code-content {
+      font-family: 'Courier New', monospace;
+      font-size: 0.88rem;
+      color: #E2E8F0;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    /* EXERCISE CARD */
+    .exercise-card {
+      background: #FFFFFF;
+      border: 2px solid var(--mardi-orange);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 32px 0;
+      box-shadow: 0 8px 24px rgba(229, 112, 58, 0.1);
+    }
+    .exercise-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .exercise-badge {
+      background: var(--mardi-orange);
+      color: #FFFFFF;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+    .exercise-time {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--navy-dark);
+    }
+    .exercise-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-1);
+      margin-bottom: 12px;
+    }
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 18px;
+    }
+    @media (max-width: 768px) { .exercise-grid { grid-template-columns: 1fr; } }
+    .ex-sub-box {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      font-size: 0.9rem;
+    }
+    .ex-sub-box strong {
+      display: block;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+    }
+
+    /* INTERACTIVE WIDGET */
+    .interactive-widget {
+      background: #F0FDF4;
+      border: 2px solid var(--green);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+    }
+    .widget-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--navy-dark);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .widget-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+    .widget-btn {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .widget-btn:hover { background: var(--mardi-orange); }
+    .widget-result {
+      margin-top: 16px;
+      padding: 16px;
+      background: #FFFFFF;
+      border: 1px dashed var(--green);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      display: none;
+    }
+
+    /* LIST STYLES */
+    ul.check-list { list-style: none; padding: 0; }
+    ul.check-list li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 10px;
+      font-size: 0.94rem;
+      color: var(--text-2);
+    }
+    ul.check-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--mardi-orange);
+      font-weight: 900;
+    }
+
+    footer {
+      background: var(--navy-dark);
+      color: #94A3B8;
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 0.88rem;
+      border-top: 1px solid var(--navy-mid);
+      margin-top: 60px;
+    }
+    footer a { color: var(--mardi-orange); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="brand">
+      🏢 Mardi <span>AI Hub 2026</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">🏠 ჰაბი</a>
+      <a href="day-1.html" class="nav-link active">დღე 1</a>
+      <a href="day-2.html" class="nav-link">დღე 2</a>
+      <a href="day-3.html" class="nav-link">დღე 3</a>
+      <a href="day-4.html" class="nav-link">დღე 4</a>
+      <a href="course-info.html" class="nav-link">📝 სილაბუსი</a>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT WRAPPER -->
+<div class="layout-wrapper">
+
+  <!-- SIDEBAR TOC -->
+  <aside class="sidebar">
+    <div class="toc-title">დღე 1 — სრული შინაარსი</div>
+    
+    <div class="toc-group-title">შესავალი & განრიგი</div>
+    <ul class="toc-list">
+      <li><a href="#overview">📌 ზოგადი მიმოხილვა</a></li>
+      <li><a href="#agenda">⏱️ 2.5-საათიანი განრიგი</a></li>
+      <li><a href="#icebreaker">🧊 Icebreaker & AI Analyzer</a></li>
+    </ul>
+
+    <div class="toc-group-title">თეორია & უსაფრთხოება</div>
+    <ul class="toc-list">
+      <li><a href="#history">⏳ AI-ის ისტორია & ELIZA</a></li>
+      <li><a href="#llm-architecture">⚙️ LLM მექანიზმები & 2026</a></li>
+      <li><a href="#security-gdpr">⚖️ PII, GDPR & AI Act</a></li>
+    </ul>
+
+    <div class="toc-group-title">მეთოდოლოგია & ინსტრუმენტები</div>
+    <ul class="toc-list">
+      <li><a href="#prompting-frameworks">⚡ 5 Prompting Framework</a></li>
+      <li><a href="#google-ai-studio">🔍 Live Web Search Grounding</a></li>
+      <li><a href="#pii-widget">🛠️ PII Sanitizer Widget</a></li>
+    </ul>
+
+    <div class="toc-group-title">პრაქტიკა & დავალებები</div>
+    <ul class="toc-list">
+      <li><a href="#exercises">🎯 3 Live ონლაინ დავალება (10-15 წთ)</a></li>
+      <li><a href="#matrix">🏢 დეპარტამენტული მატრიცა</a></li>
+      <li><a href="#blueprints">📋 პრომპტების ბიბლიოთეკა</a></li>
+      <li><a href="#outcomes">🚀 ბიზნეს შედეგები</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- HERO MINI -->
+    <div class="hero-mini">
+      <span class="hero-badge">სესია 1 (დღე 1) — 100% ონლაინ</span>
+      <h1>AI საფუძვლები, PII უსაფრთხოება & Advanced Prompt Engineering</h1>
+      <p>Mardi Holding-ის თანამშრომლებისთვის: 2026 წლის ფლაგმანური AI მოდელების (Claude Sonnet 5, GPT-5.6, Gemini 3.6 Flash) არქიტექტურა, კორპორატიული მონაცემთა დაცვა, XML პრომპტინგი და Google AI Studio live grounding.</p>
+      
+      <div class="hero-meta-bar">
+        <div class="meta-item">⏱️ ხანგრძლივობა: 2.5 საათი (150 წუთი)</div>
+        <div class="meta-item">💻 ფორმატი: Zoom / Teams Interactive</div>
+        <div class="meta-item">🎯 3 live ონლაინ დავალება (10-15 წთ)</div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section class="content-card" id="overview">
+      <span class="section-tag">შესავალი & მიზნები</span>
+      <h2 class="section-title">პირველი დღის სასწავლო მიზნები</h2>
+      <p>სესია 1 წარმოადგენს Mardi Holding-ის AI ტრანსფორმაციის ფუნდამენტს. ტრენინგის განმავლობაში მონაწილეები შეისწავლიან, თუ როგორ იმუშაონ უსაფრთხოდ AI ინსტრუმენტებთან, დაიცვან კლიენტების პერსონალური მონაცემები (PII) და ააგონ პროფესიონალური პრომპტები Mardi-ს რეალური ბიზნეს ქეისებისთვის.</p>
+      
+      <div class="highlight-box">
+        <strong>💡 მთავარი ფოკუსი Mardi-სთვის:</strong> პორტფოლიოს პროექტების (Mardi Hills, Novotel Living Batumi, Mercure Aquapark, Mardi City Center) ირგვლივ უსაფრთხო და მაღალეფექტური AI კომუნიკაციის დამყარება.
+      </div>
+    </section>
+
+    <!-- SECTION 2: TIMETABLE -->
+    <section class="content-card" id="agenda">
+      <span class="section-tag">დროის მენეჯმენტი</span>
+      <h2 class="section-title">⏱️ 2.5-საათიანი სესიის დეტალური განრიგი</h2>
+      
+      <div class="timetable-grid">
+        <div class="time-slot">
+          <span class="time-badge">1 სთ 10 წთ</span>
+          <div class="time-info">
+            <h4>ბლოკი I: 2026 AI ეკოსისტემა, PII უსაფრთხოება & Advanced Prompting</h4>
+            <p>2026 წლის ფლაგმანური მოდელები (Claude Sonnet 5, GPT-5.6, Gemini 3.6 Flash). PII მონაცემების დაცვის პროტოკოლი Mardi Holding-ში. Prompt Engineering-ის 5 ოქროს წესი და XML სტრუქტურები.</p>
+          </div>
+        </div>
+
+        <div class="time-slot break">
+          <span class="time-badge">10 წუთი</span>
+          <div class="time-info">
+            <h4>☕ ტექნიკური შესვენება & Q&A</h4>
+            <p>შეკითხვები, AI Studio / Claude / ChatGPT ანგარიშების გამართვა და პრაქტიკული დავალებებისთვის მომზადება.</p>
+          </div>
+        </div>
+
+        <div class="time-slot workshop">
+          <span class="time-badge">1 სთ 10 წთ</span>
+          <div class="time-info">
+            <h4>ბლოკი II: პრაქტიკული ონლაინ ვორქშოფი (3 Live დავალება)</h4>
+            <p>მონაწილეები ასრულებენ 3 კონკრეტულ ონლაინ დავალებას (10-15 წუთი თითოეული) Mardi-ს რეალურ მონაცემებზე: PII Sanitizer, Mardi System Directives და Live Web Search Google AI Studio-ში.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: ICEBREAKER -->
+    <section class="content-card" id="icebreaker">
+      <span class="section-tag">ინტერაქციული შესავალი</span>
+      <h2 class="section-title">🧊 Icebreaker: „ყველაზე მოსაწყენი რუტინა Mardi-ში“</h2>
+      <p>აირჩიეთ თქვენი ყოველდღიური რუტინული ამოცანა და ნახეთ, როგორ შეუძლია AI-ს მისი 70%-ით ოპტიმიზაცია:</p>
+
+      <div class="interactive-widget">
+        <div class="widget-title">🛠️ რუტინის AI-ანალიზატორი (Mardi Edition)</div>
+        <select id="ice-select" class="widget-input">
+          <option value="">-- აირჩიეთ რუტინული ამოცანა --</option>
+          <option value="1">ბათუმის ბაზრის კონკურენტების ფასების მონიტორინგი</option>
+          <option value="2">საერთაშორისო კლიენტებთან ელფოსტის მიმოწერა</option>
+          <option value="3">ნასყიდობის ხელშეკრულებების პუნქტების გადამოწმება</option>
+          <option value="4">SMM პოსტების ქოფირაითინგი Mardi Hills-ისთვის</option>
+        </select>
+        <button class="widget-btn" onclick="analyzeIcebreaker()">ანალიზი ⚡</button>
+        <div id="ice-result" class="widget-result"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: HISTORY OF AI -->
+    <section class="content-card" id="history">
+      <span class="section-tag">კონტექსტი & ევოლუცია</span>
+      <h2 class="section-title">⏳ AI-ის ისტორია, ELIZA-ს ეფექტი & 2026 წლის რევოლუცია</h2>
+      <p>ხელოვნური ინტელექტი 2022 წელს არ დაბადებულა. მისი გზა 1956 წლის დართმუთის კონფერენციიდან იწყება. LLM მოდელების გაგებისთვის მნიშვნელოვანია ELIZA-ს ეფექტის გაცნობიერება:</p>
+
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ეპოქა / წელი</th>
+              <th>ტექნოლოგია</th>
+              <th>მექანიზმი</th>
+              <th>შეზღუდვა / გაკვეთილი</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1966</strong></td>
+              <td>ELIZA (Joseph Weizenbaum)</td>
+              <td>Pattern Matching & Keyphrases</td>
+              <td>ELIZA-ს ეფექტი: ტექსტის დამაჯერებლობა ≠ გაგება.</td>
+            </tr>
+            <tr>
+              <td><strong>2017</strong></td>
+              <td>Transformer Architecture (Google)</td>
+              <td>Self-Attention Mechanism</td>
+              <td>საფუძველი ჩაუყარა თანამედროვე LLM-ებს.</td>
+            </tr>
+            <tr>
+              <td><strong>2026</strong></td>
+              <td>Claude 5, GPT-5.6, Gemini 3.6</td>
+              <td>Agentic Reasoning, Multi-Modal & 2M Context</td>
+              <td>ავტონომიური აგენტები და live grounding.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 5: LLM ARCHITECTURE -->
+    <section class="content-card" id="llm-architecture">
+      <span class="section-tag">შიდა მექანიზმები</span>
+      <h2 class="section-title">⚙️ როგორ მუშაობს LLM? Tokenization, Context & Hallucinations</h2>
+      <p>LLM (Large Language Model) არის ალბათური ძრავი, რომელიც პროგნოზირებს შემდგომ ყველაზე მოსალოდნელ სიტყვას (Token). Mardi-ს გუნდმა უნდა იცოდეს:</p>
+
+      <ul class="check-list">
+        <li><strong>Tokens (ტოკენები):</strong> ტექსტის მინიმალური ერთეული (1000 სიტყვა ≈ 1300 ტოკენი).</li>
+        <li><strong>Context Window (კონტექსტური ფანჯარა):</strong> 2026 წელს მოდელები ამუშავებენ 2,000,000+ ტოკენს (50-მდე PDF დოკუმენტი ერთდროულად).</li>
+        <li><strong>Hallucinations (ჰალუცინაციები):</strong> AI-ს მიერ დამაჯერებლად გამოგონებული მცდარი ფაქტები. გადამოწმების პროტოკოლი სავალდებულოა!</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 6: PII SECURITY & GDPR -->
+    <section class="content-card" id="security-gdpr">
+      <span class="section-tag">კორპორატიული უსაფრთხოება</span>
+      <h2 class="section-title">⚖️ PII მონაცემების დაცვა, GDPR & EU AI Act Mardi Holding-ში</h2>
+      <p>კლიენტთა პერსონალური მონაცემების უსაფრთხოება Mardi Holding-ის უმაღლესი პრიორიტეტია:</p>
+
+      <div class="warning-box">
+        <strong>⚠️ PII (Personally Identifiable Information) პროტოკოლი:</strong> არასოდეს გააგზავნოთ AI-ში კლიენტის პასპორტის ნომერი, პირადი ტელეფონი, საბანკო ანგარიშები ან ხელშეკრულების კონფიდენციალური ფინანსური პირობები ანონიმურობის დაცვის გარეშე!
+      </div>
+
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>მონაცემთა ტიპი</th>
+              <th>სტატუსი AI-ში</th>
+              <th>უსაფრთხო ჩანაცვლება (Token)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>კლიენტის სრული სახელი და გვარი</td>
+              <td>🚫 აკრძალულია</td>
+              <td><code>[CLIENT_NAME]</code> / <code>[INVESTOR_A]</code></td>
+            </tr>
+            <tr>
+              <td>პასპორტის / პირადობის ნომერი</td>
+              <td>🚫 მკაცრად აკრძალულია</td>
+              <td><code>[PASSPORT_ID]</code></td>
+            </tr>
+            <tr>
+              <td>პირადი ტელეფონი & ელფოსტა</td>
+              <td>🚫 აკრძალულია</td>
+              <td><code>[PHONE]</code> / <code>[EMAIL]</code></td>
+            </tr>
+            <tr>
+              <td>Mardi Hills-ის საჯარო ფასები & ბროშურა</td>
+              <td>✅ დაშვებულია</td>
+              <td>ნედლი ტექსტის სახით</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 7: PROMPTING FRAMEWORKS -->
+    <section class="content-card" id="prompting-frameworks">
+      <span class="section-tag">მეთოდოლოგია</span>
+      <h2 class="section-title">⚡ Prompt Engineering-ის 5 ოქროს ჩარჩო</h2>
+
+      <div class="highlight-box">
+        <strong>1. C.R.E.A.T.E ჩარჩო:</strong><br>
+        • <strong>C</strong>ontext (კონტექსტი Mardi-ს შესახებ)<br>
+        • <strong>R</strong>ole (ექსპერტული როლი)<br>
+        • <strong>E</strong>xplicit Instruction (მკაფიო ინსტრუქცია)<br>
+        • <strong>A</strong>udience (სამიზნე აუდიტორია)<br>
+        • <strong>T</strong>one (ტონალობა)<br>
+        • <strong>E</strong>xamples (მაგალითები)
+      </div>
+
+      <ul class="check-list">
+        <li><strong>Role-Based Prompting:</strong> AI-სთვის ზუსტი ექსპერტული როლის მინიჭება (მაგ. Mardi Sales Director).</li>
+        <li><strong>XML Tags Structuring:</strong> ინსტრუქციების გაყოფა ტეგებად (<code>&lt;role&gt;</code>, <code>&lt;context&gt;</code>, <code>&lt;instructions&gt;</code>).</li>
+        <li><strong>Chain-of-Thought (CoT):</strong> ეტაპობრივი აზროვნება ("Think step-by-step").</li>
+        <li><strong>Few-Shot Prompting:</strong> 2-3 სანიმუშო მაგალითის მიწოდება.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 8: GOOGLE AI STUDIO -->
+    <section class="content-card" id="google-ai-studio">
+      <span class="section-tag">LIVE SEARCH GROUNDING</span>
+      <h2 class="section-title">🔍 Google AI Studio & Check Internet ბათუმის ბაზრისთვის</h2>
+      <p>Google AI Studio (Gemini 3.6 Flash) Check Internet ფუნქციით იძლევა საშუალებას რეალურ დროში განხორციელდეს ბათუმის უძრავი ქონების ბაზრისა და კონკურენტების live ანალიზი.</p>
+    </section>
+
+    <!-- SECTION 9: PII WIDGET -->
+    <section class="content-card" id="pii-widget">
+      <span class="section-tag">ინტერაქტიული ინსტრუმენტი</span>
+      <h2 class="section-title">🛠️ Mardi PII Sanitizer & Prompt Quality Tester</h2>
+
+      <div class="interactive-widget">
+        <div class="widget-title">🔒 PII გაფილტვრის ტესტერი</div>
+        <textarea id="pii-input" class="widget-input" rows="4" placeholder="ჩასვით ტექსტი პერსონალური მონაცემებით (მაგ: გიორგი, პასპორტი N12345, ტელ: 599123456)..."></textarea>
+        <button class="widget-btn" onclick="sanitizePII()">გაფილტვრა 🛡️</button>
+        <div id="pii-result" class="widget-result"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: IN-CLASS EXERCISES (3 TASKS, 10-15 MINS EACH) -->
+    <section class="content-card" id="exercises">
+      <span class="section-tag">პრაქტიკული ვორქშოფი (II ბლოკი)</span>
+      <h2 class="section-title">🎯 3 ონლაინ ლექციის დავალება (10-15 წუთი თითოეული)</h2>
+
+      <!-- EXERCISE 1 -->
+      <div class="exercise-card">
+        <div class="exercise-header">
+          <span class="exercise-badge">დავალება 1.1</span>
+          <span class="exercise-time">⏱️ ხანგრძლივობა: 10-15 წუთი</span>
+        </div>
+        <div class="exercise-title">Mardi PII Sanitizer & Security Audit</div>
+        <p style="font-size:0.9rem; color:var(--text-2);"><strong>დავალების მიზანი:</strong> კლიენტის კონფიდენციალური მიმოწერისა და ხელშეკრულების მონაცემების ანონიმური გაფილტვრა AI-სთან გაგზავნამდე.</p>
+
+        <div class="exercise-grid">
+          <div class="ex-sub-box">
+            <strong>📥 შემავალი მონაცემი (Input):</strong>
+            კლიენტის ნედლი ელფოსტა პირადი ტელეფონით, პასპორტის ნომრითა და ბათუმის აპარტამენტის დაჯავშნის დეტალებით.
+          </div>
+          <div class="ex-sub-box">
+            <strong>🎯 მოსალოდნელი შედეგი (Output):</strong>
+            სრულად დასუფთავებული ტექსტი PII ტეგებით, რომელიც უსაფრთხოა AI დამუშავებისთვის.
+          </div>
+        </div>
+
+        <div class="prompt-blueprint" style="margin-top:16px;">
+          <div class="prompt-header">
+            <span class="prompt-label">დავალება 1.1 — პრომპტი</span>
+            <button class="copy-btn" onclick="copyPrompt('ex11_p')">📋 კოპირება</button>
+          </div>
+          <div class="code-content" id="ex11_p">You are the Security & PII Compliance Officer for Mardi Holding. 
+Review the following text and replace all sensitive PII (Client Full Name, Passport Number, Phone Number, Private Email, Credit Card/Bank details) with safe placeholders like [CLIENT_NAME], [PASSPORT_ID], [PHONE].
+
+Text to sanitize:
+"გამარჯობა, მე ვარ გიორგი კვარაცხელია (პასპორტი: N12345678, ტელ: +995599123456). მინდა გავაფორმო ნასყიდობის ხელშეკრულება Mardi Hills-ის აპარტამენტზე #402. ჩემი ელფოსტაა giorgi.kvara@gmail.com."</div>
+        </div>
+      </div>
+
+      <!-- EXERCISE 2 -->
+      <div class="exercise-card">
+        <div class="exercise-header">
+          <span class="exercise-badge">დავალება 1.2</span>
+          <span class="exercise-time">⏱️ ხანგრძლივობა: 10-15 წუთი</span>
+        </div>
+        <div class="exercise-title">Mardi Real Estate System Directives Construction</div>
+        <p style="font-size:0.9rem; color:var(--text-2);"><strong>დავალების მიზანი:</strong> Claude/ChatGPT-ში Mardi-ს კონკრეტული პროექტისთვის (Novotel Living Batumi) ექსპერტი AI ასისტენტის Directives-ის აწყობა.</p>
+
+        <div class="exercise-grid">
+          <div class="ex-sub-box">
+            <strong>🛠️ ინსტრუმენტი:</strong>
+            Claude 3.5/5 ან ChatGPT (System Prompt / Directives).
+          </div>
+          <div class="ex-sub-box">
+            <strong>🎯 მოსალოდნელი შედეგი (Output):</strong>
+            გამართული System Directive XML ტეგებით, რომელიც Novotel Living-ის უპირატესობებს წარადგენს.
+          </div>
+        </div>
+
+        <div class="prompt-blueprint" style="margin-top:16px;">
+          <div class="prompt-header">
+            <span class="prompt-label">დავალება 1.2 — პრომპტი</span>
+            <button class="copy-btn" onclick="copyPrompt('ex12_p')">📋 კოპირება</button>
+          </div>
+          <div class="code-content" id="ex12_p">Construct a System Directive XML block for an AI Sales Specialist advocating Novotel Living Batumi by Mardi Holding.
+Include:
+1. Role & Identity definition
+2. Accor Brand standard highlights (5-star hotel management, 12-14% ROI)
+3. Tone of voice: High-end luxury, welcoming, professional
+4. Rules: Do not make guarantees on unverified ROI figures. Promptly invite potential buyers to schedule a virtual tour.</div>
+        </div>
+      </div>
+
+      <!-- EXERCISE 3 -->
+      <div class="exercise-card">
+        <div class="exercise-header">
+          <span class="exercise-badge">დავალება 1.3</span>
+          <span class="exercise-time">⏱️ ხანგრძლივობა: 10-15 წუთი</span>
+        </div>
+        <div class="exercise-title">Live Web Market Research Google AI Studio-ში</div>
+        <p style="font-size:0.9rem; color:var(--text-2);"><strong>დავალების მიზანი:</strong> Google AI Studio-ს Check Internet (Live Web Grounding) ფუნქციის გამოყენება ბათუმის უძრავი ქონების ბაზრის კონკურენტების live ანალიზისთვის.</p>
+
+        <div class="exercise-grid">
+          <div class="ex-sub-box">
+            <strong>🛠️ ინსტრუმენტი:</strong>
+            Google AI Studio (Gemini 3.6 Flash / Live Search Grounding Enabled).
+          </div>
+          <div class="ex-sub-box">
+            <strong>🎯 მოსალოდნელი შედეგი (Output):</strong>
+            ბათუმის 5-ვარსკვლავიანი ბრენდირებული რეზიდენციების ფასებისა და გაქირავების განაკვეთების ანალიტიკური ცხრილი.
+          </div>
+        </div>
+
+        <div class="prompt-blueprint" style="margin-top:16px;">
+          <div class="prompt-header">
+            <span class="prompt-label">დავალება 1.3 — პრომპტი</span>
+            <button class="copy-btn" onclick="copyPrompt('ex13_p')">📋 კოპირება</button>
+          </div>
+          <div class="code-content" id="ex13_p">Enable Google Search Grounding.
+Perform a live web search on current real estate market metrics in Batumi, Georgia for branded hotel residences (e.g. Novotel, Courtyard, Wyndham, Alliance).
+
+Extract:
+1. Average price per sq.m for premium turn-key residences in Batumi.
+2. Estimated daily rental rates ($/night) during peak summer season.
+3. Comparative summary showing how Mardi Holding's Novotel Living & Mardi Hills position against competing projects.
+
+Format output as a structured comparison table followed by 3 key sales arguments for Mardi Sales reps.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: DEPARTMENTAL MATRIX -->
+    <section class="content-card" id="matrix">
+      <span class="section-tag">ორგანიზაციული გამოყენება</span>
+      <h2 class="section-title">🏢 დეპარტამენტული გამოყენების მატრიცა Mardi Holding-ში</h2>
+      
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>დეპარტამენტი</th>
+              <th>AI გამოყენების ქეისი</th>
+              <th>რეკომენდებული ინსტრუმენტი</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>გაყიდვები & CRM</strong></td>
+              <td>მრავალენოვანი Sales Pitch & BANT კვალიფიკაცია</td>
+              <td>Claude Sonnet 5 / ChatGPT Plus</td>
+            </tr>
+            <tr>
+              <td><strong>მარკეტინგი & SMM</strong></td>
+              <td>30-დღიანი SMM კალენდარი & Visual Prompts</td>
+              <td>Midjourney V8.1 / Lovable.app</td>
+            </tr>
+            <tr>
+              <td><strong>არქიტექტურა & 3D</strong></td>
+              <td>ფასადების, ინტერიერისა და ლანდშაფტის 3D რენდერი</td>
+              <td>Midjourney V8.1 / Kling AI</td>
+            </tr>
+            <tr>
+              <td><strong>იურიდიული & HR</strong></td>
+              <td>ხელშეკრულებების AI აუდიტი & SOP წერა</td>
+              <td>Claude Sonnet 5 (Artifacts 2.0)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 12: PROMPT BLUEPRINTS -->
+    <section class="content-card" id="blueprints">
+      <span class="section-tag">მზა შაბლონები</span>
+      <h2 class="section-title">📋 Mardi Universal System Prompt Blueprint</h2>
+
+      <div class="prompt-blueprint">
+        <div class="prompt-header">
+          <span class="prompt-label">Mardi System Directive (XML Format)</span>
+          <button class="copy-btn" onclick="copyPrompt('p1')">📋 კოპირება</button>
+        </div>
+        <div class="code-content" id="p1"><system_directive>
+<role>
+You are the Chief Commercial & AI Communications Advisor for Mardi Holding, a premier real estate developer in Batumi, Georgia (Projects: Mardi Hills, Novotel Living Batumi, Mercure Aquapark, Mardi City Center).
+</role>
+
+<brand_voice>
+- Tone: Sophisticated, highly professional, trustworthy, and investor-focused.
+- Key Value Proposition: High rental yields (up to 14% ROI), international brand standards (Accor), prime Batumi locations, and turnkey property management.
+</brand_voice>
+
+<security_protocol>
+- NEVER disclose sensitive client PII (Passport numbers, private phone numbers, exact bank routing).
+- Replace private data with tokens like [CLIENT_NAME], [PHONE_NUMBER], [PASSPORT_ID].
+</security_protocol>
+
+<output_format>
+Provide structured, clear, and actionable responses using bullet points and concise markdown.
+</output_format>
+</system_directive></div>
+      </div>
+    </section>
+
+    <!-- SECTION 13: OUTCOMES -->
+    <section class="content-card" id="outcomes">
+      <span class="section-tag">შედეგები & Deliverables</span>
+      <h2 class="section-title">🚀 პირველი დღის ბიზნეს შედეგები Mardi Holding-ისთვის</h2>
+      
+      <div class="success-box">
+        <h4 style="font-size:1.05rem; color:#15803D; margin-bottom:10px;">პირველი დღის დასრულებისას გუნდს აქვს:</h4>
+        <ul class="check-list">
+          <li><strong>PII უსაფრთხოების პროტოკოლი:</strong> 100%-ით დაცული კორპორატიული მონაცემები AI-სთან მუშაობისას.</li>
+          <li><strong>Mardi System Directives:</strong> მზა უნივერსალური პრომპტი დეველოპმენტისა და გაყიდვების გუნდისთვის.</li>
+          <li><strong>Live Web Grounding უნარები:</strong> Google AI Studio-თი ბათუმის ბაზრის კონკურენტების რეალურ დროში მონიტორინგის შესაძლებლობა.</li>
+        </ul>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px; padding-top:20px; border-top:1px solid var(--border);">
+        <a href="index.html" style="color:var(--text-3); text-decoration:none; font-weight:700; font-size:0.9rem;">← ჰაბზე დაბრუნება</a>
+        <a href="day-2.html" style="background:var(--mardi-orange); color:#FFFFFF; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:700; font-size:0.9rem;">გადავლათ დღე 2-ზე →</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Mardi Holding AI Training Proposal & Corporate Hub. მომზადებულია გიორგი ბასილაიას მიერ.</p>
+  <p style="margin-top:8px; font-size:0.82rem;">
+    <a href="index.html">მთავარი</a> | 
+    <a href="day-1.html">დღე 1</a> | 
+    <a href="day-2.html">დღე 2</a> | 
+    <a href="day-3.html">დღე 3</a> | 
+    <a href="day-4.html">დღე 4</a> | 
+    <a href="course-info.html">სილაბუსი</a>
+  </p>
+</footer>
+
+<script>
+  function copyPrompt(id) {
+    const box = document.getElementById(id);
+    if (!box) return;
+    const text = box.innerText.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      alert('პრომპტი წარმატებით დაკოპირდა!');
+    });
+  }
+
+  function analyzeIcebreaker() {
+    const val = document.getElementById('ice-select').value;
+    const res = document.getElementById('ice-result');
+    if (!val) { alert('გთხოვთ აირჩიოთ რუტინა!'); return; }
+    res.style.display = 'block';
+    if (val === '1') {
+      res.innerHTML = '<strong>💡 AI ოპტიმიზაცია:</strong> Google AI Studio Check Internet-ით ბათუმის 10 კონკურენტის ფასების ავტომატური სკანირება კვირაში 4 საათს გიზოგავთ.';
+    } else if (val === '2') {
+      res.innerHTML = '<strong>💡 AI ოპტიმიზაცია:</strong> Custom GPT Sales Assistant-ით არაბულ/ინგლისურენოვანი პასუხები მზადდება 30 წამში.';
+    } else if (val === '3') {
+      res.innerHTML = '<strong>💡 AI ოპტიმიზაცია:</strong> Claude Sonnet 5 Artifacts 2.0-ით ხელშეკრულების რისკების სკანირება სრულდება 2 წუთში.';
+    } else {
+      res.innerHTML = '<strong>💡 AI ოპტიმიზაცია:</strong> Midjourney V8.1 + Claude-ით 30-დღიანი SMM კონტენტი იწერება 1 საათში.';
+    }
+  }
+
+  function sanitizePII() {
+    const text = document.getElementById('pii-input').value;
+    const res = document.getElementById('pii-result');
+    if (!text) { alert('გთხოვთ ჩასვათ ტექსტი!'); return; }
+    let sanitized = text
+      .replace(/([ა-ჰ]+)\s+([ა-ჰ]+)/g, '[CLIENT_NAME]')
+      .replace(/N?\d{8,9}/g, '[PASSPORT_ID]')
+      .replace(/(\+?995)?\d{9}/g, '[PHONE]')
+      .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL]');
+    res.style.display = 'block';
+    res.innerHTML = '<strong>🛡️ გაფილტრული ტექსტი (უსაფრთხოა AI-სთვის):</strong><br><br>' + sanitized;
+  }
+</script>
+
+</body>
+</html>
