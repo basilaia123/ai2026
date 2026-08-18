@@ -28,8 +28,8 @@
 <details>
 <summary><b>3. Architecture Team</b></summary>
 
-* **Description:** Works on BIM/CAD models. Uses Claude to write Revit/AutoCAD automation scripting procedures and Dynamo scripts, NotebookLM to query zoning codes, guidelines, and construction documentation, and Notion to catalogue drawing inventory.
-* **Focus:** Zoning Guidelines & Drawing Documentation
+* **Description:** Works on project planning and conceptual development. Uses Claude to structure technical specifications, guidelines, and executive summaries, NotebookLM to query zoning codes and brand regulations, and Notion to catalogue project documentation.
+* **Focus:** Regulations, Standards & Documentation
 </details>
 
 <details>
@@ -70,7 +70,7 @@ To foster collaboration and prevent communication silos, the program is structur
 
 The training will focus on five industry-leading tools, demonstrating their direct application to Central Park Towers' operations:
 
-1. **Claude Opus 4.8, GPT-5.5 & Gemini 3.5 Pro (with Claude Cowork):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 2M context window for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
+1. **Claude Opus 4.8, GPT-5.5 & Gemini 3.5 Pro (with Claude Cowork):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, business logic and document processing, ChatGPT for custom GPT actions, Gemini's 2M context window for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
 2. **Google NotebookLM:** Localized knowledge hubs. Leverages Gemini 3.5 Pro to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
 3. **Notion & Notion AI:** Central operations backend. Relational databases with advanced formulas, semantic Notion AI search, and team dashboards acting as our unified project database.
 4. **Lovable.app (Supabase):** AI-powered full-stack app builder. Develops, deploys, and updates React/Vite web applications with natural language, connecting to Supabase tables, role-based access control (RBAC), user auth, and API webhooks.
@@ -104,7 +104,7 @@ The program is offered in three flexible duration tiers:
 * **Block 1 (1 hr 20 min):**
   * **Claude Projects & Claude Cowork:** creating a dedicated assistant for Central Park Towers (e.g., an MEP Compliance Checker or a Tender Spec Reviewer) and setting up **Claude Cowork** desktop agent to automate folder scanning and local workspace tasks.
   * **SOP Auto-Generation:** using Claude to convert raw process notes into structured Standard Operating Procedures with numbered steps, responsible roles, and checklists.
-  * **CAD & BIM Scripting intro:** prompting Claude to generate a short AutoCAD LISP snippet or a Revit Python snippet — understanding the workflow, not memorizing syntax.
+  * **Business Template & Workflow Structuring:** prompting Claude to generate standardized corporate templates, communication frameworks, and reporting structures.
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hr 20 min):**
   * **NotebookLM Setup:** uploading 2-3 real datasheets, international hotel brand standards, or MEP manuals; running Q&A and generating an Audio Overview summary.
@@ -128,7 +128,7 @@ The program is offered in three flexible duration tiers:
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
   * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), Perplexity.ai & Arena.ai research, and Gamma.app presentations from briefs.
-  * **Day 2:** Custom Assistants (Claude Projects, Custom GPTs & Claude Cowork agent), SOP auto-generation, NotebookLM setup for long manuals/design standards, and Revit/Dynamo script automation.
+  * **Day 2:** Custom Assistants (Claude Projects, Custom GPTs & Claude Cowork agent), SOP auto-generation, and NotebookLM enterprise knowledge bases.
   * **Day 3:** Notion & Lovable.app (structured databases, Notion AI, and rapid prototyping of web portals with Supabase data-bindings).
   * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack), corporate AI Policy, Data Governance, and Shadow AI prevention.
 * **Evaluation:** The optimal pedagogical format. Provides ample time for participants to integrate their real project documents, design a database backend in Notion, build a front-end portal in Lovable.app, and automate it via Make.com.
@@ -138,7 +138,7 @@ The program is offered in three flexible duration tiers:
 * **Budget:** 8,500 GEL (all taxes included)
 * **Evaluation:** The complete operational transformation track. Days 1–4 follow the Option B curriculum with expanded hands-on time and department-specific exercises. Day 5 adds advanced engineering, AI governance, and a live cross-functional simulation unique to this tier.
 
-**Days C-1 through C-4:** Full Option B curriculum (see detailed schedule below) with additional practice time per block — approximately 10-15 extra minutes per block for deeper department-specific exercises (e.g., Architects generate and test Dynamo scripts on real BIM tasks; Designers build a full moodboard review workflow in Lovable.app; PMs create a multi-table Notion project backend with Rollup KPIs).
+**Days C-1 through C-4:** Full Option B curriculum (see detailed schedule below) with additional practice time per block — approximately 10-15 extra minutes per block for deeper department-specific exercises (e.g., Architects generate and test technical specifications and documentation; Designers build a full moodboard review workflow in Lovable.app; PMs create a multi-table Notion project backend with Rollup KPIs).
 
 **Day C-5: Advanced Development, AI Governance & Cross-Functional Simulation (3 Hours)**
 * **Block 1 (1 hr 20 min) — Advanced Lovable.app Engineering:**
@@ -179,7 +179,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
     1. *Multi-Perspective Roleplay:* Structuring system instructions to make the AI simulate a joint review panel (e.g., Architect, MEP Engineer, Project Manager, Hotel Operator) to identify design issues.
     2. *Reverse Brainstorming:* Forcing the AI to list every logical reason why a specific site construction schedule or procurement plan might fail, then reversing those constraints into risk-mitigation prompts.
   * **Claude Cowork desktop agent:** Downloading, configuring permissions, and running local file scanning tasks (e.g., automatically sorting construction logs or generating summaries from directories of weekly reports).
-  * **AI Hallucinations & Limitations:** Why LLMs hallucinate, recognizing "plausible-sounding" but fabricated metrics, fake CAD commands, and non-existent industry standards.
+  * **AI Hallucinations & Limitations:** Why LLMs hallucinate, recognizing "plausible-sounding" but fabricated metrics, fabricated business metrics, and non-existent regulations.
   * **VERIFY Critical Thinking Framework:**
     * **V**alidate facts against official documents.
     * **E**valuate source reliability.
@@ -191,11 +191,11 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 * **📋 Practical Assignment:** Run a work-relevant project planning prompt across ChatGPT, Claude, and Gemini. Write a comparative report scoring them on accuracy, tone, and format, and identify at least one hallucination or logic error using the VERIFY checklist.
 
 #### Day 2: Prompt Engineering, Custom Assistants, and NotebookLM (3 Hours)
-* **Block 1 (1 hour 25 minutes): Advanced Prompting, Custom Assistants & CAD Automation**
+* **Block 1 (1 hour 25 minutes): Advanced Prompting, Custom Assistants & SOP Auto-Generation**
   * **Prompt Engineering Frameworks:** Deep-dive into **PARTS** (Purpose, Action, Role, Topic, Style) and **CREATE** (Context, Role, Examples, Ask, Tone, Execution).
-  * **Advanced In-Context Learning:** Implementing zero-shot, one-shot, and multi-shot prompting with raw Orbi specification examples.
-  * **Custom AI Assistants:** Setting up Custom GPTs and Claude Projects. Structuring system instructions, configuring knowledge bases (MEP guidelines, Orbi design standards), and using markdown system prompts to enforce specific formatting.
-  * **CAD, BIM, and Scripting Automation:** Prompting Claude to generate, debug, and optimize AutoCAD LISP routines, Revit Python scripts, and Dynamo script blocks. Step-by-step methods for explaining execution errors to the AI to auto-correct code.
+  * **Advanced In-Context Learning:** Implementing zero-shot, one-shot, and few-shot prompting with raw Orbi specification and process examples.
+  * **Custom AI Assistants:** Setting up Custom GPTs and Claude Projects. Structuring system instructions, configuring knowledge bases (corporate guidelines, Orbi standards), and using markdown system prompts to enforce specific formatting.
+  * **SOP Auto-Generation & Process Documentation:** Prompting Claude to convert raw meeting notes and operational workflows into structured Standard Operating Procedures (SOPs), role assignments, and execution checklists.
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hour 25 minutes): Google NotebookLM in Practice**
   * **NotebookLM Workspace Setup:** Creating dedicated notebooks for large-scale projects (e.g., Central Park Towers). Uploading multiple sources: PDF manuals, MEP standards, Excel schedules, and international hotel brand checklists.
