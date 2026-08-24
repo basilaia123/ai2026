@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მაკდონალდსის AI ტრენინგი - სესია 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mcd: { 900: '#0B0F19', 800: '#121826', 700: '#1E293B', red: '#DA291C', gold: '#FFC72C', light: '#F4F6F9' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --red: #DA291C; --gold: #FFC72C; --deep: #B51C12;
+            --bg: #f4f6f9; --surface: #ffffff;
+            --text-1: #0B0F19; --text-2: #374151; --text-3: #6b7280;
+        }
+        html { scroll-behavior: smooth; font-size: 140%; }
+        body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; font-size: 24px; line-height: 1.7; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link { display: flex; align-items: flex-start; padding: 0.6rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.07); }
+        .nav-link.active { background: rgba(218,41,28,0.18); border-left-color: #DA291C; color: #ffb4ac; }
+        .topic-card { border-left: 4px solid #DA291C; padding-left: 1.5rem; }
+        .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-theory { background: rgba(218,41,28,0.12); color: #B51C12; border: 1px solid rgba(218,41,28,0.3); }
+        .badge-practice { background: rgba(255,199,44,0.18); color: #8a6400; border: 1px solid rgba(255,199,44,0.4); }
+        .badge-break { background: rgba(0,188,212,0.1); color: #0097A7; border: 1px solid rgba(0,188,212,0.3); }
+        .badge-demo { background: rgba(103,58,183,0.1); color: #512DA8; border: 1px solid rgba(103,58,183,0.3); }
+        .highlight-box { background: #fdecea; border-left: 4px solid #DA291C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .warning-box { background: #fff8e1; border-left: 4px solid #FFC72C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .success-box { background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .code-block { background: #0B0F19; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+        .copy-btn:hover { background: #DA291C; color: white; border-color: #DA291C; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+        .create-letter { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #DA291C; color: white; font-size: 1.2rem; font-weight: 800; margin-right: 0.75rem; flex-shrink: 0; }
+        .create-row { display: flex; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid #e5e7eb; }
+        .create-row:last-child { border-bottom: none; }
+        .timer-badge { background: #FFC72C; color: #0B0F19; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+        .section-header { background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .gdpr-badge { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.4); color: #2e7d32; border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.75rem; font-weight: 700; }
+        @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+        section { scroll-margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-mcd-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-mcd-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-mcd-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#DA291C;">🍟 მაკდონალდსის AI ტრენინგი</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 2: SCAMPER, Gemini Gems და Claude Cowork</p>
+        <p class="text-gray-400 text-xs mt-1">120 წუთი | 2 ბლოკი + შესვენება</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#FFC72C;">შინაარსი</div>
+
+        <a href="#agenda" class="nav-link">🎯 სესიის წესრიგი</a>
+        <a href="#recap" class="nav-link">🔄 სესია 1-ის მოკლე მიმოხილვა</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I - AI, როგორც სააზროვნო პარტნიორი (55 წთ)</div>
+        <a href="#thinking-partner" class="nav-link">🧠 AI, როგორც Thinking Partner</a>
+        <a href="#scamper" class="nav-link">🔧 SCAMPER ჩარჩო</a>
+        <a href="#scamper-s" class="nav-link" style="padding-left:2rem;">S - Substitute</a>
+        <a href="#scamper-c" class="nav-link" style="padding-left:2rem;">C - Combine</a>
+        <a href="#scamper-a" class="nav-link" style="padding-left:2rem;">A - Adapt</a>
+        <a href="#scamper-m" class="nav-link" style="padding-left:2rem;">M - Modify</a>
+        <a href="#scamper-p" class="nav-link" style="padding-left:2rem;">P - Put to other use</a>
+        <a href="#scamper-e" class="nav-link" style="padding-left:2rem;">E - Eliminate</a>
+        <a href="#scamper-r" class="nav-link" style="padding-left:2rem;">R - Reverse</a>
+        <a href="#drive-thru" class="nav-link">🚗 Drive-Thru რიგების ოპტიმიზაცია</a>
+        <a href="#food-waste" class="nav-link">🥗 Food Waste შემცირება</a>
+        <a href="#practice1" class="nav-link">✏️ პრაქტიკა 1: SCAMPER სესია</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">☕ შესვენება (10 წთ)</div>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II - Gems + Claude Cowork (55 წთ)</div>
+        <a href="#gems-advanced" class="nav-link">💎 Gemini Gems - გაფართოებული კონფიგურაცია</a>
+        <a href="#gems-thinking-demo" class="nav-link">🖥️ სააზროვნო პარტნიორი Gem-ის აწყობა</a>
+        <a href="#cowork-intro" class="nav-link">🖇️ Claude Cowork - შესავალი</a>
+        <a href="#cowork-demo" class="nav-link">🖥️ Cowork-ის დაყენება ნაბიჯ-ნაბიჯ</a>
+        <a href="#practice2" class="nav-link">✏️ პრაქტიკა 2: Gem + Cowork ტესტირება</a>
+        <a href="#summary" class="nav-link">✅ შეჯამება და საშინაო დავალება</a>
+
+        <div class="mt-6 mx-4 mb-4">
+            <a href="lecture-1-slides.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← სესია 1</a>
+            <a href="index.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors mt-2">🏠 წინადადებაში დაბრუნება</a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Main -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%);">
+        <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#DA291C;"></div>
+        <div class="max-w-5xl relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">🧠</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest" style="color:#FFC72C;">მაკდონალდს საქართველო - AI ტრენინგი</p>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">სესია 2: გაფართოებული პრომპტინგი, AI აზროვნების პარტნიორობა<br><span style="color:#ffb4ac;">(SCAMPER), Gemini Gems და Claude Cowork</span></h1>
+                </div>
+            </div>
+            <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">AI, როგორც სტრატეგიული Thinking Partner - SCAMPER ჩარჩო Drive-Thru რიგების მართვისა და Food Waste შემცირებისთვის, გაფართოებული Gemini Gems კონფიგურაცია და Claude Cowork - დესკტოპის აგენტური ასისტენტი ინვოისებისა და ფაილების ორგანიზებისთვის.</p>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">⏱ 120 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">👥 2 ბლოკი + შესვენება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">🎯 2 პრაქტიკული დავალება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(255,199,44,0.2);color:#FFC72C;">🧠 კრეატიული აზროვნება</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10 space-y-0">
+
+<!-- ═══════════════════════════════════════════════════
+     AGENDA
+═══════════════════════════════════════════════════ -->
+<section id="agenda" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📋 სესიის სტრუქტურა</span>
+    <h2 class="text-3xl font-bold mb-6" style="color:#0B0F19;">🎯 დღევანდელი სესიის დღის წესრიგი</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <!-- Block 1 -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 00:00 - 00:55</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი I: SCAMPER - სააზროვნო პარტნიორობა</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">10 წთ</strong> - მოკლე მიმოხილვა + Thinking Partner</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">30 წთ</strong> - SCAMPER ჩარჩო + Drive-Thru/Food Waste</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - პრაქტიკა 1</span></li>
+            </ul>
+        </div>
+        <!-- Break -->
+        <div class="flex flex-col" style="background:#121826;">
+            <div class="px-6 py-3 border-b border-white/10 flex items-center justify-between" style="background:rgba(0,188,212,0.15);">
+                <span class="font-bold text-white text-sm">☕ შესვენება</span>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#0097A7;color:white;">00:55 - 01:05</span>
+            </div>
+            <div class="p-6 flex-1">
+                <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 01:05 - 02:00</div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი II: Gems + Claude Cowork</h3>
+                <ul class="text-sm text-gray-300 space-y-2">
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - Gemini Gems: გაფართოებული კონფიგურაცია</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - Claude Cowork - შესავალი და დემო</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - პრაქტიკა 2: Gem + Cowork ტესტირება</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">5 წთ</strong> - შეჯამება + საშინაო</span></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Outcomes -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#FFC72C;">🎯 სესიის შედეგები</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">რას ისწავლით?</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> AI, როგორც სტრატეგიული Thinking Partner</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> SCAMPER - 7-ნაბიჯიანი ინოვაციის ჩარჩო</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> სააზროვნო პარტნიორი Gem ასისტენტი</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Claude Cowork - ფაილების/ინვოისების ავტომატიზაცია</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border-left:4px solid #FFC72C;">
+        <h4 class="font-bold text-lg mb-2">🧊 Icebreaker: „ერთი პროცესი, რომელიც გავამარტივებდით“</h4>
+        <p class="text-gray-700 mb-2">სესიის დაწყებამდე - <strong>ჩატში დაწერეთ ერთი საოპერაციო პროცესი</strong>, რომელსაც, თქვენი აზრით, გაუმჯობესება სჭირდება.</p>
+        <p class="text-sm text-gray-500 italic">მაგ: „Drive-Thru რიგი პიკის საათებში“, „საკვების ჭარბი მარაგი დღის ბოლოს“, „ცვლების გრაფიკის დაგეგმვა“, „მომწოდებლების ინვოისების დახარისხება“...</p>
+        <p class="text-sm mt-2" style="color:#B51C12;font-weight:600;">დღეს ვისწავლით, როგორ გამოვიყენოთ AI ამ პროცესების გადასააზროვნებლად.</p>
+    </div>
+</section>
+
+<!-- RECAP -->
+<section id="recap" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🔄 მოკლე მიმოხილვა · 5 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">🔄 სესია 1-ის მოკლე მიმოხილვა</h2>
+    <div class="card">
+        <div class="three-column">
+            <div class="p-4 rounded-lg text-center" style="background:#fdecea;">
+                <p class="text-2xl mb-1">🎯</p>
+                <p class="font-bold text-sm">C.R.E.A.T.E. ჩარჩო</p>
+                <p class="text-xs text-gray-600 mt-1">Context · Request · Explanation · Action · Tone · Extras</p>
+            </div>
+            <div class="p-4 rounded-lg text-center" style="background:#fff8e1;">
+                <p class="text-2xl mb-1">🔒</p>
+                <p class="font-bold text-sm">GDPR-თავსებადი გამოყენება</p>
+                <p class="text-xs text-gray-600 mt-1">არასოდეს - რეცეპტები, ფინანსური მონაცემები, პირადი ინფო</p>
+            </div>
+            <div class="p-4 rounded-lg text-center" style="background:#e8f5e9;">
+                <p class="text-2xl mb-1">💎</p>
+                <p class="font-bold text-sm">Gemini Gems</p>
+                <p class="text-xs text-gray-600 mt-1">Wolt/Bolt/Google Reviews-ზე პასუხების ასისტენტი</p>
+            </div>
+        </div>
+    </div>
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">💡 დღეს ამ საფუძველზე ვაგრძელებთ:</p>
+        <p class="text-sm text-gray-700">C.R.E.A.T.E. ჩარჩოს ვიყენებთ ხელოვნური ინტელექტის, როგორც <strong>სააზროვნო პარტნიორის</strong> (Thinking Partner) როლში, ხოლო Gemini Gems-ს ვაფართოებთ ახალი ტიპის ასისტენტებით.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK I HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🧠</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი I · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">AI, როგორც სააზროვნო პარტნიორი - SCAMPER</h2>
+                <p class="text-gray-300 text-sm mt-1">00:00 - 00:55 · თეორია + ჩარჩო + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- THINKING PARTNER -->
+<section id="thinking-partner" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🧠 AI, როგორც Thinking Partner</h2>
+
+    <div class="card mb-4">
+        <p class="text-xl font-bold mb-3" style="color:#B51C12;">გადავიდეთ წერითი ასისტენტიდან სააზროვნო პარტნიორზე</p>
+        <p class="text-gray-700 text-lg">სესია 1-ში AI გვეხმარებოდა <strong>ტექსტის დაწერაში</strong>. სესია 2-ში ხელოვნურ ინტელექტს ვიყენებთ, როგორც <strong>სააზროვნო პარტნიორს (Thinking Partner)</strong> - სტრატეგიული გადაწყვეტილებების მისაღებად, პროცესების ანალიზისა და ახალი იდეების გენერირებისთვის.</p>
+    </div>
+
+    <div class="two-column">
+        <div class="card">
+            <p class="font-bold mb-2" style="color:#E91E63;">❌ AI, როგორც მხოლოდ ტექსტ-გენერატორი</p>
+            <ul class="text-gray-600 space-y-1 text-sm">
+                <li>• წერს, რასაც ეუბნებით</li>
+                <li>• არ სვამს კითხვებს</li>
+                <li>• არ სთავაზობს ალტერნატივებს</li>
+            </ul>
+        </div>
+        <div class="card" style="border: 2px solid #DA291C;">
+            <p class="font-bold mb-2" style="color:#B51C12;">✅ AI, როგორც Thinking Partner</p>
+            <ul class="text-gray-600 space-y-1 text-sm">
+                <li>• სთავაზობს სტრუქტურირებულ ჩარჩოებს (SCAMPER)</li>
+                <li>• აანალიზებს პროცესს სხვადასხვა კუთხით</li>
+                <li>• გენერირებს 5-10 იდეას წუთებში</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">Drive-Thru რიგების მართვის იდეები → საკვების ნარჩენების შემცირების სტრატეგიები → ცვლების გრაფიკის ოპტიმიზაცია → ახალი მენიუს/აქციის კონცეფციები</p>
+    </div>
+</section>
+
+<!-- SCAMPER -->
+<section id="scamper" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 SCAMPER ჩარჩო</span>
+    <h2 class="text-3xl font-bold mb-2">🔧 SCAMPER - 7-ნაბიჯიანი ინოვაციის ჩარჩო</h2>
+    <p class="text-gray-500 mb-6">კლასიკური ბრეინშტორმინგის მეთოდი, ადაპტირებული AI პრომპტინგისთვის</p>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+        <div style="background:#0B0F19;padding:1.25rem 1.5rem;">
+            <p class="text-white font-bold text-lg">SCAMPER = 7 კითხვის ტიპი ერთი პროცესის გადასააზროვნებლად</p>
+        </div>
+        <div style="padding:0 1.5rem;">
+            <div class="create-row">
+                <span class="create-letter" style="background:#DA291C;">S</span>
+                <div><p class="font-bold">Substitute - ჩანაცვლება</p><p class="text-sm text-gray-600">რისი ჩანაცვლება შეიძლება? - მასალა, ადამიანი, ეტაპი</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#FFC72C;color:#0B0F19;">C</span>
+                <div><p class="font-bold">Combine - გაერთიანება</p><p class="text-sm text-gray-600">რომელი ორი ეტაპი შეიძლება გაერთიანდეს ერთში?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#9C27B0;">A</span>
+                <div><p class="font-bold">Adapt - ადაპტაცია</p><p class="text-sm text-gray-600">რა მუშაობს სხვა ინდუსტრიაში, რისი გამოყენებაც შეგვიძლია?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#4CAF50;">M</span>
+                <div><p class="font-bold">Modify - მოდიფიკაცია</p><p class="text-sm text-gray-600">რისი გაზრდა/შემცირება/ხაზგასმა შეიძლება?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#00BCD4;">P</span>
+                <div><p class="font-bold">Put to other use - სხვა გამოყენება</p><p class="text-sm text-gray-600">შეიძლება ეს რესურსი/პროცესი სხვა მიზნით გამოვიყენოთ?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#607D8B;">E</span>
+                <div><p class="font-bold">Eliminate - ამოღება</p><p class="text-sm text-gray-600">რომელი ეტაპი შეიძლება მთლიანად ამოვაგდოთ?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#B51C12;">R</span>
+                <div><p class="font-bold">Reverse - შებრუნება</p><p class="text-sm text-gray-600">რა მოხდება, თუ პროცესს პირიქით ავაწყობთ?</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SCAMPER S -->
+<section id="scamper-s" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">S - Substitute</span>
+    <h2 class="text-2xl font-bold mb-4">S - Substitute (ჩანაცვლება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">რისი <strong>ჩანაცვლება</strong> შეიძლება პროცესში - მასალა, ეტაპი, ხელსაწყო?</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„Drive-Thru-ში შეკვეთის მიღება ხდება ხმით, ერთი თანამშრომლის მიერ.
+რისი ჩანაცვლება შეიძლება - თანამშრომელი, არხი, ან პროცესის ეტაპი -
+რიგის დასაჩქარებლად? მომეცი 5 იდეა.“</div>
+</div>
+    </div>
+</section>
+
+<!-- SCAMPER C -->
+<section id="scamper-c" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">C - Combine</span>
+    <h2 class="text-2xl font-bold mb-4">C - Combine (გაერთიანება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">რომელი <strong>ორი ეტაპი</strong> შეიძლება ერთში გავაერთიანოთ?</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„ამჟამად შეკვეთის მიღება და გადახდა ორი ცალკე ეტაპია Drive-Thru-ში.
+რომელი ეტაპები შეიძლება გავაერთიანოთ დროის დასაზოგად?“</div>
+</div>
+    </div>
+</section>
+
+<!-- SCAMPER A -->
+<section id="scamper-a" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">A - Adapt</span>
+    <h2 class="text-2xl font-bold mb-4">A - Adapt (ადაპტაცია)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">რა <strong>მუშაობს სხვა ინდუსტრიაში</strong>, რისი გამოყენებაც შეგვიძლია?</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„როგორ მართავენ რიგებს ავიაკომპანიების Check-in-ზე ან ბანკებში?
+რომელი ტექნიკის ადაპტაცია შეიძლება Drive-Thru-სთვის?“</div>
+</div>
+    </div>
+</section>
+
+<!-- SCAMPER M -->
+<section id="scamper-m" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">M - Modify</span>
+    <h2 class="text-2xl font-bold mb-4">M - Modify (მოდიფიკაცია)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">რისი <strong>გაზრდა, შემცირება ან ხაზგასმა</strong> შეიძლება?</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„დღის ბოლოს ხშირად რჩება ჭარბი მომზადებული საკვები.
+რისი გაზრდა/შემცირება შეიძლება მომზადების პროცესში -
+პორცია, სიხშირე, პროგნოზირების პერიოდი - ნარჩენების შესამცირებლად?“</div>
+</div>
+    </div>
+</section>
+
+<!-- SCAMPER P -->
+<section id="scamper-p" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">P - Put to other use</span>
+    <h2 class="text-2xl font-bold mb-4">P - Put to other use (სხვა გამოყენება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">შეიძლება <strong>რესურსი ან პროცესი</strong> სხვა მიზნით გამოვიყენოთ?</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„დაბალი დატვირთვის საათებში (14:00-17:00) გუნდის ნაწილი
+თავისუფალია. ეს დროის რესურსი როგორ შეიძლება
+სხვა მიზნით - გუნდის ტრენინგი, სისუფთავე, მარაგის აღრიცხვა - გამოვიყენოთ?“</div>
+</div>
+    </div>
+</section>
+
+<!-- SCAMPER E -->
+<section id="scamper-e" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">E - Eliminate</span>
+    <h2 class="text-2xl font-bold mb-4">E - Eliminate (ამოღება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">რომელი <strong>ეტაპი</strong> შეიძლება მთლიანად ამოვაგდოთ?</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„მომწოდებლის ინვოისების დამუშავებაში 4 ეტაპია: მიღება,
+ხელით შემოწმება, სისტემაში შეყვანა, დამტკიცება.
+რომელი ეტაპი შეიძლება მთლიანად ამოვიღოთ ან გავამარტივოთ?“</div>
+</div>
+    </div>
+</section>
+
+<!-- SCAMPER R -->
+<section id="scamper-r" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">R - Reverse</span>
+    <h2 class="text-2xl font-bold mb-4">R - Reverse (შებრუნება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">რა მოხდება, თუ პროცესს <strong>პირიქით</strong> ავაწყობთ?</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„ამჟამად ჯერ ვამზადებთ საკვებს, მერე ველოდებით შეკვეთას.
+რა მოხდება, თუ ამ თანმიმდევრობას შევაბრუნებთ -
+როგორ შეიძლება პროგნოზირებამ შეამციროს ნარჩენები?“</div>
+</div>
+    </div>
+
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-2">🔥 სრული SCAMPER სესია - ერთი პრომპტით:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">იმოქმედე, როგორც ჩემი სააზროვნო პარტნიორი (Thinking Partner).
+
+პროცესი: [აღწერე პროცესი - მაგ: Drive-Thru რიგის მართვა პიკის საათებში]
+
+გაიარე SCAMPER ჩარჩოს ყველა ეტაპი (Substitute, Combine, Adapt,
+Modify, Put to other use, Eliminate, Reverse) და თითოეულზე
+შემომთავაზე 1-2 კონკრეტული იდეა.
+
+ფორმატი: 7 სათაური (თითო ასო) + თითოეულის ქვეშ 1-2 ბულეტი.
+ქართულ ენაზე.</div>
+</div>
+    </div>
+</section>
+
+<!-- DRIVE-THRU -->
+<section id="drive-thru" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🚗 Follow-Along მაგალითი</span>
+    <h2 class="text-2xl font-bold mb-4">🚗 Drive-Thru რიგების ოპტიმიზაცია - SCAMPER პრაქტიკაში</h2>
+    <p class="text-gray-600 mb-4">ტრენერი ერთად გადის ერთ სცენარზე მთელ SCAMPER ჩარჩოს:</p>
+
+    <div class="card" style="background:#0B0F19;color:white;padding:0;overflow:hidden;">
+        <div class="p-4 border-b border-white/10" style="background:#121826;">
+            <p class="font-bold" style="color:#ffb4ac;">📍 სცენარი: პიკის საათებში Drive-Thru რიგი იზრდება</p>
+        </div>
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#DA291C;">S</span>
+                <div><p class="font-bold text-sm text-white">Substitute</p><p class="text-gray-400 text-xs">წინასწარი შეკვეთის აპლიკაციით ხმოვანი შეკვეთის ჩანაცვლება</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FFC72C;color:#0B0F19;">C</span>
+                <div><p class="font-bold text-sm text-white">Combine</p><p class="text-gray-400 text-xs">შეკვეთის მიღება + გადახდის გაერთიანება ერთ ეტაპში</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#9C27B0;">A</span>
+                <div><p class="font-bold text-sm text-white">Adapt</p><p class="text-gray-400 text-xs">ავიაკომპანიების "Fast Lane" მოდელის ადაპტაცია მუდმივი კლიენტებისთვის</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#4CAF50;">M</span>
+                <div><p class="font-bold text-sm text-white">Modify</p><p class="text-gray-400 text-xs">პიკის საათებში პერსონალის რაოდენობის დროებითი გაზრდა</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#00BCD4;">P</span>
+                <div><p class="font-bold text-sm text-white">Put to other use</p><p class="text-gray-400 text-xs">Drive-Thru მონიტორის ეკრანის გამოყენება რიგის დროის ცოცხალი ჩვენებისთვის</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#607D8B;">E</span>
+                <div><p class="font-bold text-sm text-white">Eliminate</p><p class="text-gray-400 text-xs">გადახდის ჩეკის ბეჭდვის ამოღება - მხოლოდ ციფრული ჩეკი მოთხოვნით</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#B51C12;">R</span>
+                <div><p class="font-bold text-sm text-white">Reverse</p><p class="text-gray-400 text-xs">გადახდა შესვლისთანავე, საკვების მომზადება გადახდის დროს</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOD WASTE -->
+<section id="food-waste" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🥗 საოპერაციო გამოწვევა · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🥗 Food Waste - საკვების ნარჩენების შემცირება</h2>
+    <p class="text-gray-500 mb-6">SCAMPER-ის მეორე გამოყენების ველი</p>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">🔧 საოპერაციო ამოცანები, სადაც AI-Thinking Partner გამოსადეგია:</p>
+        <div class="three-column">
+            <div class="p-3 rounded-lg text-center" style="background:#fdecea;">
+                <p class="text-2xl mb-1">📊</p>
+                <p class="text-sm font-bold">მოთხოვნის პროგნოზირება</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#fff8e1;">
+                <p class="text-2xl mb-1">🍔</p>
+                <p class="text-sm font-bold">პორციების ოპტიმიზაცია</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#e8f5e9;">
+                <p class="text-2xl mb-1">♻️</p>
+                <p class="text-sm font-bold">ჭარბი მარაგის გამოყენება</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">იმოქმედე, როგორც ოპერაციული ეფექტურობის კონსულტანტი.
+
+პრობლემა: სამზარეულოში დღის ბოლოს რჩება 8-10% მომზადებული
+საკვები, რომელიც უტილიზაციაში მიდის.
+
+გაიარე SCAMPER ჩარჩო და შემომთავაზე კონკრეტული,
+დღეიდანვე გამოსაყენებელი იდეები - თითოეული ერთი წინადადებით.
+ქართულად.</div>
+</div>
+</section>
+
+<!-- PRACTICE 1 -->
+<section id="practice1" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 1 · 15 წუთი</span>
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-3xl font-bold">✏️ პრაქტიკული დავალება 1: SCAMPER სესია</h2>
+        <div id="timer1" class="flex items-center gap-2 px-4 py-2 rounded-xl" style="background:#0B0F19;">
+            <span class="text-2xl">⏱</span>
+            <span id="timer1-display" class="font-black text-2xl" style="color:#FFC72C;font-variant-numeric:tabular-nums;">15:00</span>
+            <button onclick="startTimer('timer1-display',15)" class="text-xs px-3 py-1 rounded font-bold" style="background:#DA291C;color:white;">▶ დაწყება</button>
+        </div>
+    </div>
+    <p class="text-gray-500 mb-5">აირჩიეთ ერთი პროცესი - გაატარეთ ხელოვნურ ინტელექტთან სრული SCAMPER სესია</p>
+
+    <p class="font-bold text-lg mb-3">🃏 პროცესის ბარათები - აირჩიეთ ერთი:</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#fdecea;border:2px solid #DA291C;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🔴</span>
+                <div>
+                    <p class="font-bold" style="color:#B51C12;">პროცესი 1 - Drive-Thru რიგი</p>
+                    <p class="text-sm text-gray-700 mt-1">პიკის საათებში (12:00-14:00) Drive-Thru რიგი 8-10 მანქანამდე იზრდება. <strong>გაატარეთ SCAMPER სესია.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#fff8e1;border:2px solid #FFC72C;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🟡</span>
+                <div>
+                    <p class="font-bold" style="color:#8a6400;">პროცესი 2 - საკვების ნარჩენები</p>
+                    <p class="text-sm text-gray-700 mt-1">დღის ბოლოს რჩება მომზადებული საკვების ჭარბი რაოდენობა. <strong>გაატარეთ SCAMPER სესია ნარჩენების შესამცირებლად.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#f3e5f5;border:2px solid #9C27B0;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🟣</span>
+                <div>
+                    <p class="font-bold" style="color:#6A1B9A;">პროცესი 3 - ცვლების გრაფიკი</p>
+                    <p class="text-sm text-gray-700 mt-1">ცვლების დაგეგმვა ხელით ხდება და ხშირად ცვლილება საჭიროებს. <strong>გაატარეთ SCAMPER სესია პროცესის გასამარტივებლად.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#e8f5e9;border:2px solid #4CAF50;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🟢</span>
+                <div>
+                    <p class="font-bold" style="color:#1B5E20;">პროცესი 4 - მარაგის აღრიცხვა</p>
+                    <p class="text-sm text-gray-700 mt-1">კვირაში ერთხელ ხდება ხელით მარაგის აღრიცხვა, რაც დიდ დროს მოითხოვს. <strong>გაატარეთ SCAMPER სესია.</strong></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="background:#f0fdf4;border:1px solid #4CAF50;">
+        <p class="font-bold mb-2">💡 რჩევები:</p>
+        <ul class="text-sm text-gray-700 space-y-1">
+            <li>✓ სცადეთ ყველა 7 ეტაპი, არა მხოლოდ ერთი-ორი</li>
+            <li>✓ არ შეზღუდოთ AI - მოითხოვეთ „უცნაური“ იდეებიც</li>
+            <li>✓ ბოლოს აირჩიეთ 2-3 იდეა, რომელიც რეალურად გამოსაცდელია</li>
+        </ul>
+    </div>
+</section>
+
+<!-- BREAK -->
+<div id="break" class="py-10 border-b border-gray-200">
+    <div class="card text-center" style="background:linear-gradient(135deg,#00BCD4,#0097A7);color:white;border:none;">
+        <p class="text-4xl mb-2">☕</p>
+        <p class="text-2xl font-bold mb-1">10-წუთიანი შესვენება</p>
+        <p class="text-white/80">00:55 - 01:05</p>
+    </div>
+</div>
+
+<!-- BLOCK II HEADER -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">💎</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი II · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">Gemini Gems - გაფართოებული კონფიგურაცია და Claude Cowork</h2>
+                <p class="text-gray-300 text-sm mt-1">01:05 - 02:00 · Gems + Cowork + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GEMS ADVANCED -->
+<section id="gems-advanced" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">💎 Gemini Gems · 15 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">💎 Gemini Gems - გაფართოებული კონფიგურაცია</h2>
+    <p class="text-gray-500 mb-6">სესია 1-ში ავაწყეთ წერითი ასისტენტი Gem. დღეს ვქმნით <strong>სააზროვნო პარტნიორ Gem-ს</strong></p>
+
+    <div class="two-column mb-6">
+        <div class="card">
+            <p class="font-bold mb-3" style="color:#E91E63;">💌 სესია 1 Gem - წერითი ასისტენტი</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• პასუხობს შეფასებებზე (Wolt/Bolt/Google)</li>
+                <li>• ინახავს ბრენდის ტონს</li>
+                <li>• Few-Shot მაგალითებით ვწვრთნით</li>
+            </ul>
+        </div>
+        <div class="card" style="border:2px solid #4285F4;">
+            <p class="font-bold mb-3" style="color:#1565C0;">🧠 სესია 2 Gem - სააზროვნო პარტნიორი</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• ყოველთვის SCAMPER ჩარჩოთი პასუხობს</li>
+                <li>• იცის მაკდონალდსის საოპერაციო კონტექსტი</li>
+                <li>• გენერირებს სტრუქტურირებულ იდეებს ერთი Click-ით</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 რატომ ცალკე Gem თითო როლისთვის?</p>
+        <p class="text-sm text-gray-700">ერთი Gem-ი ერთ როლს ითამაშოს საუკეთესოდ. წერითი ასისტენტი და სააზროვნო პარტნიორი სხვადასხვა „ხასიათს“ საჭიროებენ - ცალკე Gem-ები უფრო ზუსტ შედეგს იძლევა.</p>
+    </div>
+</section>
+
+<!-- GEMS THINKING DEMO -->
+<section id="gems-thinking-demo" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ Follow-Along დემო</span>
+    <h2 class="text-2xl font-bold mb-4">🖥️ სააზროვნო პარტნიორი Gem-ის აწყობა - ერთად ვქმნით</h2>
+    <p class="text-gray-600 mb-4">გაიარეთ ნაბიჯები სინქრონულად - click-by-click:</p>
+
+    <div class="card" style="background:#0B0F19;color:white;padding:0;overflow:hidden;">
+        <div class="p-4 border-b border-white/10" style="background:#121826;">
+            <p class="font-bold" style="color:#ffb4ac;">📍 ნაბიჯები - ერთად გადის:</p>
+        </div>
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#DA291C;">1</span>
+                <div><p class="font-bold text-sm text-white">Gem manager → "New Gem" → სახელი: "SCAMPER თინკინგ პარტნიორი"</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FFC72C;color:#0B0F19;">2</span>
+                <div><p class="font-bold text-sm text-white">ინსტრუქციის შეყვანა</p><p class="text-gray-400 text-xs font-mono">„შენ ხარ მაკდონალდსის საოპერაციო ეფექტურობის სააზროვნო პარტნიორი. ყოველი პროცესის აღწერაზე პასუხობ SCAMPER ჩარჩოთი - 7 კატეგორია, თითოეულში 1-2 კონკრეტული იდეა. ქართულად.“</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#9C27B0;">3</span>
+                <div><p class="font-bold text-sm text-white">Few-Shot მაგალითის დამატება</p><p class="text-gray-400 text-xs">Drive-Thru მაგალითი (იხ. წინა სექცია) - შესატანი როგორც ნიმუში</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#4CAF50;">4</span>
+                <div><p class="font-bold text-sm text-white">Save - Gem მზადაა!</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FF9800;">5</span>
+                <div><p class="font-bold text-sm text-white">ტესტირება - ახალი პროცესის აღწერით</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- COWORK INTRO -->
+<section id="cowork-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🖇️ Claude Cowork · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🖇️ Claude Cowork - შესავალი</h2>
+    <p class="text-gray-500 mb-6">დესკტოპის აგენტური ასისტენტი - AI, რომელიც თქვენი კომპიუტერის ფაილებთან მუშაობს</p>
+
+    <div class="two-column mb-6">
+        <div class="card">
+            <p class="font-bold mb-3" style="color:#E91E63;">❌ ხელით მართვა:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• თითოეული ფაილის ხელით გახსნა და დახარისხება</li>
+                <li>• ინვოისების ხელით შემოწმება ერთმანეთის მიმართ</li>
+                <li>• ინბოქსის ხელით ტრიაჟი</li>
+            </ul>
+        </div>
+        <div class="card" style="border:2px solid #DA291C;">
+            <p class="font-bold mb-3" style="color:#B51C12;">✅ Claude Cowork:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• დესკტოპზე მუშაობს პირდაპირ ფაილებთან</li>
+                <li>• ავტომატურად ალაგებს, ასახელებს, აჯგუფებს დოკუმენტებს</li>
+                <li>• ინვოისებისა და საწყობის დოკუმენტების დამუშავება-ორგანიზება</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">🔧 Cowork-ის გამოყენება მაკდონალდსში:</p>
+        <div class="three-column">
+            <div class="p-3 rounded-lg text-center" style="background:#fdecea;">
+                <p class="text-2xl mb-1">🧾</p>
+                <p class="text-sm font-bold">მომწოდებლების ინვოისების დახარისხება</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#fff8e1;">
+                <p class="text-2xl mb-1">📥</p>
+                <p class="text-sm font-bold">ინბოქსის ავტომატური ტრიაჟი</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#e8f5e9;">
+                <p class="text-2xl mb-1">📁</p>
+                <p class="text-sm font-bold">საოპერაციო რეპორტების ორგანიზება</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="warning-box">
+        <p class="font-bold mb-1">⚠️ უსაფრთხოების შენიშვნა:</p>
+        <p class="text-sm text-gray-700">Cowork-ს ფაილურ სისტემასთან წვდომა აქვს - მიეცით წვდომა მხოლოდ სამუშაო ფოლდერზე, არასოდეს - პირად ან ფინანსურ მონაცემებზე შემცველ ფოლდერებზე (იხ. სესია 1-ის GDPR წესები).</p>
+    </div>
+</section>
+
+<!-- COWORK DEMO -->
+<section id="cowork-demo" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ Follow-Along დემო</span>
+    <h2 class="text-2xl font-bold mb-4">🖥️ Claude Cowork-ის დაყენება ნაბიჯ-ნაბიჯ</h2>
+    <p class="text-gray-600 mb-4">გაიარეთ ნაბიჯები სინქრონულად - click-by-click:</p>
+
+    <div class="card" style="background:#0B0F19;color:white;padding:0;overflow:hidden;">
+        <div class="p-4 border-b border-white/10" style="background:#121826;">
+            <p class="font-bold" style="color:#ffb4ac;">📍 ნაბიჯები - ერთად გადის:</p>
+        </div>
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#DA291C;">1</span>
+                <div><p class="font-bold text-sm text-white">Claude Desktop → Cowork-ის ჩართვა</p><p class="text-gray-400 text-xs">Claude Pro/Team ანგარიშში ხელმისაწვდომია</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FFC72C;color:#0B0F19;">2</span>
+                <div><p class="font-bold text-sm text-white">სამუშაო ფოლდერის მითითება</p><p class="text-gray-400 text-xs">მაგ: "მომწოდებლების ინვოისები 2026"</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#9C27B0;">3</span>
+                <div><p class="font-bold text-sm text-white">ინსტრუქციის მიცემა</p><p class="text-gray-400 text-xs font-mono">"დაალაგე ეს ინვოისები მომწოდებლის სახელის მიხედვით ცალკე ქვეფოლდერებში და შექმენი ცხრილი თარიღით და თანხით."</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#4CAF50;">4</span>
+                <div><p class="font-bold text-sm text-white">Cowork ასრულებს დავალებას და აჩვენებს ანგარიშს</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FF9800;">5</span>
+                <div><p class="font-bold text-sm text-white">შედეგის გადამოწმება ხელით</p><p class="text-gray-400 text-xs">Human-in-the-Loop - ყოველთვის გადაამოწმეთ</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-6" style="border: 2px dashed #DA291C; background:#fdf3f2;">
+        <p class="font-bold text-lg mb-4" style="color:#B51C12;">🤖 Cowork ინსტრუქციის 2 მაგალითი:</p>
+        <div class="space-y-4 text-sm text-gray-800">
+            <div class="flex items-start gap-3">
+                <span class="text-xl">1️⃣</span>
+                <div>
+                    <strong style="color:#B51C12;">ინვოისების ორგანიზება:</strong><br>
+                    <span class="inline-block mt-1 px-2 py-1 bg-white border border-red-200 rounded text-red-700 font-mono text-xs">"დახარისხე ეს PDF ინვოისები თვის მიხედვით ცალკე ფოლდერებში."</span>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="text-xl">2️⃣</span>
+                <div>
+                    <strong style="color:#B51C12;">საოპერაციო რეპორტების შეჯამება:</strong><br>
+                    <span class="inline-block mt-1 px-2 py-1 bg-white border border-red-200 rounded text-red-700 font-mono text-xs">"წაიკითხე ეს 5 ყოველკვირეული რეპორტი და შემიქმენი ერთი გვერდიანი შეჯამება ცხრილში."</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRACTICE 2 -->
+<section id="practice2" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 2 · 20 წუთი</span>
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-3xl font-bold">✏️ პრაქტიკული დავალება 2: Gem + Cowork ტესტირება</h2>
+        <div class="flex items-center gap-2 px-4 py-2 rounded-xl" style="background:#0B0F19;">
+            <span class="text-2xl">⏱</span>
+            <span id="timer2-display" class="font-black text-2xl" style="color:#FFC72C;font-variant-numeric:tabular-nums;">20:00</span>
+            <button onclick="startTimer('timer2-display',20)" class="text-xs px-3 py-1 rounded font-bold" style="background:#DA291C;color:white;">▶ დაწყება</button>
+        </div>
+    </div>
+    <p class="text-gray-500 mb-6">გამოსცადეთ დღეს აწყობილი ორივე ინსტრუმენტი</p>
+
+    <div class="card mb-6" style="border:2px solid #4285F4;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#4285F4;">1</span>
+                <p class="text-gray-700">გაუშვით სააზროვნო პარტნიორი Gem-ი <strong>ახალ პროცესზე</strong> (რომელიც პრაქტიკა 1-ში არ აირჩიეთ)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#4285F4;">2</span>
+                <p class="text-gray-700">დაყავით/გამოსცადეთ Claude Cowork ერთ სატესტო ფოლდერზე</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#4285F4;">3</span>
+                <p class="text-gray-700">გადაამოწმეთ Cowork-ის შედეგი ხელით - მუშაობს თუ არა სწორად?</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold mb-3">💡 იდეები:</p>
+        <div class="two-column">
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• SCAMPER - ცვლების გრაფიკის დაგეგმვა</li>
+                <li>• SCAMPER - მარაგის აღრიცხვის პროცესი</li>
+            </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• Cowork - სატესტო ინვოისების დახარისხება</li>
+                <li>• Cowork - რეპორტების შეჯამება</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">20 წუთში - მუშა SCAMPER Gem, რომელიც სტრუქტურირებულ იდეებს იძლევა, და გამოცდილი Claude Cowork ფაილების ორგანიზებაზე.</p>
+    </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="min-h-[80vh] flex flex-col justify-center py-12 topic-card">
+    <span class="badge badge-theory">✅ შეჯამება · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">✅ შეჯამება და საშინაო დავალება</h2>
+
+    <div class="card mb-6" style="background:#0B0F19;color:white;">
+        <p class="font-bold text-xl mb-4" style="color:#ffb4ac;">🏆 დღეს ისწავლეთ:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">AI, როგორც Thinking Partner</p><p class="text-gray-400 text-sm">არა მხოლოდ წერითი, არამედ სააზროვნო დახმარება</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">SCAMPER ჩარჩო</p><p class="text-gray-400 text-sm">7 კითხვის ტიპი ნებისმიერი პროცესის გადასააზროვნებლად</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Gemini Gems - გაფართოებული კონფიგურაცია</p><p class="text-gray-400 text-sm">სააზროვნო პარტნიორი Gem</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Claude Cowork</p><p class="text-gray-400 text-sm">ინვოისებისა და ფაილების ავტომატური ორგანიზება</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#2196F3;font-size:1.2rem;">→</span>
+                <div><p class="font-bold text-white" style="color:#90caf9;">Notion AI, Claude Projects, SOP მენეჯმენტი</p><p class="text-gray-400 text-sm">გაგრძელება სესია 3-ში →</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-lg mb-3">🔥 ოქროს SCAMPER პრომპტი - წაიღეთ სახლში:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„იმოქმედე, როგორც ჩემი სააზროვნო პარტნიორი.
+პროცესი: [აღწერე პროცესი]
+გაიარე SCAMPER ჩარჩოს ყველა 7 ეტაპი და თითოეულზე
+მომეცი 1-2 კონკრეტული, დღეიდანვე გამოსაცდელი იდეა.
+ქართულ ენაზე.“</div>
+</div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border:1px solid #FFC72C;">
+        <p class="font-bold text-lg mb-2">❓ Q&amp;A</p>
+        <p class="text-gray-700">კითხვები - პასუხები. გამოსცადეთ SCAMPER Gem-ი და Cowork ხვალვე სამსახურში.</p>
+    </div>
+
+    <!-- Pro Tips & Next Steps -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="card" style="background:#e1f5fe; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#0277BD;">📱 საშინაო დავალება 1: SCAMPER - 3 იდეა</p>
+            <p class="text-sm text-gray-700">SCAMPER ჩარჩოზე მორგებული Gem ასისტენტის გამოყენებით მოიფიქრეთ Drive-Thru ან სამზარეულოს პროცესის ოპტიმიზაციის <strong>3 იდეა</strong> და გაუზიარეთ თქვენს გუნდს.</p>
+        </div>
+        <div class="card" style="background:#f1f8e9; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#33691E;">📚 საშინაო დავალება 2: Cowork ტესტი</p>
+            <p class="text-sm text-gray-700">გამოსცადეთ Claude Cowork ერთ რეალურ (მაგრამ არასაიდუმლო) ფოლდერზე - მომწოდებლების ინვოისები ან საოპერაციო რეპორტები.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 rounded-xl text-center" style="background:linear-gradient(135deg,#0B0F19,#3a0f0a);">
+        <p class="text-3xl mb-2">🍟</p>
+        <p class="text-white font-bold text-xl mb-2">მაკდონალდსის AI ტრენინგი - სესია 2 დასრულდა!</p>
+        <p class="text-gray-300 text-sm">გამოიყენეთ SCAMPER, Gems და Cowork ხვალვე სამსახურში.</p>
+        <p class="text-gray-400 text-xs mt-2">გიორგი ბასილაია · 2026</p>
+    </div>
+</section>
+
+    </div><!-- end max-w-5xl -->
+</main>
+
+<!-- Back to Top -->
+<button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 bg-[#DA291C] text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none hover:bg-[#B51C12]">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+
+<script>
+// Sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    overlay.classList.toggle('hidden', isOpen);
+    menuIcon.classList.toggle('hidden', !isOpen);
+    closeIcon.classList.toggle('hidden', isOpen);
+    document.getElementById('mainContent').style.marginLeft = isOpen ? '0' : '';
+}
+
+// Navigation and Scroll logic
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+const backToTopBtn = document.getElementById('backToTop');
+
+// Close sidebar on mobile when link is clicked
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth < 768 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+            toggleSidebar();
+        }
+    });
+});
+
+window.addEventListener('scroll', () => {
+    // Back to top button visibility
+    if (window.scrollY > 500) {
+        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+    } else {
+        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    // Scroll highlight (better than observer for this layout)
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - 200)) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+            // Safely scroll sidebar without affecting main page scroll
+            const sidebar = document.getElementById('sidebar');
+            if (link.offsetTop < sidebar.scrollTop || link.offsetTop > (sidebar.scrollTop + sidebar.clientHeight)) {
+                 link.scrollIntoView({ block: 'nearest' });
+            }
+        }
+    });
+});
+
+// Countdown timer
+const timers = {};
+function startTimer(id, minutes) {
+    if (timers[id]) { clearInterval(timers[id]); }
+    let secs = minutes * 60;
+    const el = document.getElementById(id);
+    timers[id] = setInterval(() => {
+        secs--;
+        const m = Math.floor(secs / 60), s = secs % 60;
+        el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        el.style.color = secs <= 60 ? '#ff5722' : secs <= 300 ? '#FFC72C' : '#DA291C';
+        if (secs <= 0) { clearInterval(timers[id]); el.textContent = '⏰ დრო!'; }
+    }, 1000);
+}
+
+function copyText(btn) {
+    const codeBlock = btn.closest('.code-block, .prompt-blueprint');
+    const contentNode = codeBlock.querySelector('.code-content');
+    let text = '';
+    if (contentNode) {
+        text = contentNode.innerText.trim();
+    } else {
+        text = codeBlock.innerText.replace('კოპირება', '').replace('Prompt Blueprint', '').trim();
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ დაკოპირდა';
+        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+    });
+}
+</script>
+</body>
+</html>

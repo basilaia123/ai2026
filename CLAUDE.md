@@ -22,11 +22,13 @@ If push fails with "Duplicate header" error, the local git config has a stale `h
 git config --local --unset http.extraHeader
 ```
 
+Commit history uses short operational subjects like `update <timestamp>`, plus occasional `CHECKPOINT:` messages for larger restructures — follow one of those two styles. Testing is manual: after edits, open the affected HTML file in a browser and verify layout, slide/section navigation, and any inline JS (collapsibles, timers, copy buttons, quiz reveals). If you touch `gipa/`, re-check the password-gate flow on `gipa/index.html`.
+
 ## Project Overview
 
-Static HTML educational materials for AI courses by **Giorgi Basilaia** (Smart Academy). No build tools, no bundlers, no npm. Every file is standalone HTML with embedded CSS/JS.
+Static HTML educational and proposal materials for AI courses and corporate trainings by **Giorgi Basilaia** (Smart Academy). No build tools, no bundlers, no npm for the course content — every page is standalone HTML with embedded CSS/JS. A couple of unrelated app subfolders (see below) are real npm/Next.js projects with their own `CLAUDE.md`/`AGENTS.md` — their rules override this file when working inside them.
 
-### Course Programs
+### Course & Proposal Programs
 
 | Program | Directory | Language | Format |
 |---------|-----------|----------|--------|
@@ -36,7 +38,13 @@ Static HTML educational materials for AI courses by **Giorgi Basilaia** (Smart A
 | **Tempo Holding** (Corporate) | `tempo/` | Georgian | 6 sessions, fullscreen slides |
 | **Cascade / Art Direction** | `art/` | Georgian | 1-day workshop, sidebar nav |
 | **OPPA** (Corporate) | `oppa/` | Georgian | Workshop, sidebar nav |
+| **Green School** | `Green/` | Georgian | Multi-session, sidebar nav |
+| **Megalab** | `megalab/` | Georgian | Multi-day (`day-X-slides.html`), sidebar nav |
+| **Mardi Holding** (Corporate) | `mardi/` | Georgian | Multi-lecture, sidebar nav |
+| **Eurodrug Georgia** (Corporate) | `eurodrug/` | Georgian | Proposal + sidebar-nav sessions |
 | **chatgpt.ge** | `chatgpt.ge/` | Georgian | Marketing/landing pages |
+
+Many other top-level folders (`caritas`/`caritas_georgia`/`caritasgeorgia`, `credo`, `GITA`, `orbi`, `mof`, `mcdonalds`, `job26`, `labtechnology`, `loialte_ebrd`, `openday`, `award`, `unlimited`, `gh`) are one-off client proposals or event pages following the same standalone-HTML conventions as above; check each folder's own `index.html` before assuming a shared structure. `dead_offers/` holds archived proposals — treat as read-only unless explicitly asked.
 
 ## Architecture
 
@@ -50,13 +58,15 @@ Static HTML educational materials for AI courses by **Giorgi Basilaia** (Smart A
 - Charts: Chart.js via CDN, initialized in `window.onload`
 - Colors: amber/gold (`#d97706`, `#fbbf24`) on dark (`#0f172a`)
 
-**Pattern B — Scrollable Reference Page** (`gipa/day1.html`, `art/art-direction-training.html`, `oppa/oppa-training.html`)
-- Tailwind CSS CDN + custom navy color extension
-- Fixed sidebar (`w-72`, collapsible on mobile), main content scrolls
-- Active nav link highlighting via IntersectionObserver
-- Font size controls (`A-`/`A+`) stored in `localStorage`
-- Dark mode via JS-injected `<style>` block (not Tailwind dark: prefix)
+**Pattern B — Scrollable Reference Page** (`gipa/day1.html`, `art/art-direction-training.html`, `oppa/oppa-training.html`, and now the default for newer corporate decks: `Green/lecture-X.html`, `megalab/day-X-slides.html`, `mardi/lecture-X-slides.html`, `eurodrug/day-X-slides.html`)
+- Tailwind CSS CDN (or hand-rolled equivalent) + a client-specific color palette defined as CSS custom properties / `tailwind.config` extension (e.g. Megalab blue/pink, Eurodrug navy/cyan, Green School forest green)
+- Fixed sidebar (`~280px` / `w-72`, collapsible on mobile via `toggleSidebar()`/`toggleMenu()`), main content scrolls
+- Active nav link highlighting on `scroll` (offsetTop comparison) or IntersectionObserver
+- Shared component kit across these decks: `.badge` (`badge-theory`/`badge-practice`/`badge-demo`), `.card`, `.two-column`/`.three-column` grids, `.highlight-box`/`.warning-box`/`.success-box`, `.prompt-blueprint` (dark code block with a `.pb-copy`/`.copy-btn` button wired to `copyText(btn)`, which reads `.code-content` and calls `navigator.clipboard.writeText`), and a countdown `startTimer(elementId, minutes)` for timed practice exercises
+- Font size controls (`A-`/`A+`) stored in `localStorage` (where present)
+- Dark mode via JS-injected `<style>` block (not Tailwind `dark:` prefix)
 - **Known pitfall**: Tailwind hover escaped selectors (`hover\:bg-gray-50`) don't work in JS-injected styles — use structural selectors instead
+- When asked to build a new lecture/session for one of these clients "in the format of" an existing one, treat the referenced file as the literal template: copy its section skeleton (agenda → block header → topic sections → practice → summary), its CSS variable names, and its JS helpers, then swap in the client's palette and subject-matter content — don't invent a new layout.
 
 ### Main Course Slides (`lectures/`)
 - Standalone HTML, FiraGO font CDN only
@@ -78,11 +88,16 @@ Each slide can have an expandable detail drawer:
 ```
 `toggleDetail()` manages `.open` class on both panel and overlay, and `.visible` on button.
 
+### Nested Real App Projects (not static HTML)
+- `investment-app/` — a Next.js/TypeScript app (React 19, Tailwind, recharts, yahoo-finance2) with its own `package.json`, `CLAUDE.md`, and `AGENTS.md`. Use `npm run dev`/`build`/`lint` inside that folder; its rules take precedence there.
+- `chat-app/` — standalone static HTML pages only (no build step), despite the name.
+
 ## Language Rules
 
 - **Primary**: Georgian (ქართული), UTF-8 encoding — never break encoding when editing
 - **Technical terms**: Keep in English (ChatGPT, prompt, API, workflow, ROI, etc.)
 - **Font**: FiraGO CDN (`https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css`), fallback `'Segoe UI'`
+- **Georgian QA**: after generating or editing Georgian content, run it past the `gramma` subagent (or the `georgian-proofreader` skill/rules in `skill_rules.md`) — it checks spelling, morphology, postpositions, verb conjugation, and flags common AI-generated calques (e.g. banned em/en-dashes, forbidden abbreviations, corporate loanword barbarisms).
 
 ## Directory Map
 
@@ -91,10 +106,15 @@ Each slide can have an expandable detail drawer:
 | `lectures/` | Main adult course: 12 lectures × 6 file types each |
 | `ai4teens/` | Teen course: 8 lectures |
 | `gipa/` | University masterclass: day1, day2, faq, glossary, prompts, labs, action-plan, ai-matrix |
-| `tempo/` | Tempo Holding corporate: index, 6 session slides (only session 1 complete) |
+| `tempo/` | Tempo Holding corporate: index + 6 sessions (slides/summary/exercises each), all complete |
 | `art/` | Cascade art direction workshop: training HTML + prompt templates |
 | `oppa/` | OPPA corporate workshop |
+| `Green/` | Green School: lecture-X.html sessions, dashboard, offer/schedule generators |
+| `megalab/` | Megalab corporate training: day-X-slides/summary/exercises, homework, Notion guide |
+| `mardi/` | Mardi Holding corporate training: lecture-X-slides + day-X pages, prompt library, survey |
+| `eurodrug/` | Eurodrug Georgia proposal (`index.html`) + `day-X-slides.html` sessions |
 | `chatgpt.ge/` | Marketing site templates (agriculture, construction, corporate) |
+| `investment-app/` | Standalone Next.js app — see its own `CLAUDE.md` |
 | `dead_offers/` | Archived proposals — do not modify |
 
 ## Lecture File Naming (`lectures/`)
@@ -102,16 +122,7 @@ Each slide can have an expandable detail drawer:
 `lecture-X-[type].html` where type ∈ `slides`, `summary`, `study-guide`, `quick-ref`, `exercises`, `lesson-plan`
 `homework-X.html` — assignments (homework-1 through homework-10)
 
-## Tempo Session Status
-
-| Session | Topic | Slides |
-|---------|-------|--------|
-| 1 | AI საფუძვლები + პრომპტ-ინჟინერია | ✅ Complete (34 slides) |
-| 2 | ელფოსტა, ბიზნეს-კომუნიკაცია | ❌ Missing |
-| 3 | პრეზენტაციები (Gamma) + SOP | ❌ Missing |
-| 4 | სოციალური მედია + მულტიმედია | ❌ Missing |
-| 5 | გაყიდვები: სკრიპტები, Follow-up | ❌ Missing |
-| 6 | AI ასისტენტები, ავტომატიზაცია + ROI | ❌ Missing |
+Newer corporate decks (`Green/`, `megalab/`, `mardi/`, `eurodrug/`) instead use `lecture-X.html` or `day-X-slides.html`/`day-X-summary.html`/`day-X-exercises.html` — check the target directory's existing files for its actual convention before creating a new one.
 
 ## Instructor
 

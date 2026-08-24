@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eurodrug Georgia — AI ტრენინგი — შეხვედრა 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        euro: { 900: '#00253e', 800: '#003863', 700: '#005a9c', cyan: '#00b3e4', gold: '#00b3e4', light: '#f5faff' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --blue: #005a9c; --cyan: #00b3e4; --navy: #00253e;
+            --bg: #f4f7fb; --surface: #ffffff;
+            --text-1: #0f1f2e; --text-2: #374151; --text-3: #6b7280;
+        }
+        html { scroll-behavior: smooth; font-size: 140%; }
+        body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; font-size: 24px; line-height: 1.7; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link { display: flex; align-items: flex-start; padding: 0.6rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.07); }
+        .nav-link.active { background: rgba(0,179,228,0.15); border-left-color: #00b3e4; color: #7fe0fa; }
+        .topic-card { border-left: 4px solid #005a9c; padding-left: 1.5rem; }
+        .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-theory { background: rgba(0,90,156,0.12); color: #005a9c; border: 1px solid rgba(0,90,156,0.3); }
+        .badge-practice { background: rgba(0,179,228,0.1); color: #0097a7; border: 1px solid rgba(0,179,228,0.3); }
+        .badge-break { background: rgba(0,188,212,0.1); color: #0097A7; border: 1px solid rgba(0,188,212,0.3); }
+        .badge-demo { background: rgba(103,58,183,0.1); color: #512DA8; border: 1px solid rgba(103,58,183,0.3); }
+        .highlight-box { background: #e6f4fc; border-left: 4px solid #005a9c; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .warning-box { background: #fce4ec; border-left: 4px solid #d81b60; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .success-box { background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .code-block { background: #00253e; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+        .copy-btn:hover { background: #005a9c; color: white; border-color: #005a9c; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+        .create-letter { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #005a9c; color: white; font-size: 1.2rem; font-weight: 800; margin-right: 0.75rem; flex-shrink: 0; }
+        .create-row { display: flex; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid #e5e7eb; }
+        .create-row:last-child { border-bottom: none; }
+        .timer-badge { background: #00b3e4; color: white; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+        .section-header { background: linear-gradient(135deg, #00253e 0%, #003863 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .gdpr-badge { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.4); color: #2e7d32; border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.75rem; font-weight: 700; }
+        .prompt-blueprint { background: #00253e; border: 1px solid rgba(0,179,228,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .pb-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+        .pb-tag { color: #00b3e4; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pb-copy { position: static; font-size: 0.7rem; background: rgba(0,179,228,0.1); color: #00b3e4; border: 1px solid rgba(0,179,228,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        .pb-copy:hover { background: #00b3e4; color: #00253e; }
+        .code-content { font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6; }
+        .step-num { width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; color: white; }
+        @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+        section { scroll-margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-euro-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-euro-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-euro-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#00b3e4;">💊 Eurodrug AI ტრენინგი</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">შეხვედრა 3: Gamma, AI Roleplay & Notion CRM</p>
+        <p class="text-gray-400 text-xs mt-1">180 წუთი | 2 ბლოკი + შესვენება</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#00b3e4;">შინაარსი</div>
+
+        <a href="#agenda" class="nav-link">🎯 დღის წესრიგი</a>
+        <a href="#recap" class="nav-link">🔁 შეხვედრა 1-2-ის მიმოხილვა</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I — Gamma & AI Roleplay (80 წთ)</div>
+        <a href="#gamma-intro" class="nav-link">🎨 Gamma.app-ის გაცნობა</a>
+        <a href="#gamma-usecases" class="nav-link">🔧 Gamma-ს გამოყენება Eurodrug-ში</a>
+        <a href="#gamma-demo" class="nav-link">🖥️ Follow-Along დემო</a>
+        <a href="#gamma-ai-agent" class="nav-link">🤖 AI Agent (Ctrl+E) ტრიუკები</a>
+        <a href="#visual-aids" class="nav-link">📋 Visual Aid & დეტალინგ-ფურცლები</a>
+        <a href="#ai-roleplay" class="nav-link">🎭 AI Roleplay — ექიმის სიმულაცია</a>
+        <a href="#roleplay-demo" class="nav-link">🖥️ Roleplay Follow-Along დემო</a>
+        <a href="#practice1" class="nav-link">✏️ პრაქტიკა 1: Gamma პრეზენტაცია (20 წთ)</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">☕ შესვენება (10 წთ)</div>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II — Notion & Notion AI Fast-Track (90 წთ)</div>
+        <a href="#notion-intro" class="nav-link">🗄️ Notion CRM-ის გაცნობა</a>
+        <a href="#notion-architecture" class="nav-link">🏗️ ექიმების/კლინიკების ბაზის არქიტექტურა</a>
+        <a href="#notion-visit-log" class="nav-link">📖 ვიზიტების Tracking ჟურნალი</a>
+        <a href="#notion-ai" class="nav-link">✨ Notion AI — ავტო-რეზიუმე</a>
+        <a href="#notion-demo" class="nav-link">🖥️ Notion Follow-Along დემო</a>
+        <a href="#notion-safety" class="nav-link">🔒 GDPR/HIPAA Notion-ში</a>
+        <a href="#practice2" class="nav-link">✏️ პრაქტიკული დავალება (20 წთ)</a>
+        <a href="#summary" class="nav-link">✅ შეჯამება და Q&amp;A</a>
+        <a href="#homework" class="nav-link" style="color:#00b3e4;">🏠 საშინაო დავალება</a>
+        <a href="#directory" class="nav-link" style="color:#00b3e4;">🔌 AI-ინსტრუმენტების კატალოგი</a>
+        <div class="mt-4 mx-4 mb-2 px-3 py-2 rounded text-[10px] text-gray-500" style="background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.12);">🔗 Advanced Notion AI CRM, Make.com, Lovable.app → შემდეგი შეხვედრები (Optimal/Extended)</div>
+
+        <div class="mt-6 mx-4 mb-4 space-y-2">
+            <a href="day-2-slides.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← შეხვედრა 2</a>
+            <a href="day-4-slides.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">შეხვედრა 4 →</a>
+            <a href="index.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">🏠 წინადადებაში დაბრუნება</a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Main -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #00253e 0%, #003863 50%, #005a9c 100%);">
+        <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#00b3e4;"></div>
+        <div class="max-w-5xl relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">🎨</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest" style="color:#00b3e4;">Eurodrug Laboratories Georgia — AI ტრენინგი</p>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">შეხვედრა 3: Gamma პრეზენტაციები, AI Roleplay<br><span style="color:#7fe0fa;">და Notion CRM Fast-Track</span></h1>
+                </div>
+            </div>
+            <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">Gamma.app-ით 10-წუთიანი სამედიცინო პრეზენტაციის შექმნა, Visual Aid-ებისა და დეტალინგ-ფურცლების სტრუქტურირება, ექიმის როლური სიმულაცია (AI Roleplay) GPT-5.6/Claude Sonnet 5-ში და Notion-ში ექიმების/კლინიკების ბაზისა და ვიზიტების tracking ჟურნალის სწრაფი აწყობა Notion AI-ის დახმარებით.</p>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">⏱ 180 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">👥 2 ბლოკი + შესვენება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">🎯 2 პრაქტიკული დავალება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(0,179,228,0.2);color:#7fe0fa;">🎓 Minimal პაკეტის ფინალური სესია</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10 space-y-0">
+
+<!-- ═══════════════════════════════════════════════════
+     AGENDA
+═══════════════════════════════════════════════════ -->
+<section id="agenda" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📋 სესიის სტრუქტურა</span>
+    <h2 class="text-3xl font-bold mb-6" style="color:#00253e;">🎯 დღევანდელი სესიის დღის წესრიგი</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <!-- Block 1 -->
+        <div class="p-6" style="background:#00253e;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#00b3e4;">⏱ 00:00 – 01:20</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი I: Gamma & AI Roleplay</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">25 წთ</strong> — Gamma.app გაცნობა + დემო</span></li>
+                <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">20 წთ</strong> — Visual Aid & დეტალინგ-ფურცლები</span></li>
+                <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">15 წთ</strong> — AI Roleplay: ექიმის სიმულაცია</span></li>
+                <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">20 წთ</strong> — პრაქტიკა 1: პრეზენტაცია</span></li>
+            </ul>
+        </div>
+        <!-- Break -->
+        <div class="flex flex-col" style="background:#003863;">
+            <div class="px-6 py-3 border-b border-white/10 flex items-center justify-between" style="background:rgba(0,179,228,0.15);">
+                <span class="font-bold text-white text-sm">☕ შესვენება</span>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#0097A7;color:white;">01:20 – 01:30</span>
+            </div>
+            <div class="p-6 flex-1">
+                <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#00b3e4;">⏱ 01:30 – 03:00</div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი II: Notion CRM Fast-Track</h3>
+                <ul class="text-sm text-gray-300 space-y-2">
+                    <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">30 წთ</strong> — ბაზის არქიტექტურა + დემო</span></li>
+                    <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">20 წთ</strong> — ვიზიტების ჟურნალი & Notion AI</li>
+                    <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">20 წთ</strong> — პრაქტიკული დავალება</span></li>
+                    <li class="flex gap-2"><span style="color:#00b3e4;">•</span><span><strong class="text-white">20 წთ</strong> — შეჯამება, Q&amp;A + Minimal პაკეტის დახურვა</span></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Outcomes -->
+        <div class="p-6" style="background:#00253e;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#00b3e4;">🎯 სესიის შედეგები</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">რას ისწავლით?</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Gamma.app — 10-წუთიანი პრეზენტაცია</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Visual Aid & დეტალინგ-ფურცლების სტრუქტურა</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> AI Roleplay — ვიზიტის რეპეტიცია</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Notion ექიმების/კლინიკების ბაზა</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Notion AI ავტო-რეზიუმეები</li>
+                <li class="flex gap-2"><span style="color:#00b3e4;">→</span> <span style="color:#7fe0fa;">Advanced Notion AI CRM, Make.com — Optimal/Extended პაკეტებში</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border-left:4px solid #FF9800;">
+        <h4 class="font-bold text-lg mb-2">🧊 Icebreaker: ,,ყველაზე რთული ვიზიტი“</h4>
+        <p class="text-gray-700 mb-2">სესიის დაწყებამდე — <strong>ჩატში დაწერეთ</strong>, რომელი ტიპის ექიმის კითხვა ან შეპასუხება ყველაზე ხშირად გიჭირთ ვიზიტზე.</p>
+        <p class="text-sm text-gray-500 italic">მაგ: ,,ფასზე დაფუძნებული წინააღმდეგობა“, ,,კონკურენტთან შედარება“, ,,გვერდითი ეფექტების შესახებ კითხვები“...</p>
+        <p class="text-sm mt-2" style="color:#E65100;font-weight:600;">დღეს ამას AI Roleplay-ით ვივარჯიშებთ, სანამ რეალურ ექიმთან წავალთ.</p>
+    </div>
+</section>
+
+<!-- RECAP -->
+<section id="recap" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🔁 მიმოხილვა · 5 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">🔁 შეხვედრა 1-2-ის სწრაფი მიმოხილვა</h2>
+    <div class="three-column">
+        <div class="card">
+            <p class="font-bold text-sm mb-2" style="color:#005a9c;">📝 P.A.R.T.S. & C.R.E.A.T.E.</p>
+            <p class="text-xs text-gray-600">პრომპტ-ჩარჩოები ვიზიტების, წერილებისა და ანგარიშებისთვის</p>
+        </div>
+        <div class="card">
+            <p class="font-bold text-sm mb-2" style="color:#005a9c;">🗂️ Claude Projects & Custom GPTs</p>
+            <p class="text-xs text-gray-600">Respiratory/Gastro Assist — მუდმივი ცოდნის ბაზები</p>
+        </div>
+        <div class="card">
+            <p class="font-bold text-sm mb-2" style="color:#005a9c;">📚 NotebookLM</p>
+            <p class="text-xs text-gray-600">წყაროზე დაფუძნებული Q&A და Audio Briefs</p>
+        </div>
+    </div>
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">💡 დღეს გავაგრძელებთ:</p>
+        <p class="text-gray-700">ტექსტიდან — <strong>ვიზუალურ და ინტერაქტიულ</strong> ხელსაწყოებზე გადავდივართ: პრეზენტაციები, ვიზიტის რეპეტიცია და გუნდის მართვის სისტემა.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK I HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🎨</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#7fe0fa;">ბლოკი I · 80 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">Gamma.app პრეზენტაციები და AI Roleplay</h2>
+                <p class="text-gray-300 text-sm mt-1">00:00 – 01:20 · 7 ქვე-მოდული</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GAMMA INTRO -->
+<section id="gamma-intro" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 Gamma.app · 12 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🎨 Gamma.app-ის გაცნობა</h2>
+    <p class="text-gray-500 mb-6">AI-ზე დაფუძნებული პრეზენტაციების პლატფორმა — PowerPoint-ის ეპოქა გათავდა</p>
+
+    <div class="two-column mb-6">
+        <div class="card">
+            <p class="font-bold mb-3" style="color:#d81b60;">❌ ტრადიციული PowerPoint:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• 2-3 საათი სლაიდების მოწყობაზე</li>
+                <li>• ხელით დიზაინი და ფორმატირება</li>
+                <li>• სამედიცინო ვიზუალების ძიება ინტერნეტში</li>
+                <li>• ტექსტის სიგრძის ხელით მორგება სლაიდზე</li>
+            </ul>
+        </div>
+        <div class="card" style="border:2px solid #7C3AED;">
+            <p class="font-bold mb-3" style="color:#7C3AED;">✅ Gamma.app:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• <strong>5-10 წუთი</strong> — სრული პრეზენტაცია</li>
+                <li>• AI ავტომატურად ადგენს სტრუქტურას</li>
+                <li>• AI ირჩევს სამედიცინო თემატურ ვიზუალებს</li>
+                <li>• Ctrl+E — მყისიერი რედაქტირება ბუნებრივი ენით</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🌐 დარეგისტრირდით: <a href="https://gamma.app" target="_blank" style="color:#005a9c;text-decoration:underline;">gamma.app</a></p>
+        <p class="text-sm text-gray-700">უფასო ვერსია — საკმარისი კრედიტი 8-10 პრეზენტაციისთვის თვეში. Google-ის ანგარიშით შესვლა — ყველაზე მარტივი.</p>
+    </div>
+</section>
+
+<!-- GAMMA USECASES -->
+<section id="gamma-usecases" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🔧 გამოყენება · 6 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">🔧 Gamma-ს გამოყენება Eurodrug Georgia-ში</h2>
+    <div class="three-column">
+        <div class="card">
+            <p class="text-2xl mb-1">🩺</p>
+            <p class="font-bold text-sm mb-1">ექიმთან ვიზიტის პრეზენტაცია</p>
+            <p class="text-xs text-gray-600">10-წუთიანი პროდუქტის ვიზუალური მიმოხილვა</p>
+        </div>
+        <div class="card">
+            <p class="text-2xl mb-1">🏢</p>
+            <p class="font-bold text-sm mb-1">B2B პარტნიორ-პრეზენტაცია</p>
+            <p class="text-xs text-gray-600">აფთიაქებთან/სადისტრიბუციო კომპანიებთან</p>
+        </div>
+        <div class="card">
+            <p class="text-2xl mb-1">🎓</p>
+            <p class="font-bold text-sm mb-1">გუნდის შიდა ტრენინგი</p>
+            <p class="text-xs text-gray-600">ახალი პროდუქტის ცოდნის გადაცემა გუნდში</p>
+        </div>
+    </div>
+</section>
+
+<!-- GAMMA DEMO -->
+<section id="gamma-demo" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ Follow-Along დემო</span>
+    <h2 class="text-2xl font-bold mb-4">🖥️ ინტერაქტიული დემო — ერთად ვქმნით</h2>
+    <p class="text-gray-600 mb-4">გაიარეთ ნაბიჯები სინქრონულად — click-by-click:</p>
+
+    <div class="card" style="background:#0f1f2e;color:white;padding:0;overflow:hidden;">
+        <div class="p-4 border-b border-white/10" style="background:#1a2f42;">
+            <p class="font-bold" style="color:#7fe0fa;">📍 ნაბიჯები — ერთად გადის:</p>
+        </div>
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#005a9c;">1</span>
+                <div><p class="font-bold text-sm text-white">gamma.app → "New with AI"</p><p class="text-gray-400 text-xs">ან "Generate" ღილაკი</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#00b3e4;">2</span>
+                <div><p class="font-bold text-sm text-white">Outline-ის შეყვანა</p><p class="text-gray-400 text-xs font-mono">,,Eurodrug-ის [X პროდუქტის] ვიზიტის პრეზენტაცია: მოქმედების მექანიზმი, კლინიკური უპირატესობა, უსაფრთხოების პროფილი. 6 სლაიდი.“</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#9C27B0;">3</span>
+                <div><p class="font-bold text-sm text-white">თემის და ფერის არჩევა</p><p class="text-gray-400 text-xs">Professional / Medical/Healthcare სტილი</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#4CAF50;">4</span>
+                <div><p class="font-bold text-sm text-white">Generate — პრეზენტაცია მზადაა!</p><p class="text-gray-400 text-xs">30-60 წამი</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#FF9800;">5</span>
+                <div><p class="font-bold text-sm text-white">AI Agent ტრიუკი: Ctrl+E</p><p class="text-gray-400 text-xs">სლაიდზე ახალი ინსტრუქციის მიწოდება — ტექსტის ან სურათის ჩანაცვლება</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GAMMA AI AGENT -->
+<section id="gamma-ai-agent" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🤖 AI Agent · 8 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">🤖 AI Agent (Ctrl+E) გამოყენების 3 მაგალითი სლაიდზე</h2>
+    <div class="card" style="border: 2px dashed #d81b60; background:#fff5f8;">
+        <div class="space-y-4 text-sm text-gray-800">
+            <div class="flex items-start gap-3">
+                <span class="text-xl">1️⃣</span>
+                <div>
+                    <strong style="color:#c2185b;">ფორმატირება (ტექსტის გამარტივება):</strong><br>
+                    მონიშნეთ ვრცელი ტექსტი, დააჭირეთ Ctrl+E და დაუწერეთ:<br>
+                    <span class="inline-block mt-1 px-2 py-1 bg-white border border-pink-200 rounded text-pink-700 font-mono text-xs">"ეს აბზაცი გადააკეთე 3 მოკლე კლინიკურ ბულეტ-პუნქტად."</span>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="text-xl">2️⃣</span>
+                <div>
+                    <strong style="color:#c2185b;">ვიზუალის შეცვლა კონტექსტურად:</strong><br>
+                    მონიშნეთ სურათი (ან მთელი სლაიდი), დააჭირეთ Ctrl+E და დაუწერეთ:<br>
+                    <span class="inline-block mt-1 px-2 py-1 bg-white border border-pink-200 rounded text-pink-700 font-mono text-xs">"შეცვალე ეს სურათი თანამედროვე კლინიკური გარემოს ფოტოთი."</span>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="text-xl">3️⃣</span>
+                <div>
+                    <strong style="color:#c2185b;">თარგმნა / ტონის კალიბრაცია:</strong><br>
+                    მონიშნეთ მთელი სლაიდი, დააჭირეთ Ctrl+E და დაუწერეთ:<br>
+                    <span class="inline-block mt-1 px-2 py-1 bg-white border border-pink-200 rounded text-pink-700 font-mono text-xs">"თარგმნე ეს სლაიდი ინგლისურად და გახადე უფრო ფორმალური B2B პარტნიორებისთვის."</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- VISUAL AIDS -->
+<section id="visual-aids" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📋 Visual Aid · 8 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">📋 Visual Aid & დეტალინგ-ფურცლების სტრუქტურირება</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">Visual Aid ვიზიტის დროს ერთგვარი „მეორე ხმაა“ — AI-ს დახმარებით შეგიძლიათ სწრაფად ააწყოთ თანმიმდევრული, ვიზუალურად მკაფიო სტრუქტურა.</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#e6f4fc;">
+                <p class="text-2xl mb-1">1️⃣</p>
+                <p class="font-bold text-sm">გახსნის სლაიდი</p>
+                <p class="text-xs text-gray-600 mt-1">პრობლემა/საჭიროება, რომელსაც პროდუქტი აგვარებს</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#f3e5f5;">
+                <p class="text-2xl mb-1">2️⃣</p>
+                <p class="font-bold text-sm">მტკიცებულების სლაიდები</p>
+                <p class="text-xs text-gray-600 mt-1">კლინიკური მონაცემები, გრაფიკები, უსაფრთხოების პროფილი</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <p class="text-2xl mb-1">3️⃣</p>
+                <p class="font-bold text-sm">დახურვის სლაიდი</p>
+                <p class="text-xs text-gray-600 mt-1">საკვანძო შეტყობინება, შემდეგი ნაბიჯი (Sample/Follow-up)</p>
+            </div>
+        </div>
+    </div>
+    <div class="prompt-blueprint">
+        <div class="pb-head"><span class="pb-tag">Prompt Blueprint</span><button class="pb-copy" onclick="copyText(this)">კოპირება</button></div>
+        <div class="code-content">Visual Aid სტრუქტურირების პრომპტი:
+,,ქვემოთ მოცემულია [X პროდუქტის] საჯარო SmPC-ის საკვანძო წერტილები
+[ჩასვი ტექსტი]. ააგე Visual Aid-ის 5-სლაიდიანი სტრუქტურა:
+1 გახსნის სლაიდი (პრობლემა) + 3 მტკიცებულების სლაიდი
++ 1 დახურვის სლაიდი. თითოეულს დაამატე 1 საკვანძო წინადადება
+და შემოთავაზება, რა ტიპის ვიზუალი (გრაფიკი/დიაგრამა/ფოტო)
+შეესაბამება. ქართულ ენაზე.“</div>
+    </div>
+</section>
+
+<!-- AI ROLEPLAY -->
+<section id="ai-roleplay" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🎭 AI Roleplay · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🎭 AI Roleplay — ექიმის როლური სიმულაცია</h2>
+    <p class="text-gray-500 mb-6">ივარჯიშეთ რთულ საუბრებზე AI-სთან, სანამ რეალურ ექიმთან წახვალთ</p>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3" style="color:#005a9c;">როგორ მუშაობს?</p>
+        <p class="text-gray-700 text-sm">AI-ს (GPT-5.6 ან Claude Sonnet 5-ის Voice Mode-ით ან ტექსტურად) ეუბნებით, რომ „ითამაშოს“ კონკრეტული ტიპის ექიმის როლი — სკეპტიკოსი, დაკავებული, ან დეტალებზე ორიენტირებული — და ივარჯიშებთ თქვენს არგუმენტებზე რეალურ დროში.</p>
+    </div>
+
+    <div class="prompt-blueprint">
+        <div class="pb-head"><span class="pb-tag">Prompt Blueprint</span><button class="pb-copy" onclick="copyText(this)">კოპირება</button></div>
+        <div class="code-content">AI Roleplay — მაგალითი:
+,,ითამაშე როლი: შენ ხარ დაკავებული კარდიოლოგი, რომელსაც
+სულ 2 წუთი აქვს ჩემთვის. სკეპტიკურად ხარ განწყობილი ახალი
+პრეპარატების მიმართ და ხშირად აჩერებ ვიზიტს ფასზე შეკითხვით.
+მე ვარ Eurodrug-ის სამედიცინო წარმომადგენელი და გაცნობებ
+[X პროდუქტს]. დაიწყე საუბარი შენი პირველი კითხვით/წინააღმდეგობით,
+შემდეგ პასუხობდე ჩემს არგუმენტებზე რეალისტურად.
+საუბრის ბოლოს მომეცი უკუკავშირი — რა იმუშავა და რა არა.“</div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 რატომ მუშაობს?</p>
+        <p class="text-sm text-gray-700">ხმამაღლა/წერილობით წარმოთქმა ცვლის თავდაჯერებულობას. AI-ს არაფერი „ეწყინება“ — შეგიძლიათ ერთი და იგივე სცენარი 5-ჯერ სცადოთ, სანამ არგუმენტი არ ჩამოყალიბდება.</p>
+    </div>
+</section>
+
+<!-- ROLEPLAY DEMO -->
+<section id="roleplay-demo" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ Follow-Along დემო</span>
+    <h2 class="text-2xl font-bold mb-4">🖥️ Roleplay დემო — ერთად ვცდით</h2>
+    <div class="card" style="background:#0f1f2e;color:white;padding:0;overflow:hidden;">
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#005a9c;">1</span>
+                <div><p class="font-bold text-sm text-white">აირჩიეთ ერთი „რთული ექიმის ტიპი“</p><p class="text-gray-400 text-xs">სკეპტიკოსი / დაკავებული / ფასზე ორიენტირებული</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#00b3e4;">2</span>
+                <div><p class="font-bold text-sm text-white">გაუშვით Roleplay პრომპტი</p><p class="text-gray-400 text-xs">ტექსტურად ან Voice Mode-ით (ChatGPT/Claude მობილურ აპში)</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#9C27B0;">3</span>
+                <div><p class="font-bold text-sm text-white">უპასუხეთ AI-ს „წინააღმდეგობას“</p><p class="text-gray-400 text-xs">გამოიყენეთ Segment 3-ის Visual Aid არგუმენტები</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#4CAF50;">4</span>
+                <div><p class="font-bold text-sm text-white">მიიღეთ AI-ს უკუკავშირი</p><p class="text-gray-400 text-xs">რა იმუშავა, რა უნდა გაძლიერდეს შემდეგ ჯერზე</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRACTICE 1 -->
+<section id="practice1" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 1 · 20 წუთი</span>
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-3xl font-bold">✏️ პრაქტიკული დავალება 1: Gamma პრეზენტაცია</h2>
+        <div class="flex items-center gap-2 px-4 py-2 rounded-xl" style="background:#00253e;">
+            <span class="text-2xl">⏱</span>
+            <span id="timer1-display" class="font-black text-2xl" style="color:#00b3e4;font-variant-numeric:tabular-nums;">20:00</span>
+            <button onclick="startTimer('timer1-display',20)" class="text-xs px-3 py-1 rounded font-bold" style="background:#00b3e4;color:#00253e;">▶ დაწყება</button>
+        </div>
+    </div>
+    <p class="text-gray-500 mb-6">შექმენით საკუთარი პრეზენტაცია — და სცადეთ AI Roleplay ერთხელ მაინც</p>
+
+    <div class="card mb-6" style="border:2px solid #7C3AED;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#7C3AED;">1</span>
+                <p class="text-gray-700">შექმენით <strong>5-7 სლაიდიანი Gamma პრეზენტაცია</strong> ერთ Eurodrug-ის პროდუქტზე (გახსნა + მტკიცებულება + დახურვა)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#7C3AED;">2</span>
+                <p class="text-gray-700">დაარედაქტირეთ <strong>მინიმუმ 2 სლაიდი</strong> Ctrl+E-ით — ტექსტი ან სურათი</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#7C3AED;">3</span>
+                <p class="text-gray-700">გაუშვით <strong>1 AI Roleplay</strong> სცენარი ამ პრეზენტაციის თემაზე</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">20 წუთში — სრული, ვიზუალურად მიმზიდველი პრეზენტაცია + ერთი Roleplay ცდა უკუკავშირით.</p>
+    </div>
+</section>
+
+<!-- BREAK -->
+<div id="break" class="py-10 border-b border-gray-200">
+    <div class="card text-center" style="background:linear-gradient(135deg,#00b3e4,#0097A7);color:white;border:none;">
+        <p class="text-4xl mb-2">☕</p>
+        <p class="text-2xl font-bold mb-1">10-წუთიანი შესვენება</p>
+        <p class="text-white/80">01:20 – 01:30</p>
+    </div>
+</div>
+
+<!-- BLOCK II HEADER -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🗄️</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#7fe0fa;">ბლოკი II · 90 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">Notion & Notion AI Fast-Track</h2>
+                <p class="text-gray-300 text-sm mt-1">01:30 – 03:00 · CRM არქიტექტურა + Notion AI + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NOTION INTRO -->
+<section id="notion-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 Notion · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🗄️ Notion CRM-ის გაცნობა</h2>
+    <p class="text-gray-500 mb-6">ერთი ცენტრალიზებული ბაზა ექიმების, კლინიკებისა და ვიზიტებისთვის — Excel-ის ნაცვლად</p>
+
+    <div class="two-column mb-6">
+        <div class="card">
+            <p class="font-bold mb-2" style="color:#d81b60;">❌ Excel/ცალკეული ფაილები</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• თითოეულ წარმომადგენელს — საკუთარი ფაილი</li>
+                <li>• დუბლირებული/მოძველებული მონაცემები</li>
+                <li>• არ არსებობს ცენტრალიზებული ისტორია</li>
+            </ul>
+        </div>
+        <div class="card" style="border:2px solid #005a9c;">
+            <p class="font-bold mb-2" style="color:#005a9c;">✅ Notion CRM</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• ერთი საერთო ბაზა, რეალურ დროში სინქრონიზებული</li>
+                <li>• Relations — ექიმი ↔ კლინიკა ↔ ვიზიტი ერთმანეთთან დაკავშირებული</li>
+                <li>• Notion AI — ავტომატური რეზიუმეები და ანალიზი</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🌐 notion.so — უფასო გეგმა საკმარისია დაწყებისთვის</p>
+        <p class="text-sm text-gray-700">გუნდის ვერსიისთვის (გაზიარებადი ბაზები, Notion AI) საჭიროა Team გეგმა — Optimal/Extended პაკეტში დეტალურად განვიხილავთ.</p>
+    </div>
+</section>
+
+<!-- NOTION ARCHITECTURE -->
+<section id="notion-architecture" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🏗️ არქიტექტურა · 10 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">🏗️ ექიმების/კლინიკების ბაზის არქიტექტურა</h2>
+    <div class="card mb-4">
+        <p class="font-bold mb-3">3 ურთიერთდაკავშირებული ბაზა (database):</p>
+        <div class="three-column">
+            <div class="p-4 rounded-lg" style="background:#e6f4fc;">
+                <p class="font-bold text-sm mb-1">👨‍⚕️ ექიმები</p>
+                <p class="text-xs text-gray-600">სახელი, სპეციალობა, კლინიკა (Relation), უკანასკნელი ვიზიტი</p>
+            </div>
+            <div class="p-4 rounded-lg" style="background:#f3e5f5;">
+                <p class="font-bold text-sm mb-1">🏥 კლინიკები/აფთიაქები</p>
+                <p class="text-xs text-gray-600">დასახელება, მისამართი, ექიმები (Relation), პარტნიორობის სტატუსი</p>
+            </div>
+            <div class="p-4 rounded-lg" style="background:#e8f5e9;">
+                <p class="font-bold text-sm mb-1">📅 ვიზიტები</p>
+                <p class="text-xs text-gray-600">თარიღი, ექიმი (Relation), თემა, შედეგი, Follow-up საჭიროება</p>
+            </div>
+        </div>
+    </div>
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 Relations & Rollups:</p>
+        <p class="text-sm text-gray-700"><strong>Relation</strong> აკავშირებს ჩანაწერებს ბაზებს შორის (ექიმი → კლინიკა). <strong>Rollup</strong> ავტომატურად აჯამებს დაკავშირებულ მონაცემებს (მაგ. „ბოლო 3 ვიზიტის თარიღები“ ერთ სვეტში).</p>
+    </div>
+</section>
+
+<!-- NOTION VISIT LOG -->
+<section id="notion-visit-log" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📖 Visit Log · 8 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">📖 სამედიცინო წარმომადგენლის ვიზიტების Tracking ჟურნალი</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">ერთი ცხრილი, რომელშიც ყოველი ვიზიტის შემდეგ 2 წუთში ინახება ჩანაწერი — ტექსტური შენიშვნები, შემდეგი ნაბიჯი, პრიორიტეტი.</p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs bg-white rounded-lg overflow-hidden shadow" style="border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#00253e;color:white;">
+                        <th class="text-left px-3 py-2">თარიღი</th>
+                        <th class="text-left px-3 py-2">ექიმი</th>
+                        <th class="text-left px-3 py-2">თემა</th>
+                        <th class="text-left px-3 py-2">Follow-up</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-gray-200">
+                        <td class="px-3 py-2">12.03.2026</td>
+                        <td class="px-3 py-2">დ. მაისურაძე</td>
+                        <td class="px-3 py-2">[X პროდუქტის] დოზირება</td>
+                        <td class="px-3 py-2"><span class="px-2 py-0.5 rounded" style="background:#fff8e1;color:#E65100;">საჭირო — 2 კვირაში</span></td>
+                    </tr>
+                    <tr>
+                        <td class="px-3 py-2">14.03.2026</td>
+                        <td class="px-3 py-2">ნ. კვარაცხელია</td>
+                        <td class="px-3 py-2">ახალი პროდუქტის შესავალი</td>
+                        <td class="px-3 py-2"><span class="px-2 py-0.5 rounded" style="background:#e8f5e9;color:#2e7d32;">არ არის საჭირო</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- NOTION AI -->
+<section id="notion-ai" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">✨ Notion AI · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">✨ Notion AI — ვიზიტის ჩანაწერებიდან ავტო-რეზიუმე</h2>
+    <p class="text-gray-500 mb-6">დაწერეთ თავისუფალი ტექსტით, AI აჯამებს სტრუქტურირებულ ველებში</p>
+
+    <div class="prompt-blueprint">
+        <div class="pb-head"><span class="pb-tag">Prompt Blueprint</span><button class="pb-copy" onclick="copyText(this)">კოპირება</button></div>
+        <div class="code-content">Notion AI — ვიზიტის რეზიუმეს ექსტრაქცია:
+,,ქვემოთ ჩემი თავისუფალი ჩანაწერებია დღევანდელი ვიზიტიდან:
+,,დ. მაისურაძესთან ვიყავი, ვისაუბრეთ ახალ დოზირებაზე, ჰქონდა
+კითხვა ხანდაზმულ პაციენტებზე გამოყენების შესახებ, ვთხოვე
+დამატებითი მასალის გამოგზავნა, დაინტერესდა კლინიკურ კვლევაშიც“
+
+გამომიტანე: 1) ვიზიტის თემა (1 წინადადება), 2) ექიმის ძირითადი
+შეკითხვა, 3) საჭირო Follow-up მოქმედება, 4) პრიორიტეტი
+(მაღალი/საშუალო/დაბალი).“</div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ დროის ეკონომია:</p>
+        <p class="text-sm text-gray-700">ვიზიტის შემდეგ 5-წუთიანი თავისუფალი ჩანაწერი AI-ის დახმარებით 30 წამში ხდება სტრუქტურირებული CRM ჩანაწერი — მენეჯმენტს მთელი გუნდის აქტივობა ერთი დეშბორდიდან უჩანს.</p>
+    </div>
+</section>
+
+<!-- NOTION DEMO -->
+<section id="notion-demo" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ Follow-Along დემო</span>
+    <h2 class="text-2xl font-bold mb-4">🖥️ Notion Follow-Along დემო</h2>
+    <div class="card" style="background:#0f1f2e;color:white;padding:0;overflow:hidden;">
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#005a9c;">1</span>
+                <div><p class="font-bold text-sm text-white">"+ New Database" → ,,ექიმები“</p><p class="text-gray-400 text-xs">Name, Specialty, Clinic (Relation)</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#00b3e4;">2</span>
+                <div><p class="font-bold text-sm text-white">"+ New Database" → ,,ვიზიტები“</p><p class="text-gray-400 text-xs">Date, Doctor (Relation), Notes, Follow-up (checkbox)</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#9C27B0;">3</span>
+                <div><p class="font-bold text-sm text-white">დაამატეთ Rollup</p><p class="text-gray-400 text-xs">ექიმის ბაზაში — „ბოლო ვიზიტის თარიღი“ ვიზიტების ბაზიდან</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="step-num" style="background:#4CAF50;">4</span>
+                <div><p class="font-bold text-sm text-white">სცადეთ Notion AI</p><p class="text-gray-400 text-xs">"/ai" ან Space-ზე ორმაგი დაჭერა → "Summarize"</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NOTION SAFETY -->
+<section id="notion-safety" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🔒 GDPR/HIPAA · 5 წუთი</span>
+    <h2 class="text-2xl font-bold mb-4">🔒 GDPR/HIPAA Notion-ში</h2>
+    <div class="warning-box">
+        <p class="font-bold mb-1">🔑 ოქროს წესი:</p>
+        <p class="text-gray-700">Notion CRM ინახავს <strong>ექიმებისა და კლინიკების</strong> ბიზნეს-კონტაქტებს — ეს დასაშვებია (B2B პროფესიული ურთიერთობა). მაგრამ <strong>პაციენტთა მონაცემები არასოდეს არ შედის</strong> ვიზიტების ჟურნალში, თუნდაც ანონიმური სახით — ვიზიტის შენიშვნები ეხება მხოლოდ ექიმთან საუბარს, არა კონკრეტულ პაციენტს.</p>
+    </div>
+</section>
+
+<!-- PRACTICE 2 -->
+<section id="practice2" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 2 · 20 წუთი</span>
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-3xl font-bold">✏️ პრაქტიკული დავალება: Notion Visit Tracking</h2>
+        <div class="flex items-center gap-2 px-4 py-2 rounded-xl" style="background:#00253e;">
+            <span class="text-2xl">⏱</span>
+            <span id="timer2-display" class="font-black text-2xl" style="color:#00b3e4;font-variant-numeric:tabular-nums;">20:00</span>
+            <button onclick="startTimer('timer2-display',20)" class="text-xs px-3 py-1 rounded font-bold" style="background:#00b3e4;color:#00253e;">▶ დაწყება</button>
+        </div>
+    </div>
+    <p class="text-gray-500 mb-6">ააშენეთ საკუთარი მინი-CRM</p>
+
+    <div class="card mb-6" style="border:2px solid #005a9c;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#005a9c;">1</span>
+                <p class="text-gray-700">შექმენით <strong>2 ურთიერთდაკავშირებული ბაზა</strong>: ,,ექიმები“ და ,,ვიზიტები“ (Relation-ით)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#005a9c;">2</span>
+                <p class="text-gray-700">დაამატეთ <strong>3 საცდელი ჩანაწერი</strong> ორივე ბაზაში</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#005a9c;">3</span>
+                <p class="text-gray-700">გამოცადეთ <strong>Notion AI</strong> — ერთი თავისუფალი ჩანაწერის სტრუქტურირებულ ველებად გადაქცევა</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">20 წუთში — მუშა 2-ბაზიანი CRM prototype, Relation-ითა და მინიმუმ ერთი Notion AI ცდით.</p>
+    </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="min-h-[80vh] flex flex-col justify-center py-12 topic-card">
+    <span class="badge badge-theory">✅ შეჯამება · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">✅ შეჯამება და Q&amp;A</h2>
+
+    <div class="card mb-6" style="background:#00253e;color:white;">
+        <p class="font-bold text-xl mb-4" style="color:#7fe0fa;">🏆 დღეს ისწავლეთ:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Gamma.app</p><p class="text-gray-400 text-sm">AI პრეზენტაცია 5-10 წუთში, Ctrl+E ტრიუკები</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Visual Aid სტრუქტურა</p><p class="text-gray-400 text-sm">გახსნა → მტკიცებულება → დახურვა</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">AI Roleplay</p><p class="text-gray-400 text-sm">ვიზიტის რეპეტიცია რთულ ექიმის ტიპებზე</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Notion CRM არქიტექტურა</p><p class="text-gray-400 text-sm">ექიმები/კლინიკები/ვიზიტები, Relations & Rollups</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Notion AI</p><p class="text-gray-400 text-sm">თავისუფალი ტექსტიდან — სტრუქტურირებულ ჩანაწერამდე</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#00b3e4;font-size:1.2rem;">→</span>
+                <div><p class="font-bold text-white" style="color:#7fe0fa;">Advanced Notion AI CRM, Make.com, Lovable.app</p><p class="text-gray-400 text-sm">Optimal/Extended პაკეტების შემდეგ შეხვედრებზე →</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-6" style="border:2px solid #00b3e4;">
+        <p class="font-bold text-lg mb-3">🎓 Minimal პაკეტის დახურვა:</p>
+        <p class="text-sm text-gray-700">ეს იყო Minimal 3-შეხვედრიანი პროგრამის ბოლო სესია (9 საათი სულ). თუ Eurodrug Georgia-ს გუნდი დაინტერესებულია გაღრმავებული Advanced Notion AI CRM-ით, Make.com ავტომატიზაციითა და Lovable.app No-Code აპლიკაციებით — ეს გრძელდება Optimal (12სთ) და Extended (18სთ) პაკეტებში.</p>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border:1px solid #FF9800;">
+        <p class="font-bold text-lg mb-2">❓ Q&amp;A</p>
+        <p class="text-gray-700">კითხვები — პასუხები. ააშენეთ თქვენი პირველი რეალური Gamma პრეზენტაცია და Notion ჟურნალი ხვალვე.</p>
+    </div>
+
+    <div class="mt-8 p-6 rounded-xl text-center" style="background:linear-gradient(135deg,#00253e,#003863);">
+        <p class="text-3xl mb-2">🎨</p>
+        <p class="text-white font-bold text-xl mb-2">Eurodrug Georgia-ს AI ტრენინგი — შეხვედრა 3 დასრულდა!</p>
+        <p class="text-gray-300 text-sm">გამოიყენეთ Gamma, AI Roleplay და Notion CRM ხვალვე სამსახურში.</p>
+        <p class="text-gray-400 text-xs mt-2">გიორგი ბასილაია · 2026</p>
+    </div>
+</section>
+
+<!-- HOMEWORK -->
+<section id="homework" class="py-12 border-b border-gray-200">
+    <div class="card" style="background:#fff9ed;border:2px solid #FF9800;">
+        <p class="font-bold text-xl mb-4" style="color:#E65100;">🏠 საშინაო დავალება</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <p class="font-bold text-sm mb-2" style="color:#00253e;">1️⃣ რეალური Gamma პრეზენტაცია</p>
+                <p class="text-sm text-gray-700">შექმენით სრული Visual Aid რეალურ ვიზიტზე გამოსაყენებლად და გააზიარეთ გუნდთან.</p>
+            </div>
+            <div>
+                <p class="font-bold text-sm mb-2" style="color:#00253e;">2️⃣ 3 AI Roleplay ცდა</p>
+                <p class="text-sm text-gray-700">ივარჯიშეთ 3 სხვადასხვა ტიპის ექიმის წინააღმდეგობაზე — ჩაწერეთ, რა არგუმენტმა იმუშავა.</p>
+            </div>
+            <div>
+                <p class="font-bold text-sm mb-2" style="color:#00253e;">3️⃣ Notion CRM-ის შევსება</p>
+                <p class="text-sm text-gray-700">დაამატეთ თქვენი რეალური ექიმების/კლინიკების სია და 5 ვიზიტის ჩანაწერი.</p>
+            </div>
+            <div>
+                <p class="font-bold text-sm mb-2" style="color:#00253e;">4️⃣ Prompt Library-ის განახლება</p>
+                <p class="text-sm text-gray-700">დაამატეთ დღეს გამოცდილი Gamma/Roleplay/Notion AI პრომპტები საერთო ბიბლიოთეკაში.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TOOLS DIRECTORY -->
+<section id="directory" class="py-12">
+    <span class="badge badge-theory">🔌 საცნობარო · სწრაფი წვდომა</span>
+    <h2 class="text-2xl font-bold mb-4">🔌 AI-ინსტრუმენტების კატალოგი — შეხვედრა 3</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="card" style="margin:0;">
+            <p class="font-bold" style="color:#7C3AED;">🎨 Gamma — gamma.app</p>
+            <p class="text-xs text-gray-600 mt-1">უფასო ვერსია · AI პრეზენტაციები, Ctrl+E რედაქტირება</p>
+        </div>
+        <div class="card" style="margin:0;">
+            <p class="font-bold" style="color:#005a9c;">🎭 AI Roleplay — GPT-5.6 / Claude Sonnet 5</p>
+            <p class="text-xs text-gray-600 mt-1">ტექსტური ან Voice Mode როლური სიმულაცია</p>
+        </div>
+        <div class="card" style="margin:0;">
+            <p class="font-bold" style="color:#00253e;">🗄️ Notion — notion.so</p>
+            <p class="text-xs text-gray-600 mt-1">უფასო/Team · CRM ბაზები, Relations, Rollups</p>
+        </div>
+        <div class="card" style="margin:0;">
+            <p class="font-bold" style="color:#00b3e4;">✨ Notion AI</p>
+            <p class="text-xs text-gray-600 mt-1">ჩართული Notion Team გეგმაში · ავტო-რეზიუმეები</p>
+        </div>
+    </div>
+</section>
+
+    </div><!-- end max-w-5xl -->
+</main>
+
+<!-- Back to Top -->
+<button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 bg-[#00b3e4] text-[#00253e] w-12 h-12 rounded-full shadow-2xl flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none hover:bg-[#0097a7] hover:text-white">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+
+<script>
+// Sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    overlay.classList.toggle('hidden', isOpen);
+    menuIcon.classList.toggle('hidden', !isOpen);
+    closeIcon.classList.toggle('hidden', isOpen);
+    document.getElementById('mainContent').style.marginLeft = isOpen ? '0' : '';
+}
+
+// Navigation and Scroll logic
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+const backToTopBtn = document.getElementById('backToTop');
+
+// Close sidebar on mobile when link is clicked
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth < 768 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+            toggleSidebar();
+        }
+    });
+});
+
+window.addEventListener('scroll', () => {
+    // Back to top button visibility
+    if (window.scrollY > 500) {
+        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+    } else {
+        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    // Scroll highlight
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= (sectionTop - 200)) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+            const sidebar = document.getElementById('sidebar');
+            if (link.offsetTop < sidebar.scrollTop || link.offsetTop > (sidebar.scrollTop + sidebar.clientHeight)) {
+                 link.scrollIntoView({ block: 'nearest' });
+            }
+        }
+    });
+});
+
+// Countdown timer
+const timers = {};
+function startTimer(id, minutes) {
+    if (timers[id]) { clearInterval(timers[id]); }
+    let secs = minutes * 60;
+    const el = document.getElementById(id);
+    timers[id] = setInterval(() => {
+        secs--;
+        const m = Math.floor(secs / 60), s = secs % 60;
+        el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        el.style.color = secs <= 60 ? '#ff5722' : secs <= 300 ? '#FF9800' : '#00b3e4';
+        if (secs <= 0) { clearInterval(timers[id]); el.textContent = '⏰ დრო!'; }
+    }, 1000);
+}
+
+function copyText(btn) {
+    const codeBlock = btn.closest('.code-block, .prompt-blueprint');
+    const contentNode = codeBlock.querySelector('.code-content');
+    let text = '';
+    if (contentNode) {
+        text = contentNode.innerText.trim();
+    } else {
+        text = codeBlock.innerText.replace('კოპირება', '').replace('Prompt Blueprint', '').trim();
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ დაკოპირდა';
+        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მაკდონალდსის AI ტრენინგი - სესია 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mcd: { 900: '#0B0F19', 800: '#121826', 700: '#1E293B', red: '#DA291C', gold: '#FFC72C', light: '#F4F6F9' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --red: #DA291C; --gold: #FFC72C; --deep: #B51C12;
+            --bg: #f4f6f9; --surface: #ffffff;
+            --text-1: #0B0F19; --text-2: #374151; --text-3: #6b7280;
+        }
+        html { scroll-behavior: smooth; font-size: 140%; }
+        body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; font-size: 24px; line-height: 1.7; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link { display: flex; align-items: flex-start; padding: 0.6rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.07); }
+        .nav-link.active { background: rgba(218,41,28,0.18); border-left-color: #DA291C; color: #ffb4ac; }
+        .topic-card { border-left: 4px solid #DA291C; padding-left: 1.5rem; }
+        .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-theory { background: rgba(218,41,28,0.12); color: #B51C12; border: 1px solid rgba(218,41,28,0.3); }
+        .badge-practice { background: rgba(255,199,44,0.18); color: #8a6400; border: 1px solid rgba(255,199,44,0.4); }
+        .badge-break { background: rgba(0,188,212,0.1); color: #0097A7; border: 1px solid rgba(0,188,212,0.3); }
+        .badge-demo { background: rgba(103,58,183,0.1); color: #512DA8; border: 1px solid rgba(103,58,183,0.3); }
+        .highlight-box { background: #fdecea; border-left: 4px solid #DA291C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .warning-box { background: #fff8e1; border-left: 4px solid #FFC72C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .success-box { background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .code-block { background: #0B0F19; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+        .copy-btn:hover { background: #DA291C; color: white; border-color: #DA291C; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+        .create-letter { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #DA291C; color: white; font-size: 1.2rem; font-weight: 800; margin-right: 0.75rem; flex-shrink: 0; }
+        .create-row { display: flex; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid #e5e7eb; }
+        .create-row:last-child { border-bottom: none; }
+        .timer-badge { background: #FFC72C; color: #0B0F19; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+        .section-header { background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .gdpr-badge { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.4); color: #2e7d32; border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.75rem; font-weight: 700; }
+        @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+        section { scroll-margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-mcd-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-mcd-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-mcd-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#DA291C;">🍟 მაკდონალდსის AI ტრენინგი</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 4: Perplexity.ai, NotebookLM და კრეატიული AI ვიზუალები</p>
+        <p class="text-gray-400 text-xs mt-1">120 წუთი | 2 ბლოკი + შესვენება</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#FFC72C;">შინაარსი</div>
+
+        <a href="#agenda" class="nav-link">🎯 სესიის წესრიგი</a>
+        <a href="#recap" class="nav-link">🔄 სესია 1-3-ის მოკლე მიმოხილვა</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I - კვლევა და HACCP ინტელექტი (55 წთ)</div>
+        <a href="#perplexity-intro" class="nav-link">🔍 Perplexity.ai - შესავალი</a>
+        <a href="#perplexity-operators" class="nav-link">⚙️ მოწინავე ოპერატორები და ბაზრის კვლევა</a>
+        <a href="#notebooklm-intro" class="nav-link">📚 NotebookLM - შესავალი</a>
+        <a href="#notebooklm-haccp" class="nav-link">🛡️ HACCP სტანდარტების ანალიზი და აუდიო-ბრიფინგები</a>
+        <a href="#practice1" class="nav-link">✏️ პრაქტიკა 1: HACCP Checklist NotebookLM-ში</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">☕ შესვენება (10 წთ)</div>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II - კრეატიული AI ვიზუალები (55 წთ)</div>
+        <a href="#lsm-intro" class="nav-link">🎨 კრეატიული AI ლოკალური მარკეტინგისთვის (LSM)</a>
+        <a href="#midjourney-firefly" class="nav-link">🖼️ Midjourney, Flux და Adobe Firefly</a>
+        <a href="#photoshop-genfill" class="nav-link">✂️ Photoshop Generative Fill</a>
+        <a href="#visuals-demo" class="nav-link">🖥️ LSM ბანერის შექმნის დემო</a>
+        <a href="#practice2" class="nav-link">✏️ პრაქტიკა 2: საკუთარი LSM ვიზუალი</a>
+        <a href="#summary" class="nav-link">✅ შეჯამება და საშინაო დავალება</a>
+
+        <div class="mt-6 mx-4 mb-4">
+            <a href="lecture-3-slides.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← სესია 3</a>
+            <a href="index.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors mt-2">🏠 წინადადებაში დაბრუნება</a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Main -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%);">
+        <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#DA291C;"></div>
+        <div class="max-w-5xl relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">🔍</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest" style="color:#FFC72C;">მაკდონალდს საქართველო - AI ტრენინგი</p>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">სესია 4: Perplexity.ai, NotebookLM (HACCP)<br><span style="color:#ffb4ac;">და კრეატიული AI ვიზუალები</span></h1>
+                </div>
+            </div>
+            <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">ბაზრის კვლევა და ფასწარმოქმნის ანალიზი Perplexity.ai-ით, გლობალური HACCP სტანდარტების ინტერაქტიული ანალიზი NotebookLM-ში აუდიო-ბრიფინგებით და ლოკალური მარკეტინგის (LSM) ვიზუალების გენერირება Midjourney-სა და Adobe Firefly-ის მეშვეობით.</p>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">⏱ 120 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">👥 2 ბლოკი + შესვენება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">🎯 2 პრაქტიკული დავალება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(255,199,44,0.2);color:#FFC72C;">🔒 GDPR-თავსებადი</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10 space-y-0">
+
+<!-- ═══════════════════════════════════════════════════
+     AGENDA
+═══════════════════════════════════════════════════ -->
+<section id="agenda" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📋 სესიის სტრუქტურა</span>
+    <h2 class="text-3xl font-bold mb-6" style="color:#0B0F19;">🎯 დღევანდელი სესიის დღის წესრიგი</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <!-- Block 1 -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 00:00 - 00:55</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი I: კვლევა და HACCP ინტელექტი</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - Perplexity.ai და ბაზრის კვლევა</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - NotebookLM და HACCP ანალიზი</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - პრაქტიკა 1</span></li>
+            </ul>
+        </div>
+        <!-- Break -->
+        <div class="flex flex-col" style="background:#121826;">
+            <div class="px-6 py-3 border-b border-white/10 flex items-center justify-between" style="background:rgba(0,188,212,0.15);">
+                <span class="font-bold text-white text-sm">☕ შესვენება</span>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#0097A7;color:white;">00:55 - 01:05</span>
+            </div>
+            <div class="p-6 flex-1">
+                <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 01:05 - 02:00</div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი II: კრეატიული AI ვიზუალები</h3>
+                <ul class="text-sm text-gray-300 space-y-2">
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - Midjourney, Flux, Adobe Firefly</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - Photoshop Generative Fill დემო</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - პრაქტიკა 2: საკუთარი LSM ვიზუალი</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">5 წთ</strong> - შეჯამება + საშინაო</span></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Outcomes -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#FFC72C;">🎯 სესიის შედეგები</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">რას ისწავლით?</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Perplexity.ai ბაზრის კვლევისთვის</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> NotebookLM და HACCP checklist-ები</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> პერსონალიზებული აუდიო-ბრიფინგები</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Midjourney/Firefly LSM ვიზუალებისთვის</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Photoshop Generative Fill</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border-left:4px solid #FFC72C;">
+        <h4 class="font-bold text-lg mb-2">🧊 Icebreaker: „ბოლო კითხვა, რომელზეც პასუხი დიდხანს ვეძებდით“</h4>
+        <p class="text-gray-700 mb-2">სესიის დაწყებამდე - <strong>ჩატში დაწერეთ ერთი კითხვა</strong>, რომლის პასუხის მოძებნამაც ინტერნეტში ან შიდა დოკუმენტებში დიდი დრო წაგართვათ ბოლო ერთი თვის განმავლობაში.</p>
+        <p class="text-sm text-gray-500 italic">მაგ: „კონკურენტების ფასების შედარება“, „HACCP-ის კონკრეტული პუნქტის ინტერპრეტაცია“, „ახალი Happy Meal-ის სარეკლამო ვიზუალის იდეა“...</p>
+        <p class="text-sm mt-2" style="color:#B51C12;font-weight:600;">ჩვენ ზუსტად ამ ტიპის ამოცანებს ვაჩქარებთ დღეს.</p>
+    </div>
+</section>
+
+<!-- RECAP -->
+<section id="recap" class="min-h-[50vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🔄 რეკაპი · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🔄 სესია 1-3-ის მოკლე მიმოხილვა</h2>
+
+    <div class="three-column">
+        <div class="card" style="border-top:4px solid #DA291C;">
+            <p class="font-bold mb-2">✅ სესია 1:</p>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• C.R.E.A.T.E. პრომპტ-ინჟინერია</li>
+                <li>• Microsoft Copilot, Gemini Gems</li>
+            </ul>
+        </div>
+        <div class="card" style="border-top:4px solid #FFC72C;">
+            <p class="font-bold mb-2">✅ სესია 2:</p>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• SCAMPER სააზროვნო პარტნიორობა</li>
+                <li>• Claude Cowork</li>
+            </ul>
+        </div>
+        <div class="card" style="border-top:4px solid #4285F4;">
+            <p class="font-bold mb-2">✅ სესია 3:</p>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• Notion AI, Prompt Library &amp; SOP Wiki</li>
+                <li>• Claude Projects &amp; Multimodal AI</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">🍟 დღეს გავაგრძელებთ:</p>
+        <p class="text-gray-700">წერითი და ორგანიზაციული ასისტენტებიდან - <strong>კვლევისა და ვიზუალური კრეატივის</strong> AI ინსტრუმენტებზე: ბაზრის კვლევა, რეგულაციური შესაბამისობა (HACCP) და ლოკალური მარკეტინგის ვიზუალები.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK I HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🔍</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი I · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">კვლევა, ბაზრის ანალიზი და HACCP ინტელექტი</h2>
+                <p class="text-gray-300 text-sm mt-1">00:00 - 00:55 · 4 ქვე-მოდული + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PERPLEXITY INTRO -->
+<section id="perplexity-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 7 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🔍 Perplexity.ai - შესავალი</h2>
+
+    <div class="card mb-4">
+        <p class="text-xl font-bold mb-3" style="color:#B51C12;">რატომ განსხვავდება Google-ისგან?</p>
+        <p class="text-gray-700 text-lg">Perplexity.ai არის <strong>AI ძრავიანი საძიებო სისტემა</strong>, რომელიც ინტერნეტს რეალურ დროში ეძებს და პასუხს <strong>წყაროებზე მითითებით</strong> გაძლევთ - არა უბრალოდ ბმულების სია, არამედ სინთეზირებული, გადამოწმებადი პასუხი.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">კონკურენტების ფასწარმოქმნის ანალიზი → სწრაფი კვების ინდუსტრიის ტრენდები საქართველოში → ახალი რეგულაციები → მომწოდებელთა ბაზრის კვლევა - ყველა წყაროზე მითითებით, გადამოწმებადი.</p>
+    </div>
+
+    <div class="card mt-4">
+        <p class="font-bold text-lg mb-3">💡 Perplexity vs. სტანდარტული ჩატბოტი</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#fdecea;">
+                <div class="text-3xl mb-2">🌐</div>
+                <p class="font-bold text-sm mb-1">Real-Time ინტერნეტი</p>
+                <p class="text-xs text-gray-600">პასუხობს დღევანდელი მონაცემებით, არა მხოლოდ ტრენინგის მონაცემებით</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+                <div class="text-3xl mb-2">📎</div>
+                <p class="font-bold text-sm mb-1">წყაროებზე მითითება</p>
+                <p class="text-xs text-gray-600">ყოველი ფაქტი მოჰყვება ბმულს გადასამოწმებლად</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <div class="text-3xl mb-2">🎯</div>
+                <p class="font-bold text-sm mb-1">ფოკუსირებული კვლევა</p>
+                <p class="text-xs text-gray-600">Pro Search რეჟიმი - ღრმა, მრავალსაფეხურიანი კვლევა</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PERPLEXITY OPERATORS -->
+<section id="perplexity-operators" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">⚙️ დემო · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">⚙️ მოწინავე ოპერატორები და ბაზრის კვლევა</h2>
+    <p class="text-gray-500 mb-6">Pro Search, ფილტრები და მიზნობრივი კვლევის ტექნიკები</p>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">ცოცხალი დემო: ფასწარმოქმნის კვლევა</p>
+        <p class="text-gray-600 text-sm mb-3">ტრენერი გამოიყენებს Perplexity Pro Search-ს, რათა შეადაროს სწრაფი კვების ბაზრის ფასწარმოქმნის ტენდენციები საქართველოში ბოლო 12 თვის განმავლობაში, წყაროებზე მითითებით.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„გამოიყენე Pro Search - შეადარე სწრაფი კვების (QSR) ინდუსტრიის ფასწარმოქმნის ტენდენციები საქართველოში ბოლო 12 თვეში. მოიყვანე კონკრეტული წყაროები და თარიღები. შედეგი წარმომიდგინე ცხრილის სახით.“</div>
+</div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ შედეგი:</p>
+        <p class="text-sm text-gray-700">10 წუთიანი ხელით კვლევა → 90 წამში, წყაროებით გამყარებული, გადამოწმებადი ცხრილი მენეჯმენტისთვის წარსადგენად.</p>
+    </div>
+</section>
+
+<!-- NOTEBOOKLM INTRO -->
+<section id="notebooklm-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 7 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">📚 NotebookLM - შესავალი</h2>
+    <p class="text-gray-500 mb-6">Google-ის კვლევითი ასისტენტი, რომელიც მხოლოდ თქვენს დოკუმენტებზეა დაფუძნებული</p>
+
+    <div class="card mb-4">
+        <p class="text-gray-700 text-lg">NotebookLM ატვირთულ დოკუმენტებს (PDF, Google Docs, ბმულები) აქცევს <strong>ინტერაქტიულ ცოდნის ბაზად</strong> - ის პასუხობს <strong>მხოლოდ ატვირთული წყაროების საფუძველზე</strong>, ჰალუცინაციის რისკის მინიმუმამდე დაყვანით და აჩვენებს ციტატას, საიდან არის აღებული პასუხი.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">მაკდონალდსის მოცულობითი გლობალური ინსტრუქციები, HACCP-ის სტანდარტები და რეგულაციები → ატვირთვა NotebookLM-ში → ინტერაქტიული კითხვა-პასუხი ნებისმიერ დროს, ტექსტის ხელით ძიების გარეშე.</p>
+    </div>
+
+    <div class="warning-box mt-4">
+        <p class="font-bold mb-1">⚠️ GDPR შეხსენება:</p>
+        <p class="text-gray-700">ატვირთეთ მხოლოდ დამტკიცებული, საჯარო ან შიდა სამუშაო დოკუმენტები - <strong>არასოდეს</strong> კონფიდენციალური ფინანსური ან პერსონალური მონაცემები.</p>
+    </div>
+</section>
+
+<!-- NOTEBOOKLM HACCP -->
+<section id="notebooklm-haccp" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ დემო · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🛡️ HACCP სტანდარტების ანალიზი და აუდიო-ბრიფინგები</h2>
+    <p class="text-gray-500 mb-6">გლობალური რეგულაციები - მარტივად გასაგებ ფორმატში</p>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">ცოცხალი დემო: HACCP დოკუმენტის ინტერაქტიური კითხვა-პასუხი</p>
+        <p class="text-gray-600 text-sm mb-3">ტრენერი ატვირთავს HACCP-ის სტანდარტის დოკუმენტს NotebookLM-ში და სვამს კონკრეტულ ოპერაციულ კითხვას.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„ატვირთული HACCP დოკუმენტის საფუძველზე შექმენი საოპერაციო რისკების Checklist - კრიტიკული საკონტროლო წერტილები (CCP), ტემპერატურული ლიმიტები და მონიტორინგის სიხშირე. მიუთითე კონკრეტული გვერდი ან სექცია თითოეულ პუნქტთან.“</div>
+</div>
+    </div>
+
+    <div class="two-column mt-4">
+        <div class="card" style="background:#e8eaf6; border-left:4px solid #3F51B5;">
+            <p class="font-bold text-lg mb-2" style="color:#283593;">🎧 აუდიო-ბრიფინგი (Audio Overview)</p>
+            <p class="text-gray-700 text-sm">NotebookLM-ს შეუძლია ატვირთული HACCP დოკუმენტიდან შექმნას <strong>პერსონალიზებული აუდიო საუბარი</strong> - ორი AI „წამყვანის“ დიალოგის ფორმატში - რომლის მოსმენაც გუნდს შეუძლია Drive-Thru ცვლის დროსაც.</p>
+        </div>
+        <div class="card" style="background:#fff3e0; border-left:4px solid #F57C00;">
+            <p class="font-bold text-lg mb-2" style="color:#E65100;">🎯 ოპერაციული სარგებელი</p>
+            <p class="text-gray-700 text-sm">ახალი თანამშრომელი 500-გვერდიან HACCP სახელმძღვანელოს კითხვის ნაცვლად, <strong>15-წუთიან აუდიო-ბრიფინგს ისმენს</strong> - ან პირდაპირ ეკითხება NotebookLM-ს კონკრეტულ საკითხზე.</p>
+        </div>
+    </div>
+</section>
+
+<!-- PRACTICE 1 -->
+<section id="practice1" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 1 · 15 წუთი <span class="timer-badge" id="timer1">15:00</span></span>
+    <h2 class="text-3xl font-bold mb-2">✏️ პრაქტიკა 1: HACCP Checklist NotebookLM-ში</h2>
+    <p class="text-gray-500 mb-6">
+        <button onclick="startTimer('timer1', 15)" class="text-xs px-3 py-1 rounded-full text-white" style="background:#DA291C;">⏱ ტაიმერის დაწყება</button>
+    </p>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">1</span>
+                <p class="text-gray-700">გახსენით NotebookLM და შექმენით ახალი Notebook „HACCP სტანდარტები“</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">2</span>
+                <p class="text-gray-700">ატვირთეთ HACCP-ის ან სხვა ოპერაციული სახელმძღვანელოს PDF/დოკუმენტი</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">3</span>
+                <p class="text-gray-700">გენერირეთ საოპერაციო რისკების <strong>Checklist</strong></p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">4</span>
+                <p class="text-gray-700">სცადეთ Audio Overview-ის გენერირება (თუ დრო რჩება)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">15 წუთში - ერთი მზა NotebookLM Notebook ატვირთული დოკუმენტით და ერთი გენერირებული, გვერდზე მითითებით გამყარებული Checklist.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK II HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🎨</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი II · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">კრეატიული AI ვიზუალები ლოკალური მარკეტინგისთვის</h2>
+                <p class="text-gray-300 text-sm mt-1">01:05 - 02:00 · 3 ქვე-მოდული + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LSM INTRO -->
+<section id="lsm-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🎨 თეორია · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🎨 კრეატიული AI ლოკალური მარკეტინგისთვის (LSM)</h2>
+    <p class="text-gray-500 mb-6">Local Store Marketing - სარეკლამო ვიზუალები დიზაინერის გარეშეც</p>
+
+    <div class="card mb-4">
+        <p class="text-gray-700 text-lg">გამოსახულების გენერაციის AI ინსტრუმენტები საშუალებას აძლევს რესტორნის მენეჯერს <strong>ტექსტური აღწერიდან რამდენიმე წუთში</strong> შექმნას სარეკლამო ვიზუალები - დიზაინერის ან ფოტოსესიის მოლოდინის გარეშე.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">ლოკალური სარეკლამო კამპანიები → სოციალური მედიის პოსტები → ახალი აქციების ბანერები → Happy Meal-ის სათამაშოების სარეკლამო ვიზუალები (Key Visuals).</p>
+    </div>
+
+    <div class="warning-box mt-4">
+        <p class="font-bold mb-1">⚠️ ბრენდის სტანდარტების დაცვა:</p>
+        <p class="text-gray-700">ხელოვნური ინტელექტით გენერირებული ვიზუალი <strong>ყოველთვის მოწმდება მარკეტინგის განყოფილების</strong> მიერ ბრენდის გაიდლაინებთან შესაბამისობაზე გამოქვეყნებამდე - ლოგოები, ფერები და შრიფტები ხელოვნური ინტელექტით არ გენერირდება, არამედ ხელით ემატება Photoshop-ში.</p>
+    </div>
+</section>
+
+<!-- MIDJOURNEY / FLUX / FIREFLY -->
+<section id="midjourney-firefly" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🖼️ თეორია · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🖼️ Midjourney, Flux და Adobe Firefly</h2>
+    <p class="text-gray-500 mb-6">სამი წამყვანი გამოსახულების გენერაციის ინსტრუმენტი - რომელი როდის?</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="card" style="border-top: 3px solid #000000;">
+            <p class="text-2xl mb-2">🌌</p>
+            <p class="font-bold text-lg mb-1">Midjourney v7</p>
+            <p class="text-xs text-gray-500 mb-3">midjourney.com (Discord/Web)</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ ყველაზე მაღალი ვიზუალური ხარისხი</li>
+                <li>✓ ფოტორეალისტური კვების ვიზუალები</li>
+                <li>✓ ძლიერი სტილისტური კონტროლი (--style, --sref)</li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded" style="background:#f3e5f5;color:#4a148c;">გამოიყენეთ: Key Visuals, სარეკლამო კამპანიები</div>
+        </div>
+        <div class="card" style="border-top: 3px solid #DA291C; border: 2px solid #DA291C;">
+            <p class="text-2xl mb-2">⚡</p>
+            <p class="font-bold text-lg mb-1">Flux 1.1 (Black Forest Labs)</p>
+            <p class="text-xs text-gray-500 mb-3">via API / Freepik / krea.ai</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ ტექსტის ზუსტი გენერირება სურათებში (ბანერზე წარწერები)</li>
+                <li>✓ სწრაფი გენერაცია</li>
+                <li>✓ <strong>რეკომენდებული ბანერებზე ტექსტისთვის</strong></li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded font-bold" style="background:rgba(218,41,28,0.1);color:#B51C12;">⭐ ტექსტიან ბანერებზე</div>
+        </div>
+        <div class="card" style="border-top: 3px solid #FA0F00;">
+            <p class="text-2xl mb-2">🔥</p>
+            <p class="font-bold text-lg mb-1">Adobe Firefly 3</p>
+            <p class="text-xs text-gray-500 mb-3">firefly.adobe.com</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ <strong>კომერციულად უსაფრთხო</strong> - საავტორო უფლებების რისკის გარეშე</li>
+                <li>✓ პირდაპირი ინტეგრაცია Photoshop-თან</li>
+                <li>✓ Generative Fill-ის ძრავა</li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded" style="background:#ffebee;color:#c62828;">გამოიყენეთ: კორპორატიული, კომერციული გამოყენება</div>
+        </div>
+    </div>
+
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">💡 ტრენერის რჩევა მაკდონალდსისთვის:</p>
+        <p class="text-gray-700"><strong>Adobe Firefly</strong> - უსაფრთხო არჩევანია კომერციული გამოქვეყნებისთვის საავტორო უფლებების გარანტიის გამო. <strong>Midjourney</strong> - საუკეთესო ვიზუალური სტილისთვის კონცეპტების ეტაპზე. <strong>Flux</strong> - როცა ბანერზე ზუსტი ტექსტი გჭირდებათ.</p>
+    </div>
+</section>
+
+<!-- PHOTOSHOP GENFILL -->
+<section id="photoshop-genfill" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">✂️ თეორია · 7 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">✂️ Photoshop Generative Fill</h2>
+    <p class="text-gray-500 mb-6">არსებული ფოტოს გაფართოება და რედაქტირება ხელოვნური ინტელექტით</p>
+
+    <div class="card mb-4">
+        <p class="text-gray-700 text-lg">Photoshop-ის <strong>Generative Fill</strong> (Adobe Firefly-ის ძრავზე დაფუძნებული) საშუალებას აძლევს მენეჯერს უკვე არსებულ ფოტოს - მაგალითად: რესტორნის ფასადის ან პროდუქტის ფოტოს - <strong>დაუმატოს ან წაუშალოს ელემენტები</strong> ტექსტური მითითებით, Photoshop-ის ღრმა ცოდნის გარეშე.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">Happy Meal-ის ახალი სათამაშოს დამატება არსებულ სარეკლამო ფოტოში → სოციალური მედიის პოსტისთვის ფოტოს კვადრატულ ან ვერტიკალურ ფორმატამდე გაფართოება (Generative Expand) → ფონის შეცვლა ბრენდის ფერებზე.</p>
+    </div>
+</section>
+
+<!-- VISUALS DEMO -->
+<section id="visuals-demo" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ დემო · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🖥️ LSM ბანერის შექმნის დემო</h2>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">ცოცხალი დემო: ტექსტიდან - გამოქვეყნებამდე მზა ბანერამდე</p>
+        <p class="text-gray-600 text-sm mb-3">ტრენერი Adobe Firefly-ში გენერირებს საბაზო ვიზუალს ახალი აქციისთვის, შემდეგ Photoshop Generative Fill-ით ამატებს ბრენდის ელემენტებს.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„ფოტორეალისტური, თბილი განათების საზაფხულო სარეკლამო ვიზუალი - ცივი ყინულიანი კოკტეილი მზიან ტერასაზე, სუფთა და მინიმალისტური კომპოზიცია, ცარიელი სივრცე ზედა ნაწილში ტექსტის დასამატებლად, ცხელი ფერების პალიტრა.“</div>
+</div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ შედეგი:</p>
+        <p class="text-sm text-gray-700">5 წუთში - საბაზო ვიზუალი მზადაა, Photoshop-ში ემატება ლოგო, ფასი და ტექსტი ბრენდის გაიდლაინების მიხედვით, შემდეგ იგზავნება მარკეტინგის დასამტკიცებლად.</p>
+    </div>
+</section>
+
+<!-- PRACTICE 2 -->
+<section id="practice2" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 2 · 15 წუთი <span class="timer-badge" id="timer2">15:00</span></span>
+    <h2 class="text-3xl font-bold mb-2">✏️ პრაქტიკა 2: საკუთარი LSM ვიზუალი</h2>
+    <p class="text-gray-500 mb-6">
+        <button onclick="startTimer('timer2', 15)" class="text-xs px-3 py-1 rounded-full text-white" style="background:#DA291C;">⏱ ტაიმერის დაწყება</button>
+    </p>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">1</span>
+                <p class="text-gray-700">გახსენით Adobe Firefly (ან Midjourney/Flux)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">2</span>
+                <p class="text-gray-700">დაწერეთ დეტალური აღწერითი პრომპტი - <strong>სცენა, განათება, ფერები, კომპოზიცია</strong></p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">3</span>
+                <p class="text-gray-700">გენერირეთ <strong>მინიმუმ 2 ვარიანტი</strong> და აირჩიეთ საუკეთესო</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">4</span>
+                <p class="text-gray-700">(სურვილისამებრ) Photoshop Generative Fill-ით დაამატეთ ერთი ელემენტი</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold mb-3">💡 ვიზუალის იდეები:</p>
+        <div class="two-column">
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• ახალი აქციის სარეკლამო ბანერი</li>
+                <li>• Happy Meal-ის სათამაშოს Key Visual</li>
+            </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• სოციალური მედიის საზაფხულო პოსტი</li>
+                <li>• ლოკალური Drive-Thru აქციის პოსტერი</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">15 წუთში - მინიმუმ ერთი მზა, ბრენდის სტილთან თავსებადი სარეკლამო ვიზუალი, მზად მარკეტინგისთვის წარსადგენად.</p>
+    </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="min-h-[80vh] flex flex-col justify-center py-12 topic-card">
+    <span class="badge badge-theory">✅ შეჯამება · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">✅ შეჯამება და საშინაო დავალება</h2>
+
+    <div class="card mb-6" style="background:#0B0F19;color:white;">
+        <p class="font-bold text-xl mb-4" style="color:#ffb4ac;">🏆 დღეს ისწავლეთ:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Perplexity.ai</p><p class="text-gray-400 text-sm">Pro Search - ბაზრის და ფასწარმოქმნის კვლევა</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">NotebookLM</p><p class="text-gray-400 text-sm">HACCP ანალიზი, Checklist, აუდიო-ბრიფინგები</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Midjourney v7 / Flux 1.1</p><p class="text-gray-400 text-sm">ფოტორეალისტური ვიზუალები და ტექსტიანი ბანერები</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Adobe Firefly 3</p><p class="text-gray-400 text-sm">კომერციულად უსაფრთხო გამოსახულების გენერაცია</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Photoshop Generative Fill</p><p class="text-gray-400 text-sm">არსებული ფოტოს რედაქტირება და გაფართოება</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#2196F3;font-size:1.2rem;">→</span>
+                <div><p class="font-bold text-white" style="color:#90caf9;">Julius.ai, ფინანსური შეჯერება, Custom GPTs</p><p class="text-gray-400 text-sm">გაგრძელება სესია 5-ში →</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-lg mb-3">🔥 ოქროს პრომპტი - წაიღეთ სახლში:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„გამოიყენე Pro Search - [კვლევის საკითხი მაკდონალდსში]. მოიყვანე წყაროები და თარიღები. შედეგი წარმომიდგინე [ცხრილის / სიის] სახით.“</div>
+</div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border:1px solid #FFC72C;">
+        <p class="font-bold text-lg mb-2">❓ Q&amp;A</p>
+        <p class="text-gray-700">კითხვები - პასუხები. გამოიყენეთ Perplexity, NotebookLM და AI ვიზუალები ხვალვე სამსახურში.</p>
+    </div>
+
+    <!-- Pro Tips & Next Steps -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="card" style="background:#e1f5fe; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#0277BD;">📱 საშინაო დავალება 1: HACCP სატესტო სახელმძღვანელო</p>
+            <p class="text-sm text-gray-700">NotebookLM-ის ბაზაზე მოამზადეთ 10-კითხვიანი სატესტო სახელმძღვანელო ახალი თანამშრომლებისთვის.</p>
+        </div>
+        <div class="card" style="background:#f1f8e9; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#33691E;">📚 საშინაო დავალება 2: 1 სარეკლამო პოსტი</p>
+            <p class="text-sm text-gray-700">Midjourney-ში ან Adobe Firefly-ში გენერირეთ 1 სარეკლამო პოსტის ვიზუალი და მოამზადეთ სოციალური მედიისთვის.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 rounded-xl text-center" style="background:linear-gradient(135deg,#0B0F19,#3a0f0a);">
+        <p class="text-3xl mb-2">🍟</p>
+        <p class="text-white font-bold text-xl mb-2">მაკდონალდსის AI ტრენინგი - სესია 4 დასრულდა!</p>
+        <p class="text-gray-300 text-sm">გამოიყენეთ Perplexity, NotebookLM და AI ვიზუალები ხვალვე სამსახურში.</p>
+        <p class="text-gray-400 text-xs mt-2">გიორგი ბასილაია · 2026</p>
+    </div>
+</section>
+
+    </div><!-- end max-w-5xl -->
+</main>
+
+<!-- Back to Top -->
+<button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 bg-[#DA291C] text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none hover:bg-[#B51C12]">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+
+<script>
+// Sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    overlay.classList.toggle('hidden', isOpen);
+    menuIcon.classList.toggle('hidden', !isOpen);
+    closeIcon.classList.toggle('hidden', isOpen);
+    document.getElementById('mainContent').style.marginLeft = isOpen ? '0' : '';
+}
+
+// Navigation and Scroll logic
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+const backToTopBtn = document.getElementById('backToTop');
+
+// Close sidebar on mobile when link is clicked
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth < 768 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+            toggleSidebar();
+        }
+    });
+});
+
+window.addEventListener('scroll', () => {
+    // Back to top button visibility
+    if (window.scrollY > 500) {
+        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+    } else {
+        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    // Scroll highlight (better than observer for this layout)
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - 200)) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+            // Safely scroll sidebar without affecting main page scroll
+            const sidebar = document.getElementById('sidebar');
+            if (link.offsetTop < sidebar.scrollTop || link.offsetTop > (sidebar.scrollTop + sidebar.clientHeight)) {
+                 link.scrollIntoView({ block: 'nearest' });
+            }
+        }
+    });
+});
+
+// Countdown timer
+const timers = {};
+function startTimer(id, minutes) {
+    if (timers[id]) { clearInterval(timers[id]); }
+    let secs = minutes * 60;
+    const el = document.getElementById(id);
+    timers[id] = setInterval(() => {
+        secs--;
+        const m = Math.floor(secs / 60), s = secs % 60;
+        el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        el.style.color = secs <= 60 ? '#ff5722' : secs <= 300 ? '#FFC72C' : '#DA291C';
+        if (secs <= 0) { clearInterval(timers[id]); el.textContent = '⏰ დრო!'; }
+    }, 1000);
+}
+
+function copyText(btn) {
+    const codeBlock = btn.closest('.code-block, .prompt-blueprint');
+    const contentNode = codeBlock.querySelector('.code-content');
+    let text = '';
+    if (contentNode) {
+        text = contentNode.innerText.trim();
+    } else {
+        text = codeBlock.innerText.replace('კოპირება', '').replace('Prompt Blueprint', '').trim();
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ დაკოპირდა';
+        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+    });
+}
+</script>
+</body>
+</html>

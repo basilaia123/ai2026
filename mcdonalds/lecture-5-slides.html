@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მაკდონალდსის AI ტრენინგი - სესია 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mcd: { 900: '#0B0F19', 800: '#121826', 700: '#1E293B', red: '#DA291C', gold: '#FFC72C', light: '#F4F6F9' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --red: #DA291C; --gold: #FFC72C; --deep: #B51C12;
+            --bg: #f4f6f9; --surface: #ffffff;
+            --text-1: #0B0F19; --text-2: #374151; --text-3: #6b7280;
+        }
+        html { scroll-behavior: smooth; font-size: 140%; }
+        body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; font-size: 24px; line-height: 1.7; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link { display: flex; align-items: flex-start; padding: 0.6rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.07); }
+        .nav-link.active { background: rgba(218,41,28,0.18); border-left-color: #DA291C; color: #ffb4ac; }
+        .topic-card { border-left: 4px solid #DA291C; padding-left: 1.5rem; }
+        .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-theory { background: rgba(218,41,28,0.12); color: #B51C12; border: 1px solid rgba(218,41,28,0.3); }
+        .badge-practice { background: rgba(255,199,44,0.18); color: #8a6400; border: 1px solid rgba(255,199,44,0.4); }
+        .badge-break { background: rgba(0,188,212,0.1); color: #0097A7; border: 1px solid rgba(0,188,212,0.3); }
+        .badge-demo { background: rgba(103,58,183,0.1); color: #512DA8; border: 1px solid rgba(103,58,183,0.3); }
+        .highlight-box { background: #fdecea; border-left: 4px solid #DA291C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .warning-box { background: #fff8e1; border-left: 4px solid #FFC72C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .success-box { background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .code-block { background: #0B0F19; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+        .copy-btn:hover { background: #DA291C; color: white; border-color: #DA291C; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+        .create-letter { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #DA291C; color: white; font-size: 1.2rem; font-weight: 800; margin-right: 0.75rem; flex-shrink: 0; }
+        .create-row { display: flex; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid #e5e7eb; }
+        .create-row:last-child { border-bottom: none; }
+        .timer-badge { background: #FFC72C; color: #0B0F19; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+        .section-header { background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .gdpr-badge { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.4); color: #2e7d32; border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.75rem; font-weight: 700; }
+        @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+        section { scroll-margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-mcd-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-mcd-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-mcd-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#DA291C;">🍟 მაკდონალდსის AI ტრენინგი</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 5: მონაცემთა ანალიტიკა, ფინანსური შეჯერება და Custom GPTs</p>
+        <p class="text-gray-400 text-xs mt-1">120 წუთი | 2 ბლოკი + შესვენება</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#FFC72C;">შინაარსი</div>
+
+        <a href="#agenda" class="nav-link">🎯 სესიის წესრიგი</a>
+        <a href="#recap" class="nav-link">🔄 სესია 1-4-ის მოკლე მიმოხილვა</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I - მონაცემთა ანალიზი და ფინანსური შეჯერება (55 წთ)</div>
+        <a href="#julius-intro" class="nav-link">📊 Julius.ai - შესავალი</a>
+        <a href="#data-analysis-demo" class="nav-link">🖥️ CSV ანალიზი: გაყიდვების პიკები და საშუალო ჩეკი</a>
+        <a href="#reconciliation" class="nav-link">💰 ფინანსური შეჯერება (Reconciliation)</a>
+        <a href="#hr-cv" class="nav-link">👥 HR AI და CV სკრინინგი</a>
+        <a href="#practice1" class="nav-link">✏️ პრაქტიკა 1: Julius.ai + შეჯერება + CV სკრინინგი</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">☕ შესვენება (10 წთ)</div>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II - პროგნოზირება და Custom GPTs (55 წთ)</div>
+        <a href="#forecasting" class="nav-link">📅 პიკური საათების პროგნოზირება</a>
+        <a href="#custom-gpts-intro" class="nav-link">🤖 Custom GPTs (OpenAI) - შესავალი</a>
+        <a href="#crew-trainer" class="nav-link">🎓 Crew Trainer GPT - ონბორდინგის სიმულატორი</a>
+        <a href="#gems-workspace" class="nav-link">💎 Gemini Gems ინტეგრაცია Google Workspace-ში</a>
+        <a href="#practice2" class="nav-link">✏️ პრაქტიკა 2: Custom GPT-ის შექმნა</a>
+        <a href="#summary" class="nav-link">✅ შეჯამება და საშინაო დავალება</a>
+
+        <div class="mt-6 mx-4 mb-4">
+            <a href="lecture-4-slides.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← სესია 4</a>
+            <a href="index.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors mt-2">🏠 წინადადებაში დაბრუნება</a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Main -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%);">
+        <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#DA291C;"></div>
+        <div class="max-w-5xl relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">📊</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest" style="color:#FFC72C;">მაკდონალდს საქართველო - AI ტრენინგი</p>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">სესია 5: მონაცემთა ანალიტიკა,<br><span style="color:#ffb4ac;">ფინანსური შეჯერება, HR AI და Custom GPTs</span></h1>
+                </div>
+            </div>
+            <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">CSV მონაცემთა ანალიზი Julius.ai-ითა და ChatGPT Advanced Data Analysis-ით, POS/Wolt/Bolt ფინანსური შეჯერება, HR AI და CV სკრინინგი, პიკური საათების პროგნოზირება და მენეჯერული Custom GPTs - Shift Scheduler და Crew Trainer ასისტენტები.</p>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">⏱ 120 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">👥 2 ბლოკი + შესვენება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">🎯 2 პრაქტიკული დავალება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(255,199,44,0.2);color:#FFC72C;">🔒 GDPR-თავსებადი</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10 space-y-0">
+
+<!-- ═══════════════════════════════════════════════════
+     AGENDA
+═══════════════════════════════════════════════════ -->
+<section id="agenda" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📋 სესიის სტრუქტურა</span>
+    <h2 class="text-3xl font-bold mb-6" style="color:#0B0F19;">🎯 დღევანდელი სესიის დღის წესრიგი</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <!-- Block 1 -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 00:00 - 00:55</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი I: მონაცემთა ანალიზი და შეჯერება</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - Julius.ai და CSV ანალიზი</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - ფინანსური შეჯერება და HR/CV სკრინინგი</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - პრაქტიკა 1</span></li>
+            </ul>
+        </div>
+        <!-- Break -->
+        <div class="flex flex-col" style="background:#121826;">
+            <div class="px-6 py-3 border-b border-white/10 flex items-center justify-between" style="background:rgba(0,188,212,0.15);">
+                <span class="font-bold text-white text-sm">☕ შესვენება</span>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#0097A7;color:white;">00:55 - 01:05</span>
+            </div>
+            <div class="p-6 flex-1">
+                <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 01:05 - 02:00</div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი II: პროგნოზირება და Custom GPTs</h3>
+                <ul class="text-sm text-gray-300 space-y-2">
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - პიკური საათების პროგნოზირება</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - Custom GPTs, Crew Trainer, Gemini Gems</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - პრაქტიკა 2: Custom GPT-ის შექმნა</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">5 წთ</strong> - შეჯამება + საშინაო</span></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Outcomes -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#FFC72C;">🎯 სესიის შედეგები</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">რას ისწავლით?</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Julius.ai - CSV მონაცემთა ანალიზი</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> POS vs Wolt/Bolt ფინანსური შეჯერება</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> HR AI და CV სკრინინგი</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> პიკური საათების პროგნოზირება</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Custom GPTs - Shift Scheduler, Crew Trainer</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border-left:4px solid #FFC72C;">
+        <h4 class="font-bold text-lg mb-2">🧊 Icebreaker: „რიცხვი, რომელსაც დროულად ვერასდროს ვამჩნევთ“</h4>
+        <p class="text-gray-700 mb-2">სესიის დაწყებამდე - <strong>ჩატში დაწერეთ ერთი მაგალითი</strong>, როცა ფინანსური ან საოპერაციო რიცხვი გვიან შეამჩნიეთ - მაგალითად: POS-ისა და მიწოდების პლატფორმის შეუსაბამობა, ან არასაკმარისი ეკიპაჟი პიკის საათებში.</p>
+        <p class="text-sm text-gray-500 italic">მაგ: „Wolt-ის რეპორტი და POS ერთმანეთს არ ემთხვევა“, „კვირას ორჯერ ნაკლები ეკიპაჟი გვყავდა, ვიდრე საჭირო იყო“...</p>
+        <p class="text-sm mt-2" style="color:#B51C12;font-weight:600;">ჩვენ ზუსტად ამ ტიპის რიცხვების ავტომატურ, დროულ გამოვლენას ვსწავლობთ დღეს.</p>
+    </div>
+</section>
+
+<!-- RECAP -->
+<section id="recap" class="min-h-[50vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🔄 რეკაპი · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🔄 სესია 1-4-ის მოკლე მიმოხილვა</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div class="card" style="border-top:4px solid #DA291C;">
+            <p class="font-bold mb-2 text-sm">✅ სესია 1</p>
+            <p class="text-xs text-gray-700">C.R.E.A.T.E., Copilot, Gemini Gems</p>
+        </div>
+        <div class="card" style="border-top:4px solid #FFC72C;">
+            <p class="font-bold mb-2 text-sm">✅ სესია 2</p>
+            <p class="text-xs text-gray-700">SCAMPER, Claude Cowork</p>
+        </div>
+        <div class="card" style="border-top:4px solid #4285F4;">
+            <p class="font-bold mb-2 text-sm">✅ სესია 3</p>
+            <p class="text-xs text-gray-700">Notion AI, Claude Projects, Multimodal AI</p>
+        </div>
+        <div class="card" style="border-top:4px solid #7B1FA2;">
+            <p class="font-bold mb-2 text-sm">✅ სესია 4</p>
+            <p class="text-xs text-gray-700">Perplexity.ai, NotebookLM, Midjourney/Firefly</p>
+        </div>
+    </div>
+
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">🍟 დღეს გავაგრძელებთ:</p>
+        <p class="text-gray-700">წერისა და კვლევის AI ინსტრუმენტებიდან - <strong>რიცხვებზე დაფუძნებულ, ანალიტიკურ</strong> AI გამოყენებაზე: მონაცემთა ანალიზი, ფინანსური კონტროლი, HR და ავტომატიზირებული ასისტენტების აწყობა.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK I HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">📊</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი I · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">მონაცემთა ანალიზი, ფინანსური შეჯერება და HR AI</h2>
+                <p class="text-gray-300 text-sm mt-1">00:00 - 00:55 · 4 ქვე-მოდული + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JULIUS INTRO -->
+<section id="julius-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">📊 Julius.ai - შესავალი</h2>
+
+    <div class="card mb-4">
+        <p class="text-xl font-bold mb-3" style="color:#B51C12;">AI, რომელიც თავად წერს კოდს ანალიზისთვის</p>
+        <p class="text-gray-700 text-lg">Julius.ai (ისევე, როგორც ChatGPT-ის <strong>Advanced Data Analysis</strong>) იღებს CSV/Excel ფაილს და ბუნებრივი ენის კითხვას, ავტომატურად წერს Python კოდს ანალიზისთვის, აწარმოებს გრაფიკებს და გვიბრუნებს პასუხს - ცხრილების ფორმულების ხელით წერის გარეშე.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">საათობრივი გაყიდვების პიკების ანალიზი → საშუალო ჩეკის (Average Check) დინამიკა → პოპულარული მენიუს კომბინაციები → ეს ყველაფერი ერთი ატვირთული CSV ფაილიდან, წუთებში.</p>
+    </div>
+
+    <div class="card mt-4">
+        <p class="font-bold text-lg mb-3">💡 Julius.ai vs. ChatGPT Advanced Data Analysis vs. Copilot</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#fdecea;">
+                <div class="text-3xl mb-2">📈</div>
+                <p class="font-bold text-sm mb-1">Julius.ai</p>
+                <p class="text-xs text-gray-600">სპეციალიზებული მონაცემთა ანალიზისთვის, ვიზუალურად მდიდარი დაშბორდები</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+                <div class="text-3xl mb-2">🤖</div>
+                <p class="font-bold text-sm mb-1">ChatGPT (GPT-5.1)</p>
+                <p class="text-xs text-gray-600">Advanced Data Analysis - უნივერსალური, სწრაფი ერთჯერადი ანალიზისთვის</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <div class="text-3xl mb-2">📄</div>
+                <p class="font-bold text-sm mb-1">Microsoft Copilot</p>
+                <p class="text-xs text-gray-600">პირდაპირ არსებულ Excel ფაილში, ფორმულების ახსნა-გენერირება</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DATA ANALYSIS DEMO -->
+<section id="data-analysis-demo" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ დემო · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🖥️ CSV ანალიზი: გაყიდვების პიკები და საშუალო ჩეკი</h2>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">ცოცხალი დემო: ერთი ატვირთვა - სამი დასკვნა</p>
+        <p class="text-gray-600 text-sm mb-3">ტრენერი ატვირთავს ანონიმიზებულ გაყიდვების CSV ფაილს Julius.ai-ში და სვამს კონკრეტულ ბიზნეს-კითხვას.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„გაანალიზე ატვირთული გაყიდვების მონაცემები და გამომიტანე: 1) საათობრივი გაყიდვების პიკები გრაფიკის სახით, 2) საშუალო ჩეკის ცვლილება კვირის დღეების მიხედვით, 3) ტოპ-5 ყველაზე ხშირად ერთად შეკვეთილი მენიუს პოზიცია. შედეგი განმარტე მარტივი, არა-ტექნიკური ენით.“</div>
+</div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ შედეგი:</p>
+        <p class="text-sm text-gray-700">Excel-ში საათობით ფილტრაცია → 3 გრაფიკი და ერთი მოკლე ახსნა 2 წუთში, ფორმულების წერის გარეშე.</p>
+    </div>
+</section>
+
+<!-- RECONCILIATION -->
+<section id="reconciliation" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">💰 თეორია · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">💰 ფინანსური შეჯერება (Reconciliation)</h2>
+    <p class="text-gray-500 mb-6">POS-ის, ნაღდი ფულისა და Wolt/Bolt-ის რეპორტების ავტომატური შედარება</p>
+
+    <div class="card mb-4">
+        <p class="text-gray-700 text-lg">სამი დამოუკიდებელი წყარო - <strong>სალაროს (POS) სისტემა</strong>, <strong>ნაღდი ფულის რეესტრი</strong> და <strong>Wolt/Bolt Food-ის გაყიდვების რეპორტი</strong> - ხშირად მცირედით განსხვავდება. Julius.ai-ს ან Python Sandbox-ს შეუძლია ეს სამი ფაილი ავტომატურად შეადაროს და <strong>ცდომილებები გამოკვეთოს</strong>, ხელით ცხრილების გადამოწმების ნაცვლად.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">დღის ბოლოს POS-ის ჯამური თანხის, ნაღდი ფულის რეესტრისა და Wolt/Bolt-ის რეპორტის ერთდროული ატვირთვა → AI გამოკვეთს, სად და რამდენით განსხვავდება რიცხვები → მენეჯერი მხოლოდ გამოკვეთილ ცდომილებებზე ამახვილებს ყურადღებას.</p>
+    </div>
+
+    <div class="warning-box mt-4">
+        <p class="font-bold mb-1">⚠️ მნიშვნელოვანი შეზღუდვა:</p>
+        <p class="text-gray-700">AI ვერ ითვლის ფინანსურ მონაცემებს უცდომილოდ - <strong>ყოველთვის გადაამოწმეთ</strong> საბოლოო ციფრები ხელით ან ბუღალტერიის სისტემით, სანამ ოფიციალურ ანგარიშში შეიტანთ. AI აჩქარებს გამოვლენას, არა - საბოლოო დამტკიცებას.</p>
+    </div>
+</section>
+
+<!-- HR AI & CV -->
+<section id="hr-cv" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">👥 თეორია · 7 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">👥 HR AI და CV სკრინინგი</h2>
+    <p class="text-gray-500 mb-6">კადრების მაღალი დენადობა - სწრაფი, სამართლიანი გაფილტვრა</p>
+
+    <div class="two-column mb-4">
+        <div class="card" style="border-top:4px solid #DA291C;">
+            <p class="font-bold text-lg mb-2">📄 CV სკრინინგი</p>
+            <p class="text-sm text-gray-700">ეკიპაჟის რეზიუმეების ავტომატური გაფილტვრა კრიტერიუმების მიხედვით (ხელმისაწვდომობა, გამოცდილება, მდებარეობა) - მენეჯერი მხოლოდ შერჩეულ კანდიდატებზე ხარჯავს დროს.</p>
+        </div>
+        <div class="card" style="border-top:4px solid #FFC72C;">
+            <p class="font-bold text-lg mb-2">📊 Performance Review</p>
+            <p class="text-sm text-gray-700">მონაცემებზე დაფუძნებული Performance Review-ების დრაფტების მომზადება - თანამშრომლის მაჩვენებლების ობიექტური შეჯამება მენეჯერის საბოლოო შემოწმებით.</p>
+        </div>
+    </div>
+
+    <div class="warning-box">
+        <p class="font-bold mb-1">⚠️ მიკერძოების რისკი (Bias):</p>
+        <p class="text-gray-700">CV სკრინინგისა და Performance Review-ის დროს ხელოვნურ ინტელექტს გამოსავალს <strong>ყოველთვის ამოწმებს ადამიანი</strong> - საბოლოო HR გადაწყვეტილება არასოდეს კეთდება მხოლოდ ხელოვნური ინტელექტის შეფასებაზე დაყრდნობით.</p>
+    </div>
+</section>
+
+<!-- PRACTICE 1 -->
+<section id="practice1" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 1 · 15 წუთი <span class="timer-badge" id="timer1">15:00</span></span>
+    <h2 class="text-3xl font-bold mb-2">✏️ პრაქტიკა 1: Julius.ai + შეჯერება + CV სკრინინგი</h2>
+    <p class="text-gray-500 mb-6">
+        <button onclick="startTimer('timer1', 15)" class="text-xs px-3 py-1 rounded-full text-white" style="background:#DA291C;">⏱ ტაიმერის დაწყება</button>
+    </p>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება (აირჩიეთ 1 ან 2):</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">1</span>
+                <p class="text-gray-700">ატვირთეთ სატესტო CSV ფაილი Julius.ai-ში ან ChatGPT Advanced Data Analysis-ში და გამოიღეთ <strong>საათობრივი გაყიდვების პიკების</strong> გრაფიკი</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">2</span>
+                <p class="text-gray-700">სცადეთ POS vs Wolt/Bolt სატესტო ფინანსური შეჯერება - ხელოვნურ ინტელექტს სთხოვეთ ცდომილებების გამოკვეთა</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">3</span>
+                <p class="text-gray-700">სცადეთ CV სკრინინგის პრომპტი - 3 კრიტერიუმის მიხედვით რეზიუმეების დახარისხება</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">15 წუთში - მინიმუმ ერთი გენერირებული გრაფიკი ან შეჯერების ცხრილი, გასაგები, არა-ტექნიკური ახსნით.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK II HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🤖</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი II · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">პროგნოზირება და მენეჯერული Custom GPTs</h2>
+                <p class="text-gray-300 text-sm mt-1">01:05 - 02:00 · 3 ქვე-მოდული + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORECASTING -->
+<section id="forecasting" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📅 თეორია · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">📅 პიკური საათების პროგნოზირება</h2>
+    <p class="text-gray-500 mb-6">ცვლის ოპტიმალური განრიგი - ინტუიციის ნაცვლად, მონაცემებზე დაფუძნებული</p>
+
+    <div class="card mb-4">
+        <p class="text-gray-700 text-lg">Julius.ai-ს შეუძლია გააერთიანოს <strong>რამდენიმე მონაცემთა წყარო</strong> - ისტორიული გაყიდვები, ადგილობრივი ღონისძიებები, არდადეგები და ამინდის პროგნოზი - და შემოგთავაზოთ, რომელ დღეს/საათზე გჭირდებათ მეტი ან ნაკლები ეკიპაჟი.</p>
+    </div>
+
+    <div class="three-column">
+        <div class="text-center p-4 rounded-lg" style="background:#fdecea;">
+            <div class="text-3xl mb-2">📈</div>
+            <p class="font-bold text-sm mb-1">ისტორიული გაყიდვები</p>
+            <p class="text-xs text-gray-600">წინა კვირების/თვეების პატერნები</p>
+        </div>
+        <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+            <div class="text-3xl mb-2">🎉</div>
+            <p class="font-bold text-sm mb-1">ღონისძიებები და არდადეგები</p>
+            <p class="text-xs text-gray-600">ადგილობრივი ივენთები, სადღესასწაულო დღეები</p>
+        </div>
+        <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+            <div class="text-3xl mb-2">☀️</div>
+            <p class="font-bold text-sm mb-1">ამინდის პროგნოზი</p>
+            <p class="text-xs text-gray-600">წვიმა/სიცხე → Drive-Thru მოთხოვნის ცვლილება</p>
+        </div>
+    </div>
+
+    <div class="highlight-box mt-4">
+        <p class="font-bold mb-1">🍟 პრაქტიკული ეფექტი:</p>
+        <p class="text-gray-700">ცვლის განრიგი იგეგმება <strong>რეალურ პროგნოზზე</strong> დაყრდნობით, არა მხოლოდ „წინა კვირას ასე იყო“-ს პრინციპზე - ეს ამცირებს როგორც ჭარბ ხარჯებს, ისე მომსახურების დაყოვნებას პიკის საათებში.</p>
+    </div>
+</section>
+
+<!-- CUSTOM GPTS INTRO -->
+<section id="custom-gpts-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🤖 თეორია · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🤖 Custom GPTs (OpenAI) - შესავალი</h2>
+    <p class="text-gray-500 mb-6">პერსონალური ასისტენტების აწყობა - კოდის წერის გარეშე</p>
+
+    <div class="card mb-4">
+        <p class="text-gray-700 text-lg">OpenAI-ის პლატფორმაზე ნებისმიერ ChatGPT Plus/Team მომხმარებელს შეუძლია <strong>საკუთარი, სპეციალიზებული GPT ასისტენტის აწყობა</strong> - მისცეს მას სახელი, როლი, ინსტრუქციები და ცოდნის ბაზა (ატვირთული დოკუმენტები), ისე რომ ყოველ საუბარში ავტომატურად „იცოდეს“ კონტექსტი.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700"><strong>Shift Scheduler GPT</strong> - ცვლის განრიგის შედგენაში დამხმარე ასისტენტი, რომელსაც ესმის რესტორნის სპეციფიკური წესები (მინიმალური ეკიპაჟი, შესვენებების კანონმდებლობა).</p>
+    </div>
+
+    <div class="card mt-4">
+        <p class="font-bold text-lg mb-3">💡 GPT-ის შემადგენლობა</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#fdecea;">
+                <div class="text-3xl mb-2">🎭</div>
+                <p class="font-bold text-sm mb-1">როლი და ინსტრუქციები</p>
+                <p class="text-xs text-gray-600">ვინ არის, რას აკეთებს, რა ტონით პასუხობს</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+                <div class="text-3xl mb-2">📎</div>
+                <p class="font-bold text-sm mb-1">ცოდნის ბაზა</p>
+                <p class="text-xs text-gray-600">ატვირთული შიდა დოკუმენტები, SOP-ები</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <div class="text-3xl mb-2">🔗</div>
+                <p class="font-bold text-sm mb-1">გაზიარება</p>
+                <p class="text-xs text-gray-600">გუნდის სხვა წევრებთან ბმულით გაზიარება</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREW TRAINER -->
+<section id="crew-trainer" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🎓 დემო · 8 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🎓 Crew Trainer GPT - ონბორდინგის სიმულაციური ტრენერი</h2>
+    <p class="text-gray-500 mb-6">ახალი თანამშრომელი ვარჯიშობს ხელოვნურ ინტელექტთან - რეალურ სცენარამდე</p>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">ცოცხალი დემო: Crew Trainer GPT-ის კონფიგურაცია</p>
+        <p class="text-gray-600 text-sm mb-3">ტრენერი აწყობს GPT-ს, რომელიც ახალ თანამშრომელს სთავაზობს სავარჯიშო დიალოგებს - მაგალითად: რთული კლიენტის სცენარს Drive-Thru-ზე - და აძლევს დაუყოვნებელ უკუკავშირს.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint (GPT Instructions)</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„შენ ხარ Crew Trainer - მაკდონალდსის ახალი თანამშრომლების ონბორდინგის სავარჯიშო პარტნიორი. ითამაშე რთული კლიენტის როლი Drive-Thru სცენარში (არასწორი შეკვეთა, გაღიზიანება). თანამშრომლის პასუხის შემდეგ მიეცი 3-წინადადებიანი უკუკავშირი: რა გააკეთა კარგად და რა უნდა გააუმჯობესოს. ტონი - მხარდამჭერი, არასოდეს დამამცირებელი.“</div>
+</div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ სარგებელი:</p>
+        <p class="text-sm text-gray-700">ახალი თანამშრომელი პრაქტიკულ სცენარებზე ვარჯიშობს <strong>რეალურ კლიენტამდე</strong>, უსაფრთხო, არაკრიტიკულ გარემოში, ნებისმიერ დროს - ტრენერის ხელმისაწვდომობის მოლოდინის გარეშე.</p>
+    </div>
+</section>
+
+<!-- GEMS WORKSPACE -->
+<section id="gems-workspace" class="min-h-[60vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">💎 თეორია · 6 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">💎 Gemini Gems ინტეგრაცია Google Workspace-ში</h2>
+    <p class="text-gray-500 mb-6">წინა სესიებში აწყობილი Gem-ები - პირდაპირ Gmail-სა და Sheets-ში</p>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">სესია 1-სა და 2-ში აწყობილი Gemini Gems ასისტენტები (მაგალითად: შეფასებებზე პასუხის Gem) ინტეგრირდება პირდაპირ Gmail-სა და Google Sheets-ში - ისე, რომ მენეჯერს არ სჭირდება ცალკე ჩანართის გახსნა.</p>
+    </div>
+
+    <div class="warning-box mt-4">
+        <p class="font-bold mb-1">💡 შეხსენება:</p>
+        <p class="text-gray-700">Custom GPTs და Gemini Gems - <strong>დამატებითი ინსტრუმენტებია, არა შემცვლელი</strong> Prompt Library-ისა და SOP Wiki-ისა, რომელიც სესია 3-ში ავაწყეთ. საუკეთესო შედეგი მიიღწევა, როცა ყველა ეს ინსტრუმენტი ერთმანეთს ავსებს.</p>
+    </div>
+</section>
+
+<!-- PRACTICE 2 -->
+<section id="practice2" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 2 · 15 წუთი <span class="timer-badge" id="timer2">15:00</span></span>
+    <h2 class="text-3xl font-bold mb-2">✏️ პრაქტიკა 2: Custom GPT-ის შექმნა</h2>
+    <p class="text-gray-500 mb-6">
+        <button onclick="startTimer('timer2', 15)" class="text-xs px-3 py-1 rounded-full text-white" style="background:#DA291C;">⏱ ტაიმერის დაწყება</button>
+    </p>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">1</span>
+                <p class="text-gray-700">გახსენით OpenAI-ის პლატფორმა → GPT Builder → „Create a GPT“</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">2</span>
+                <p class="text-gray-700">დაარქვით სახელი და დაწერეთ როლი, <strong>მინიმუმ 3 ინსტრუქცია</strong> (რას აკეთებს, რა ტონით, რას არასოდეს აკეთებს)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">3</span>
+                <p class="text-gray-700">აირჩიეთ - Shift Scheduler GPT <strong>ან</strong> Crew Trainer GPT <strong>ან</strong> საკუთარი იდეა</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">4</span>
+                <p class="text-gray-700">გამოსცადეთ ერთი სატესტო სცენარით</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold mb-3">💡 GPT-ის იდეები:</p>
+        <div class="two-column">
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• Shift Scheduler GPT</li>
+                <li>• Crew Trainer GPT</li>
+            </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• CV სკრინინგის ასისტენტი</li>
+                <li>• ფინანსური შეჯერების დამხმარე</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">15 წუთში - მოქმედი Custom GPT, რომელსაც შეუძლია ერთი რეალისტური სცენარის დამუშავება, ინსტრუქციის თავიდან წერის გარეშე.</p>
+    </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="min-h-[80vh] flex flex-col justify-center py-12 topic-card">
+    <span class="badge badge-theory">✅ შეჯამება · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">✅ შეჯამება და საშინაო დავალება</h2>
+
+    <div class="card mb-6" style="background:#0B0F19;color:white;">
+        <p class="font-bold text-xl mb-4" style="color:#ffb4ac;">🏆 დღეს ისწავლეთ:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Julius.ai / Advanced Data Analysis</p><p class="text-gray-400 text-sm">CSV ანალიზი, გაყიდვების პიკები</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">ფინანსური შეჯერება</p><p class="text-gray-400 text-sm">POS vs Wolt/Bolt - ავტომატური ცდომილების გამოვლენა</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">HR AI და CV სკრინინგი</p><p class="text-gray-400 text-sm">გაფილტვრა, Performance Review</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">პიკური საათების პროგნოზირება</p><p class="text-gray-400 text-sm">ისტორია + ღონისძიებები + ამინდი</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Custom GPTs (OpenAI)</p><p class="text-gray-400 text-sm">Shift Scheduler, Crew Trainer</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#2196F3;font-size:1.2rem;">→</span>
+                <div><p class="font-bold text-white" style="color:#90caf9;">Make.com, Lovable, AI Governance</p><p class="text-gray-400 text-sm">გაგრძელება სესია 6-ში →</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-lg mb-3">🔥 ოქროს პრომპტი - წაიღეთ სახლში:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„გაანალიზე ატვირთული [მონაცემთა ტიპი] და გამომიტანე [კონკრეტული ინსაითი - გრაფიკი/ცხრილი/სია]. შედეგი განმარტე მარტივი, არა-ტექნიკური ენით ქართულად.“</div>
+</div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border:1px solid #FFC72C;">
+        <p class="font-bold text-lg mb-2">❓ Q&amp;A</p>
+        <p class="text-gray-700">კითხვები - პასუხები. გამოიყენეთ Julius.ai და თქვენი Custom GPT ხვალვე სამსახურში.</p>
+    </div>
+
+    <!-- Pro Tips & Next Steps -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="card" style="background:#e1f5fe; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#0277BD;">📱 საშინაო დავალება: Reorder Point ცხრილი</p>
+            <p class="text-sm text-gray-700">მოამზადეთ Excel-ის დინამიკური ცხრილი, სადაც ხელოვნური ინტელექტის დახმარებით გამოთვლილია რეორდერის წერტილები (Reorder Point) მთავარი მარაგის პოზიციებისთვის.</p>
+        </div>
+        <div class="card" style="background:#f1f8e9; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#33691E;">📚 დახვეწა: Custom GPT-ის დამატება</p>
+            <p class="text-sm text-gray-700">დღეს შექმნილ Custom GPT-ს დაუმატეთ კიდევ ერთი სცენარი ან ცოდნის ბაზაში ატვირთეთ დამატებითი შიდა დოკუმენტი.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 rounded-xl text-center" style="background:linear-gradient(135deg,#0B0F19,#3a0f0a);">
+        <p class="text-3xl mb-2">🍟</p>
+        <p class="text-white font-bold text-xl mb-2">მაკდონალდსის AI ტრენინგი - სესია 5 დასრულდა!</p>
+        <p class="text-gray-300 text-sm">გამოიყენეთ Julius.ai და თქვენი Custom GPT ხვალვე სამსახურში.</p>
+        <p class="text-gray-400 text-xs mt-2">გიორგი ბასილაია · 2026</p>
+    </div>
+</section>
+
+    </div><!-- end max-w-5xl -->
+</main>
+
+<!-- Back to Top -->
+<button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 bg-[#DA291C] text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none hover:bg-[#B51C12]">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+
+<script>
+// Sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    overlay.classList.toggle('hidden', isOpen);
+    menuIcon.classList.toggle('hidden', !isOpen);
+    closeIcon.classList.toggle('hidden', isOpen);
+    document.getElementById('mainContent').style.marginLeft = isOpen ? '0' : '';
+}
+
+// Navigation and Scroll logic
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+const backToTopBtn = document.getElementById('backToTop');
+
+// Close sidebar on mobile when link is clicked
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth < 768 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+            toggleSidebar();
+        }
+    });
+});
+
+window.addEventListener('scroll', () => {
+    // Back to top button visibility
+    if (window.scrollY > 500) {
+        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+    } else {
+        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    // Scroll highlight (better than observer for this layout)
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - 200)) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+            // Safely scroll sidebar without affecting main page scroll
+            const sidebar = document.getElementById('sidebar');
+            if (link.offsetTop < sidebar.scrollTop || link.offsetTop > (sidebar.scrollTop + sidebar.clientHeight)) {
+                 link.scrollIntoView({ block: 'nearest' });
+            }
+        }
+    });
+});
+
+// Countdown timer
+const timers = {};
+function startTimer(id, minutes) {
+    if (timers[id]) { clearInterval(timers[id]); }
+    let secs = minutes * 60;
+    const el = document.getElementById(id);
+    timers[id] = setInterval(() => {
+        secs--;
+        const m = Math.floor(secs / 60), s = secs % 60;
+        el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        el.style.color = secs <= 60 ? '#ff5722' : secs <= 300 ? '#FFC72C' : '#DA291C';
+        if (secs <= 0) { clearInterval(timers[id]); el.textContent = '⏰ დრო!'; }
+    }, 1000);
+}
+
+function copyText(btn) {
+    const codeBlock = btn.closest('.code-block, .prompt-blueprint');
+    const contentNode = codeBlock.querySelector('.code-content');
+    let text = '';
+    if (contentNode) {
+        text = contentNode.innerText.trim();
+    } else {
+        text = codeBlock.innerText.replace('კოპირება', '').replace('Prompt Blueprint', '').trim();
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ დაკოპირდა';
+        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+    });
+}
+</script>
+</body>
+</html>

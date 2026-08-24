@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მაკდონალდსის AI ტრენინგი - სესია 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mcd: { 900: '#0B0F19', 800: '#121826', 700: '#1E293B', red: '#DA291C', gold: '#FFC72C', light: '#F4F6F9' }
+                    },
+                    fontFamily: { sans: ['FiraGO', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --red: #DA291C; --gold: #FFC72C; --deep: #B51C12;
+            --bg: #f4f6f9; --surface: #ffffff;
+            --text-1: #0B0F19; --text-2: #374151; --text-3: #6b7280;
+        }
+        html { scroll-behavior: smooth; font-size: 140%; }
+        body { background: var(--bg); color: var(--text-1); font-family: 'FiraGO', sans-serif; font-size: 24px; line-height: 1.7; }
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .nav-link { display: flex; align-items: flex-start; padding: 0.6rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.07); }
+        .nav-link.active { background: rgba(218,41,28,0.18); border-left-color: #DA291C; color: #ffb4ac; }
+        .topic-card { border-left: 4px solid #DA291C; padding-left: 1.5rem; }
+        .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.75rem; border-radius: 999px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-theory { background: rgba(218,41,28,0.12); color: #B51C12; border: 1px solid rgba(218,41,28,0.3); }
+        .badge-practice { background: rgba(255,199,44,0.18); color: #8a6400; border: 1px solid rgba(255,199,44,0.4); }
+        .badge-break { background: rgba(0,188,212,0.1); color: #0097A7; border: 1px solid rgba(0,188,212,0.3); }
+        .badge-demo { background: rgba(103,58,183,0.1); color: #512DA8; border: 1px solid rgba(103,58,183,0.3); }
+        .highlight-box { background: #fdecea; border-left: 4px solid #DA291C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .warning-box { background: #fff8e1; border-left: 4px solid #FFC72C; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .success-box { background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+        .code-block { background: #0B0F19; color: #e2e8f0; padding: 1.25rem 1.5rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem; white-space: pre-wrap; margin: 1rem 0; position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: all 0.2s; }
+        .copy-btn:hover { background: #DA291C; color: white; border-color: #DA291C; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin: 1rem 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin: 1rem 0; }
+        .create-letter { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #DA291C; color: white; font-size: 1.2rem; font-weight: 800; margin-right: 0.75rem; flex-shrink: 0; }
+        .create-row { display: flex; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid #e5e7eb; }
+        .create-row:last-child { border-bottom: none; }
+        .timer-badge { background: #FFC72C; color: #0B0F19; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+        .section-header { background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%); color: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+        .gdpr-badge { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.4); color: #2e7d32; border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.75rem; font-weight: 700; }
+        @media (max-width: 768px) { .two-column, .three-column { grid-template-columns: 1fr; } }
+        section { scroll-margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-mcd-900 text-white p-2.5 rounded-lg shadow-lg hover:bg-mcd-800 transition-colors">
+    <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-mcd-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
+    <div class="px-5 py-6 border-b border-white/10">
+        <h1 class="text-lg font-bold" style="color:#DA291C;">🍟 მაკდონალდსის AI ტრენინგი</h1>
+        <p class="text-gray-300 text-sm mt-1 font-semibold">სესია 1: პრომპტინგი, უსაფრთხოება, წერითი ასისტენტი</p>
+        <p class="text-gray-400 text-xs mt-1">120 წუთი | 2 ბლოკი + შესვენება</p>
+    </div>
+    <nav class="py-3">
+        <div class="px-5 pt-3 pb-2 text-[10px] uppercase tracking-wider font-bold" style="color:#FFC72C;">შინაარსი</div>
+
+        <a href="#agenda" class="nav-link">🎯 სესიის წესრიგი</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი I - თეორია + პრომპტინგი (55 წთ)</div>
+        <a href="#ai-landscape" class="nav-link">🌍 AI ლანდშაფტი 2026</a>
+        <a href="#llm" class="nav-link">⚙️ LLM - როგორ მუშაობს?</a>
+        <a href="#models" class="nav-link">🔍 ChatGPT vs Claude vs Gemini vs Copilot</a>
+        <a href="#pricing" class="nav-link">💳 ფასიანი მოდელები</a>
+        <a href="#lmarena" class="nav-link">🏆 lmarena.ai - რეიტინგი</a>
+        <a href="#security" class="nav-link">🔒 კორპორატიული უსაფრთხოება და GDPR</a>
+        <a href="#hallucination" class="nav-link">⚠️ ჰალუცინაციები და შეზღუდვები</a>
+        <a href="#role" class="nav-link">📝 პრომპტის ანატომია: R.O.L.E.</a>
+        <a href="#create" class="nav-link">🎯 C.R.E.A.T.E. მოდელი</a>
+        <a href="#create-c" class="nav-link" style="padding-left:2rem;">C - Context</a>
+        <a href="#create-r" class="nav-link" style="padding-left:2rem;">R - Request</a>
+        <a href="#create-e1" class="nav-link" style="padding-left:2rem;">E - Explanation</a>
+        <a href="#create-a" class="nav-link" style="padding-left:2rem;">A - Action</a>
+        <a href="#create-t" class="nav-link" style="padding-left:2rem;">T - Tone/Target</a>
+        <a href="#create-e2" class="nav-link" style="padding-left:2rem;">E - Extras</a>
+        <a href="#before-after" class="nav-link">⚡ Before / After დემო</a>
+        <a href="#practice1" class="nav-link">✏️ პრაქტიკა 1: 3 AI შედარება</a>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">☕ შესვენება (10 წთ)</div>
+
+        <div class="px-5 pt-4 pb-1 text-[10px] uppercase tracking-wider text-gray-500 font-bold">ბლოკი II - Copilot, Gemini Gems, შეფასებები (55 წთ)</div>
+        <a href="#copilot" class="nav-link">📄 Microsoft Copilot: Word &amp; Outlook</a>
+        <a href="#gems-intro" class="nav-link">💎 Gemini Gems - შესავალი</a>
+        <a href="#gems-demo" class="nav-link">🖥️ Gem-ის შექმნა ნაბიჯ-ნაბიჯ</a>
+        <a href="#reviews" class="nav-link">⭐ შეფასებების აგრეგაცია</a>
+        <a href="#practice2" class="nav-link">✏️ პრაქტიკა 2: საკუთარი Gem-ი</a>
+        <a href="#summary" class="nav-link">✅ შეჯამება და საშინაო დავალება</a>
+
+        <div class="mt-6 mx-4 mb-4">
+            <a href="index.html" class="block text-center bg-white/5 hover:bg-white/10 text-gray-300 text-sm py-2 rounded transition-colors">← წინადადებაში დაბრუნება</a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Main -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+    <!-- Header -->
+    <header class="pl-16 pr-6 md:pl-24 md:pr-10 py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #0B0F19 0%, #3a0f0a 100%);">
+        <div class="absolute top-0 right-0 w-72 h-72 rounded-full blur-[120px] opacity-20" style="background:#DA291C;"></div>
+        <div class="max-w-5xl relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">🍟</span>
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest" style="color:#FFC72C;">მაკდონალდს საქართველო - AI ტრენინგი</p>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight">სესია 1: პრომპტინგის საფუძვლები, კორპორატიული უსაფრთხოება<br><span style="color:#ffb4ac;">და AI წერითი ასისტენტი</span></h1>
+                </div>
+            </div>
+            <p class="text-gray-300 text-lg max-w-3xl leading-relaxed mb-6">ChatGPT vs Claude vs Gemini vs Microsoft Copilot, R.O.L.E. და C.R.E.A.T.E. ჩარჩოები, GDPR-თავსებადი უსაფრთხოება და Gemini Gems ასისტენტი მომხმარებელთა შეფასებებზე რეაგირებისთვის.</p>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">⏱ 120 წუთი</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">👥 2 ბლოკი + შესვენება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm bg-white/10 px-3 py-1.5 rounded text-gray-200">🎯 2 პრაქტიკული დავალება</span>
+                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded font-bold" style="background:rgba(255,199,44,0.2);color:#FFC72C;">🔒 GDPR-თავსებადი</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-10 space-y-0">
+
+<!-- ═══════════════════════════════════════════════════
+     AGENDA
+═══════════════════════════════════════════════════ -->
+<section id="agenda" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📋 სესიის სტრუქტურა</span>
+    <h2 class="text-3xl font-bold mb-6" style="color:#0B0F19;">🎯 დღევანდელი სესიის დღის წესრიგი</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-xl overflow-hidden shadow-lg mb-8">
+        <!-- Block 1 -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 00:00 - 00:55</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი I: თეორია + პრომპტინგი</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">25 წთ</strong> - AI ლანდშაფტი, მოდელები და უსაფრთხოება</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - R.O.L.E. + C.R.E.A.T.E.</span></li>
+                <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">10 წთ</strong> - პრაქტიკა 1</span></li>
+            </ul>
+        </div>
+        <!-- Break -->
+        <div class="flex flex-col" style="background:#121826;">
+            <div class="px-6 py-3 border-b border-white/10 flex items-center justify-between" style="background:rgba(0,188,212,0.15);">
+                <span class="font-bold text-white text-sm">☕ შესვენება</span>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#0097A7;color:white;">00:55 - 01:05</span>
+            </div>
+            <div class="p-6 flex-1">
+                <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#DA291C;">⏱ 01:05 - 02:00</div>
+                <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">ბლოკი II: Copilot + Gemini Gems</h3>
+                <ul class="text-sm text-gray-300 space-y-2">
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - Microsoft Copilot: Word/Outlook</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">20 წთ</strong> - Gemini Gems + შეფასებების აგრეგაცია</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">15 წთ</strong> - პრაქტიკა 2: საკუთარი Gem</span></li>
+                    <li class="flex gap-2"><span style="color:#FFC72C;">•</span><span><strong class="text-white">5 წთ</strong> - შეჯამება + საშინაო</span></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Outcomes -->
+        <div class="p-6" style="background:#0B0F19;">
+            <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#FFC72C;">🎯 სესიის შედეგები</div>
+            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">რას ისწავლით?</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> ხელოვნური ინტელექტის მუშაობის პრინციპი</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> GDPR-თავსებადი გამოყენება</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> C.R.E.A.T.E. ფრეიმვორქი</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> Microsoft Copilot საოფისე დავალებებზე</li>
+                <li class="flex gap-2"><span style="color:#4CAF50;">✓</span> საკუთარი Gemini Gem ასისტენტი</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border-left:4px solid #FFC72C;">
+        <h4 class="font-bold text-lg mb-2">🧊 Icebreaker: „ყველაზე მოსაწყენი წერითი დავალება“</h4>
+        <p class="text-gray-700 mb-2">სესიის დაწყებამდე - <strong>ჩატში დაწერეთ ერთი რამ</strong>, რაც თქვენს ყოველდღიურ წერით სამუშაოში ყველაზე მეტ დროს გართმევთ.</p>
+        <p class="text-sm text-gray-500 italic">მაგ: „Wolt/Bolt Food შეფასებებზე პასუხის გაცემა“, „ცვლების გრაფიკის მეილები“, „მომწოდებლების წერილები“, „გუნდის შეხსენებები“...</p>
+        <p class="text-sm mt-2" style="color:#B51C12;font-weight:600;">ჩვენ ზუსტად ამ ამოცანებს ავტომატიზირებთ დღეს.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BLOCK I HEADER
+═══════════════════════════════════════════════════ -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">🧠</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი I · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">AI ლანდშაფტი, უსაფრთხოება და პრომპტინგი</h2>
+                <p class="text-gray-300 text-sm mt-1">00:00 - 00:55 · 3 ქვე-მოდული + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI LANDSCAPE -->
+<section id="ai-landscape" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🌍 თეორია · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">🌍 ხელოვნური ინტელექტის ლანდშაფტი 2026</h2>
+
+    <div class="card mb-4">
+        <p class="text-xl font-bold mb-3" style="color:#B51C12;">მარტივი განმარტება</p>
+        <p class="text-gray-700 text-lg">გენერაციული AI არის ინსტრუმენტი, რომელიც <strong>ახალ ტექსტს, დოკუმენტს ან ანალიზს ქმნის</strong> ადამიანის ენაზე მიცემული ინსტრუქციის (პრომპტის) საფუძველზე - 2026 წელს ეს უკვე ოთხ ძირითად პლატფორმას შორის არჩევანია.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსში პრაქტიკული გამოყენება:</p>
+        <p class="text-gray-700">Wolt/Bolt Food/Google Reviews-ზე რეაგირება → HR და გუნდის მეილები → Drive-Thru და სამზარეულოს პროცესის ოპტიმიზაცია → მომწოდებლების ინვოისების დამუშავება → პრეზენტაციები მენეჯმენტისთვის</p>
+    </div>
+
+    <div class="card mt-4">
+        <p class="font-bold text-lg mb-3">🖥️ ცოცხალი დემო: ერთი პრომპტი - სამი AI</p>
+        <p class="text-gray-600 text-sm">ტრენერი ერთსა და იმავე პრომპტს ჩასვამს ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად - ვხედავთ, სამივემ სხვადასხვანაირად უპასუხა.</p>
+    </div>
+</section>
+
+<!-- LLM -->
+<section id="llm" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">⚙️ LLM - როგორ მუშაობს?</h2>
+
+    <div class="card mb-6">
+        <p class="text-xl font-bold mb-4" style="color:#B51C12;">Next-Word Prediction - „შემდეგი სიტყვის წინასწარმეტყველება“</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#fdecea;">
+                <div class="text-3xl mb-2">📚</div>
+                <p class="font-bold text-sm mb-1">ტრენინგი</p>
+                <p class="text-xs text-gray-600">ხელოვნურ ინტელექტს გაუვლია ინტერნეტის ტექსტების ტრილიონები - წიგნები, სტატიები, კოდი</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+                <div class="text-3xl mb-2">🎲</div>
+                <p class="font-bold text-sm mb-1">ალბათობები</p>
+                <p class="text-xs text-gray-600">სწავლობს: „მომხმარებელი უკმაყოფილოა“ - ყველაზე ხშირად მოჰყვება „ბოდიში“ ან „გამოსავალი“</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <div class="text-3xl mb-2">💬</div>
+                <p class="font-bold text-sm mb-1">გენერაცია</p>
+                <p class="text-xs text-gray-600">თქვენი პრომპტის საფუძველზე ირჩევს ყველაზე სავარაუდო სიტყვებს</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="warning-box">
+        <p class="font-bold mb-1">⚠️ მნიშვნელოვანი: AI არ ფიქრობს</p>
+        <p class="text-gray-700">AI <strong>არ „ფიქრობს“</strong> და <strong>არ „იცის“</strong> - ის სტატისტიკურად ყველაზე სავარაუდო სიტყვის კომბინაციებს ირჩევს. ამიტომ შეიძლება ზოგჯერ <strong>ჰალუცინაციები</strong> (მცდარი ფაქტები) შექმნას.</p>
+    </div>
+
+    <div class="card mt-6" style="background:#e8eaf6; border-left:4px solid #3F51B5;">
+        <p class="font-bold text-lg mb-2" style="color:#283593;">👁️ Vision: AI აღარ არის მხოლოდ ტექსტი</p>
+        <p class="text-gray-700 text-sm mb-2">თანამედროვე მოდელებს (GPT-5.1, Claude Sonnet 5) შეუძლიათ <strong>სურათების დანახვა და გაანალიზება.</strong></p>
+        <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside ml-4">
+            <li>მომწოდებლის ინვოისის ან საწყობის ეტიკეტის ფოტოდან მონაცემების ამოღება.</li>
+            <li>Drive-Thru რიგის ან სამზარეულოს Board-ის ფოტოს ანალიზი პიკის საათებში.</li>
+            <li>გრაფიკებისა და ცხრილების ანალიზი პირდაპირ სქრინშოტიდან.</li>
+        </ul>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 პრაქტიკული შედეგი:</p>
+        <p class="text-gray-700">რაც უფრო <strong>ზუსტ კონტექსტს</strong> მიაწვდით, მით უფრო ზუსტ პასუხს მიიღებთ. სწორედ ამიტომ ვსწავლობთ C.R.E.A.T.E.-ს.</p>
+    </div>
+</section>
+
+<!-- MODELS -->
+<section id="models" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🔍 ChatGPT vs Claude vs Gemini vs Microsoft Copilot</h2>
+    <p class="text-gray-500 mb-6">რომელი პლატფორმა რომელ მენეჯერულ ამოცანაში ჯობია</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="card" style="border-top: 3px solid #10a37f;">
+            <p class="text-2xl mb-2">💚</p>
+            <p class="font-bold text-lg mb-1">ChatGPT - GPT-5.1 (OpenAI)</p>
+            <p class="text-xs text-gray-500 mb-3">chat.openai.com</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ ყველაზე უნივერსალური</li>
+                <li>✓ Advanced Data Analysis - ცხრილების/ექსელის ანალიზი</li>
+                <li>✓ Voice Mode - ხმით საუბარი მობილურიდან</li>
+                <li>✓ სურათების გენერაცია (GPT Image)</li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded" style="background:#e8f5e9;color:#2e7d32;">გამოიყენეთ: მონაცემთა ანალიზი, ზოგადი დავალებები</div>
+        </div>
+        <div class="card" style="border-top: 3px solid #DA291C; border: 2px solid #DA291C;">
+            <p class="text-2xl mb-2">🤖</p>
+            <p class="font-bold text-lg mb-1">Claude - Sonnet 5 / Opus 5 (Anthropic)</p>
+            <p class="text-xs text-gray-500 mb-3">claude.ai</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ გრძელი დოკუმენტების ანალიზი</li>
+                <li>✓ ყველაზე ზუსტი ინსტრუქციების გაგება და ტონის დაცვა</li>
+                <li>✓ Projects - ბრენდის ხმის (Tone of Voice) კონტექსტის შენახვა</li>
+                <li>✓ <strong>რეკომენდებული ოფიციალური წერილებისთვის</strong></li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded font-bold" style="background:rgba(218,41,28,0.1);color:#B51C12;">⭐ ძირითადი წერითი ხელსაწყო</div>
+        </div>
+        <div class="card" style="border-top: 3px solid #4285F4;">
+            <p class="text-2xl mb-2">🔷</p>
+            <p class="font-bold text-lg mb-1">Gemini - Gemini 3 Pro (Google)</p>
+            <p class="text-xs text-gray-500 mb-3">gemini.google.com</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ Gmail/Docs/Sheets ინტეგრაცია</li>
+                <li>✓ <strong>Gemini Gems</strong> - პერსონალური ასისტენტების აწყობა</li>
+                <li>✓ NotebookLM - დოკუმენტების კვლევა</li>
+                <li>✓ <strong>დღევანდელი სესიის ძირითადი ხელსაწყო</strong></li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded" style="background:#e3f2fd;color:#1565C0;">გამოიყენეთ: Gems, Workspace ინტეგრაცია</div>
+        </div>
+        <div class="card" style="border-top: 3px solid #0078D4;">
+            <p class="text-2xl mb-2">📄</p>
+            <p class="font-bold text-lg mb-1">Microsoft 365 Copilot</p>
+            <p class="text-xs text-gray-500 mb-3">Word / Outlook / Teams</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>✓ პირდაპირ Word-ში დოკუმენტების დრაფტინგი</li>
+                <li>✓ Outlook იმეილების სწრაფი ტრიაჟი და პასუხი</li>
+                <li>✓ Teams შეხვედრების შეჯამება</li>
+                <li>✓ არსებულ კორპორატიულ ლიცენზიაშია ჩართული</li>
+            </ul>
+            <div class="mt-3 text-xs px-2 py-1 rounded" style="background:#e3f2fd;color:#0078D4;">გამოიყენეთ: Word/Outlook ყოველდღიური სამუშაო</div>
+        </div>
+    </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">💳 გამოწერა · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">💳 პოპულარული ფასიანი მოდელები</h2>
+    <p class="text-gray-500 mb-6">ღირს თუ არა გადახდა? (სტანდარტული ფასი: $20 / თვეში)</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="card flex flex-col h-full" style="border-top: 4px solid #10a37f;">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="text-3xl">🤖</span>
+                <p class="font-bold text-lg" style="color:#0d8265;">ChatGPT Plus</p>
+            </div>
+            <p class="text-2xl font-black mb-3">$20<span class="text-sm font-normal text-gray-500">/თვე</span></p>
+            <ul class="text-sm text-gray-700 space-y-2 flex-1">
+                <li>✅ <strong>მოდელები:</strong> GPT-5.1 და o4 (Thinking)</li>
+                <li>✅ <strong>Deep Research</strong></li>
+                <li>✅ <strong>Advanced Data Analysis</strong> (ექსელის ანალიზი)</li>
+                <li>✅ <strong>Voice Mode</strong> (ხმა/სურათი/ვიდეო)</li>
+            </ul>
+        </div>
+        <div class="card flex flex-col h-full" style="border-top: 4px solid #DA291C;">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="text-3xl">🧠</span>
+                <p class="font-bold text-lg" style="color:#B51C12;">Claude Pro</p>
+            </div>
+            <p class="text-2xl font-black mb-3">$20<span class="text-sm font-normal text-gray-500">/თვე</span></p>
+            <ul class="text-sm text-gray-700 space-y-2 flex-1">
+                <li>✅ <strong>მოდელები:</strong> Claude Sonnet 5 / Opus 5</li>
+                <li>✅ <strong>Projects:</strong> ბრენდის ხმის იდეალური მართვა</li>
+                <li>✅ <strong>ქართული ენის</strong> საუკეთესო ცოდნა და ლოგიკა</li>
+                <li>✅ <strong>Extended Thinking</strong> (რთული ამოცანების ამოხსნა)</li>
+            </ul>
+        </div>
+        <div class="card flex flex-col h-full" style="border-top: 4px solid #4285F4;">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="text-3xl">✨</span>
+                <p class="font-bold text-lg" style="color:#1565C0;">Google AI Pro</p>
+            </div>
+            <p class="text-2xl font-black mb-3">$20<span class="text-sm font-normal text-gray-500">/თვე</span></p>
+            <ul class="text-sm text-gray-700 space-y-2 flex-1">
+                <li>✅ <strong>მოდელები:</strong> Gemini 3 Pro (1M კონტექსტი)</li>
+                <li>✅ <strong>Gems & Deep Research:</strong> ავტომატური ასისტენტები</li>
+                <li>✅ <strong>ინტეგრაცია:</strong> Gmail, Docs, Sheets</li>
+                <li>✅ <strong>მოიცავს 2TB</strong> Google Drive მეხსიერებას</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="highlight-box" style="background:#e8f5e9; border-left-color:#4CAF50;">
+        <p class="font-bold mb-1" style="color:#2E7D32;">💡 ტრენერის რჩევა მაკდონალდსისთვის:</p>
+        <p class="text-sm text-gray-700">ოფიციალური წერილებისთვის და ტონის დაცვისთვის <strong>Claude Pro</strong> ქართულ ენაზე შეუდარებელია. <strong>Gemini</strong> (Gems) - უფასოდაც ხელმისაწვდომია და დღევანდელი პრაქტიკის ცენტრში დგას, ხოლო <strong>Microsoft Copilot</strong> უკვე ხშირად შედის კორპორატიულ Microsoft 365 ლიცენზიაში.</p>
+    </div>
+</section>
+
+<section id="lmarena" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🏆 lmarena.ai · დემო</span>
+    <h2 class="text-3xl font-bold mb-2">🏆 LMSYS Chatbot Arena - მოდელების საბრძოლო ასპარეზი</h2>
+    <p class="text-gray-500 mb-6">რომელი AI მოდელი არის ყველაზე ძლიერი? მომხმარებლები წყვეტენ - <strong>lmarena.ai</strong></p>
+
+    <div class="card mb-4">
+        <p class="font-bold text-xl mb-3" style="color:#B51C12;">💡 რა არის Chatbot Arena?</p>
+        <p class="text-gray-700 mb-4">Stanford / UC Berkeley-ის პროექტი. ადამიანები ურთიერთობენ <strong>2 ანონიმურ AI მოდელთან ერთდროულად</strong> და ხმა აძლევენ, ვინ პასუხობს უკეთ. ასობით ათასი ხმიდან იქმნება <strong>Elo-რეიტინგი</strong> - ისევე, როგორც ჭადრაკში.</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#fdecea;">
+                <p class="text-3xl mb-2">⚡</p>
+                <p class="font-bold text-sm">Blind Test</p>
+                <p class="text-xs text-gray-600 mt-1">არ იცით, ვინ არის ვინ - მხოლოდ შედეგი წყვეტს</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+                <p class="text-3xl mb-2">📊</p>
+                <p class="font-bold text-sm">Elo რეიტინგი</p>
+                <p class="text-xs text-gray-600 mt-1">რეალური მომხმარებლების ასობით ათასი შეფასება</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <p class="text-3xl mb-2">🔄</p>
+                <p class="font-bold text-sm">განახლება</p>
+                <p class="text-xs text-gray-600 mt-1">ახალი მოდელები ემატება კვირა-კვირაში</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4" style="background:#0B0F19;color:white;">
+        <div class="flex items-center justify-between mb-3">
+            <p class="font-bold" style="color:#ffb4ac;">📈 TOP მოდელები - აგვისტო 2026 (Elo რეიტინგი)</p>
+            <span class="text-xs px-2 py-1 rounded" style="background:rgba(218,41,28,0.2);color:#ffb4ac;">380+ მოდელი · 7M+ ხმა</span>
+        </div>
+        <div class="space-y-2">
+            <div class="flex items-center gap-3 p-2 rounded" style="background:rgba(255,215,0,0.12);">
+                <span class="text-xl">🥇</span>
+                <div class="flex-1">
+                    <p class="font-bold text-white text-sm">GPT-5.1 (OpenAI)</p>
+                    <p class="text-gray-400 text-xs">კოდი: top-1 · მათემატიკა: top-1</p>
+                </div>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#FFD700;color:#000;">~1575</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded" style="background:rgba(255,215,0,0.07);">
+                <span class="text-xl">🥇</span>
+                <div class="flex-1">
+                    <p class="font-bold text-white text-sm">Claude Opus 5 Thinking (Anthropic)</p>
+                    <p class="text-gray-400 text-xs">ტექსტი: #1 · ინსტრუქციების ზუსტი დაცვა</p>
+                </div>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#FFD700;color:#000;">~1558</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded" style="background:rgba(192,192,192,0.1);">
+                <span class="text-xl">🥈</span>
+                <div class="flex-1">
+                    <p class="font-bold text-white text-sm">Gemini 3 Pro (Google)</p>
+                    <p class="text-gray-400 text-xs">სტატისტიკური გათანაბრება top-3-ში</p>
+                </div>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#C0C0C0;color:#000;">~1532</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded" style="background:rgba(192,192,192,0.07);">
+                <span class="text-xl">🥈</span>
+                <div class="flex-1">
+                    <p class="font-bold text-white text-sm">Claude Sonnet 5 (Anthropic)</p>
+                    <p class="text-gray-400 text-xs">სისწრაფე + ხარისხის ბალანსი</p>
+                </div>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#C0C0C0;color:#000;">~1519</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded" style="background:rgba(205,127,50,0.1);">
+                <span class="text-xl">🥉</span>
+                <div class="flex-1">
+                    <p class="font-bold text-white text-sm">Grok 5 (xAI) · DeepSeek V4</p>
+                    <p class="text-gray-400 text-xs">ფრონტიერული open-weight მოდელები</p>
+                </div>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background:#CD7F32;color:#fff;">~1475+</span>
+            </div>
+        </div>
+        <p class="text-gray-400 text-xs mt-3 italic">* წყარო: lmarena.ai - 23 აგვისტო, 2026 · top-3 სტატისტიკურად გათანაბრებულია</p>
+    </div>
+
+    <div class="two-column">
+        <div class="highlight-box">
+            <p class="font-bold mb-2">🎯 რატომ გვჭირდება მაკდონალდსში?</p>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• ობიექტური კრიტერიუმი მოდელის ასარჩევად</li>
+                <li>• ტასკ-სპეციფიკური შედარება (წერა, ანალიზი, ტონი)</li>
+                <li>• უახლესი ინფო - ვინ „ჩამოვარდა“, ვინ „ამოვიდა“</li>
+            </ul>
+        </div>
+        <div class="card" style="background:#fff8e1;border:1px solid #FFC72C;margin:0;">
+            <p class="font-bold mb-2">🖥️ ლაივ დემო:</p>
+            <p class="text-sm text-gray-700 mb-2">შედით <strong>lmarena.ai</strong>-ზე და ატარეთ ტესტი:</p>
+            <p class="text-[0.7rem] font-mono p-3 rounded leading-relaxed border border-gray-200" style="background:#f8fafc; color:#334155;">"დაწერე მოკლე და ემპათიური პასუხი Google Reviews-ზე დარეგისტრირებული 2-ვარსკვლავიანი შეფასებისთვის, სადაც კლიენტი წუწუნებს გვიან მომსახურებაზე პიკის საათებში."</p>
+            <p class="text-xs text-gray-500 mt-2">→ 2 მოდელი პასუხობს → კლასი ხმას აძლევს</p>
+        </div>
+    </div>
+</section>
+
+<!-- SECURITY -->
+<section id="security" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">🔒 GDPR + კორპორატიული უსაფრთხოება · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">🔒 კორპორატიული უსაფრთხოება და GDPR</h2>
+    <p class="text-gray-500 mb-6">კრიტიკული მნიშვნელობა მაკდონალდსის კონტექსტში</p>
+
+    <div class="card mb-4">
+        <div class="flex items-start gap-4">
+            <span class="text-4xl">🌍</span>
+            <div>
+                <p class="font-bold text-lg mb-1">GDPR - მონაცემთა დაცვის ზოგადი რეგლამენტი</p>
+                <p class="text-gray-700 text-sm">ევროკავშირის კანონი, რომელიც <strong>თანამშრომლების და კლიენტების პერსონალური მონაცემების</strong> დამუშავებას არეგულირებს. მაკდონალდსი, როგორც გლობალური ბრენდი, სრულად ექვემდებარება ამ სტანდარტებს და შიდა Data Protection პოლიტიკას.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="warning-box mb-6">
+        <p class="font-bold text-lg mb-2">🚫 არასოდეს შეიტანოთ ხელოვნურ ინტელექტში:</p>
+        <div class="two-column">
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>❌ მაკდონალდსის ფარული რეცეპტები და მიწოდების ფორმულები</li>
+                <li>❌ საფინანსო ანგარიშები და მარჟის მონაცემები</li>
+                <li>❌ თანამშრომლების პირადი ნომერი / ხელფასი / პირადი ინფო</li>
+                <li>❌ სისტემების პაროლები / POS წვდომის კოდები</li>
+            </ul>
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>❌ კონკრეტული კლიენტის სახელი და საკონტაქტო მონაცემები</li>
+                <li>❌ მომწოდებლების კონფიდენციალური ხელშეკრულებები</li>
+                <li>❌ არადამტკიცებული შიდა დოკუმენტები</li>
+                <li>❌ HR - დისციპლინური საქმეების დეტალები</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="success-box mb-4">
+        <p class="font-bold text-lg mb-2">✅ ნებადართულია (ანონიმიზაციის შემდეგ):</p>
+        <div class="two-column">
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>✓ „კლიენტმა დატოვა 2-ვარსკვლავიანი შეფასება Wolt-ზე“ (სახელის გარეშე)</li>
+                <li>✓ ზოგადი შეფასების ფორმატების შაბლონები</li>
+                <li>✓ საოპერაციო ტექსტების გამარტივება</li>
+            </ul>
+            <ul class="text-gray-700 space-y-1 text-sm">
+                <li>✓ B2B/მომწოდებელთა წერილების დრაფტები (შაბლონური)</li>
+                <li>✓ SOP-ების ახსნა და ადაპტაცია</li>
+                <li>✓ ტრენინგ-მასალების შექმნა</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #FFC72C;background:#fff8e1;">
+        <p class="font-bold mb-1">🔑 ოქროს წესი:</p>
+        <p class="text-gray-700">„თუ ამ ინფორმაციას <strong>სხვა თანამშრომელს ვერ გაუზიარებთ</strong> ჩვეულებრივი ელექტრონული ფოსტით - AI შიც ნუ შეიყვანთ. საბოლოო გადაწყვეტილება ყოველთვის მენეჯერისაა.“</p>
+    </div>
+</section>
+
+<!-- HALLUCINATION -->
+<section id="hallucination" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 თეორია</span>
+    <h2 class="text-3xl font-bold mb-6">⚠️ ჰალუცინაციები და ხელოვნურ ინტელექტს შეზღუდვები</h2>
+
+    <div class="two-column mb-6">
+        <div class="card" style="border-left:4px solid #FF5722;">
+            <p class="font-bold text-lg mb-3" style="color:#D84315;">🌀 ჰალუცინაცია (Hallucination)</p>
+            <p class="text-gray-700 text-sm mb-3">AI <strong>წარმოქმნის მცდარ ფაქტებს</strong> სრული დარწმუნებით - თარიღები, სახელები, სტატისტიკა, პროცედურები.</p>
+            <div class="text-xs px-3 py-2 rounded" style="background:#fbe9e7;color:#bf360c;">
+                <strong>საოპერაციო რისკი:</strong> AI მ შეიძლება „გამოიგონოს“ არარსებული SOP ან უსაფრთხოების ინსტრუქცია.
+            </div>
+            <p class="font-bold text-sm mt-3">✅ გამოსავალი: <span class="font-normal">ყოველთვის გადაამოწმეთ ფაქტები პირველადი წყაროებით</span></p>
+        </div>
+        <div class="card" style="border-left:4px solid #9C27B0;">
+            <p class="font-bold text-lg mb-3" style="color:#6A1B9A;">⚖️ მიკერძოება (Bias)</p>
+            <p class="text-gray-700 text-sm mb-3">AI გაწვრთნილია ადამიანების მიერ დაწერილ ტექსტებზე. ამ ტექსტებში არსებული <strong>სტერეოტიპები</strong> AI შიც გადადის.</p>
+            <div class="text-xs px-3 py-2 rounded" style="background:#f3e5f5;color:#4a148c;">
+                <strong>პრაქტიკული გამოსავალი:</strong> კრიტიკულად შეხედეთ ხელოვნურ ინტელექტს გამოსვლას. ნუ გამოიყენებთ პირდაპირ.
+            </div>
+            <p class="font-bold text-sm mt-3">✅ გამოსავალი: <span class="font-normal">AI - პირველი დრაფტი, ადამიანი - საბოლოო შემოწმება</span></p>
+        </div>
+    </div>
+
+    <div class="card mb-6" style="border-left:4px solid #F44336; background:#fff3e0;">
+        <p class="font-bold text-lg mb-2" style="color:#D84315;">🧮 მათემატიკა და ლოგიკა - სუსტი წერტილი</p>
+        <p class="text-gray-700 text-sm mb-2">LLM ენობრივი მოდელია და არა კალკულატორი. ის <strong>ვერ ითვლის</strong>, არამედ „გამოიცნობს“ შემდეგ ციფრს. ფინანსურ ან ფასთან დაკავშირებულ მონაცემებთან მუშაობისას <strong>არასოდეს ენდოთ მის გამოთვლებს</strong> ცალკე გადამოწმების გარეშე!</p>
+        <p class="font-bold text-sm" style="color:#C62828;">✅ ოქროს წესი: Human-in-the-Loop - ყოველთვის გადაამოწმეთ ციფრები!</p>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსის სამუშაო პრინციპი:</p>
+        <p class="text-gray-700"><strong>AI → დრაფტი → მენეჯერი ამოწმებს → საბოლოო ვერსია.</strong> ხელოვნურ ინტელექტს გამოსვლა არასოდეს გამოქვეყნდეს ან გაიგზავნოს <strong>ადამიანის შემოწმების გარეშე.</strong></p>
+    </div>
+</section>
+
+<!-- ROLE -->
+<section id="role" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 პრომპტ-ინჟინერია</span>
+    <h2 class="text-3xl font-bold mb-2">📝 პრომპტის ანატომია: R.O.L.E.</h2>
+    <p class="text-gray-500 mb-6">ნებისმიერი კარგი პრომპტი 4 ელემენტისგან შედგება</p>
+
+    <div class="grid grid-cols-1 gap-3 mb-6">
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#fdecea;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#B51C12;">R</div>
+            <div>
+                <p class="font-bold text-lg">Role - როლი</p>
+                <p class="text-gray-600 text-sm mb-2">ხელოვნურ ინტელექტს ეუბნება, <strong>ვინ</strong> უნდა იყოს ამ საუბარში.</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„იმოქმედე, როგორც მაკდონალდსის გამოცდილი მომხმარებელთა მომსახურების მენეჯერი...“</div>
+</div>
+            </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#f3e5f5;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#7B1FA2;">O</div>
+            <div>
+                <p class="font-bold text-lg">Objective - მიზანი</p>
+                <p class="text-gray-600 text-sm mb-2">რა <strong>შედეგი</strong> გინდა, რა <strong>დავალება</strong> გაქვს.</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„...და დაწერე თავაზიანი პასუხი Google Reviews-ზე დატოვებულ საჩივარზე...“</div>
+</div>
+            </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#e8f5e9;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#388E3C;">L</div>
+            <div>
+                <p class="font-bold text-lg">Level - დონე / აუდიტორია</p>
+                <p class="text-gray-600 text-sm mb-2"><strong>ვინ</strong> კითხულობს - კლიენტი? მომწოდებელი? ბორდი?</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„...განკუთვნილია საჯარო ონლაინ პლატფორმისთვის (Wolt/Bolt/Google), არ იყოს ზედმეტად ფორმალური...“</div>
+</div>
+            </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 rounded-xl" style="background:#fff8e1;">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-black flex-shrink-0" style="background:#8a6400;">E</div>
+            <div>
+                <p class="font-bold text-lg">Edge - ფორმატი / შეზღუდვები</p>
+                <p class="text-gray-600 text-sm mb-2">სიგრძე, ფორმატი, ტონი, ენა, სტილი.</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„...მაქსიმუმ 60 სიტყვა, ქართულ ენაზე, თბილი და ემპათიური ტონი.“</div>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-2">💡 R.O.L.E. - სრული მაგალითი მაკდონალდსისთვის:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„იმოქმედე, როგორც მაკდონალდსის მომხმარებელთა მომსახურების მენეჯერი [R].
+დაწერე თავაზიანი პასუხი Google Reviews-ზე დატოვებულ 2-ვარსკვლავიან შეფასებაზე, სადაც კლიენტი წუწუნებს გვიან მომსახურებაზე [O].
+განკუთვნილია საჯარო პლატფორმისთვის, სადაც სხვა კლიენტებიც კითხულობენ [L].
+მაქსიმუმ 60 სიტყვა, თბილი და გულწრფელი ტონი, ქართულ ენაზე [E].“</div>
+</div>
+    </div>
+</section>
+
+<!-- CREATE -->
+<section id="create" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📘 C.R.E.A.T.E. ფრეიმვორქი</span>
+    <h2 class="text-3xl font-bold mb-2">🎯 C.R.E.A.T.E. მოდელი</h2>
+    <p class="text-gray-500 mb-6">დეტალური კონტროლისთვის - პროფესიული კომუნიკაციის ოქროს სტანდარტი</p>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+        <div style="background:#0B0F19;padding:1.25rem 1.5rem;">
+            <p class="text-white font-bold text-lg">C.R.E.A.T.E. = 6 ელემენტი, 1 სრულყოფილი პრომპტი</p>
+        </div>
+        <div style="padding:0 1.5rem;">
+            <div class="create-row">
+                <span class="create-letter" style="background:#DA291C;">C</span>
+                <div><p class="font-bold">Context - კონტექსტი</p><p class="text-sm text-gray-600">რა სიტუაციაა? რა პრობლემა გვაქვს? სად ვართ?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#FFC72C;color:#0B0F19;">R</span>
+                <div><p class="font-bold">Request - მოთხოვნა</p><p class="text-sm text-gray-600">ზუსტად რა გინდა? რამდენი ვარიანტი? რა ტიპი?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#9C27B0;">E</span>
+                <div><p class="font-bold">Explanation - ახსნა</p><p class="text-sm text-gray-600">დამატებითი შეზღუდვები, კონტექსტი, ტერმინოლოგია</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#4CAF50;">A</span>
+                <div><p class="font-bold">Action - მოქმედება</p><p class="text-sm text-gray-600">AI მ როგორ უნდა მოიქცეს? ვის სახელით? რა სტილი?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#B51C12;">T</span>
+                <div><p class="font-bold">Tone/Target - ტონი და სამიზნე</p><p class="text-sm text-gray-600">ვინ კითხულობს? ოფიციალური თუ არაფორმალური?</p></div>
+            </div>
+            <div class="create-row">
+                <span class="create-letter" style="background:#00BCD4;">E</span>
+                <div><p class="font-bold">Extras - ფორმატი და დამატებები</p><p class="text-sm text-gray-600">სიგრძე, სტრუქტურა, ენა, სპეციალური მოთხოვნები</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREATE C -->
+<section id="create-c" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">C - Context</span>
+    <h2 class="text-2xl font-bold mb-4">C - Context (კონტექსტი)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">ხელოვნურ ინტელექტს ეუბნება <strong>სიტუაციის არსს</strong>: სად ვართ, რა ხდება, რა არის პრობლემა.</p>
+        <div class="two-column">
+            <div>
+                <p class="text-sm font-bold text-red-600 mb-2">❌ სუსტი კონტექსტი:</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„დაწერე პასუხი შეფასებაზე.“</div>
+</div>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-green-700 mb-2">✅ ძლიერი კონტექსტი:</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„ჩვენს Wolt გვერდზე დღეს გამოჩნდა 2-ვარსკვლავიანი შეფასება - კლიენტმა დაწერა, რომ შეკვეთა 20 წუთით დაუგვიანდა პიკის საათებში. ეს ჩვენი მესამე მსგავსი კომენტარია ამ კვირაში.“</div>
+</div>
+            </div>
+        </div>
+    </div>
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🍟 მაკდონალდსის კონტექსტის ელემენტები:</p>
+        <p class="text-sm text-gray-700">პლატფორმა (Wolt/Bolt Food/Google) • კონკრეტული სიტუაცია • განმეორებადობა (რამდენჯერ მოხდა) • ძირითადი გამოწვევა</p>
+    </div>
+</section>
+
+<!-- CREATE R -->
+<section id="create-r" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">R - Request</span>
+    <h2 class="text-2xl font-bold mb-4">R - Request (მოთხოვნა)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3"><strong>ზუსტად</strong> რა გინდა AI მ წარმოქმნას - ტიპი, რაოდენობა, ფორმა.</p>
+        <div class="two-column">
+            <div>
+                <p class="text-sm font-bold text-red-600 mb-2">❌ ბუნდოვანი:</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„დამეხმარე ტექსტის დაწერაში.“</div>
+</div>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-green-700 mb-2">✅ ზუსტი:</p>
+                <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„დაწერე 3 სხვადასხვა ვარიანტი პასუხისა Wolt-ის 2-ვარსკვლავიან შეფასებაზე, სადაც კლიენტი გვიან მიწოდებაზე წუწუნებს.“</div>
+</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREATE E1 -->
+<section id="create-e1" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">E - Explanation</span>
+    <h2 class="text-2xl font-bold mb-4">E - Explanation (ახსნა)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">დამატებითი <strong>შეზღუდვები, ტერმინოლოგია, სპეციფიკური მოთხოვნები</strong> - ის, რაც ხელოვნურ ინტელექტს „ჩარჩოს“ განსაზღვრავს.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„ნუ გამოიყენებ თავდაცვით ტონს. მადლობა გადაუხადე გამოხმაურებისთვის.
+ნუ ახსენებ კონკრეტულ თანამშრომელს ან ცვლას.
+შესთავაზე კონკრეტული გამოსავალი (მაგ: ცხელი ხაზი, შემდეგი ვიზიტისთვის ბონუსი).“</div>
+</div>
+    </div>
+</section>
+
+<!-- CREATE A -->
+<section id="create-a" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">A - Action</span>
+    <h2 class="text-2xl font-bold mb-4">A - Action (მოქმედება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">ხელოვნურ ინტელექტს ეუბნება <strong>ვის სახელით</strong> და <strong>როგორ</strong> უნდა მოიქცეს.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„დაწერე რესტორნის მენეჯერის სახელით - თბილი,
+პასუხისმგებელი, გადაწყვეტისკენ ორიენტირებული.“</div>
+</div>
+    </div>
+    <div class="highlight-box">
+        <p class="font-bold mb-1">მაკდონალდსის სტანდარტული როლები:</p>
+        <p class="text-sm text-gray-700">„რესტორნის მენეჯერი“ · „მომხმარებელთა მომსახურების წარმომადგენელი“ · „HR მენეჯერი“ · „Procurement კოორდინატორი“</p>
+    </div>
+</section>
+
+<!-- CREATE T -->
+<section id="create-t" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">T - Tone/Target</span>
+    <h2 class="text-2xl font-bold mb-4">T - Tone/Target (ტონი და სამიზნე)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3"><strong>ვინ</strong> კითხულობს და <strong>რა ტონი</strong> შეესაბამება.</p>
+        <div class="three-column">
+            <div class="p-4 rounded-lg text-center" style="background:#fdecea;">
+                <p class="font-bold text-sm mb-2">⭐ საჯარო შეფასება</p>
+                <p class="text-xs text-gray-600">თბილი, ემპათიური, არ არის თავდაცვითი</p>
+            </div>
+            <div class="p-4 rounded-lg text-center" style="background:#f3e5f5;">
+                <p class="font-bold text-sm mb-2">🤝 მომწოდებელი / პარტნიორი</p>
+                <p class="text-xs text-gray-600">ოფიციალური, კოლეგიური, პატივისცემა</p>
+            </div>
+            <div class="p-4 rounded-lg text-center" style="background:#e8f5e9;">
+                <p class="font-bold text-sm mb-2">👥 გუნდი / პერსონალი</p>
+                <p class="text-xs text-gray-600">მარტივი, პირდაპირი, მოტივირებული</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREATE E2 -->
+<section id="create-e2" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">E - Extras</span>
+    <h2 class="text-2xl font-bold mb-4">E - Extras (დამატებითი ფორმატირება)</h2>
+    <div class="card mb-4">
+        <p class="text-gray-700 mb-3">სიგრძე, სტრუქტურა, ენა, ბულეტები, სათაურები.</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„მაქსიმუმ 60 სიტყვა. დაწერე ერთ აბზაცად, ბულეტების გარეშე.
+ბოლოს ჩართე ერთი კონკრეტული next step (მაგ: ცხელი ხაზის ნომერი).
+ქართულ ენაზე.“</div>
+</div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-2">🔥 სრული C.R.E.A.T.E. პრომპტი - მაკდონალდსის მაგალითი:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">[C] ჩვენს Google Reviews გვერდზე გამოჩნდა 2-ვარსკვლავიანი შეფასება -
+კლიენტი წუწუნებს, რომ Drive-Thru-ში 15 წუთი მოუწია ლოდინი პიკის საათებში.
+
+[R] დაწერე თავაზიანი საჯარო პასუხი.
+
+[E] ნუ იქნები თავდაცვითი. მადლობა გადაუხადე გამოხმაურებისთვის.
+ნუ ახსენებ კონკრეტულ თანამშრომელს.
+
+[A] იმოქმედე, როგორც რესტორნის მენეჯერი - თბილი და პასუხისმგებელი.
+
+[T] სამიზნე: საჯარო აუდიტორია. ტონი: ემპათიური, ნდობის განმამტკიცებელი.
+
+[E] მაქსიმუმ 60 სიტყვა. ერთი აბზაცი. ქართული ენა.</div>
+</div>
+    </div>
+</section>
+
+<!-- BEFORE AFTER -->
+<section id="before-after" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">⚡ Before / After დემო</span>
+    <h2 class="text-2xl font-bold mb-2">⚡ Before / After - ერთი ამოცანა, ორი პრომპტი</h2>
+    <p class="text-gray-500 mb-5">იგივე დავალება - სუსტი პრომპტი vs. C.R.E.A.T.E. პრომპტი. კლასი ადარებს.</p>
+
+    <div class="two-column mb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-lg">❌</span>
+                <p class="font-bold" style="color:#C62828;">სუსტი პრომპტი</p>
+            </div>
+            <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„დაწერე პასუხი შეფასებაზე.“</div>
+</div>
+            <div class="card" style="background:#fce4ec;margin-top:0.5rem;">
+                <p class="text-xs font-bold mb-1" style="color:#C62828;">ხელოვნურ ინტელექტს გამოსვლა:</p>
+                <p class="text-sm text-gray-700 italic">„ძვირფასო კლიენტო, ვწუხვართ თქვენი გამოცდილების გამო. ჩვენთვის მნიშვნელოვანია ხარისხი...“</p>
+                <p class="text-xs mt-2" style="color:#b71c1c;">→ ზოგადი, გულთბილობის გარეშე, არაფერს პირდება</p>
+            </div>
+        </div>
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-lg">✅</span>
+                <p class="font-bold" style="color:#1B5E20;">C.R.E.A.T.E. პრომპტი</p>
+            </div>
+            <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">[C] Google Reviews, 2 ვარსკვლავი, Drive-Thru-ში 15 წთ ლოდინი.
+[R] თავაზიანი საჯარო პასუხი.
+[A] რესტორნის მენეჯერი.
+[T] თბილი, ემპათიური.
+[E] 60 სიტყვა. ქართულად.</div>
+</div>
+            <div class="card" style="background:#e8f5e9;margin-top:0.5rem;">
+                <p class="text-xs font-bold mb-1" style="color:#1B5E20;">ხელოვნურ ინტელექტს გამოსვლა:</p>
+                <p class="text-sm text-gray-700 italic">„მადლობა, რომ გვითხარით. ვხედავთ, რომ პიკის საათებში ლოდინი მაღალი იყო და ამაზე ვმუშაობთ. მოხარული ვიქნებით, თუ დაგვიკავშირდებით ცხელ ხაზზე...“</p>
+                <p class="text-xs mt-2" style="color:#1B5E20;">→ კონკრეტული, ემპათიური, გამოსავალზე ორიენტირებული</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="background:#0B0F19;color:white;">
+        <p class="font-bold mb-2" style="color:#ffb4ac;">🗳️ კლასის კენჭისყრა:</p>
+        <p class="text-gray-300 text-sm">რომელი პასუხი გამოდგება რეალურ სამუშაოდ? → ჩატში: <strong style="color:#FFD700;">A</strong> (სუსტი) ან <strong style="color:#4CAF50;">B</strong> (CREATE)</p>
+    </div>
+</section>
+
+<!-- PRACTICE 1 -->
+<section id="practice1" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 1 · 10 წუთი</span>
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-3xl font-bold">✏️ პრაქტიკული დავალება 1</h2>
+        <div id="timer1" class="flex items-center gap-2 px-4 py-2 rounded-xl" style="background:#0B0F19;">
+            <span class="text-2xl">⏱</span>
+            <span id="timer1-display" class="font-black text-2xl" style="color:#FFC72C;font-variant-numeric:tabular-nums;">10:00</span>
+            <button onclick="startTimer('timer1-display',10)" class="text-xs px-3 py-1 rounded font-bold" style="background:#DA291C;color:white;">▶ დაწყება</button>
+        </div>
+    </div>
+    <p class="text-gray-500 mb-5">ერთი რეალური ამოცანა - გამოცადეთ ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად</p>
+
+    <div class="card mb-5" style="border:2px solid #DA291C;">
+        <p class="font-bold text-lg mb-3">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">1</span>
+                <p class="text-gray-700">აირჩიეთ ერთი რეალური მენეჯერული ამოცანა (შეფასებაზე პასუხი, გუნდის მეილი, მომწოდებლის წერილი)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">2</span>
+                <p class="text-gray-700">დაწერეთ C.R.E.A.T.E. პრომპტი და გაუშვით <strong>ChatGPT-ში, Claude-სა და Gemini-ში ერთდროულად</strong></p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#DA291C;">3</span>
+                <p class="text-gray-700">შეადარეთ 3 პასუხი - რომელია ყველაზე ახლოს რეალურ სამუშაოსთან?</p>
+            </div>
+        </div>
+    </div>
+
+    <p class="font-bold text-lg mb-3">🃏 სცენარის ბარათები - აირჩიეთ ერთი:</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#fdecea;border:2px solid #DA291C;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🔴</span>
+                <div>
+                    <p class="font-bold" style="color:#B51C12;">სცენარი 1 - Google Reviews საჩივარი</p>
+                    <p class="text-sm text-gray-700 mt-1">კლიენტმა 2 ვარსკვლავი დაწერა Drive-Thru-ში 15 წუთიანი ლოდინის გამო. <strong>დაწერეთ საჯარო პასუხი.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#fff8e1;border:2px solid #FFC72C;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🟡</span>
+                <div>
+                    <p class="font-bold" style="color:#8a6400;">სცენარი 2 - Wolt შეკვეთის შეცდომა</p>
+                    <p class="text-sm text-gray-700 mt-1">Wolt-ზე კლიენტმა მიუთითა, რომ შეკვეთაში ერთი პროდუქტი აკლდა. <strong>დაწერეთ ბოდიშისა და კომპენსაციის შეთავაზების პასუხი.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#f3e5f5;border:2px solid #9C27B0;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🟣</span>
+                <div>
+                    <p class="font-bold" style="color:#6A1B9A;">სცენარი 3 - გუნდის შეხსენება</p>
+                    <p class="text-sm text-gray-700 mt-1">გუნდს უნდა შეახსენოთ ახალი ჰიგიენის სტანდარტების დაცვის შესახებ. <strong>დაწერეთ მოკლე, მოტივირებული Shift-შეხსენება.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-xl cursor-pointer hover:shadow-lg transition-shadow" style="background:#e8f5e9;border:2px solid #4CAF50;">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🟢</span>
+                <div>
+                    <p class="font-bold" style="color:#1B5E20;">სცენარი 4 - მომწოდებლის წერილი</p>
+                    <p class="text-sm text-gray-700 mt-1">მომწოდებელს დაგვიანებული მიწოდების გამო გამოხმაურება უნდა მისცეთ. <strong>დაწერეთ ოფიციალური, თუმცა კოლეგიური წერილი.</strong></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="background:#f0fdf4;border:1px solid #4CAF50;">
+        <p class="font-bold mb-2">💡 რჩევები:</p>
+        <ul class="text-sm text-gray-700 space-y-1">
+            <li>✓ „გატეხეთ“ პრომპტი - ნახეთ რა იცვლება</li>
+            <li>✓ სცადეთ სხვადასხვა ტონი ერთ შინაარსზე</li>
+            <li>✓ გაამახვილეთ ყურადღება, სად უფრო ბუნებრივად ჟღერს ქართული ტექსტი</li>
+        </ul>
+    </div>
+</section>
+
+<!-- BREAK -->
+<div id="break" class="py-10 border-b border-gray-200">
+    <div class="card text-center" style="background:linear-gradient(135deg,#00BCD4,#0097A7);color:white;border:none;">
+        <p class="text-4xl mb-2">☕</p>
+        <p class="text-2xl font-bold mb-1">10-წუთიანი შესვენება</p>
+        <p class="text-white/80">00:55 - 01:05</p>
+    </div>
+</div>
+
+<!-- BLOCK II HEADER -->
+<div class="py-8 border-b border-gray-200">
+    <div class="section-header">
+        <div class="flex items-center gap-4">
+            <span class="text-5xl">💎</span>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest" style="color:#ffb4ac;">ბლოკი II · 55 წუთი</p>
+                <h2 class="text-2xl font-bold text-white">Microsoft Copilot, Gemini Gems და შეფასებების აგრეგაცია</h2>
+                <p class="text-gray-300 text-sm mt-1">01:05 - 02:00 · Copilot + Gems + პრაქტიკა</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- COPILOT -->
+<section id="copilot" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">📄 Microsoft Copilot · 15 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">📄 Microsoft Copilot: Word და Outlook</h2>
+    <p class="text-gray-500 mb-6">AI, რომელიც პირდაპირ თქვენს ყოველდღიურ ხელსაწყოებშია ჩაშენებული</p>
+
+    <div class="two-column mb-6">
+        <div class="card">
+            <p class="font-bold mb-3" style="color:#0078D4;">📝 Word - დოკუმენტების დრაფტინგი</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• პირველადი დოკუმენტების სწრაფი დრაფტი (Draft with Copilot)</li>
+                <li>• არსებული ტექსტის შეჯამება ან გაფართოება</li>
+                <li>• SOP-ის ან ინსტრუქციის სტრუქტურირება</li>
+                <li>• ტონისა და სტილის კორექტირება</li>
+            </ul>
+        </div>
+        <div class="card">
+            <p class="font-bold mb-3" style="color:#0078D4;">📧 Outlook - იმეილების ტრიაჟი</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• გრძელი Thread-ის სწრაფი შეჯამება</li>
+                <li>• პასუხის დრაფტის ავტომატური გენერაცია</li>
+                <li>• Coach by Copilot - ტონის შემოწმება გაგზავნამდე</li>
+                <li>• დღის ინბოქსის პრიორიტეტების მიმოხილვა</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">🔧 Copilot-ის გამოყენება მაკდონალდსში:</p>
+        <div class="three-column">
+            <div class="p-3 rounded-lg text-center" style="background:#e3f2fd;">
+                <p class="text-2xl mb-1">📋</p>
+                <p class="text-sm font-bold">SOP-ების დრაფტინგი</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#fdecea;">
+                <p class="text-2xl mb-1">✉️</p>
+                <p class="text-sm font-bold">გუნდის მასობრივი მეილები</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#fff8e1;">
+                <p class="text-2xl mb-1">🗂️</p>
+                <p class="text-sm font-bold">ინბოქსის სწრაფი ტრიაჟი</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">💡 რატომ Copilot?</p>
+        <p class="text-sm text-gray-700">არ საჭიროებს ცალკე პლატფორმაზე გადასვლას - მუშაობს ზუსტად იმ Word/Outlook ფანჯარაში, სადაც უკვე ხართ. იდეალურია სწრაფი, ყოველდღიური წერითი ამოცანებისთვის.</p>
+    </div>
+</section>
+
+<!-- GEMS INTRO -->
+<section id="gems-intro" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">💎 Gemini Gems · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">💎 Gemini Gems-ის შესავალი</h2>
+    <p class="text-gray-500 mb-6">პერსონალური AI ასისტენტი, რომელიც ყოველთვის იმახსოვრებს თქვენს ინსტრუქციებს</p>
+
+    <div class="two-column mb-6">
+        <div class="card">
+            <p class="font-bold mb-3" style="color:#E91E63;">❌ ჩვეულებრივი პრომპტინგი:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• ყოველ ჯერზე თავიდან ხსნით კონტექსტს</li>
+                <li>• ბრენდის ტონს ხელით იმეორებთ</li>
+                <li>• ერთი და იგივე ინსტრუქციები იკარგება</li>
+            </ul>
+        </div>
+        <div class="card" style="border:2px solid #4285F4;">
+            <p class="font-bold mb-3" style="color:#1565C0;">✅ Gemini Gems:</p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• ერთხელ აწყობთ - ინსტრუქცია სამუდამოდ ინახება</li>
+                <li>• ბრენდის ხმის ტონი (Tone of Voice) ჩაშენებულია</li>
+                <li>• ერთი Click-ით - ახალი შეფასება/საჩივარი → მზა პასუხი</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">🔧 Gem-ის გამოყენება მაკდონალდსში:</p>
+        <div class="three-column">
+            <div class="p-3 rounded-lg text-center" style="background:#e3f2fd;">
+                <p class="text-2xl mb-1">⭐</p>
+                <p class="text-sm font-bold">Wolt/Bolt/Google Reviews პასუხები</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#fdecea;">
+                <p class="text-2xl mb-1">📢</p>
+                <p class="text-sm font-bold">ბრენდის ტონით კომუნიკაცია</p>
+            </div>
+            <div class="p-3 rounded-lg text-center" style="background:#fff8e1;">
+                <p class="text-2xl mb-1">📊</p>
+                <p class="text-sm font-bold">კვირის Summary ანგარიში</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <p class="font-bold mb-1">🌐 დარეგისტრირდით: <a href="https://gemini.google.com" target="_blank" style="color:#DA291C;text-decoration:underline;">gemini.google.com</a></p>
+        <p class="text-sm text-gray-700">Gemini Gems უფასო ვერსიითაც ხელმისაწვდომია - "Gem manager"-ში იქმნება ახალი პერსონალური ასისტენტი Few-Shot მაგალითებით.</p>
+    </div>
+</section>
+
+<!-- GEMS DEMO -->
+<section id="gems-demo" class="py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-demo">🖥️ Follow-Along დემო</span>
+    <h2 class="text-2xl font-bold mb-4">🖥️ Gem-ის შექმნა ნაბიჯ-ნაბიჯ - ერთად ვქმნით</h2>
+    <p class="text-gray-600 mb-4">გაიარეთ ნაბიჯები სინქრონულად - click-by-click:</p>
+
+    <div class="card" style="background:#0B0F19;color:white;padding:0;overflow:hidden;">
+        <div class="p-4 border-b border-white/10" style="background:#121826;">
+            <p class="font-bold" style="color:#ffb4ac;">📍 ნაბიჯები - ერთად გადის:</p>
+        </div>
+        <div class="divide-y divide-white/10">
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#DA291C;">1</span>
+                <div><p class="font-bold text-sm text-white">Gemini → "Gem manager" → "New Gem"</p><p class="text-gray-400 text-xs">Gemini-ის მარცხენა მენიუში</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FFC72C;color:#0B0F19;">2</span>
+                <div><p class="font-bold text-sm text-white">სახელი და ინსტრუქციის შეყვანა</p><p class="text-gray-400 text-xs font-mono">„შენ ხარ მაკდონალდსის მომხმარებელთა მომსახურების ასისტენტი. პასუხობ Wolt/Bolt/Google Reviews-ის შეფასებებზე თბილად და კონკრეტულად, არასოდეს თავდაცვითად.“</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#9C27B0;">3</span>
+                <div><p class="font-bold text-sm text-white">Few-Shot მაგალითების დამატება</p><p class="text-gray-400 text-xs">2-3 ნამდვილი შეფასება + სასურველი პასუხის მაგალითი</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#4CAF50;">4</span>
+                <div><p class="font-bold text-sm text-white">Save - Gem მზადაა!</p><p class="text-gray-400 text-xs">ხელმისაწვდომია ყოველთვის მარცხენა მენიუდან</p></div>
+            </div>
+            <div class="flex gap-4 p-4">
+                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style="background:#FF9800;">5</span>
+                <div><p class="font-bold text-sm text-white">ტესტირება</p><p class="text-gray-400 text-xs">ჩასვით ახალი შეფასების ტექსტი - Gem-მა იცის, როგორ უპასუხოს</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-6" style="border: 2px dashed #DA291C; background:#fdf3f2;">
+        <p class="font-bold text-lg mb-4" style="color:#B51C12;">💡 Few-Shot ინსტრუქციის მაგალითი Gem-ისთვის:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">როლი: მაკდონალდსის მომხმარებელთა მომსახურების ასისტენტი.
+
+წესები:
+- ყოველთვის მადლობა გადაუხადე გამოხმაურებისთვის.
+- არასოდეს იყო თავდაცვითი ან ბოდიშის ავტომატური.
+- თუ საკითხი პერსონალურია (ალერგია, ჯანმრთელობა) - შესთავაზე ცხელ ხაზზე დაკავშირება.
+- მაქსიმუმ 60 სიტყვა, ქართულ ენაზე.
+
+მაგალითი 1 - შეფასება: „საკვები ცივი მოვიდა“
+პასუხი: „მადლობა, რომ გვითხარით - ეს ჩვენთვის მიუღებელია. გთხოვთ, დაგვიკავშირდით ცხელ ხაზზე, რომ სიტუაცია გამოვასწოროთ.“
+
+მაგალითი 2 - შეფასება: „საუკეთესო მომსახურება!“
+პასუხი: „დიდი მადლობა თბილი სიტყვებისთვის! გუნდს გადავცემთ თქვენს შეფასებას - მოხარულები ვართ, რომ დაგვიბრუნდით.“</div>
+</div>
+    </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" class="min-h-[70vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-theory">⭐ შეფასებების აგრეგაცია · 10 წუთი</span>
+    <h2 class="text-3xl font-bold mb-2">⭐ შეფასებების სისტემური აგრეგაცია</h2>
+    <p class="text-gray-500 mb-6">Wolt, Bolt Food და Google Reviews - ერთი სამართველო პანელი</p>
+
+    <div class="card mb-4">
+        <p class="font-bold text-lg mb-3">📊 ერთიანი მიდგომის სარგებელი:</p>
+        <div class="three-column">
+            <div class="text-center p-4 rounded-lg" style="background:#fdecea;">
+                <p class="text-3xl mb-2">🧭</p>
+                <p class="font-bold text-sm">სენტიმენტის ანალიზი</p>
+                <p class="text-xs text-gray-600 mt-1">დადებითი/უარყოფითი შეფასებების ავტომატური კატეგორიზაცია</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#fff8e1;">
+                <p class="text-3xl mb-2">🔁</p>
+                <p class="font-bold text-sm">განმეორებადი საჩივრები</p>
+                <p class="text-xs text-gray-600 mt-1">ავტომატური აღმოჩენა - ლოდინის დრო, შეკვეთის სისწორე, ტემპერატურა</p>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background:#e8f5e9;">
+                <p class="text-3xl mb-2">📈</p>
+                <p class="font-bold text-sm">კვირის Summary</p>
+                <p class="text-xs text-gray-600 mt-1">Gemini-ით გენერირებული მოკლე ანგარიში მენეჯმენტისთვის</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">კვირის Summary პრომპტი:
+„ქვემოთ მოცემულია ამ კვირის ყველა შეფასება Wolt, Bolt Food და
+Google Reviews-იდან [ჩასვი ტექსტი/ცხრილი].
+დაჯგუფე დადებით და უარყოფით კატეგორიებად.
+გამოკვეთე 3 ყველაზე ხშირი საჩივარი.
+დაწერე 1-გვერდიანი Summary მენეჯმენტისთვის - ბულეტ-პუნქტებით, ქართულად.“</div>
+</div>
+
+    <div class="warning-box mt-4">
+        <p class="font-bold mb-1">⚠️ დაიცავით GDPR:</p>
+        <p class="text-sm text-gray-700">შეფასებების აგრეგაციისას ნუ ჩასვამთ კლიენტების სახელებს ან საკონტაქტო მონაცემებს - მხოლოდ შეფასების ტექსტი და ვარსკვლავები.</p>
+    </div>
+</section>
+
+<!-- PRACTICE 2 -->
+<section id="practice2" class="min-h-[80vh] flex flex-col justify-center py-12 border-b border-gray-200 topic-card">
+    <span class="badge badge-practice">✏️ პრაქტიკა 2 · 15 წუთი</span>
+    <div class="flex items-center justify-between mb-2">
+        <h2 class="text-3xl font-bold">✏️ პრაქტიკული დავალება 2: საკუთარი Gem</h2>
+        <div class="flex items-center gap-2 px-4 py-2 rounded-xl" style="background:#0B0F19;">
+            <span class="text-2xl">⏱</span>
+            <span id="timer2-display" class="font-black text-2xl" style="color:#FFC72C;font-variant-numeric:tabular-nums;">15:00</span>
+            <button onclick="startTimer('timer2-display',15)" class="text-xs px-3 py-1 rounded font-bold" style="background:#DA291C;color:white;">▶ დაწყება</button>
+        </div>
+    </div>
+    <p class="text-gray-500 mb-6">შექმენით საკუთარი Few-Shot Gem ასისტენტი</p>
+
+    <div class="card mb-6" style="border:2px solid #4285F4;">
+        <p class="font-bold text-xl mb-4">🎯 დავალება:</p>
+        <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#4285F4;">1</span>
+                <p class="text-gray-700">გახსენით Gemini → Gem manager → New Gem</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#4285F4;">2</span>
+                <p class="text-gray-700">დაწერეთ როლი და <strong>მინიმუმ 3 წესი</strong> (ტონი, სიგრძე, აკრძალული ფრაზები)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#4285F4;">3</span>
+                <p class="text-gray-700">დაამატეთ <strong>2 Few-Shot მაგალითი</strong> (შეფასება + პასუხი)</p>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 text-white" style="background:#4285F4;">4</span>
+                <p class="text-gray-700">გამოსცადეთ ახალი, გამოუცდელი შეფასებით</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <p class="font-bold mb-3">💡 Gem-ის იდეები:</p>
+        <div class="two-column">
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• Wolt/Bolt/Google Reviews-ზე პასუხების Gem</li>
+                <li>• გუნდის ყოველდღიური შეხსენებების Gem</li>
+                <li>• მომწოდებელთა კომუნიკაციის Gem</li>
+            </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+                <li>• კვირის Summary-ის ავტომატური გენერაცია</li>
+                <li>• HR შეტყობინებების Gem</li>
+                <li>• ახალი თანამშრომლის Onboarding შეტყობინებები</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <p class="font-bold mb-1">✅ წარმატების კრიტერიუმი:</p>
+        <p class="text-sm text-gray-700">15 წუთში - მუშა Gem, რომელსაც ერთი ახალი შეყვანით შეუძლია ბრენდის ტონით რეაგირება, ყოველი ინსტრუქციის თავიდან წერის გარეშე.</p>
+    </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary" class="min-h-[80vh] flex flex-col justify-center py-12 topic-card">
+    <span class="badge badge-theory">✅ შეჯამება · 5 წუთი</span>
+    <h2 class="text-3xl font-bold mb-6">✅ შეჯამება და საშინაო დავალება</h2>
+
+    <div class="card mb-6" style="background:#0B0F19;color:white;">
+        <p class="font-bold text-xl mb-4" style="color:#ffb4ac;">🏆 დღეს ისწავლეთ:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">ხელოვნურ ინტელექტს მუშაობის ლოგიკა</p><p class="text-gray-400 text-sm">LLM, Next-word prediction, ჰალუცინაციები</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">GDPR-თავსებადი გამოყენება</p><p class="text-gray-400 text-sm">რა შეიძლება, რა - არა</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">C.R.E.A.T.E. ფრეიმვორქი</p><p class="text-gray-400 text-sm">სრული 6-ელემენტიანი პრომპტი</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Microsoft Copilot</p><p class="text-gray-400 text-sm">Word/Outlook დღიური სამუშაო</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#4CAF50;font-size:1.2rem;">✓</span>
+                <div><p class="font-bold text-white">Gemini Gems</p><p class="text-gray-400 text-sm">პერსონალური ასისტენტი შეფასებებზე</p></div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <span style="color:#2196F3;font-size:1.2rem;">→</span>
+                <div><p class="font-bold text-white" style="color:#90caf9;">SCAMPER, Claude Cowork, Notion AI</p><p class="text-gray-400 text-sm">გაგრძელება სესია 2-ში →</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-6" style="border:2px solid #DA291C;">
+        <p class="font-bold text-lg mb-3">🔥 ოქროს პრომპტი - წაიღეთ სახლში:</p>
+        <div class="prompt-blueprint" style="background: #0B0F19; border: 1px solid rgba(218,41,28,0.3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1rem 0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+        <span style="color: #DA291C; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Prompt Blueprint</span>
+        <button class="copy-btn" style="position: static; font-size: 0.7rem; background: rgba(218,41,28,0.1); color: #DA291C; border: 1px solid rgba(218,41,28,0.3); padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DA291C'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,41,28,0.1)'; this.style.color='#DA291C';" onclick="copyText(this)">კოპირება</button>
+    </div>
+    <div class="code-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.6;">„[C] [სიტუაცია მაკდონალდსში]
+[R] დაწერე [ტიპი: პასუხი / წერილი / შეხსენება / შეჯამება]
+[E] [შეზღუდვები: ტონი, რა გამოიტოვო]
+[A] იმოქმედე, როგორც [რესტორნის მენეჯერი / HR / Procurement]
+[T] სამიზნე: [ვინ კითხულობს]. ტონი: [თბილი / ოფიციალური / კოლეგიური]
+[E] [სიგრძე] სიტყვა. [ფორმატი]. ქართულ ენაზე.“</div>
+</div>
+    </div>
+
+    <div class="card" style="background:#fff8e1;border:1px solid #FFC72C;">
+        <p class="font-bold text-lg mb-2">❓ Q&amp;A</p>
+        <p class="text-gray-700">კითხვები - პასუხები. გამოიყენეთ C.R.E.A.T.E. და Gem ხვალვე სამსახურში.</p>
+    </div>
+
+    <!-- Pro Tips & Next Steps -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="card" style="background:#e1f5fe; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#0277BD;">📱 საშინაო დავალება 1: საკუთარი Gem-ის დახვეწა</p>
+            <p class="text-sm text-gray-700">დღეს შექმნილ Gem-ს დაუმატეთ კიდევ 2-3 Few-Shot მაგალითი რეალური შეფასებებიდან - რაც მეტ მაგალითს ხედავს, მით უფრო ზუსტად იმეორებს ბრენდის ტონს.</p>
+        </div>
+        <div class="card" style="background:#f1f8e9; border:none;">
+            <p class="font-bold text-lg mb-3" style="color:#33691E;">📚 საშინაო დავალება 2: ერთი ავტომატიზაცია</p>
+            <p class="text-sm text-gray-700">ავტომატიზირეთ 1 ყოველდღიური მენეჯერული წერილობითი დავალება საკუთარი Gem-ის ან C.R.E.A.T.E. პრომპტის საშუალებით.</p>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 rounded-xl text-center" style="background:linear-gradient(135deg,#0B0F19,#3a0f0a);">
+        <p class="text-3xl mb-2">🍟</p>
+        <p class="text-white font-bold text-xl mb-2">მაკდონალდსის AI ტრენინგი - სესია 1 დასრულდა!</p>
+        <p class="text-gray-300 text-sm">გამოიყენეთ C.R.E.A.T.E. და თქვენი Gem ხვალვე სამსახურში.</p>
+        <p class="text-gray-400 text-xs mt-2">გიორგი ბასილაია · 2026</p>
+    </div>
+</section>
+
+    </div><!-- end max-w-5xl -->
+</main>
+
+<!-- Back to Top -->
+<button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 bg-[#DA291C] text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none hover:bg-[#B51C12]">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+
+<script>
+// Sidebar toggle
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    overlay.classList.toggle('hidden', isOpen);
+    menuIcon.classList.toggle('hidden', !isOpen);
+    closeIcon.classList.toggle('hidden', isOpen);
+    document.getElementById('mainContent').style.marginLeft = isOpen ? '0' : '';
+}
+
+// Navigation and Scroll logic
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+const backToTopBtn = document.getElementById('backToTop');
+
+// Close sidebar on mobile when link is clicked
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth < 768 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+            toggleSidebar();
+        }
+    });
+});
+
+window.addEventListener('scroll', () => {
+    // Back to top button visibility
+    if (window.scrollY > 500) {
+        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+    } else {
+        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    // Scroll highlight (better than observer for this layout)
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - 200)) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+            // Safely scroll sidebar without affecting main page scroll
+            const sidebar = document.getElementById('sidebar');
+            if (link.offsetTop < sidebar.scrollTop || link.offsetTop > (sidebar.scrollTop + sidebar.clientHeight)) {
+                 link.scrollIntoView({ block: 'nearest' });
+            }
+        }
+    });
+});
+
+// Countdown timer
+const timers = {};
+function startTimer(id, minutes) {
+    if (timers[id]) { clearInterval(timers[id]); }
+    let secs = minutes * 60;
+    const el = document.getElementById(id);
+    timers[id] = setInterval(() => {
+        secs--;
+        const m = Math.floor(secs / 60), s = secs % 60;
+        el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        el.style.color = secs <= 60 ? '#ff5722' : secs <= 300 ? '#FFC72C' : '#DA291C';
+        if (secs <= 0) { clearInterval(timers[id]); el.textContent = '⏰ დრო!'; }
+    }, 1000);
+}
+
+function copyText(btn) {
+    const codeBlock = btn.closest('.code-block, .prompt-blueprint');
+    const contentNode = codeBlock.querySelector('.code-content');
+    let text = '';
+    if (contentNode) {
+        text = contentNode.innerText.trim();
+    } else {
+        text = codeBlock.innerText.replace('კოპირება', '').replace('Prompt Blueprint', '').trim();
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ დაკოპირდა';
+        setTimeout(() => btn.textContent = 'კოპირება', 2000);
+    });
+}
+</script>
+</body>
+</html>
