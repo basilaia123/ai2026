@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silk Development - AI ხელსაწყოების ეკოსისტემა (Claude Core)</title>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Day / Light Theme as DEFAULT */
+      --silk-green: #00875A;
+      --silk-emerald: #00573E;
+      --gold: #B45309;
+      --walnut: #C2410C;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-card: #F1F5F9;
+      --border: rgba(0, 0, 0, 0.09);
+      --text-1: #0F172A;
+      --text-2: #334155;
+      --text-3: #64748B;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      --nav-bg: rgba(255, 255, 255, 0.95);
+      --brand-title: #0F172A;
+    }
+
+    body.dark {
+      --silk-green: #00C68D;
+      --silk-emerald: #00573E;
+      --gold: #C5A059;
+      --walnut: #D97706;
+      --bg: #12181F;
+      --surface: #1E2735;
+      --surface-card: #242F40;
+      --border: rgba(255, 255, 255, 0.10);
+      --text-1: #F0F4F8;
+      --text-2: #CBD5E1;
+      --text-3: #94A3B8;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --nav-bg: rgba(18, 24, 31, 0.95);
+      --brand-title: #FFFFFF;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'FiraGO', sans-serif; line-height: 1.6; color: var(--text-1); background: var(--bg); min-height: 100vh; transition: background-color 0.25s, color 0.25s; }
+    h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* Navigation */
+    .nav { position: sticky; top: 0; z-index: 1000; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.9rem 1.5rem; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .nav-link { color: var(--text-2); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: color 0.2s; }
+    .nav-link:hover { color: var(--silk-green); }
+
+    .header {
+      background: linear-gradient(135deg, #0A1E17 0%, #003828 60%, #102E23 100%);
+      color: white; padding: 3.5rem 2rem; text-align: center; border-radius: 8px; margin-bottom: 2rem;
+      box-shadow: var(--shadow); position: relative; overflow: hidden; border-top: 4px solid #00E6A5;
+    }
+    .header h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.5rem; font-weight: 800; }
+    .header p { font-size: 1rem; color: #00E6A5; font-weight: 700; }
+
+    .claude-hero-card {
+      background: var(--surface);
+      border: 1.5px solid rgba(194, 65, 12, 0.35); border-radius: 8px; padding: 2rem;
+      margin-bottom: 2.5rem; box-shadow: var(--shadow);
+    }
+    body.dark .claude-hero-card {
+      background: linear-gradient(135deg, rgba(217, 119, 6, 0.12), rgba(0, 87, 62, 0.2));
+      border-color: rgba(217, 119, 6, 0.45);
+    }
+    .ch-title { font-size: 1.4rem; font-weight: 800; color: var(--walnut); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px; }
+    body.dark .ch-title { color: #FBBF24; }
+    .ch-desc { font-size: 0.92rem; color: var(--text-2); margin-bottom: 1.2rem; line-height: 1.7; }
+    .ch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .ch-feature {
+      background: var(--surface-card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 12px 14px;
+    }
+    .ch-feature h4 { font-size: 0.82rem; color: var(--silk-green); font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
+    .ch-feature p { font-size: 0.78rem; color: var(--text-2); line-height: 1.45; }
+
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; margin-bottom: 3rem; }
+    .tool-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 20px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; transition: all 0.2s;
+    }
+    .tool-card:hover { transform: translateY(-3px); border-color: rgba(0, 135, 90, 0.4); }
+    .tc-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .tc-icon {
+      width: 46px; height: 46px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      background: var(--surface-card); border: 1px solid var(--border); flex-shrink: 0;
+    }
+    .tc-title h3 { font-size: 1.1rem; font-weight: 800; color: var(--deep); line-height: 1.2; }
+    .tc-cat { font-size: 0.7rem; font-weight: 800; color: var(--silk-green); text-transform: uppercase; letter-spacing: 0.5px; }
+    .tc-desc { font-size: 0.84rem; color: var(--text-3); margin-bottom: 14px; flex: 1; line-height: 1.6; }
+    .tc-silk-case {
+      background: var(--surface-card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 14px;
+    }
+    .tc-silk-case b { font-size: 0.72rem; color: var(--silk-green); display: block; margin-bottom: 2px; text-transform: uppercase; }
+    .tc-silk-case p { font-size: 0.78rem; color: var(--text-2); line-height: 1.45; }
+    .tc-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 16px; border-radius: 4px; text-decoration: none;
+      font-size: 0.8rem; font-weight: 800; transition: all 0.2s;
+      background: rgba(0, 135, 90, 0.08); border: 1px solid var(--silk-green); color: var(--silk-green);
+    }
+    .tc-btn:hover { background: var(--silk-green); color: #FFFFFF; }
+
+    footer { text-align: center; padding: 3rem; color: var(--text-3); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div style="font-weight: 800; color: var(--brand-title); font-size: 1.05rem; font-family: 'Playfair Display', serif;">
+      <span style="color:var(--silk-green)">SILK</span> Development <span style="font-weight:400; color:var(--text-3); font-size:0.85rem;">× AI Tools</span>
+    </div>
+    <div style="display: flex; gap: 1.4rem;">
+      <a href="index.html" class="nav-link">🏠 მთავარი</a>
+      <a href="prompt-library.html" class="nav-link">📚 პრომპტები</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <header class="header">
+    <p>Corporate Tool Ecosystem</p>
+    <h1>AI ხელსაწყოების კატალოგი</h1>
+    <p style="color: #E2E8F0; font-size: 0.9rem; font-weight: normal; margin-top: 6px;">
+      Silk Development-ის ლიცენზირებული Claude მოდელის გარშემო აგებული სრული AI ეკოსისტემა.
+    </p>
+  </header>
+
+  <!-- CLAUDE CORE HERO -->
+  <div class="claude-hero-card">
+    <div class="ch-title">
+      <span>⚡</span> ძირითადი ბირთვი: Anthropic Claude (Team / Enterprise)
+    </div>
+    <p class="ch-desc">
+      Silk Development-ს აქვს ლიცენზირებული Claude, რაც გუნდს აძლევს წვდომას მსოფლიოში მოწინავე მოდელებზე (Claude 3.7 / 3.5 Sonnet & Opus), 200,000-ზე მეტი ტოკენის მქონე კონტექსტურ ფანჯარაზე, Claude Projects სივრცეზე, Artifacts-სა და მონაცემთა კორპორატიულ უსაფრთხოებაზე.
+    </p>
+    <div class="ch-grid">
+      <div class="ch-feature">
+        <h4>📁 Claude Projects</h4>
+        <p>დეპარტამენტის ცოდნის ბაზა (PDF, ხელშეკრულებები, ბრენდბუქი) ერთ სივრცეში.</p>
+      </div>
+      <div class="ch-feature">
+        <h4>✨ Artifacts</h4>
+        <p>ცხრილების, რეპორტების, სკრიპტებისა და დოკუმენტების ცოცხალი რედაქტირება.</p>
+      </div>
+      <div class="ch-feature">
+        <h4>🔒 Enterprise Privacy</h4>
+        <p>კომპანიის მონაცემები არ გამოიყენება AI მოდელების დასატრენინგებლად.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLS GRID -->
+  <div class="tools-grid">
+
+    <!-- 1. CLAUDE -->
+    <div class="tool-card" style="border-color: rgba(194, 65, 12, 0.4); background: rgba(194, 65, 12, 0.03);">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(194, 65, 12, 0.15); color:var(--walnut);">📝</div>
+        <div class="tc-title">
+          <h3>Anthropic Claude</h3>
+          <span class="tc-cat" style="color:var(--walnut);">Primary Enterprise Engine</span>
+        </div>
+      </div>
+      <p class="tc-desc">Silk Development-ის მთავარი სამუშაო პლატფორმა ტექსტური, ანალიტიკური, იურიდიული და საპროექტო ამოცანებისთვის.</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>ყველა დეპარტამენტის ყოველდღიური სამუშაო ნაკადი, კონტრაქტების აუდიტი, BANT სკორინგი, SOP ინსტრუქციები.</p>
+      </div>
+      <a href="https://claude.ai" target="_blank" rel="noopener" class="tc-btn" style="border-color:var(--walnut); color:var(--walnut);">გახსენი Claude ↗</a>
+    </div>
+
+    <!-- 2. PERPLEXITY -->
+    <div class="tool-card">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(14, 165, 233, 0.12); color:#0284C7;">🔍</div>
+        <div class="tc-title">
+          <h3>Perplexity Pro</h3>
+          <span class="tc-cat">Real-Time Search & Research</span>
+        </div>
+      </div>
+      <p class="tc-desc">ხელოვნური ინტელექტის საძიებო სისტემა წყაროების პირდაპირი ციტირებით. უძრავი ქონების ბაზრის, კონკურენტებისა და ტენდენციების კვლევა.</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>ბათუმისა და თბილისის უძრავი ქონების ბაზრის ანალიტიკა, კონკურენტების ფასების მონიტორინგი.</p>
+      </div>
+      <a href="https://perplexity.ai" target="_blank" rel="noopener" class="tc-btn">გახსენი Perplexity ↗</a>
+    </div>
+
+    <!-- 3. MIDJOURNEY -->
+    <div class="tool-card">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(147, 51, 234, 0.12); color:#9333EA;">🎨</div>
+        <div class="tc-title">
+          <h3>Midjourney v6</h3>
+          <span class="tc-cat">Visual Concept & Moodboards</span>
+        </div>
+      </div>
+      <p class="tc-desc">უმაღლესი ხარისხის ვიზუალური AI გენერატორი. არქიტექტურული განწყობის რუკები, ინტერიერის კონცეფციები და სარეკლამო ვიზუალები.</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>Silk Towers-ისა და Telegraph Hotel-ის სარეკლამო ვიზუალური კონცეფციები, არქიტექტურული განწყობის რუკები.</p>
+      </div>
+      <a href="https://midjourney.com" target="_blank" rel="noopener" class="tc-btn">გახსენი Midjourney ↗</a>
+    </div>
+
+    <!-- 4. NOTEBOOKLM -->
+    <div class="tool-card">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(37, 99, 235, 0.12); color:#2563EB;">📚</div>
+        <div class="tc-title">
+          <h3>Google NotebookLM</h3>
+          <span class="tc-cat">Knowledge Corpus & Audio Overview</span>
+        </div>
+      </div>
+      <p class="tc-desc">დიდი მოცულობის შიდა დოკუმენტების (PDF, რეპორტები, კვლევები) ანალიზი და აუდიო-შეჯამების (Deep Dive Podcast) გენერაცია.</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>Silk Development-ის მრავალწლიანი ანგარიშებისა და სამშენებლო რეგულაციების ერთიან ბაზად გადაქცევა.</p>
+      </div>
+      <a href="https://notebooklm.google.com" target="_blank" rel="noopener" class="tc-btn">გახსენი NotebookLM ↗</a>
+    </div>
+
+    <!-- 5. GAMMA -->
+    <div class="tool-card">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(219, 39, 119, 0.12); color:#DB2777;">📊</div>
+        <div class="tc-title">
+          <h3>Gamma App</h3>
+          <span class="tc-cat">AI Presentation & Pitch Decks</span>
+        </div>
+      </div>
+      <p class="tc-desc">ბრიფიდან და ტექსტიდან დასრულებული, ვიზუალურად გამართული საპრეზენტაციო სლაიდების შექმნა 10 წუთში.</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>Silk Towers-ისა და Botanico-ს საინვესტიციო Pitch Deck-ების სწრაფი აწყობა პარტნიორებისთვის.</p>
+      </div>
+      <a href="https://gamma.app" target="_blank" rel="noopener" class="tc-btn">გახსენი Gamma ↗</a>
+    </div>
+
+    <!-- 6. MAKE.COM -->
+    <div class="tool-card">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(5, 150, 105, 0.12); color:#059669;">⚙️</div>
+        <div class="tc-title">
+          <h3>Make.com</h3>
+          <span class="tc-cat">No-Code Workflow Automation</span>
+        </div>
+      </div>
+      <p class="tc-desc">აპლიკაციების დაკავშირება და სამუშაო ჯაჭვების ავტომატიზაცია (ვებგვერდის ლიდი → CRM → Claude დამუშავება → WhatsApp შეტყობინება).</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>ვებგვერდიდან (silkdevelopment.com) შემოსული განაცხადების ავტომატური კვალიფიკაცია და გადანაწილება.</p>
+      </div>
+      <a href="https://make.com" target="_blank" rel="noopener" class="tc-btn">გახსენი Make.com ↗</a>
+    </div>
+
+    <!-- 7. NOTION -->
+    <div class="tool-card">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(15, 23, 42, 0.12); color:var(--text-1);">📓</div>
+        <div class="tc-title">
+          <h3>Notion & Notion AI</h3>
+          <span class="tc-cat">Connected Workspace & SOP Wiki</span>
+        </div>
+      </div>
+      <p class="tc-desc">კომპანიის ერთიანი ცოდნის ბაზა, დოკუმენტაციის სისტემატიზაცია, SOP ინსტრუქციების Wiki და გუნდური სამუშაო სივრცე.</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>დეპარტამენტების სტანდარტული პროცედურების (SOP) არქივი, პროექტების ცოდნის ბაზა და Claude-თან ინტეგრირებული დოკუმენტბრუნვა.</p>
+      </div>
+      <a href="https://notion.so" target="_blank" rel="noopener" class="tc-btn">გახსენი Notion ↗</a>
+    </div>
+
+    <!-- 8. LOVABLE -->
+    <div class="tool-card">
+      <div class="tc-head">
+        <div class="tc-icon" style="background: rgba(236, 72, 153, 0.12); color:#EC4899;">💡</div>
+        <div class="tc-title">
+          <h3>Lovable</h3>
+          <span class="tc-cat">Prompt-to-App & Full-Stack Prototyping</span>
+        </div>
+      </div>
+      <p class="tc-desc">ხელოვნური ინტელექტის აპლიკაციების შემქმნელი პლატფორმა. ტექსტური ბრიფიდან სრულფასოვანი, ინტერაქტიული ვებ-აპლიკაციების აწყობა წუთებში.</p>
+      <div class="tc-silk-case">
+        <b>Silk Development-ის გამოყენება:</b>
+        <p>მყიდველებისთვის ინტერაქტიული ROI / შემოსავლიანობის (Yield) და იპოთეკის კალკულატორების შექმნა, შიდა საოპერაციო მიკრო-აპლიკაციები.</p>
+      </div>
+      <a href="https://lovable.dev" target="_blank" rel="noopener" class="tc-btn">გახსენი Lovable ↗</a>
+    </div>
+  </div>
+
+  <footer>
+    Silk Development × Walnut AI Training Academy &copy; 2026
+  </footer>
+</div>
+
+<script>
+  // Load saved theme preference (default is light)
+  var saved = localStorage.getItem('silk-theme');
+  if (saved === 'dark') document.body.classList.add('dark');
+</script>
+
+</body>
+</html>

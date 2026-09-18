@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silk Development - პრომპტების ბიბლიოთეკა (Claude AI)</title>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Day / Light Theme as DEFAULT */
+      --silk-green: #00875A;
+      --silk-emerald: #00573E;
+      --gold: #B45309;
+      --walnut: #C2410C;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-card: #F1F5F9;
+      --code-bg: #FFFFFF;
+      --border: rgba(0, 0, 0, 0.09);
+      --text-1: #0F172A;
+      --text-2: #334155;
+      --text-3: #64748B;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      --nav-bg: rgba(255, 255, 255, 0.95);
+      --brand-title: #0F172A;
+    }
+
+    body.dark {
+      --silk-green: #00C68D;
+      --silk-emerald: #00573E;
+      --gold: #C5A059;
+      --walnut: #D97706;
+      --bg: #12181F;
+      --surface: #1E2735;
+      --surface-card: #242F40;
+      --code-bg: #12181F;
+      --border: rgba(255, 255, 255, 0.10);
+      --text-1: #F0F4F8;
+      --text-2: #CBD5E1;
+      --text-3: #94A3B8;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --nav-bg: rgba(18, 24, 31, 0.95);
+      --brand-title: #FFFFFF;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'FiraGO', sans-serif; line-height: 1.6; color: var(--text-1); background: var(--bg); min-height: 100vh; transition: background-color 0.25s, color 0.25s; }
+    h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+    .container { max-width: 1050px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* Navigation */
+    .nav { position: sticky; top: 0; z-index: 1000; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.9rem 1.5rem; }
+    .nav-inner { max-width: 1050px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .nav-link { color: var(--text-2); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: color 0.2s; }
+    .nav-link:hover { color: var(--silk-green); }
+
+    .header {
+      background: linear-gradient(135deg, #0A1E17 0%, #003828 60%, #102E23 100%);
+      color: white; padding: 3.5rem 2rem; text-align: center; border-radius: 8px; margin-bottom: 2rem;
+      box-shadow: var(--shadow); position: relative; overflow: hidden; border-top: 4px solid #00E6A5;
+    }
+    .header h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.5rem; font-weight: 800; }
+    .header p { font-size: 1rem; color: #00E6A5; font-weight: 700; }
+
+    .search-bar {
+      width: 100%; padding: 1rem 1.5rem; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 1rem; font-family: inherit;
+      margin-bottom: 1.5rem; transition: all 0.3s;
+      background: var(--surface); color: var(--text-1);
+      box-shadow: var(--shadow);
+    }
+    .search-bar:focus { outline: none; border-color: var(--silk-green); box-shadow: 0 0 15px rgba(0,135,90,0.15); }
+
+    .category-tabs {
+      display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.8rem; margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      background: var(--surface); border: 1.5px solid var(--border); padding: 0.6rem 1.2rem;
+      border-radius: 20px; cursor: pointer; white-space: nowrap; font-family: inherit;
+      font-weight: 700; font-size: 0.82rem; color: var(--text-2); transition: all 0.2s;
+    }
+    .tab-btn:hover { border-color: var(--silk-green); color: var(--silk-green); }
+    .tab-btn.active { background: var(--silk-green); color: #FFFFFF; border-color: var(--silk-green); font-weight: 800; }
+
+    .prompt-card {
+      background: var(--surface); border-radius: 8px; overflow: hidden;
+      margin-bottom: 1.8rem; box-shadow: var(--shadow);
+      border: 1.5px solid var(--border); border-left: 4px solid var(--silk-green);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .prompt-card:hover { transform: translateY(-2px); border-color: rgba(0,135,90,0.4); }
+    
+    .prompt-header {
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;
+    }
+    .prompt-title h3 { font-size: 1.2rem; color: var(--text-1); margin-bottom: 0.3rem; font-weight: 800; }
+    .prompt-meta {
+      display: inline-block; font-size: 0.72rem; color: var(--silk-green);
+      background: rgba(0, 135, 90, 0.08); padding: 0.25rem 0.7rem; border-radius: 12px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(0, 135, 90, 0.25);
+    }
+    .prompt-desc { font-size: 0.85rem; color: var(--text-3); }
+
+    .prompt-body { padding: 1.5rem; background: var(--surface-card); }
+    .prompt-text {
+      font-family: 'Consolas', 'Courier New', monospace; font-size: 0.88rem;
+      white-space: pre-wrap; line-height: 1.6; color: var(--text-1);
+      background: var(--code-bg); padding: 1.2rem; border-radius: 6px;
+      border: 1px solid var(--border); max-height: 380px; overflow-y: auto;
+    }
+    
+    .prompt-footer {
+      padding: 0.9rem 1.5rem; background: var(--surface);
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+    }
+    .copy-btn {
+      background: rgba(0, 135, 90, 0.08); color: var(--silk-green); border: 1.5px solid var(--silk-green);
+      padding: 0.5rem 1.2rem; border-radius: 4px; font-weight: 800; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.2s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .copy-btn:hover { background: var(--silk-green); color: #FFFFFF; }
+    .copy-btn.copied { background: #10B981; color: #fff; border-color: #10B981; }
+
+    footer { text-align: center; padding: 3rem; color: var(--text-3); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div style="font-weight: 800; color: var(--brand-title); font-size: 1.05rem; font-family: 'Playfair Display', serif;">
+      <span style="color:var(--silk-green)">SILK</span> Development <span style="font-weight:400; color:var(--text-3); font-size:0.85rem;">× Claude AI</span>
+    </div>
+    <div style="display: flex; gap: 1.4rem;">
+      <a href="index.html" class="nav-link">🏠 მთავარი</a>
+      <a href="ai-tools.html" class="nav-link">🛠️ ხელსაწყოები</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <header class="header">
+    <p>Anthropic Claude Optimized Library</p>
+    <h1>Silk Development - პრომპტების ბაზა</h1>
+    <p style="color: #E2E8F0; font-size: 0.9rem; font-weight: normal; margin-top: 6px;">
+      სპეციალურად Silk Development-ის 5 დეპარტამენტისა და აქტიური პროექტებისთვის მომზადებული მითითებები.
+    </p>
+  </header>
+
+  <input type="text" id="searchInput" class="search-bar" placeholder="🔍 მოძებნე პრომპტი (მაგალითად: BANT, RFP, ხელშეკრულება, Silk Towers, რეპორტინგი)...">
+
+  <div class="category-tabs">
+    <button class="tab-btn active" data-cat="all">ყველა</button>
+    <button class="tab-btn" data-cat="frameworks">🧠 ჩარჩოები (CREATE / CRISPE)</button>
+    <button class="tab-btn" data-cat="sales">📈 გაყიდვები (Commercial)</button>
+    <button class="tab-btn" data-cat="projects">📐 პროექტები და არქიტექტურა</button>
+    <button class="tab-btn" data-cat="legal-hr">⚖️ იურიდიული და HR</button>
+    <button class="tab-btn" data-cat="finance">💰 ფინანსები და ანალიტიკა</button>
+    <button class="tab-btn" data-cat="marketing">🎨 მარკეტინგი და PR</button>
+  </div>
+
+  <div id="promptsContainer">
+
+    <!-- 1. FRAMEWORKS: CREATE -->
+    <div class="prompt-card" data-category="frameworks">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>CREATE ჩარჩო - უნივერსალური პრომპტის ფორმულა</h3>
+          <p class="prompt-desc">ნებისმიერი კომპლექსური სამუშაო მოთხოვნის აგება სრული კონტექსტითა და შეზღუდვებით.</p>
+        </div>
+        <span class="prompt-meta">Frameworks</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის უფროსი მრჩეველი და ბიზნეს-ანალიტიკოსი.
+
+[C - Context]:
+Silk Development არის წამყვანი დეველოპერული და ჰოსპიტალითი ჰოლდინგი საქართველოში (21-ზე მეტი წლის გამოცდილებით, $1.3B-ზე მეტი ინვესტიციით), რომლის პორტფოლიოშია Silk Towers (ბათუმი), Green Cape Botanico, Telegraph Hotel, Radisson Blu ქსელი და Tsinandali Estate.
+
+[R - Role]:
+შენი როლია იმოქმედო როგორც დეპარტამენტის წამყვანმა სპეციალისტმა და მოამზადო მაღალი სიზუსტის დოკუმენტი.
+
+[E - Explicit Task]:
+[ჩაწერეთ კონკრეტული ამოცანა: მაგალითად: მოამზადე Silk Towers-ის საინვესტიციო შეთავაზების მოკლე რეზიუმე საერთაშორისო ინვესტორისთვის].
+
+[A - Audience & Tone]:
+სამიზნე აუდიტორია: [მაღალი შემოსავლის მქონე ინვესტორი / შიდა მენეჯმენტი].
+ტონი: პრემიუმ, თავდაჯერებული, ლაკონიური, ფაქტებზე და ციფრებზე დაფუძნებული.
+
+[T - Target Format & Structure]:
+1. Executive Summary (3 წინადადება)
+2. ძირითადი უპირატესობები და ROI მაჩვენებლები (Bullet points)
+3. გადახდის ეტაპობრივი გრაფიკი და გარანტიები
+4. მკაფიო Call-to-Action (შემდეგი ნაბიჯი).
+
+[E - Exclusions & Constraints]:
+- არ გამოიყენო ზედმეტად გადატვირთული კლიშეები ("უნიკალური შესაძლებლობა", "არ გამოტოვოთ").
+- დაიცავი Silk Development-ის ოფიციალური Brand Voice.
+- პასუხი მოამზადე [ქართულ / ინგლისურ] ენაზე.</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">გამოიყენება: Claude 3.7 / Sonnet</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 2. FRAMEWORKS: BRAINSTORMING -->
+    <div class="prompt-card" data-category="frameworks">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>იდეების გენერაცია (Brainstorming) - 6 ქუდის მეთოდი</h3>
+          <p class="prompt-desc">კრეატიული პრობლემების გადაჭრა და ახალი კონცეფციების გენერირება მრავალმხრივი პერსპექტივით.</p>
+        </div>
+        <span class="prompt-meta">Frameworks / Creativity</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის სტრატეგიული განვითარების გუნდის ფასილიტატორი.
+
+ჩვენი გამოწვევა/ამოცანაა:
+[ჩაწერეთ პრობლემა: მაგალითად: როგორ გავზარდოთ Green Cape Botanico-ს გაყიდვები არასეზონურ პერიოდში].
+
+გთხოვ, ჩაატარო "ედვარდ დე ბონოს 6 მოაზროვნე ქუდის" ბრეინშტორმინგის სესია და თითოეული პერსპექტივიდან შემოგვთავაზო 2-3 უნიკალური, არაორდინალური იდეა:
+
+1. ⚪ თეთრი ქუდი (ფაქტები და მონაცემები): რა ვიცით ბაზრის შესახებ ამ მიმართულებით?
+2. 🔴 წითელი ქუდი (ემოციები და ინტუიცია): რა შინაგან სურვილებსა თუ ემოციებზე უნდა ვითამაშოთ კლიენტთან?
+3. ⚫ შავი ქუდი (რისკები და სიფრთხილე): რა არის ყველაზე ცუდი სცენარი და მთავარი წინაღობა?
+4. 🟡 ყვითელი ქუდი (ოპტიმიზმი და სარგებელი): რა არის ის ფარული ღირებულება, რაც კონკურენტებს არ აქვთ?
+5. 🟢 მწვანე ქუდი (კრეატივი და ინოვაცია): შემოგვთავაზე 3 სრულიად არასტანდარტული, რადიკალური "Out-of-the-box" კამპანია ან სერვისი.
+6. 🔵 ლურჯი ქუდი (შეჯამება): ზემოაღნიშნულიდან გამომდინარე, ჩამოაყალიბე 1 საბოლოო კონსოლიდირებული მოქმედების გეგმა (Action Plan).
+
+პასუხი მოამზადე სტრუქტურირებულად და პრაქტიკულად.</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">გამოიყენება: სტრატეგიული დაგეგმარება / მარკეტინგი</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 3. SALES: BANT & Fit Scoring -->
+    <div class="prompt-card" data-category="sales">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>BANT Scoring და CRM ჩანაწერის გენერირება</h3>
+          <p class="prompt-desc">დაუმუშავებელი შემოსული ლიდის კვალიფიკაცია, ქულების მინიჭება და CRM ბარათის შევსება.</p>
+        </div>
+        <span class="prompt-meta">Sales / Commercial</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის გაყიდვების დირექტორი და CRM ანალიტიკოსი.
+
+გააანალიზე ქვემოთ მოცემული მიმოწერის/ზარის ჩანაწერი პოტენციურ კლიენტთან და შეაფასე BANT მეთოდოლოგიით Silk Towers-ის ან Green Cape Botanico-ს პროექტისთვის:
+
+[კლიენტის მონაცემები და მიმოწერის ჩანაწერი]:
+"""
+[ჩასვით ზარის მოკლე შინაარსი ან WhatsApp ჩატი]
+"""
+
+გთხოვთ მოამზადო:
+1. **BANT Scoring ცხრილი (1-5 ქულა თითოეულზე + დასაბუთება):**
+   - Budget (ბიუჯეტი და გადახდის მზაობა)
+   - Authority (გადაწყვეტილების მიმღები პირია თუ შუამავალი)
+   - Need (მოთხოვნა: საინვესტიციო შემოსავალი, საცხოვრებელი თუ საზაფხულო რეზიდენცია)
+   - Timeline (შეძენის ვადა: დაუყოვნებლივ, 1-3 თვე, 6+ თვე)
+2. **ლიდის სტატუსი:** [Hot / Warm / Nurture / Low Fit] + Fit Score (ჯამური ქულა / 20).
+3. **CRM Summary:** 3-წინადადებიანი მოკლე ჩანაწერი CRM ბარათისთვის.
+4. **დაუყოვნებელი საპასუხო შეტყობინება (WhatsApp):** პერსონალიზებული, ემპათიური და შემდეგი ნაბიჯის შემთავაზებელი (CTA).</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">Silk Sales Claude Project</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 3. SALES: 24/72h Follow-Up Sequence -->
+    <div class="prompt-card" data-category="sales">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>24/72-საათიანი მრავალენოვანი Follow-up სკრიპტი</h3>
+          <p class="prompt-desc">შეხვედრის ან ობიექტის დათვალიერების შემდგომი კომუნიკაციის ჯაჭვი 3 ენაზე (GEO / ENG / RUS).</p>
+        </div>
+        <span class="prompt-meta">Sales / Commercial</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის VIP Sales Executive.
+
+მომხმარებელმა [სახელი] გუშინ დაათვალიერა [Silk Towers / Green Cape Botanico]-ს აპარტამენტი. მისთვის მთავარი პრიორიტეტი იყო [მაგალითად: ზღვის პანორამული ხედი, მაღალი საიჯარო ამონაგები და Silk Hospitality-ის მენეჯმენტი].
+
+მოამზადე შემდგომი კომუნიკაციის (Follow-up) 2-ეტაპიანი ჯაჭვი:
+
+1. **24-საათიანი შეტყობინება (WhatsApp / Email):**
+   - მადლობა შეხვედრისთვის
+   - მისთვის შერჩეული 2 კონკრეტული აპარტამენტის გეგმარებისა და ROI გათვლის მიბმა
+   - შეთავაზება დეტალური ფინანსური მოდელის გასავლელად.
+
+2. **72-საათიანი Value-Add შეხსენება:**
+   - დამატებითი ღირებულების მიწოდება (მაგალითად: Silk Towers-ის ინფრასტრუქტურის ან ბოტანიკოს ექსკლუზიური მართვის პირობების განმარტება)
+   - მოწვევა 15-წუთიან ონლაინ კონსულტაციაზე გაყიდვების ხელმძღვანელთან.
+
+მოამზადე ტექსტები:
+- ქართულად
+- ინგლისურად
+- რუსულად (კულტურული ტონისა და თავაზიანობის შენარჩუნებით).</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">გაყიდვების დეპარტამენტი</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 4. PROJECTS: RFP Matrix -->
+    <div class="prompt-card" data-category="projects">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>ტენდერების და ქვეკონტრაქტორთა RFP წინადადებების შედარება</h3>
+          <p class="prompt-desc">სამშენებლო და საინჟინრო წინადადებების ანალიზი და რისკების გამოვლენა.</p>
+        </div>
+        <span class="prompt-meta">Projects & Architecture</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის პროექტების მთავარი მენეჯერი (PM Lead).
+
+ქვემოთ მოცემულია სამი ქვეკონტრაქტორი კომპანიის მიერ წარმოდგენილი წინადადება [პროექტის სახელი, მაგალითად: Silk Towers-ის ფასადის მოპირკეთება / HVAC სისტემა]:
+
+"""
+[ჩასვით შემოთავაზებები / მონაცემები]
+"""
+
+გთხოვთ მოამზადო Claude Artifacts-ის ფორმატში:
+1. **შედარებითი მატრიცა (ცხრილი):**
+   - კომპანიის დასახელება
+   - საერთო ღირებულება (GEL / USD)
+   - შესრულების ვადა (კვირები)
+   - საგარანტიო პირობები და გამოცდილება
+   - Silk Development-ის ტექნიკურ მოთხოვნებთან შესაბამისობა (%)
+2. **Red Flags და ფარული რისკები:**
+   - სად არის ბიუჯეტის გადაცდომის ან ვადების დაგვიანების რისკი?
+   - რა დამატებითი ხარჯები არ არის გათვალისწინებული BOQ-ში?
+3. **PM რეკომენდაცია:** დასაბუთებული გადაწყვეტილება, რომელ ვენდორთან გავაგრძელოთ მოლაპარაკება და რა პირობებზე მოვითხოვოთ ფასდაკლება.</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">Projects Team Claude Project</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 5. LEGAL: Contract Audit -->
+    <div class="prompt-card" data-category="legal-hr">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>ხელშეკრულების სიღრმისეული აუდიტი და Red Flags</h3>
+          <p class="prompt-desc">ნასყიდობის, იჯარისა და მომსახურების ხელშეკრულებების იურიდიული შემოწმება.</p>
+        </div>
+        <span class="prompt-meta">Legal & HR</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის უფროსი იურისტი (Chief Legal Officer).
+
+გააანალიზე თანდართული ხელშეკრულების პროექტი Silk Development-ის ინტერესების მაქსიმალური დაცვის პრიზმით:
+
+"""
+[ჩასვით ხელშეკრულების ტექსტი ან ატვირთეთ დოკუმენტი Claude-ში]
+"""
+
+გამოყავი და დააჯგუფე შემდეგი ანალიზი:
+1. **კრიტიკული რისკები (High Priority Red Flags):**
+   - არათანაზომიერი საჯარიმო სანქციები და პირგასამტეხლო.
+   - ხელშეკრულების ცალმხრივად შეწყვეტის ბუნდოვანი პირობები.
+   - პასუხისმგებლობის შეზღუდვის (Limitation of Liability) ხარვეზები.
+2. **სამშენებლო და დეველოპერული სპეციფიკა:**
+   - ფორს-მაჟორის, მიღება-ჩაბარების აქტის გაფორმებისა და დეფექტების გამოსწორების ვადები.
+3. **რეკომენდებული ალტერნატიული რედაქცია:**
+   - პრობლემური მუხლების კონკრეტული ჩასწორებული ფორმულირება (Clause-by-Clause Redline) ქართულ და ინგლისურ ენებზე.</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">Legal Department</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 6. HR: CV Screening Rubric -->
+    <div class="prompt-card" data-category="legal-hr">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>CV სკრინინგის რუბრიკა და ინტერვიუს სცენარი</h3>
+          <p class="prompt-desc">კანდიდატების ობიექტური შეფასება და კომპეტენციებზე დაფუძნებული შეკითხვები.</p>
+        </div>
+        <span class="prompt-meta">Legal & HR</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის HR დირექტორი.
+
+ვაკანსია: [მაგალითად: გაყიდვების მენეჯერი / პროექტის არქიტექტორი / ფინანსური ანალიტიკოსი].
+სამუშაოს აღწერა და მოთხოვნები:
+"""
+[ჩასვით ვაკანსიის მოკლე აღწერა]
+"""
+
+კანდიდატის რეზიუმე:
+"""
+[ჩასვით კანდიდატის CV ტექსტი]
+"""
+
+მოამზადე:
+1. **კვალიფიკაციის მატრიცა (1-10 ქულა თითო კომპონენტზე):**
+   - რელევანტური ინდუსტრიული გამოცდილება (დეველოპმენტი/უძრავი ქონება/ჰოსპიტალითი)
+   - ტექნიკური უნარები და ენების ცოდნა
+   - კულტურული შესაბამისობა Silk Development-ის სტანდარტებთან.
+2. **Shortlist რეკომენდაცია:** [Strong Yes / Yes / Hold / Reject] + მოკლე არგუმენტაცია.
+3. **ინტერვიუს 5 სიღრმისეული შეკითხვა (STAR მეთოდით):** რეზიუმეში გამოვლენილი საეჭვო ან ძლიერი მხარეების შესამოწმებლად.</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">HR Department</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 7. FINANCE: Narrative Reporting -->
+    <div class="prompt-card" data-category="finance">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>ფინანსური მოდელის ინტერპრეტაცია და Executive Narrative</h3>
+          <p class="prompt-desc">ფინანსური ცხრილებიდან მმართველობითი შეჯამების (Executive Summary) მიღება.</p>
+        </div>
+        <span class="prompt-meta">Finance & Accounting</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის ფინანსური დირექტორი (CFO).
+
+გააანალიზე ქვემოთ მოცემული კვარტალური ფინანსური მონაცემები [Silk Towers / Botanico / Telegraph]:
+
+"""
+[ჩასვით ფინანსური მონაცემები: შემოსავლები, CAPEX, OPEX, გაყიდვების გეგმა vs ფაქტი, საპროცენტო ხარჯები]
+"""
+
+მოამზადე დირექტორთა საბჭოსთვის (Board of Directors):
+1. **Executive Financial Summary (300 სიტყვა):** მთავარი ფინანსური მიგნებები მარტივ და გასაგებ ენაზე.
+2. **Variance Analysis (გადახრების ანალიზი):**
+   - სად გვაქვს დადებითი და უარყოფითი გადახრები ბიუჯეტიდან?
+   - რა არის ძირითადი მამოძრავებელი ფაქტორები (Cost Drivers)?
+3. **Cash Flow & Liquidity პროგნოზი:** რისკები მომდევნო 6 თვის ჭრილში.
+4. **სამოქმედო რეკომენდაციები:** 3 კონკრეტული ნაბიჯი ხარჯების ოპტიმიზაციისა და მარჟის გაუმჯობესებისთვის.</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">Finance Claude Project</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+    <!-- 8. MARKETING: Luxury Brand Voice -->
+    <div class="prompt-card" data-category="marketing">
+      <div class="prompt-header">
+        <div class="prompt-title">
+          <h3>Silk Luxury Brand Voice - კონტენტ-კამპანია და PR რელიზი</h3>
+          <p class="prompt-desc">პრემიუმ უძრავი ქონებისა და ჰოსპიტალითის კომუნიკაცია საერთაშორისო სტანდარტით.</p>
+        </div>
+        <span class="prompt-meta">Marketing & PR</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="prompt-text">შენ ხარ Silk Development-ის Brand & PR Lead.
+
+პროექტი: [Silk Towers Batumi / Telegraph Hotel / Green Cape Botanico].
+თემა: [მაგალითად: მშენებლობის ახალი ეტაპი / საერთაშორისო ჯილდოს მოპოვება / ახალი პენტჰაუსების გაყიდვის დაწყება].
+
+გაითვალისწინე Silk Development-ის Brand Voice:
+- ელეგანტური, თავშეკავებული ფუფუნება (Understated Luxury)
+- აქცენტი არქიტექტურულ მემკვიდრეობაზე, მდგრად განვითარებასა და საერთაშორისო ჰოსპიტალითი სერვისზე (The Leading Hotels of the World, Radisson).
+
+მოამზადე:
+1. **ოფიციალური PR პრეს-რელიზი (ქართულ და ინგლისურ ენებზე):** Forbes Georgia-ს, BMG-სა და საერთაშორისო მედიისთვის.
+2. **LinkedIn Executive Post:** Silk Development-ის მენეჯმენტის სახელით.
+3. **Instagram/Facebook ვიზუალური პოსტების სერია (3 პოსტი):** ქეფშენები, ჰეშთეგები და ვიზუალის AI გენერაციის პრომპტი (Midjourney Prompt).</pre>
+      </div>
+      <div class="prompt-footer">
+        <span style="font-size:0.78rem; color:var(--text-3);">Marketing & Creative</span>
+        <button class="copy-btn">📋 კოპირება</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Silk Development × Walnut AI Training Academy &copy; 2026
+  </footer>
+</div>
+
+<script>
+  // Load saved theme preference (default is light)
+  var saved = localStorage.getItem('silk-theme');
+  if (saved === 'dark') document.body.classList.add('dark');
+
+  // Search & Filter functionality
+  const searchInput = document.getElementById('searchInput');
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const cards = document.querySelectorAll('.prompt-card');
+
+  let activeCat = 'all';
+
+  function filterCards() {
+    const q = searchInput.value.toLowerCase().trim();
+    cards.forEach(card => {
+      const cat = card.getAttribute('data-category');
+      const text = card.innerText.toLowerCase();
+      const matchCat = (activeCat === 'all' || cat === activeCat);
+      const matchSearch = (!q || text.includes(q));
+
+      if (matchCat && matchSearch) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  searchInput.addEventListener('input', filterCards);
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCat = btn.getAttribute('data-cat');
+      filterCards();
+    });
+  });
+
+  // Copy to clipboard
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.prompt-card');
+      const text = card.querySelector('.prompt-text').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓ დაკოპირდა!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

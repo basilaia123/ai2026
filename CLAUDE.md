@@ -42,6 +42,7 @@ Static HTML educational and proposal materials for AI courses and corporate trai
 | **Megalab** | `megalab/` | Georgian | Multi-day (`day-X-slides.html`), sidebar nav |
 | **Mardi Holding** (Corporate) | `mardi/` | Georgian | Multi-lecture, sidebar nav |
 | **Eurodrug Georgia** (Corporate) | `eurodrug/` | Georgian | Proposal + sidebar-nav sessions |
+| **MedPharma +** (Corporate) | `medpharma/` | Georgian | Proposal + interactive web presentation |
 | **chatgpt.ge** | `chatgpt.ge/` | Georgian | Marketing/landing pages |
 
 Many other top-level folders (`caritas`/`caritas_georgia`/`caritasgeorgia`, `credo`, `GITA`, `orbi`, `mof`, `mcdonalds`, `job26`, `labtechnology`, `loialte_ebrd`, `openday`, `award`, `unlimited`, `gh`) are one-off client proposals or event pages following the same standalone-HTML conventions as above; check each folder's own `index.html` before assuming a shared structure. `dead_offers/` holds archived proposals — treat as read-only unless explicitly asked.
