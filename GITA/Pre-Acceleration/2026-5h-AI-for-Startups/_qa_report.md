@@ -41,7 +41,7 @@
 | ☕ | შესვენება (ერთჯერადი) | 30 | 1:35 |
 | VII | Technical Specification | 20 | 1:55 |
 | VIII | Lovable MVP + GDPR + Export | 80 | 3:15 |
-| IX | ავტომატიზაცია (Make.com) - გამარტივებული Workflow | 45 | 4:00 |
+| IX | AI Pitch Deck Architecture, Storytelling & Gamma | 50 | 4:00 |
 | X | Pitch Deck + Demo Day + AI Grill Session | 60 | 5:00 |
 
 ---

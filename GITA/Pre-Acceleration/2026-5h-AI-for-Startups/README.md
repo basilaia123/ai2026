@@ -73,8 +73,8 @@
 | ☕ | **შესვენება (ერთჯერადი, 30 წთ)** | 30 | 1:35 |
 | VII | Tech Spec (პროგრამისტებისთვის) | 20 | 1:55 |
 | VIII | Lovable + Supabase + Custom Domain | 80 | 3:15 |
-| IX | ავტომატიზაცია (Make.com) | 45 | 4:00 |
-| X | Pitch Deck 5→10 + Demo Day + Q&A | 60 | 5:00 |
+| IX | AI Pitch Deck Architecture, Storytelling & Gamma | 50 | 4:00 |
+| X | Pitch Delivery, Live Rehearsals & GITA Jury Grill | 60 | 5:00 |
 
 ---
 
@@ -91,7 +91,7 @@
 - ☐ Lean Canvas + Value Proposition PDF
 - ☐ 3 JTBD სცენარი
 - ☐ Landing Page-ის დახვენა (5 იტერაცია)
-- ☐ 2 Automation Workflow Make.com-ში
+- ☐ 3-წუთიანი Pitch Script & რეპეტიცია (AI Jury Grill)
 - ☐ Pitch Deck-ის გაფართოება (5 → 10 სლაიდი)
 - ☐ Demo Day-მდე მომზადება (5-წუთიანი Pitch რეპეტიცია)
 
@@ -106,12 +106,12 @@
 | ცოდნის ბაზა | NotebookLM | Personal knowledge base |
 | **პრეზენტაცია** | **Gamma.app** | Pitch Deck (PowerPoint vs Gamma) |
 | No-Code MVP | Lovable.dev | Landing Pages, MVPs |
-| ავტომატიზაცია | Make.com | Multi-step workflows |
+| პრეზენტაცია & პიჩინგი | Gamma.app | 10-სლაიდიანი Pitch Deck & Live Demo |
 | ვიზუალი | Canva AI / Ideogram | Brand assets, photo generation |
 
-### შეფასების Arena-ები (2026)
-- **LMArena (lmarena.ai):** GPT-5.6 Sol > Claude Sonnet 5 > Gemini 3.5 Pro > Claude Fable 5 > DeepSeek R1
-- **DesignArena (designarena.ai):** Ideogram v3/v4 (ლოგო) > DALL-E 3 (ბანერი) > Midjourney V8.1 (არტი) > Flux.2 / Flux.1.1 Pro (ფოტო)
+### შეფასების Arena-ები (2026 წლის შემოდგომა)
+- **LMArena (lmarena.ai):** Claude (Extended Thinking) > OpenAI o3 / ChatGPT > Gemini > DeepSeek
+- **DesignArena (designarena.ai):** Ideogram (ლოგო, ტიპოგრაფია) > Flux (ფოტორეალიზმი) > Midjourney (არტი) > Recraft (ვექტორები)
 
 ---
 
@@ -120,9 +120,9 @@
 | ფაილი | მდგომარეობა | შენიშვნა |
 |---|---|---|
 | index.html | ✅ 2-დღიანი | Hero + schedule + outcomes |
-| day_plan.md | ✅ სრული | 10 ბლოკი + Part A/B homework |
-| day1-slides.html | ✅ 19 slides | Welcome (22-24) + Day 1 |
-| day2-slides.html | ✅ 13 slides | Day 2 |
+| day_plan.md | ✅ სრული | 10 ბლოკი + Part A/B homework (2026 მოდელები) |
+| day1-slides.html | ✅ 64 slides | Welcome + Day 1 (Frontier, Reasoning, Deep Research, Validation) |
+| day2-slides.html | ✅ 53 slides | Day 2 (Vibe Coding, Lovable, Pitch Deck, Pitch Delivery & Rehearsals) |
 | prompt-library.html | ✅ 35+ prompts | 8 კატეგორია |
 | homework-ideation.html | ✅ Part A + B | 2-ნაწილადი |
 | v2-lecture-ideation-quick-ref.html | ✅ 2-დღიანი | Day 1 + Day 2 tables |

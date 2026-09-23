@@ -24,9 +24,9 @@
 - [ ] [NotebookLM](https://notebooklm.google.com) - ცოდნის ბაზისთვის
 - [ ] [Lovable.dev](https://lovable.dev) - 🟢 **Day 2-ში გვჭირდება!**
 - [ ] [Gamma.app](https://gamma.app) - 🟢 **Day 2-ში Pitch Deck-ისთვის**
-- [ ] [Make.com](https://make.com) - 🟢 **Day 2-ში Automation-ისთვის**
+- [ ] [Ideogram.ai](https://ideogram.ai) - 🟢 **Day 2-ში ლოგოსა და ვიზუალებისთვის**
 
-**⚠️ შენიშვვა:** Lovable-სა და Make.com-ში Trial ანგარიშები საკმარისია Day 2-სთვის.
+**⚠️ შენიშვნა:** Lovable-სა და Gamma-ში უფასო ანგარიშები სრულიად საკმარისია Day 2-სთვის.
 
 ---
 
@@ -151,8 +151,8 @@ Day 1-ში შენ შექმენი **2 Personas** (Block IV). **3-ე 
 - **11:05 - 11:35** - ☕ შესვენება (30 წთ)
 - **11:35 - 11:55** - Block VII: Technical Specification (20 წთ)
 - **11:55 - 13:15** - Block VIII: Lovable MVP + GDPR + GitHub Export (80 წთ)
-- **13:15 - 14:00** - Block IX: ავტომატიზაცია (Make.com) (45 წთ)
-- **14:00 - 15:00** - Block X: Pitch Deck + AI Grill Session (60 წთ)
+- **13:15 - 14:05** - Block IX: AI Pitch Deck Architecture, Storytelling & Gamma (50 წთ)
+- **14:05 - 15:05** - Block X: Pitch Delivery, Live Rehearsals & GITA Jury Grill (60 წთ)
 
 **📦 რა მოვიტანოთ Day 2-ზე:**
 - [ ] ლეპტოპი (დამუხტული)
@@ -176,6 +176,6 @@ Day 1-ში შენ შექმენი **2 Personas** (Block IV). **3-ე 
 
 **🌟 იდეა არ არის ის, რაც ფურცელზე წერი - იდეა არის ის, რაც განხორციელდება.**
 
-**ხვალეინდელ Day 2-ში ვქმნით მას ერთად. AI + Tech Spec + Lovable + Make + Gamma = Live MVP + Pitch Deck.**
+**ხვალეინდელ Day 2-ში ვქმნით მას ერთად. AI + Tech Spec + Lovable + Gamma = Live MVP + 10-Slide Pitch Deck + Jury-Ready Pitch.**
 
 🚀 **ხვალეინდეს საღამომდე ნახვამდე!**

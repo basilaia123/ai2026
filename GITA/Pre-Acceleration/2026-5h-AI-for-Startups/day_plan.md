@@ -16,7 +16,7 @@
 3. **Brand Identity:** Visual Style Guide + 5-6 ვიზუალი + Brand Voice
 4. **Technical Specification:** 6-კომპონენტიანი Tech Spec + Lovable Self-Contained Prompt
 5. **Live MVP:** Live Landing Page (Lovable + Supabase) + Custom Domain
-6. **1 Automation Workflow:** Make.com Multi-step + Error Handling
+6. **Pitch Delivery & Storytelling:** 3-წუთიანი პიჩ-სკრიპტი + AI Jury Grill-ით მომზადებული თავდაცვა
 7. **10-სლაიდიანი Pitch Deck:** Gamma-ში "Engineering Ready" marker-ით
 8. **20+ AI პრომპტის ბიბლიოთება** ყოველკვირეული გამოყენებისთვის
 
@@ -25,11 +25,11 @@
 - ვალიდაციის უნარი: SCAMPER + Lean Canvas + 3 Personas + JTBD
 - ბრენდის უნარი: Brand Architecture + Visual Style Guide + Photo Generation
 - ტექნიკური უნარი: Tech Spec + Lovable + Supabase + Custom Domain
-- ავტომატიზაციის უნარი: Make.com Workflows
+- პრეზენტაციული და პიჩინგის უნარი: 10-სლაიდიანი Pitch Deck + 3-წუთიანი Pitch + GITA Q&A ტაქტიკა
 - პრეზენტაციული უნარი: Pitch Deck + 5-წუთიანი Pitch + Q&A Tactics
 
 **წინასწარი მოთხოვნა მონაწილეებისთვის:** ტრენინგამდე 1 კვირით ადრე
-- შექმნან უფასო ანგარიშები: [Claude.ai](https://claude.ai), [ChatGPT](https://chat.openai.com), [Perplexity.ai](https://perplexity.ai), [NotebookLM](https://notebooklm.google.com), [Lovable.dev](https://lovable.dev), [Gamma.app](https://gamma.app), [Make.com](https://make.com)
+- შექმნან უფასო ანგარიშები: [Claude.ai](https://claude.ai), [ChatGPT](https://chat.openai.com), [Perplexity.ai](https://perplexity.ai), [NotebookLM](https://notebooklm.google.com), [Lovable.dev](https://lovable.dev), [Gamma.app](https://gamma.app)
 - მოიფიქრონ 1-2 წინადადებიანი აღწერა საკუთარი ბიზნეს იდეის ან პრობლემის
 - გაიარონ პრე-ტესტი (Google Form-ის ბმული გაიგზავნება 3-5 დღით ადრე)
 
@@ -44,73 +44,67 @@
 
 | Block | თემა | წუთი | კუმულაციური |
 |---|---|---|---|
-| 🆕 **Welcome + Projects Showcase** | **მონაწილეთა იდეების პრეზენტაცია ლექტორისთვის** | **20** | **0:20** |
-| **I** | AI-ის სტრატეგიული ჩარჩო + Customer Interview Basics | **40** | 1:00 |
-| **II** | AI ინსტრუმენტები | **30** | 1:10 |
-| ☕ | **შესვენება (ერთჯერადი, 30 წთ)** | **30** | **1:40** |
-| **III** | Brainstorming + AI-ით იდეაცია | **65** | 3:05 |
-| **IV** | ვალიდაცია + Lean Canvas + 2 Personas + Interview Design | **55** | 4:00 |
-| **V** | Day 1 Wrap-up + Day 2 Brief + Homework Setup | **60** | **5:00** |
+| 🆕 **Welcome + Opening Hook** | **იდეების გაცნობა + Live "Brutal VC Roast" Demo** | **25** | **0:25** |
+| **I** | AI ინსტრუმენტების ლანდშაფტი, Live Model Battle & C.R.E.A.T.E. | **35** | 1:00 |
+| 🆕 **Task #1** | **🛠️ პრაქტიკული დავალება: AI Customer Simulator (CustDev)** | **15** | 1:15 |
+| ☕ | **შესვენება (ერთჯერადი, 25 წთ)** | **25** | **1:40** |
+| **II** | Brainstorming & Contrarian Thinking (Task #2: 10x Sprint) | **40** | 2:20 |
+| **III** | Rapid Lean Canvas & Deep Research (Task #3: Canvas & SWOT) | **50** | 3:10 |
+| **IV** | ბრენდის დაბადება & 🆕 Task #4: Instant Logo Sprint Ideogram-ში | **35** | 3:45 |
+| **V** | Day 1 Wrap-up + Day 2 Brief + Homework Setup | **15** | **4:00** (5:00 Buffer) |
 
 ---
 
-### **🆕 Welcome + Projects Showcase (20 წუთი)** - Day 1-ის დასაწყისი, Block I-მდე
+### **🆕 Welcome + Opening Hook & Projects Showcase (25 წუთი)** - Day 1-ის დასაწყისი
 
-**მიზანი:** ლექტორი პირადად გაიცნობს ყველა მონაწილის პროექტს, რომ Block I-VIII-ში პერსონალიზებული მაგალითები გამოიყენოს.
+**მიზანი:** პირველივე წუთებიდან მაღალი ენერგია, მონაწილეთა იდეების გაცნობა და AI-ს რეალური ძალის დემონსტრირება.
 
-* **3 წთ | Welcome + Logistics + Demo Day-ის ჩარჩო**
-  * **ტრენერი:** 2-დღიანი პროგრამის მიმოხილვა (10 საათი = 5+5), Demo Day-ის ჩარჩო (4 კვირიანი პრე-აქსელერაცია, 25,000 ლარიანი გრანტი).
-  * **ლოგისტიკა:** WiFi პაროლი, restroom, break-ის დრო, "კითხვები ნებისმიერ დროს" პრინციპი.
-  * **"დღვანდელი მიზანი":** 5 საათში ყველას ექნება ვალიდირებული იდეა + Lean Canvas + 1-წინადადებიანი Pitch Statement.
-
-* **15 წთ | Participant Projects Showcase - მონაწილეთა სტარტაპ იდეების პრეზენტაცია ლექტორთან**
-  * **ფორმატი (თითოეული მონაწილე, 1 წთ 30 წამი):**
-    - **30 წამი:** "მე ვარ [სახელი], მუშაობ [სფერო] სფეროში."
-    - **30 წამი:** "ჩემი იდეაა: [1-2 წინადადებიანი აღწერა პროდუქტის / პრობლემის / სამიზნე მომხმარებლის]."
-    - **30 წამი:** ტრენერის 1-2 კლარიფიცირებული კითხვა: "მთავარი პრობლემა რა არის?" / "რომელ ეტაპზეა იდეა?"
-  * **8-10 მონაწილე:** 1 წთ 30 წამი × 8-10 = **12-15 წთ** (სრულდება 15 წთ-ში).
-  * **ტრენერის როლი:** ქაღად ჩანაწერებს, რეალურ დროში, **3 კონკრეტული იდეა** ირჩევს რომლებსაც განმავლობაში მაგალითად გამოიყენებს.
-  * **🆕 Personalization Note:** Block I-VIII-ის ტრენერი 1-2 კონკრეტულ მონაწილეს იხმიანებს სახელით - "როგორც [სახელი]-ის [იდეის სფერო] სფეროს მონაწილემ, თქვენთვის ეს ნიშნავს..."
-
-* **2 წთ | Opening + Rules**
-  * "დავიწყოთ Block I-ით!" - AI Framework + Customer Interview Basics (40 წთ).
-  * **ინსტრუქცია:** ყველა მონაწილეს შეუძლია ჰკითხოს ნებისმიერ დროს (ხელის აწევით ან Break-ზე).
+* **3 წთ | Welcome + Logistics + Demo Day-ის ჩარჩო:** 2-დღიანი პროგრამის მიმოხილვა, WiFi, 25,000₾ გრანტი.
+* **12 წთ | Participant Projects Showcase:** თითოეული მონაწილე 1 წუთში ამბობს თავის სახელს და იდეას (1-2 წინადადებით). ტრენერი ირჩევს 2-3 იდეას ლექციის ცოცხალი ქეისებისთვის.
+* **10 წთ | ⚡ Cold Open: Live "Brutal VC Roast" Demo (შოკისმომგვრელი ცოცხალი დემო):**
+  * ტრენერი ირჩევს 1 მოხალისეს და ეკითხება მის იდეას (30 წამში).
+  * პირდაპირ პროექტორზე Claude-ში უშვებს სპეციალურ პრომპტს: *"იმოქმედე როგორც Silicon Valley-ის ყველაზე მკაცრი და ცინიკოსი VC ინვესტორი. დაუნდობლად გაანადგურე ეს იდეა 3 პუნქტად — რატომ ჩავარდება 6 თვეში და რას არ ითვალისწინებს დამფუძნებელი."*
+  * 20 წამში AI დებს ზუსტ, დაუნდობელ კრიტიკას. დარბაზი მომენტალურად იღვიძებს!
+  * მეორე პრომპტი: *"ახლა იმოქმედე როგორც მსოფლიო დონის სტარტაპ მენტორი და გვითხარი, რა პივოტით გადავაქციოთ ეს მილიონიან ბიზნესად."*
+  * **შედეგი:** მონაწილეები პირველივე წუთებზე ხედავენ AI-ს რეალურ ძალას და ენერგია მაქსიმუმზე ადის!
 
 ---
 
-### **ბლოკი I: AI-ის სტრატეგიული ჩარჩო მეწარმეებისთვის + Customer Interview Basics (40 წუთი)**
+### **ბლოკი I: AI ინსტრუმენტების ლანდშაფტი, Live Model Battle & C.R.E.A.T.E. (35 წუთი)**
 
-* **5 წთ | AI-ს მუშაობის პრინციპი: რა არის LLM და როგორ მუშაობს?**
-  * **ტრენერი:** LLM (Large Language Model) არის ნეირონული ქსელი, რომელიც ტრენინგდება ტექსტის მილიარდ წიგნზე.
-  * **Transformer Architecture (Attention Is All You Need):** "ყურების" მექანიზმი - AI ფოკუსირებს მნიშვნელოვან სიტყვებზე.
-  * **Training Pipeline:** Pre-training (მილიარდი ტექსტი) → Fine-tuning (სპეციფიკური ამოცანები) → RLHF (ადამიანური უკუკავშირი).
-  * **Inference:** Token-by-token გენერაცია (სიტყვა-სიტყვა).
-  * **მიზანი:** მონაწილეებმა გაიგონ, რატომ ზოგიერთი prompt უკეთესია.
+* **5 წთ | როგორ "ფიქრობს" AI: სიტყვების პროგნოზი vs ღრმა აზროვნება (Reasoning):**
+  * მარტივი ანალოგია: შემდეგი სიტყვის გამოცნობა vs ნაბიჯ-ნაბიჯ ლოგიკური აზროვნება (Thinking / Reasoning).
+  * როდის ვიყენებთ სწრაფ მოდელებს და როდის — სააზროვნო რეჟიმს.
 
-* **5 წთ | AI ლანდშაფტი 2026: Frontier, Reasoning, Open-Source, Specialized**
-  * **Frontier Models:** GPT-5.6 Sol (OpenAI), Claude Sonnet 5 (Anthropic), Gemini 3.5 Pro (Google).
-  * **Reasoning Models:** o1 / o3 (OpenAI), DeepSeek R1, Claude Fable 5 / Claude Sonnet 5 with Extended Thinking.
-  * **Open-Source:** Llama 3.x, Mistral, Qwen - ლოკალურად გასაშვებად.
-  * **Specialized:** Midjourney (image), Suno (music), ElevenLabs (voice), NotebookLM (research).
-  * **Agentic AI:** Manus, Devin, Claude Computer Use - ავტონომიური AI აგენტები.
+* **10 წთ | AI ინსტრუმენტების ლანდშაფტი (მარადიული ბრენდები, ვერსიების გარეშე):**
+  * **ტექსტი და ლოგიკა:** **Claude** (ღრმა კონტექსტი და Extended Thinking), **ChatGPT** (უნივერსალური ასისტენტი), **Gemini** (მულტიმოდალური ანალიზი), **DeepSeek** (ღია კოდის ლოგიკა).
+  * **კვლევა:** **Perplexity** (ცოცხალი ძიება წყაროებით), **NotebookLM** (საკუთარი დოკუმენტების ბაზა).
+  * **ვიზუალიზაცია:** **Ideogram** (ლოგოები და მკაფიო ტექსტი), **Flux** (ფოტორეალიზმი), **Midjourney** (კონცეფტ-არტი).
+  * **პროდუქტი და პრეზენტაცია:** **Lovable** (MVP საიტები 5 წუთში), **Gamma** (პრეზენტაციები AI-ით).
 
-* **15 წთ | AI მოდელების შედარება: LMArena + DesignArena + Gamma.ai-ს პოზიციონირება**
-  * **5 წთ | LMArena (lmarena.ai) - LLM-ების შედარების პლატფორმა:** Chatbot Arena-ს "ბრმული" შედარება, ELO Rating System. 2026 Top: GPT-5.6 Sol (~1420) > Claude Sonnet 5 (~1390) > Gemini 3.5 Pro (~1350) > Claude Fable 5 (~1320) > DeepSeek R1 (~1240).
-  * **5 წთ | DesignArena (designarena.ai) - AI Image Generation-ის შედარება:** ლიდერები: Ideogram v3/v4 (ლოგო), DALL-E 3 (ბანერი), Midjourney V8.1 (კონცეფტ-არტი), Flux.2 / Flux.1.1 Pro (ფოტო).
-  * **5 წთ | Gamma.ai-ს პოზიციონირება:** AI ხელსაწყოების მატრიცა - 7 კატეგორიიდან Gamma არის **"პრეზენტაციის" AI Co-pilot** (Outline → Design → Export). PowerPoint (4 საათი) → Gamma (15 წუთი).
+* **10 წთ | ⚡ Live Model Battle: Claude vs ChatGPT vs Gemini:**
+  * ერთი რთული სტარტაპ პრობლემა იგზავნება ეკრანზე ერთდროულად სამივე სისტემაში.
+  * დარბაზი აკვირდება და ხელით აძლევს ხმას გამარჯვებულ პასუხს.
 
-* **5 წთ | C.R.E.A.T.E. პრომპტ-ინჟინერია**
-  * **C**ontext, **R**equest, **E**xplanation, **A**ction, **T**arget, **E**xtras - 6 ელემენტიანი framework.
-  * Iterative Refinement: "გაამარტივე", "შეცვალე ტონი", "დაამატე მაგალითი".
-  * **მიკრო-სავარჯიშო:** 1-პრომპტი საკუთარი იდეისთვის C.R.E.A.T.E.-ით.
+* **10 წთ | C.R.E.A.T.E. პრომპტ-ინჟინერია & AI უსაფრთხოება:**
+  * Context, Request, Explanation, Action, Target, Extras — 6 ელემენტი.
+  * უსაფრთხოება: NDA და პერსონალური მონაცემების დაცვა (რა არ ჩავწეროთ AI-ში).
 
-* **5 წთ | AI უსაფრთხოება: სწრაფი ბრიფინგი**
-  * **რა არ ჩავწეროთ:** პერსონალური/ფინანსური მონაცემები, NDA-ს ქვეშ მყოფი დოკუმენტები.
-  * **რეიტინგი:** 🟢 GO (Claude, Perplexity, NotebookLM, Lovable, Gamma, Make) / 🟡 CAUTION (Free Tiers) / 🔴 STOP (ChatGPT Free, Gemini Free - კომერციული მონაცემებისთვის).
+---
 
-* **5 წთ | Customer Interview Basics: 3-5 კითხვის დიზაინი**
-  * "რა არის ყველაზე დიდი პრობლემა [სფეროში]?" / "როგორ ეუთობთ?" / "რა ფასს გადაიხდიდით?"
-  * **გამოყენება:** Block IV-ში (Lean Canvas Validation-ში) + Homework Part A-ში (Day 1 → Day 2).
+### **🆕 🛠️ პრაქტიკული დავალება #1: "AI Customer Simulator & CustDev Interview" (15 წუთი)**
+
+* **მიზანი:** მონაწილეებმა საკუთარ იდეაზე ჩაატარონ მომხმარებლის სიმულაციური ინტერვიუ AI-სთან რეალურ დროში.
+* **ინსტრუქცია:**
+  1. მონაწილე თავის AI-ს (Claude ან ChatGPT) აძლევს როლს:
+     ```
+     შენ ხარ ჩემი ყველაზე პრეტენზიული და სკეპტიკური სამიზნე მომხმარებელი ([სფერო/სეგმენტი]).
+     მე დაგისვამ კითხვებს ჩემი იდეის შესახებ: [1-წინადადებიანი იდეა].
+     იყავი რეალისტური, არ დამეთანხმო მარტივად, მითხარი რა გაღიზიანებს არსებულ გადაწყვეტებში და გამომიკითხე დეტალები.
+     ```
+  2. 10-წუთიანი ცოცხალი ჩატი AI-კლიენტთან (პრობლემის სიმძიმე, ალტერნატივები, მზაობა გადახდაზე).
+  3. **შედეგი:** 3 კონკრეტული ინსაიტი, რომლებსაც მონაწილე შეიტანს Lean Canvas-ში.
+  4. 2-3 მონაწილის მოკლე გაზიარება დარბაზში (ყველაზე მოულოდნელი პასუხი AI-სგან).
 
 ---
 
@@ -127,7 +121,7 @@
   * **5 წთ | Claude.ai-სთან მუშაობა:** მონაწილე ეუბნება AI-ს საკუთარ იდეას, იღებს 5 ვარიანტ პასუხს.
   * **5 წთ | Perplexity.ai-სთან მუშაობა:** იგივე იდეისთვის ბაზრის ზომის კვლევა წყაროებით.
   * **5 წთ | NotebookLM-სთან მუშაობა:** ახალი Notebook შექმნა + 1-2 დოკუმენტი ატვირთვა.
-  * **5 წთ | რა იქნება Day 2-ში:** Lovable + Gamma + Make-ის preview.
+  * **5 წთ | რა იქნება Day 2-ში:** Lovable + Gamma-ს Pitch Deck-ის preview.
 
 **☕ შესვენება (30 წუთი) - ~1:40:**
 - ყავა, სველი სენდვიჩი, restroom, მოკლე ნავიგაცია.
@@ -205,7 +199,7 @@
 * **15 წთ | Day 1 Recap + Insight Integration**
   * 5 წთ ხელმისტრემა: 17+ იდეიდან 1 ფინალური + Lean Canvas + 3 Personas.
   * 5 წთ "აი, რაც ვისწავლეთ": C.R.E.A.T.E. framework + 5 AI Tools + 7 ჩარჩო.
-  * 5 წთ "რას ველოდოთ Day 2-ში": Brand → Photo → Gamma → Tech Spec → Lovable → Make → Pitch.
+  * 5 წთ "რას ველოდოთ Day 2-ში": Brand → Photo → Gamma → Tech Spec → Lovable → Pitch Deck → Jury Grill.
 
 * **15 წთ | Day 2 Brief - Roadmap**
   * **🗺️ Day 2 Timeline:**
@@ -213,13 +207,13 @@
     - **შესვენება (30 წთ)**
     - **VII (20 წთ):** Technical Specification + Lovable Prompt
     - **VIII (80 წთ):** No-Code MVP Lovable + Supabase + Custom Domain
-    - **IX (45 წთ):** Make.com Multi-step Workflows
-    - **X (60 წთ):** Pitch Deck + 5-min Rehearsal + Q&A Tactics + Demo Day Prep
+    - **IX (50 წთ):** AI Pitch Deck Architecture, Storytelling & Gamma
+    - **X (55 წთ):** Pitch Delivery, Live Rehearsals & GITA Jury Grill
   * **Demo Day-ის კავშირი:** "დღეს Day 2-ის ბოლოს თქვენ გექნება 10-სლაიდიანი Demo Day-მზა Pitch Deck. Demo Day-ზე ჟიური შეაფასებს როგორც Tech + Pitch + Visuals."
 
 * **15 წთ | Homework Setup (Day 1 → Day 2) - 15 წთ მხოლოდ!**
   * **🆕 Minimal Homework (15 წთ, Friday/Saturday-ს ღამით):**
-    1. **Account Verification (5 წთ):** Lovable, Make, Gamma - ანგარიშები უკვე შექმნილი და login-ები შენახული უნდა იყოს.
+    1. **Account Verification (5 წთ):** Lovable, Gamma, Claude - ანგარიშები უკვე შექმნილი და login-ები შენახული უნდა იყოს.
     2. **1-წინადადებიანი Pitch Statement-ის final cleanup (10 წთ):** AI-სთან "გაამარტივე ეს 2-სიტყვიანი ვერსია 1-წინადადებიანი pitch-ად."
   * **📧 ტრენერი გზავნის Day 1-ის ბოლოს:**
     - Day 1 Homework.pdf
@@ -250,16 +244,16 @@
 ## 📅 **Day 2: Product & Launch** (5 საათი = 300 წუთი = 270 კონტენტი + 30 წუთი შესვენება)
 
 **Day 2-ის ფოკუსი:** პროდუქტის შექმნა + Live MVP + Pitching.
-**Day 2-ის ფინალური შედეგი:** მონაწილეს აქვს **brand identity + 5-6 visuals + Tech Spec + live Landing Page + 1 automation + 10-სლაიდიანი Demo Day-მზა Pitch Deck.**
+**Day 2-ის ფინალური შედეგი:** მონაწილეს აქვს **brand identity + 5-6 visuals + Tech Spec + live Landing Page + 10-სლაიდიანი Demo Day-მზა Pitch Deck.**
 
 | Block | თემა | წუთი | კუმულაციური |
 |---|---|---|---|
-| **VI** | Brand + Photo + Copywriting + Gamma | **65** | 1:05 |
-| ☕ | **შესვენება (ერთჯერადი, 30 წთ)** | **30** | **1:35** |
-| **VII** | Technical Specification + Lovable Prompt | **20** | 1:55 |
-| **VIII** | No-Code MVP Lovable + Supabase + GDPR + GitHub Export | **80** | 3:15 |
-| **IX** | ავტომატიზაცია (Make.com) - გამარტივებული Workflow | **45** | 4:00 |
-| **X** | Pitch Deck + Demo Day + AI Grill Session | **60** | **5:00** |
+| **VI** | Brand Identity + Visuals (Flux & Ideogram) + Copywriting | **65** | 1:05 |
+| ☕ | **შესვენება (ერთჯერადი, 25 წთ)** | **25** | **1:30** |
+| **VII** | Technical Specification + Lovable Prompt | **25** | 1:55 |
+| **VIII** | No-Code MVP: Lovable + Supabase + Custom Domain | **75** | 3:10 |
+| **IX** | AI Pitch Deck Architecture, Storytelling & Gamma | **50** | 4:00 |
+| **X** | Pitch Delivery, Live Rehearsals & GITA Jury Grill | **60** | **5:00** |
 
 ---
 
@@ -276,10 +270,10 @@
   * **მიზანი:** მომზადდეს გაყიდვადი ტექსტები Landing Page-ისა და სტარტაპის გაშვებისთვის.
 
 * **15 წთ | Photo Generation (მარტივი Hands-on):**
-  * DesignArena Rankings: Ideogram v3/v4 (ლოგო), Flux.2 / Flux.1.1 Pro (Hero Image).
+  * DesignArena Rankings: Ideogram (ლოგო და მკაფიო ტიპოგრაფია), Flux (Hero Image და რეალიზმი).
   * **პრაქტიკა:** მონაწილეები ქმნიან მხოლოდ **2 ძირითად ვიზუალს**:
-    1. **ლოგო** (Ideogram-ში)
-    2. **კონცეფტუალური Hero Image საიტისთვის** (Flux.2-ში)
+    1. **ლოგო** (Ideogram-ში — ტექსტისა და სიმბოლოს იდეალური ინტეგრაცია)
+    2. **კონცეფტუალური Hero Image საიტისთვის** (Flux-ში — ავთენტური ფოტორეალიზმი)
   * **მიზანი:** დროის დაზოგვა და ფოკუსირება მხოლოდ იმ ვიზუალებზე, რაც აუცილებელია MVP-სთვის.
 
 * **15 წთ | Gamma.app-ით Pitch Deck (Live Demo):**
@@ -350,50 +344,60 @@
 
 ---
 
-### **ბლოკი IX: ავტომატიზაცია (Make.com) - გამარტივებული Workflow (45 წუთი)**
+### **ბლოკი IX: AI Pitch Deck Architecture, Storytelling & Gamma (50 წუთი)**
 
-* **10 წთ | ავტომატიზაციის ფუნდამენტი: Trigger-Action-Result**
-  * მაგალითი: "Landing Page Form (Supabase) → Google Sheets CRM → Gmail Notification."
-  * Make.com-ის ძირითადი ცნებები: Webhooks, Google Sheets Module, Gmail/SMTP Connection.
+* **15 წთ | 10-სლაიდიანი ინვესტორული Pitch Deck-ის ანატომია (Sequoia / YC / GITA ოქროს სტანდარტი):**
+  * Slide 1: Hook & Vision (10 წამიანი ყურადღების მიპყრობა).
+  * Slide 2: The Problem (მწვავე ტკივილი და რეალური მაგალითი).
+  * Slide 3: The Solution & Value Proposition (პროდუქტის უნიკალური ღირებულება).
+  * Slide 4: Why Now? (ტექნოლოგიური ტალღა და ბაზრის მზადყოფნა).
+  * Slide 5: Market Size (TAM, SAM, SOM - რეალური ციფრებით).
+  * Slide 6: Product & Demo (Lovable MVP-ის ცოცხალი სქრინშოტები და ლინკი).
+  * Slide 7: Business Model & Pricing (მონეტიზაციის სტრატეგია).
+  * Slide 8: Competition Matrix (რით ვჯობივართ არსებულ ალტერნატივებს).
+  * Slide 9: Team & Why Us (რატომ შეგვიძლია ამის განხორციელება).
+  * Slide 10: The Ask (25,000₾ GITA გრანტი და რაში იხარჯება მომდევნო 6 თვეში).
 
-* **25 წთ | 🆕 გამარტივებული Workflow-ის აწყობა (Follow-along):**
-  * **Trigger:** Custom Webhook (Lovable/Supabase Email Capture).
-  * **Action 1:** Google Sheets - Add a Row (CRM lead entry: Email, Name, Date).
-  * **Action 2:** Gmail - Send an Email (ავტომატური მადლობის წერილი მომხმარებელს).
-  * *შენიშვნა:* არანაირი რთული როუტერები, ფილტრები ან დაყოვნებები დროის დაზოგვისა და სირთულის შესამცირებლად.
+* **25 წთ | 🛠️ პრაქტიკული დავალება #4: 10-სლაიდიანი Pitch Deck-ის შექმნა Gamma-ში:**
+  * **ნაბიჯი 1:** Claude-ში პრომპტით ვაგენერირებთ 10-სლაიდიან დეტალურ Outline-ს.
+  * **ნაბიჯი 2:** Outline გადაგვაქვს Gamma-ში (Generate -> Text to Presentation).
+  * **ნაბიჯი 3:** Gamma აგენერირებს სრულ დიზაინს, ბარათებს და ვიზუალურ იერარქიას.
+  * **ნაბიჯი 4:** მონაწილეები ამატებენ Ideogram-ის ლოგოს და Lovable-ის პროდუქტის სქრინშოტს.
+  * **✅ შედეგი:** სრულყოფილი, ინვესტორული 10-სლაიდიანი Pitch Deck-ი!
 
-* **10 წთ | Workflow-ის ტესტირება და Edge cases:**
-  * ლაივ ტესტი: ფორმის შევსება საიტზე → Webhook-ის გაშვება → Google Sheet-ში lead-ის ასახვა და მადლობის იმეილის მიღება.
-  * Edge cases: როგორ ავიცილოთ თავიდან ცარიელი ველები (Required fields).
+* **10 წთ | ბაზრის ზომა (TAM, SAM, SOM) და Unit Economics AI-ით:**
+  * Perplexity და Claude-ით ბაზრის რეალური მონაცემების გამოთვლა (Top-down & Bottom-up).
+  * CAC (კლიენტის მოზიდვის ხარჯი) და LTV (სასიცოცხლო ღირებულება) ჟიურისთვის დასასაბუთებლად.
 
 ---
 
-### **ბლოკი X: Pitch Deck + Demo Day + AI Grill Session (60 წუთი)**
+### **ბლოკი X: Pitch Delivery, Live Rehearsals & GITA Jury Grill (60 წუთი)**
 
-* **10 წთ | Pitch Deck-ის გაფართოება (5 → 10 სლაიდი):**
-  * Slide 6: TAM, SAM, SOM (ბაზრის ზომა). Slide 7: Competition. Slide 8: Financials. Slide 9: Roadmap (Tech Spec-ის ბაზაზე). Slide 10: Team.
-  * AI პრომპტი: "დაამატე 5 ახალი სლაიდი ჩემს Pitch Deck-ში: ბაზარი, კონკურენტები, ფინანსები, როუდმეპი, გუნდი."
+* **10 წთ | Pitch Delivery: 3-წუთიანი პრეზენტაციის წესები:**
+  * 1 სლაიდი = 18-20 წამი.
+  * არასოდეს წაიკითხოთ სლაიდიდან! სლაიდი არის ვიზუალური დასტური, თქვენ ხართ მთხრობელი.
+  * სხეულის ენა, ხმის ტონი, თვალით კონტაქტი და ემოციური ენერგია.
+  * Claude-ით 3-წუთიანი სასაუბრო სკრიპტის (360-380 სიტყვა) მომზადება.
 
-* **10 წთ | 🆕 AI ფინანსური მოდელირება და Pricing სტრატეგია:**
-  * AI პრომპტი (Claude): "დამეხმარე შევქმნა ჩემი პროდუქტის [აღწერა] ფინანსური მოდელი (Slide 8). გენერირება გაუკეთე Excel ფორმულებს P&L (მოგება-ზარალი), Cash Flow, და Pricing Tiers (3 ტარიფი) გამოსათვლელად, და დამეხმარე CAC და LTV-ის შეფასებაში."
-  * **მიზანი:** ფინანსური სლაიდის რიცხვების რეალური დასაბუთება.
+* **15 წთ | ⚡ GITA Mock Jury Grill Session (დაუნდობელი ჟიურის სიმულატორი):**
+  * Claude როგორც GITA-ს მკაცრი ჟიურის წევრი (25,000 / 150,000 ლარიანი გრანტისთვის):
+    - *"რატომ არ გააკეთებს ამას Google ან ადგილობრივი დიდი მოთამაშე ხვალ?"*
+    - *"როგორია თქვენი CAC და რა არხებით მოგყავთ პირველი 1,000 მომხმარებელი?"*
+    - *"რაში გყოფნით 25,000 ლარი და რა Runway გაქვთ?"*
+  * ტრენერი 1 მოხალისეს უტარებს ცოცხალ Grill-ს AI-ს კითხვებით დარბაზის წინაშე.
 
-* **10 წთ | 🆕 იმიტირებული ჟიურის ინტერვიუ (Mock VC Grill Session):**
-  * AI პრომპტი (Claude): "მოიქეცი როგორც GITA-ს მკაცრი ჟიურის წევრი, რომელსაც აქვს 25,000 ლარიანი გრანტის გაცემის უფლებამოსილება. დამისვი 5 კრიტიკული კითხვა ჩემი იდეის შესახებ სათითაოდ და შემიფასე პასუხები."
-  * **მიზანი:** მონაწილეების მომზადება ჟიურის რეალური კითხვა-პასუხისთვის.
+* **25 წთ | 🛠️ პრაქტიკული დავალება #5: Live Founder Pitches & Peer Feedback:**
+  * 4-5 მონაწილე გამოდის და აკეთებს რეალურ 3-წუთიან პრეზენტაციას თავისი Gamma Deck-ით პროექტორზე!
+  * 1-წუთიანი სწრაფი უკუკავშირი ტრენერისა და დარბაზისგან.
+  * შეფასება: სიცხადე, ენერგია, სლაიდების ხარისხი, ჟიურის კითხვაზე პასუხი.
 
-* **20 წთ | 5-წუთიანი Pitch-ის სრული რეპეტიცია:**
-  * მონაწილეები წარმოადგენენ თავიანთ სრულ 10-სლაიდიან Pitch Deck-ს (1-2 მონაწილე) + Peer Feedback.
-
-* **5 წთ | GITA-ს გრანტები და რესურსები:**
-  * 25,000 ლარიანი გრანტი, Spark, Boost, Wise Guys და სხვა შესაძლებლობები.
-
-* **5 წთ | ფინალური მოტივაცია და Wrap-up:**
-  * "იდეა არ არის ის, რაც ფურცელზე წერია - იდეა არის ის, რაც განხორციელდება. Tech Spec და MVP არის ხიდი მათ შორის."
+* **5 წთ | GITA-ს გრანტების რუკა & დასკვნითი სიტყვა:**
+  * Spark, Boost, 25k, 150k გრანტები და შემდეგი ნაბიჯები.
+  * ფინალური მოტივაცია: *"თქვენ გაქვთ ვალიდირებული იდეა, მომუშავე MVP და ინვესტორული Pitch Deck. ახლა მთავარია განხორციელება!"*
 
 **📋 პოსტ-ტესტი (10 წუთი):** იგივე 15 კითხვა, პროგრესის გაზომვისთვის.
 
-**📍 Gamma.ai-ს მომენტი #2 (Day 2-ში):** Pitch Deck 5→10 + AI Grill + Final Pitch.
+**📍 Gamma-ს მომენტი #2 (Day 2-ში):** Pitch Deck 5→10 + AI Grill + Final Live Pitch.
 
 ---
 
@@ -403,7 +407,7 @@
 
 | # | დავალება | დრო |
 |---|---|---|
-| 1 | **Account Verification** - Lovable, Make, Gamma ანგარიშები უკვე შექმნილი და login-ები შენახული | **5 წთ** |
+| 1 | **Account Verification** - Lovable, Gamma, Claude ანგარიშები უკვე შექმნილი და login-ები შენახული | **5 წთ** |
 | 2 | **1-წინადადებიანი Pitch Statement-ის final cleanup** - AI-სთან "გაამარტივე ეს 2-სიტყვიანი ვერსია 1-სიტყვიანი pitch-ად" | **10 წთ** |
 | 3 | **🆕 1 მოკლე Customer Interview (5 წთ)** - დაურეკე/დაესემებონ Block IV-ში იდენტიფიცირებულ 1 პიროვნებას. 5-წუთიანი საუბარი (3 Insights ჩაწერე). | **5 წთ** |
 | 4 | **🆕 3-ე Persona-ის შექმნა** - AI-სთან ერთად "დამეხმარე 1 დამატებითი Persona-ის შექმნაში" | **5 წთ** |
@@ -427,7 +431,7 @@
 | 2 | **Lean Canvas + Value Proposition PDF** | 30 წთ | - |
 | 3 | **3 JTBD სცენარი** (AI-სთან ერთად) | 45 წთ | - |
 | 4 | **Landing Page-ის დახვენა Lovable-ში 5 იტერაცია** (Testimonials, FAQ, Blog Post, Custom Integrations) | 90 წთ | Tech Spec-ის Features-ის მიხედვით |
-| 5 | **2 Automation Workflow-ის აწყობა Make.com-ში** (Lead Capture + Email Nurturing Sequence) | 90 წთ | - |
+| 5 | **3-წუთიანი Pitch Script & რეპეტიცია (AI Jury Grill)** (სასაუბრო სკრიპტი + თავდაცვა) | 45 წთ | - |
 | 6 | **Pitch Deck-ის გაფართოება 5 → 10 სლაიდამდე** (Market Size, Competition, Financials, Roadmap, Team Bios) | 90 წთ | Tech Spec-ის Feature-ების მიხედვით |
 | 7 | **Demo Day-მდე მომზადება** - 5-წუთიანი Pitch-ის რეპეტიცია კამერის წინ + **Tech Spec-ის გამოყენება Q&A-ში** ("Engineering Ready" marker) | 60 წთ | ✅ |
 
@@ -445,7 +449,7 @@
 3. **SCAMPER-ის 7 პრომპტი 1 ჩატვირთვად.** ნაცვლად 7 ცალკე ჩატისა, AI-ს აძლევთ ერთ პრომპტს.
 4. **Tech Spec-ის ბლოკი VII (20 წთ) არის "Game Changer".** ეს გარდაქმნის Pitch Deck-ს "vibes"-დან "engineering-ready"-ში.
 5. **Lovable-ის 40 წთ "Tech Spec-ის გამოყენებაა".** მონაწილეებს უკვე აქვთ პრომპტი ბლოკი VII-დან, ამიტომ უფრო სწრაფი იქნება.
-6. **Make.com-ის 45 წთ არის Follow-along.** ტრენერი აწყობს, მონაწილეები მიყვებიან.
+6. **Gamma Pitch Deck-ის 50 წთ არის Hands-on.** მონაწილეები Claude-ის Outline-ს გადაიტანენ Gamma-ში და ქმნიან 10-სლაიდიან დეკს.
 7. **Pitch Deck-ში Tech Spec-ის გამოყენება არის კრიტიკული.** ეს არის "Engineering Ready" marker, რომელიც ჟიურის წინაშე გამორჩეულად აყენებს.
 8. **🆕 Voice of Customer Mini-Session (5 წთ) ჩაანაცვლებს Homework Customer Interviews-ს.** ტრენერი წაიკითხავს 3 testimonials.
 9. **Homework Part A არის მინიმალური (15 წთ).** მონაწილეები Day 2-ზე სუფთა ტვინით მოდიან.
@@ -470,7 +474,7 @@
 
 ## 📚 **წინასწარი მოსამზადებელი მონაწილეებისთვის (ტრენინგამდე 1 კვირით):**
 
-- შექმნან უფასო ანგარიშები: [Claude.ai](https://claude.ai), [ChatGPT](https://chat.openai.com), [Perplexity.ai](https://perplexity.ai), [NotebookLM](https://notebooklm.google.com), [Lovable.dev](https://lovable.dev), [Gamma.app](https://gamma.app), [Make.com](https://make.com)
+- შექმნან უფასო ანგარიშები: [Claude.ai](https://claude.ai), [ChatGPT](https://chat.openai.com), [Perplexity.ai](https://perplexity.ai), [NotebookLM](https://notebooklm.google.com), [Lovable.dev](https://lovable.dev), [Gamma.app](https://gamma.app)
 - **Namecheap/GoDaddy-დან** Custom Domain შეძენა (~$10/წელი, Day 2-სთვის)
 - მოიფიქრონ 1-2 წინადადებიანი აღწერა საკუთარი ბიზნეს იდეის ან პრობლემის
 - გაიარონ პრე-ტესტი (Google Form-ის ბმული გაიგზავნება 3-5 დღით ადრე)
@@ -485,7 +489,7 @@
 - **Landing Pages Live:** ≥80% მონაწილეს უნდა ჰქონდეს live URL + Custom Domain + Email Sign-up.
 - **Photo + Gamma Integration:** ≥70% მონაწილეს უნდა ჰქონდეს 5-6 visuals + 5-სლაიდიანი Pitch Deck (Block VI).
 - **Pitch Decks:** ≥70% მონაწილეს უნდა ჰქონდეს 10-სლაიდიანი Deck Gamma-ში (Tech Spec-ის Roadmap-ით, Block X).
-- **Workflow-ები:** ≥80% მონაწილეს უნდა ჰქონდეს 2 multi-step automation Make.com-ით.
+- **Pitch Deck & Script:** ≥80% მონაწილეს უნდა ჰქონდეს 10-სლაიდიანი Gamma Pitch Deck და მომზადებული 3-წუთიანი პიჩ-სკრიპტი.
 - **🆕 Minimal Homework Compliance:** ≥90% მონაწილეს უნდა შეასრულოს Part A (15 წთ) Day 2-მდე.
 - **პრე/პოსტ ტესტის პროგრესი:** საშუალო ქულა უნდა გაიზარდოს მინიმუმ 30%-ით.
 - **შეფასების ფურცელი (1-წუთიანი Google Form):** ≥4.0 / 5.0 საშუალო ქულა.
@@ -514,7 +518,7 @@
 | - | ☕ შესვენება (ერთჯერადი) | 30 | 1:35 |
 | VII | Technical Specification | 20 | 1:55 |
 | VIII | Lovable MVP + GDPR + Export | 80 | 3:15 |
-| IX | ავტომატიზაცია (Make.com) - გამარტივებული Workflow | 45 | 4:00 |
+| IX | AI Pitch Deck Architecture, Storytelling & Gamma | 50 | 4:00 |
 | X | Pitch Deck + Demo Day + AI Grill Session | 60 | 5:00 |
 
 ### 🟰 Homework-ები
