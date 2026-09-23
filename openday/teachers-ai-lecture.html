@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI მასწავლებლებისთვის | Open Day — დეტალური 90-წუთიანი ლექცია</title>
+
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: { 950: '#0f172a', 900: '#111827', 800: '#1e293b', 700: '#334155' },
+          cyan: { 600: '#0284c7', 500: '#0ea5e9', 400: '#38bdf8', 300: '#7dd3fc' },
+          coral: { 600: '#e11d48', 500: '#f43f5e', 400: '#fb7185' },
+          gold: { 600: '#b45309', 500: '#d97706', 400: '#f59e0b' }
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  * { font-family: 'FiraGO', 'Outfit', sans-serif; }
+  html { scroll-behavior: smooth; font-size: 17px; }
+  body { background: #f0f4f8; color: #0f172a; }
+
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.35); border-radius: 2px; }
+  .nav-link.active { background: rgba(56,189,248,0.14); border-left: 3px solid #38bdf8; }
+  .nav-link:hover { background: rgba(255,255,255,0.06); }
+  pre { white-space: pre-wrap; word-wrap: break-word; }
+
+  .topic-card { border-left: 4px solid #0ea5e9; }
+
+  .prompt-box {
+    background: #0f172a;
+    border: 1px solid rgba(56,189,248,0.35);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    position: relative;
+  }
+  .prompt-box pre {
+    color: #bae6fd;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    font-family: 'Courier New', monospace;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.55rem; right: 0.55rem;
+    background: rgba(56,189,248,0.2);
+    color: #7dd3fc;
+    border: 1px solid rgba(56,189,248,0.4);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: #0ea5e9; color: #fff; }
+
+  .warning-box { background: #fdf2f4; border-left: 4px solid #e11d48; border-radius: 0 0.5rem 0.5rem 0; }
+  .tip-box { background: #f0fdf6; border-left: 4px solid #059669; border-radius: 0 0.5rem 0.5rem 0; }
+  .note-box { background: #eff8ff; border-left: 4px solid #0ea5e9; border-radius: 0 0.5rem 0.5rem 0; }
+
+  #backToTop { opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; }
+  #backToTop.visible { opacity: 1; pointer-events: auto; }
+  #backToTop:hover { transform: translateY(-2px); }
+
+  #fontControls {
+    position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 45;
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 5px; border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  #fontControls button {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; color: #7dd3fc;
+    border: none; border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 700;
+    transition: background 0.2s ease;
+  }
+  #fontControls button:hover { background: rgba(255,255,255,0.12); }
+
+  @media print {
+    #sidebar, #menuBtn, #overlay, #backToTop, #fontControls { display: none !important; }
+    main, #mainContent { margin-left: 0 !important; }
+    body { background: white; }
+    .topic-card { break-inside: avoid; }
+    @page { margin: 1.5cm; }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay" class="hidden fixed inset-0 bg-black/60 z-30" onclick="toggleSidebar()" aria-hidden="true"></div>
+
+<!-- Toggle button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-ink-950 text-white p-2.5 rounded-lg shadow-lg border border-white/10 hover:border-cyan-400 transition-colors" title="მენიუ">
+  <svg id="menuIcon" class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 text-cyan-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-ink-950 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300 border-r border-white/10">
+  <div class="px-5 py-6 border-b border-white/10">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="bg-coral-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPEN DAY</span>
+      <span class="text-cyan-300 text-[11px] font-semibold uppercase tracking-wider">AI მასწავლებლებისთვის</span>
+    </div>
+    <h1 class="text-base font-bold leading-tight">დეტალური ლექციის გზამკვლევი</h1>
+    <p class="text-gray-400 text-xs mt-1.5">1.5 საათი (90 წთ) · ცოცხალი დემო</p>
+  </div>
+  <div class="px-5 py-3 bg-cyan-500/10 border-b border-white/10">
+    <p class="text-[10px] font-semibold uppercase tracking-wider text-cyan-300 mb-2">3 ცოცხალი დემო</p>
+    <p class="text-xs text-gray-300 leading-relaxed mb-1"><span class="text-cyan-300 font-bold">1️⃣ სემესტრული გეგმა:</span> 3 საგანი ერთდროულად, სახალისო აქტივობებით</p>
+    <p class="text-xs text-gray-300 leading-relaxed mb-1"><span class="text-gold-400 font-bold">2️⃣ ინტერაქტიული სლაიდები:</span> ერთი გაკვეთილი, ცოცხალი ელემენტებით</p>
+    <p class="text-xs text-gray-300 leading-relaxed"><span class="text-coral-400 font-bold">3️⃣ სასწავლო თამაშები:</span> 5 ფორმატი ერთ თემაზე</p>
+  </div>
+
+  <nav class="py-3">
+    <a href="#seg-intro" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-intro">
+      <span class="leading-snug pr-2">1. გახსნა — რატომ AI ახლა?</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-demo1" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-cyan-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo1">
+      <span class="leading-snug pr-2">2. DEMO 1: სემესტრული გეგმა</span>
+      <span class="shrink-0 text-[10px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded">25 წთ</span>
+    </a>
+    <a href="#seg-demo1-history" class="nav-link flex items-center justify-between px-5 py-3 pl-8 text-xs text-gray-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo1-history">
+      <span class="leading-snug pr-2">↳ ისტორია</span>
+    </a>
+    <a href="#seg-demo1-biology" class="nav-link flex items-center justify-between px-5 py-3 pl-8 text-xs text-gray-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo1-biology">
+      <span class="leading-snug pr-2">↳ ბიოლოგია</span>
+    </a>
+    <a href="#seg-demo1-georgian" class="nav-link flex items-center justify-between px-5 py-3 pl-8 text-xs text-gray-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo1-georgian">
+      <span class="leading-snug pr-2">↳ ქართული ენა და ლიტ.</span>
+    </a>
+    <a href="#seg-demo2" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gold-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo2">
+      <span class="leading-snug pr-2">3. DEMO 2: ინტერაქტიული სლაიდები</span>
+      <span class="shrink-0 text-[10px] bg-gold-500/20 text-gold-400 px-1.5 py-0.5 rounded">20 წთ</span>
+    </a>
+    <a href="#seg-demo3" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-coral-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo3">
+      <span class="leading-snug pr-2">4. DEMO 3: სასწავლო თამაშები</span>
+      <span class="shrink-0 text-[10px] bg-coral-500/20 text-coral-400 px-1.5 py-0.5 rounded">25 წთ</span>
+    </a>
+    <a href="#seg-demo3-quiz" class="nav-link flex items-center justify-between px-5 py-3 pl-8 text-xs text-gray-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo3-quiz">
+      <span class="leading-snug pr-2">↳ ვიქტორინა / Jeopardy</span>
+    </a>
+    <a href="#seg-demo3-scenario" class="nav-link flex items-center justify-between px-5 py-3 pl-8 text-xs text-gray-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo3-scenario">
+      <span class="leading-snug pr-2">↳ სცენარული თამაში</span>
+    </a>
+    <a href="#seg-demo3-word" class="nav-link flex items-center justify-between px-5 py-3 pl-8 text-xs text-gray-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo3-word">
+      <span class="leading-snug pr-2">↳ სიტყვების თამაში</span>
+    </a>
+    <a href="#seg-closing" class="nav-link flex items-center justify-between px-5 py-2.5 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-closing">
+      <span class="leading-snug pr-2">5. დახურვა & კითხვა-პასუხი</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+  </nav>
+
+  <div class="px-5 py-4 border-t border-white/10 mt-2">
+    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">ტრენერი</p>
+    <p class="text-sm font-semibold text-white">გიორგი ბასილაია</p>
+    <p class="text-xs text-gray-400">Smart Academy · Open Day 2026</p>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+<!-- Header -->
+<header class="bg-gradient-to-r from-ink-950 to-ink-800 text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+  <div class="max-w-5xl">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="bg-coral-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPEN DAY</span>
+      <span class="text-cyan-300 text-sm font-medium">ღია ლექცია მასწავლებლებისთვის</span>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3">ხელოვნური ინტელექტი კლასში<br><span class="text-cyan-300">გეგმიდან — თამაშამდე, ერთ საათ-ნახევარში</span></h1>
+    <p class="text-gray-300 text-base max-w-2xl leading-relaxed mb-5">90-წუთიანი პრაქტიკული ლექცია, სადაც სამი ცოცხალი დემონსტრაცია გადის მასწავლებლის სამუშაო ციკლის სამივე დონეს: <strong>სემესტრის სტრატეგიული დაგეგმვა</strong> → <strong>ერთი გაკვეთილის ინტერაქტიული სლაიდები</strong> → <strong>მოსწავლეების ჩართვის თამაში</strong>. ყველა მაგალითი მზადდება რეალურ დროში, ქართულ სასკოლო კონტექსტში.</p>
+    <div class="flex flex-wrap gap-4">
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        90 წუთი
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        3 ცოცხალი დემო
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        3 საგანი + 5 თამაშის ფორმატი
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-cyan-300 font-semibold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        მასწავლებლების სპეციფიკური
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
+
+  <!-- Route Table -->
+  <div class="bg-ink-950 text-white rounded-xl p-6 mb-10">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">⏱</span>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-cyan-300 mb-0.5">ლექციის მარშრუტი</p>
+        <h2 class="text-lg font-bold">90 წუთი — სრული სესიის ქრონომეტრაჟი</h2>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-white/20">
+            <th class="text-left py-2 pr-3 text-cyan-300 font-semibold w-6">#</th>
+            <th class="text-left py-2 pr-4 text-cyan-300 font-semibold">სეგმენტი</th>
+            <th class="text-left py-2 pr-3 text-cyan-300 font-semibold">დრო</th>
+            <th class="text-left py-2 text-cyan-300 font-semibold">ტიპი</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-200">
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-gray-400 font-bold">1</td>
+            <td class="py-2 pr-4">გახსნა — რატომ AI ახლა მასწავლებლისთვის</td>
+            <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+            <td class="py-2"><span class="bg-white/10 text-gray-300 text-xs px-2 py-0.5 rounded">მიმოხილვა</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-cyan-300 font-bold">2</td>
+            <td class="py-2 pr-4">DEMO 1 — სემესტრული გეგმა 3 საგანზე + სახალისო აქტივობები</td>
+            <td class="py-2 pr-3 font-semibold text-white">25 წთ</td>
+            <td class="py-2"><span class="bg-cyan-500/20 text-cyan-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-gold-400 font-bold">3</td>
+            <td class="py-2 pr-4">DEMO 2 — ერთი გაკვეთილის ინტერაქტიული სლაიდები</td>
+            <td class="py-2 pr-3 font-semibold text-white">20 წთ</td>
+            <td class="py-2"><span class="bg-gold-500/20 text-gold-400 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-coral-400 font-bold">4</td>
+            <td class="py-2 pr-4">DEMO 3 — სასწავლო თამაშები: 5 ფორმატი ერთ თემაზე</td>
+            <td class="py-2 pr-3 font-semibold text-white">25 წთ</td>
+            <td class="py-2"><span class="bg-coral-500/20 text-coral-400 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr>
+            <td class="py-2 pr-3 text-gray-400 font-bold">5</td>
+            <td class="py-2 pr-4">დახურვა, რესურსები & კითხვა-პასუხი</td>
+            <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+            <td class="py-2"><span class="bg-white/10 text-gray-300 text-xs px-2 py-0.5 rounded">ბუფერი</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SEGMENT 1: INTRO ═══ -->
+  <section id="seg-intro" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-ink-950 text-white flex items-center justify-center font-bold text-base">1</div>
+        <div class="flex-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-cyan-600">10 წუთი · მიმოხილვა</span>
+          <h2 class="text-xl font-bold text-ink-950">რატომ AI ახლა მასწავლებლისთვის?</h2>
+          <p class="text-gray-500 text-sm mt-1">არა თეორია — მასწავლებლის რეალური კვირის ტვირთის სურათი და სად შეიძლება მისი შემცირება AI-ით.</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-3 mb-5">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="text-2xl mb-1">📝</div>
+          <p class="font-bold text-ink-950 text-sm mb-1">გეგმები & მასალები</p>
+          <p class="text-xs text-gray-500 leading-snug">სემესტრული და დღიური გეგმების მომზადება, სამუშაო ფურცლები, ტესტები.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="text-2xl mb-1">🎨</div>
+          <p class="font-bold text-ink-950 text-sm mb-1">ვიზუალები & სლაიდები</p>
+          <p class="text-xs text-gray-500 leading-snug">გაკვეთილის ვიზუალური მასალის, პრეზენტაციისა და დავალებების დიზაინი.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="text-2xl mb-1">🎮</div>
+          <p class="font-bold text-ink-950 text-sm mb-1">ჩართულობა & მოტივაცია</p>
+          <p class="text-xs text-gray-500 leading-snug">როგორ დავაკავშიროთ მასალა თამაშთან, რომ მოსწავლემ ინტერესი არ დაკარგოს.</p>
+        </div>
+      </div>
+
+      <div class="tip-box p-3 text-sm text-gray-700">
+        <strong>💡 დღევანდელი ლექციის ლოგიკა:</strong> სამივე დემო აწყობილია ერთი და იმავე ციკლის მიხედვით — ჯერ სტრატეგიული სურათი (სემესტრი), მერე ტაქტიკური ერთეული (ერთი გაკვეთილი), ბოლოს — მოსწავლის ჩართვის ინსტრუმენტი (თამაში).
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 2: DEMO 1 SEMESTER PLAN ═══ -->
+  <section id="seg-demo1" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#0ea5e9;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-base">2</div>
+        <div class="flex-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-cyan-600">25 წუთი · ლაივ დემო 1</span>
+          <h2 class="text-xl font-bold text-ink-950">სემესტრული გეგმა 3 სხვადასხვა საგანზე — ერთდროულად</h2>
+          <p class="text-gray-500 text-sm mt-1">ერთი პრომპტიდან სრული სემესტრის გაკვეთილების გეგმა, სადაც თითოეულ გაკვეთილშია ჩაშენებული 1-2 სახალისო/ჩამთრევი აქტივობა — არა მშრალი თემების სია.</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც გამოცდილმა მეთოდისტმა-მასწავლებელმა.
+საგანი: [ჩასვით საგანი — მაგ. ისტორია / ბიოლოგია / ქართული ენა და ლიტერატურა]
+კლასი: [მაგ. 8 კლასი]
+სემესტრის ხანგრძლივობა: [მაგ. 16 კვირა, კვირაში 2 გაკვეთილი]
+
+შექმენი სრული სემესტრული გეგმა ცხრილის სახით შემდეგი სვეტებით:
+1. კვირა და გაკვეთილის ნომერი
+2. თემა (სახელმძღვანელოს შესაბამისად)
+3. სწავლის შედეგი (რას შეძლებს მოსწავლე გაკვეთილის ბოლოს)
+4. ჩამთრევი აქტივობა (როლური თამაში, დებატი, ჯგუფური ამოცანა, სიმულაცია — არა მხოლოდ „კითხვა და განხილვა")
+5. შეფასების ფორმა (მოკლე ტესტი, პროექტი, პრეზენტაცია და ა.შ.)
+
+ბოლოს დაამატე 3 გაკვეთილი, სადაც აქტივობა განსაკუთრებით არასტანდარტულია (თამაში, სცენარი, დებატი).</pre>
+      </div>
+
+      <div class="note-box p-3 text-sm text-gray-700 mt-4">
+        <strong>📌 ლაივ დემოს ლოგიკა:</strong> იგივე პრომპტის ჩარჩო გამოიყენება სამივე საგანზე — მხოლოდ საგანი და თემატიკა იცვლება. ეს აჩვენებს მასწავლებლებს, რომ ერთხელ „კარგი პრომპტის" აწყობა მრავალჯერადად გამოსაყენებელია.
+      </div>
+
+      <!-- Subject cards -->
+      <div class="grid md:grid-cols-3 gap-4 mt-6">
+        <div id="seg-demo1-history" class="scroll-mt-24 border-t-4 border-cyan-500 rounded-lg p-4 bg-gray-50">
+          <p class="font-bold text-ink-950 text-sm mb-1">🏛️ ისტორია</p>
+          <p class="text-xs text-cyan-600 mb-2">მაგ: საქართველოს ისტორია, 8 კლასი</p>
+          <ul class="text-xs text-gray-600 space-y-1">
+            <li>• როლური სასამართლო — ისტორიული ფიგურის „განსჯა"</li>
+            <li>• დებატი: „რა მოხდებოდა, თუ..." ალტერნატიული სცენარი</li>
+            <li>• დროის ხაზის ჯგუფური აწყობა კლასში</li>
+          </ul>
+        </div>
+        <div id="seg-demo1-biology" class="scroll-mt-24 border-t-4 border-gold-500 rounded-lg p-4 bg-gray-50">
+          <p class="font-bold text-ink-950 text-sm mb-1">🧬 ბიოლოგია</p>
+          <p class="text-xs text-gold-600 mb-2">მაგ: უჯრედის აგებულება, 8 კლასი</p>
+          <ul class="text-xs text-gray-600 space-y-1">
+            <li>• "ააშენე უჯრედი" — ჯგუფური კონსტრუქტორის ამოცანა</li>
+            <li>• სიმულაცია: მოსწავლეები = ორგანელები, თამაშობენ ფუნქციებს</li>
+            <li>• გამოძიება: "რომელი ორგანელა დააშავა საქმე?"</li>
+          </ul>
+        </div>
+        <div id="seg-demo1-georgian" class="scroll-mt-24 border-t-4 border-coral-500 rounded-lg p-4 bg-gray-50">
+          <p class="font-bold text-ink-950 text-sm mb-1">📖 ქართული ენა და ლიტერატურა</p>
+          <p class="text-xs text-coral-600 mb-2">მაგ: „ვეფხისტყაოსანი", 8 კლასი</p>
+          <ul class="text-xs text-gray-600 space-y-1">
+            <li>• პერსონაჟის „ინტერვიუ" — მოსწავლე თამაშობს გმირს</li>
+            <li>• ალტერნატიული დასასრულის შეთხზვა ჯგუფებში</li>
+            <li>• სოციალური ქსელის პროფილი პერსონაჟისთვის</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 3: DEMO 2 INTERACTIVE SLIDES ═══ -->
+  <section id="seg-demo2" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#d97706;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-gold-500 text-white flex items-center justify-center font-bold text-base">3</div>
+        <div class="flex-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-gold-600">20 წუთი · ლაივ დემო 2</span>
+          <h2 class="text-xl font-bold text-ink-950">ერთი გაკვეთილის ინტერაქტიული სლაიდები</h2>
+          <p class="text-gray-500 text-sm mt-1">სემესტრული გეგმიდან ერთი კონკრეტული გაკვეთილის სრული სლაიდ-დეკის აწყობა — არა სტატიკური ტექსტი, არამედ ცოცხალი ელემენტებით.</p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3 mb-5">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">❓ Quiz-სლაიდი</p>
+          <p class="text-xs text-gray-600">გაკვეთილის შუაში ჩაშენებული მოკლე კითხვა, რომელიც მაშინვე ამოწმებს გაგებას.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">🖱️ Drag & Drop</p>
+          <p class="text-xs text-gray-600">მოსწავლე ეკრანზე ან ბეჭდურად ალაგებს ელემენტებს სწორ თანმიმდევრობაში.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">📊 Live Poll</p>
+          <p class="text-xs text-gray-600">კლასის აზრის მყისიერი შეგროვება — მარტივი ხმის მიცემა თემასთან დაკავშირებით.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">🔍 დამალული პასუხი</p>
+          <p class="text-xs text-gray-600">კლიკზე გამოჩენადი პასუხი — მოსწავლე ჯერ ფიქრობს, მერე ამოწმებს.</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>შექმენი ერთი გაკვეთილის სრული სლაიდ-დეკი თემაზე: [ჩასვით გაკვეთილის თემა].
+სამიზნე: [კლასი, საგანი].
+
+სტრუქტურა (8-10 სლაიდი):
+1. სათაური + გაკვეთილის მიზანი
+2. მოკლე შესავალი / წინარე ცოდნის გააქტიურება (1 კითხვა)
+3-6. ძირითადი მასალა — თითო საკვანძო იდეაზე 1 სლაიდი, მაქსიმუმ 40 სიტყვა თითოზე
+7. Quiz-სლაიდი: 2 კითხვა მასალის შემოწმებისთვის, დამალული პასუხებით
+8. Drag & Drop ან დალაგების ამოცანა
+9. Live Poll: 1 აზრის კითხვა თემასთან დაკავშირებით
+10. შეჯამება + საშინაო დავალება
+
+ტონი: მარტივი, ვიზუალურად სუფთა, თითო სლაიდზე მინიმალური ტექსტი.</pre>
+      </div>
+
+      <div class="tip-box p-3 text-sm text-gray-700 mt-4">
+        <strong>💡 ინსტრუმენტი:</strong> Gamma App გენერირებს მზა, დიზაინირებულ ვებ-სლაიდებს პირდაპირ ამ პრომპტიდან; Claude/ChatGPT კი კარგია სტრუქტურისა და კითხვების წინასწარ დახვეწისთვის, სანამ Gamma-ში გადავა.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 4: DEMO 3 GAMES ═══ -->
+  <section id="seg-demo3" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#e11d48;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-coral-500 text-white flex items-center justify-center font-bold text-base">4</div>
+        <div class="flex-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-coral-600">25 წუთი · ლაივ დემო 3</span>
+          <h2 class="text-xl font-bold text-ink-950">სასწავლო თამაშები — 5 ფორმატი ერთ თემაზე</h2>
+          <p class="text-gray-500 text-sm mt-1">ერთი და იმავე გაკვეთილის თემაზე რამდენიმე განსხვავებული თამაშის ფორმატის გენერაცია, რომ მასწავლებელმა თავად აირჩიოს რომელი შეესაბამება მის კლასს.</p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3 mb-5 text-xs">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">🏆 ვიქტორინა / Jeopardy-სტილი</p>
+          <p class="text-gray-600">კატეგორია-კითხვა-ქულა სტრუქტურა, გუნდური თამაში. კარგია ფაქტობრივი ცოდნის გამეორებისთვის.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">🔤 სიტყვა/ცნებების თამაში</p>
+          <p class="text-gray-600">ჯვარედინი სიტყვები, შესატყვისობა, ანაგრამები. კარგია ტერმინოლოგიის დასამახსოვრებლად.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">🧭 სცენარული თამაში (Choose Your Path)</p>
+          <p class="text-gray-600">მოსწავლე იღებს გადაწყვეტილებებს და ხედავს შედეგებს. კარგია ისტორიული/ეთიკური სიტუაციების გასააზრებლად.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-ink-950 text-sm mb-1">⏱️ დროზე დაფუძნებული გამოწვევა</p>
+          <p class="text-gray-600">სწრაფი კითხვა-პასუხი მთელი კლასისთვის ერთად. კარგია გაკვეთილის დასაწყისში ან ენერგიის ასაწევად.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4 sm:col-span-2">
+          <p class="font-bold text-ink-950 text-sm mb-1">🎭 როლური სიმულაცია</p>
+          <p class="text-gray-600">მოსწავლეები იღებენ როლებს და თამაშობენ სცენარს. კარგია ლიტერატურის, სამოქალაქო განათლებისა და ისტორიისთვის.</p>
+        </div>
+      </div>
+
+      <p class="text-sm font-bold text-ink-950 mb-3">🎬 ლაივ დემო — 3 ფორმატი ერთ თემაზე</p>
+
+      <div id="seg-demo3-quiz" class="scroll-mt-24 mb-4">
+        <p class="text-xs font-bold text-cyan-600 mb-2">1. ვიქტორინა / Jeopardy — პრომპტი</p>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+          <pre>შექმენი Jeopardy-სტილის ვიქტორინა თემაზე: [ჩასვით თემა].
+4 კატეგორია, თითოეულში 4 კითხვა სირთულის ზრდადობით (10, 20, 30, 40 ქულა).
+თითო კითხვას დაურთე სწორი პასუხი და მოკლე ახსნა.
+ფორმატი: ცხრილი, რომელიც პირდაპირ გამოსადეგია დაფაზე/სლაიდზე გამოსატანად.
+დაამატე წესები: 2-4 გუნდი, ჯერადობა ვინ ირჩევს კითხვას.</pre>
+        </div>
+      </div>
+
+      <div id="seg-demo3-scenario" class="scroll-mt-24 mb-4">
+        <p class="text-xs font-bold text-gold-600 mb-2">2. სცენარული თამაში — პრომპტი</p>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+          <pre>შექმენი "აირჩიე შენი გზა" ტიპის სცენარული თამაში თემაზე: [ჩასვით თემა].
+სტრუქტურა:
+1. საწყისი სიტუაცია (3-4 წინადადება)
+2. 3 გადაწყვეტილების წერტილი, თითოეულზე 2-3 არჩევანი
+3. თითო არჩევანს მოჰყვება რეალისტური შედეგი (2-3 წინადადება)
+4. ბოლოს 2-3 შესაძლო დასასრული, დამოკიდებული არჩევანებზე
+5. საკლასო განხილვის 3 კითხვა თამაშის შემდეგ
+
+მოსწავლეები თამაშობენ წყვილებში ან პატარა ჯგუფებში, ფურცელზე ან ზეპირად.</pre>
+        </div>
+      </div>
+
+      <div id="seg-demo3-word" class="scroll-mt-24 mb-4">
+        <p class="text-xs font-bold text-coral-600 mb-2">3. სიტყვების თამაში — პრომპტი</p>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+          <pre>შექმენი ჯვარედინი სიტყვების (crossword) და შესატყვისობის თამაში თემაზე: [ჩასვით თემა].
+1. 10 საკვანძო ტერმინი განმარტებებთან ერთად
+2. ჯვარედინი სიტყვების ბადე (ტექსტური ფორმატი, ბეჭდვად მზა)
+3. ცალკე — იგივე ტერმინების შესატყვისობის ცხრილი (ტერმინი ↔ განმარტება არეული თანმიმდევრობით)
+4. პასუხების გასაღები ცალკე გვერდზე
+
+ენა: მარტივი, კლასის ასაკის შესაბამისი.</pre>
+        </div>
+      </div>
+
+      <div class="warning-box p-3 text-sm text-gray-700 mt-2">
+        <strong>⚠️ პრაქტიკული რჩევა:</strong> თამაშის გენერაციის შემდეგ ყოველთვის თავად გადაამოწმეთ ფაქტობრივი სისწორე და ასაკობრივი შესაბამისობა — AI სწრაფად ქმნის სტრუქტურას, მაგრამ საბოლოო კონტენტის პასუხისმგებლობა მასწავლებელთანაა.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 5: CLOSING ═══ -->
+  <section id="seg-closing" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-ink-950 text-white flex items-center justify-center font-bold text-base">5</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-cyan-600">10 წუთი · კითხვა-პასუხი</span>
+          <h2 class="text-xl font-bold text-ink-950">დახურვა, რესურსები & კითხვა-პასუხი</h2>
+          <p class="text-gray-500 text-sm mt-1">3 კონკრეტული ნაბიჯი, საიდანაც შეგიძლიათ ხვალვე დაიწყოთ.</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-3 mb-5 text-xs">
+        <div class="bg-cyan-50 rounded-lg p-4">
+          <p class="font-bold text-cyan-700 mb-1">ნაბიჯი 1</p>
+          <p class="text-gray-700">აირჩიეთ ერთი გაკვეთილი მომავალი კვირიდან და სცადეთ სემესტრული გეგმის პრომპტი მასზე.</p>
+        </div>
+        <div class="bg-gold-50 rounded-lg p-4">
+          <p class="font-bold text-gold-700 mb-1">ნაბიჯი 2</p>
+          <p class="text-gray-700">იმ გეგმიდან აწყვეთ ერთი გაკვეთილის ინტერაქტიული სლაიდები Gamma-ში.</p>
+        </div>
+        <div class="bg-coral-50 rounded-lg p-4">
+          <p class="font-bold text-coral-700 mb-1">ნაბიჯი 3</p>
+          <p class="text-gray-700">დაამატეთ ერთი თამაში (ვიქტორინა ან სცენარული) გაკვეთილის ბოლოს განსამტკიცებლად.</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4 mb-5">
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2">🔗 ბმულები (გახსენით ახლავე)</p>
+        <ul class="text-sm space-y-2">
+          <li><a href="https://claude.ai" target="_blank" class="text-cyan-600 hover:underline">claude.ai</a> — Claude, გეგმებისა და ტექსტის დამუშავებისთვის</li>
+          <li><a href="https://chat.openai.com" target="_blank" class="text-cyan-600 hover:underline">chat.openai.com</a> — ChatGPT</li>
+          <li><a href="https://gemini.google.com" target="_blank" class="text-cyan-600 hover:underline">gemini.google.com</a> — Gemini</li>
+          <li><a href="https://gamma.app" target="_blank" class="text-cyan-600 hover:underline">gamma.app</a> — ინტერაქტიული სლაიდები</li>
+        </ul>
+      </div>
+
+      <div class="bg-ink-950 text-white rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">❓</span>
+          <h3 class="text-lg font-bold">მოსალოდნელი კითხვები</h3>
+        </div>
+        <div class="grid md:grid-cols-2 gap-2 text-xs text-gray-300">
+          <div>💭 „ხომ არ ჩამომერთმევა შემოქმედებითობა, თუ AI-ს ვანდობ გეგმას?"</div>
+          <div>💭 „როგორ დავრწმუნდე, რომ ინფორმაცია ფაქტობრივად სწორია?"</div>
+          <div>💭 „ღირს თუ არა ფასიანი ვერსია, თუ საკმარისია უფასო?"</div>
+          <div>💭 „როგორ ვასწავლო მოსწავლეებს პასუხისმგებლიან გამოყენებას?"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-200 pt-8 pb-12 text-center text-sm text-gray-400">
+    <div class="flex items-center justify-center gap-3 mb-3">
+      <span class="bg-coral-500 text-white text-xs font-bold px-2 py-0.5 rounded">OPEN DAY</span>
+      <span class="text-gray-300">×</span>
+      <span class="font-semibold text-ink-950">Smart Academy</span>
+    </div>
+    <p class="mb-1">ტრენერი: <strong>გიორგი ბასილაია</strong> — 25+ წლიანი გამოცდილება ტექნოლოგიებში, 13+ წლიანი სწავლების გამოცდილება</p>
+    <p class="text-gray-300">გვერდი შექმნილია ლექციის დეტალურ სახელმძღვანელოდ გამოსაყენებლად · © 2026 Smart Academy</p>
+  </footer>
+
+</div>
+</main>
+
+<!-- Back to top -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-50 bg-ink-950 hover:bg-ink-800 text-white w-11 h-11 rounded-full shadow-lg flex items-center justify-center transition-colors border border-white/10" title="დასაწყისი">
+  <svg class="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+<!-- Font size controls -->
+<div id="fontControls">
+  <button onclick="changeFontSize(1)" title="შრიფტი +" style="font-size:15px">A+</button>
+  <button onclick="changeFontSize(-1)" title="შრიფტი -" style="font-size:11px">A-</button>
+</div>
+
+<script>
+  // Sidebar toggle
+  let sidebarOpen = false;
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    if (sidebarOpen) {
+      sidebar.classList.remove('-translate-x-full');
+      main.style.marginLeft = window.innerWidth >= 768 ? '18rem' : '0';
+      overlay.classList.remove('hidden');
+      menuIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+    } else {
+      sidebar.classList.add('-translate-x-full');
+      main.style.marginLeft = '0';
+      overlay.classList.add('hidden');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    }
+  }
+
+  // Immediate active state on click
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      if (window.innerWidth < 768) toggleSidebar();
+    });
+  });
+
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id], div[id^="seg-"]');
+  const navLinks = document.querySelectorAll('.nav-link[data-topic]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[data-topic="${entry.target.id}"]`);
+        if (active) {
+          active.classList.add('active');
+          active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // Back to top
+  window.addEventListener('scroll', () => {
+    document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 400);
+  });
+
+  // Font size
+  let fontSize = 17;
+  function changeFontSize(delta) {
+    fontSize = Math.min(22, Math.max(14, fontSize + delta));
+    document.documentElement.style.fontSize = fontSize + 'px';
+  }
+
+  // Copy prompt
+  function copyPrompt(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ კოპირდა';
+      setTimeout(() => btn.textContent = orig, 1500);
+    });
+  }
+</script>
+</body>
+</html>
