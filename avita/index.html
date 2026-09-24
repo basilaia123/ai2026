@@ -531,8 +531,15 @@
       position: relative;
       transition: var(--transition);
     }
+    .package-card {
+      cursor: pointer;
+    }
     .package-card:hover {
       box-shadow: var(--shadow-lg);
+    }
+    .package-card.selected {
+      outline: 3px solid var(--avita-cyan);
+      outline-offset: 4px;
     }
     .package-card.highlight {
       border-color: var(--pkg-b-color);
@@ -1178,7 +1185,7 @@
       <div class="packages-grid">
         
         <!-- PACKAGE A -->
-        <div class="package-card">
+        <div class="package-card" data-pkg="a" onclick="selectPackage('a')">
           <div class="pkg-header">
             <div class="pkg-name">პაკეტი A: Fast-Track</div>
             <div class="pkg-duration">3 შეხვედრა • სულ 8 სთ 15 წთ</div>
@@ -1196,11 +1203,10 @@
             <li class="pkg-feature-item"><span class="pkg-check">✓</span> <span>Custom AI ასისტენტები (Custom GPTs / Claude Projects) „ავიტასთვის“</span></li>
             <li class="pkg-feature-item"><span class="pkg-check">✓</span> <span>კორპორაციული AI Governance & ბრენდის უსაფრთხოება</span></li>
           </ul>
-          <button class="btn-select-pkg btn-pkg-a" onclick="openModal('პაკეტი A: Fast-Track (3 შეხვედრა)')">პაკეტი A-ს შერჩევა</button>
         </div>
 
         <!-- PACKAGE B (RECOMMENDED) -->
-        <div class="package-card highlight">
+        <div class="package-card highlight" data-pkg="b" onclick="selectPackage('b')">
           <div class="ribbon">⭐ რეკომენდებული</div>
           <div class="pkg-header">
             <div class="pkg-name">პაკეტი B: Optimal Adoption</div>
@@ -1217,11 +1223,10 @@
             <li class="pkg-feature-item"><span class="pkg-check">✓</span> <span>გაყიდვების მილსადენი (Pipeline) და მენეჯმენტის დეშბორდი</span></li>
             <li class="pkg-feature-item"><span class="pkg-check">✓</span> <span>ტენდერები, სახელმწიფო შესყიდვები & ფარმაკოვიგილანსი</span></li>
           </ul>
-          <button class="btn-select-pkg btn-pkg-b" onclick="openModal('პაკეტი B: Optimal Adoption (4 შეხვედრა)')">პაკეტი B-ს შერჩევა</button>
         </div>
 
         <!-- PACKAGE C -->
-        <div class="package-card">
+        <div class="package-card" data-pkg="c" onclick="selectPackage('c')">
           <div class="pkg-header">
             <div class="pkg-name">პაკეტი C: Enterprise Transformation</div>
             <div class="pkg-duration">6 შეხვედრა • სულ 16 სთ 30 წთ</div>
@@ -1236,7 +1241,6 @@
             <li class="pkg-feature-item"><span class="pkg-check">✓</span> <span>Make.com: ვიზიტის შემდგომი Follow-up კომუნიკაციის ავტომატიზაცია</span></li>
             <li class="pkg-feature-item"><span class="pkg-check">✓</span> <span>შემოსული მოთხოვნებისა და შეკითხვების AI კლასიფიკაცია & სისტემური ინტეგრაცია</span></li>
           </ul>
-          <button class="btn-select-pkg btn-pkg-c" onclick="openModal('პაკეტი C: Enterprise Transformation (6 შეხვედრა)')">პაკეტი C-ს შერჩევა</button>
         </div>
 
       </div>
@@ -1649,8 +1653,27 @@
       }
     }
 
+    // Package card click: show that package's detailed syllabus
+    function selectPackage(pkg, scroll = true) {
+      switchCurriculum(pkg);
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.pkg === pkg);
+      });
+      document.querySelectorAll('.session-item').forEach(item => {
+        if (item.style.display === 'none') return;
+        const header = item.querySelector('.session-summary');
+        const body = header.nextElementSibling;
+        body.style.display = 'grid';
+        const arrow = header.querySelector('span');
+        if (arrow) arrow.textContent = '▲';
+      });
+      if (scroll) document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     // Modal
     function openModal(pkgName) {
+      const m = /პაკეტი ([ABC])/.exec(pkgName || '');
+      if (m) selectPackage(m[1].toLowerCase(), false);
       document.getElementById('modalPkgInput').value = pkgName || 'პაკეტი B: Optimal Adoption';
       document.getElementById('contactModal').classList.add('active');
     }
