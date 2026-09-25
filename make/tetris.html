@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Tetris</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-color: #f8fafc;
+            --border-color: #334155;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #game-layout {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: var(--panel-bg);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+        .canvas-container {
+            position: relative;
+            border: 4px solid var(--border-color);
+            border-radius: 8px;
+            line-height: 0;
+        }
+        canvas {
+            display: block;
+            background-color: #000;
+        }
+        #side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 150px;
+        }
+        .stat-box {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #next-container {
+            background: var(--bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .controls-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: auto;
+            line-height: 1.6;
+        }
+        #game-over-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            z-index: 10;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+
+<div id="game-layout">
+    <div class="canvas-container">
+        <canvas id="tetris"></canvas>
+        <div id="game-over-overlay">
+            <h2 style="color: #ef4444; margin: 0;">GAME OVER</h2>
+            <button onclick="resetGame()">RESTART</button>
+        </div>
+    </div>
+    
+    <div id="side-panel">
+        <div class="stat-box">
+            <div class="stat-label">Next</div>
+            <div id="next-container">
+                <canvas id="next"></canvas>
+            </div>
+        </div>
+        
+        <div class="stat-box">
+            <div class="stat-label">Score</div>
+            <div id="score" class="stat-value">0</div>
+        </div>
+        
+        <div class="stat-box">
+            <div class="stat-label">Level</div>
+            <div id="level" class="stat-value">1</div>
+        </div>
+
+        <div class="controls-hint">
+            <b>Arrows</b>: Move/Rotate<br>
+            <b>Down</b>: Soft Drop<br>
+            <b>Space</b>: Hard Drop
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('tetris');
+    const ctx = canvas.getContext('2d');
+    const nextCanvas = document.getElementById('next');
+    const nextCtx = nextCanvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const levelEl = document.getElementById('level');
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+
+    const ROW = 20;
+    const COL = 10;
+    const SQ = 30;
+    const VACANT = "black";
+
+    canvas.width = COL * SQ;
+    canvas.height = ROW * SQ;
+    nextCanvas.width = 4 * SQ;
+    nextCanvas.height = 4 * SQ;
+
+    const I = [[ [0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0] ], [ [0,0,1,0],[0,0,1,0],[0,0,1,0],[0,0,1,0] ], [ [0,0,0,0],[0,0,0,0],[1,1,1,1],[0,0,0,0] ], [ [0,1,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0] ]];
+    const J = [[ [1,0,0],[1,1,1],[0,0,0] ], [ [0,1,1],[0,1,0],[0,1,0] ], [ [0,0,0],[1,1,1],[0,0,1] ], [ [0,1,0],[0,1,0],[1,1,0] ]];
+    const L = [[ [0,0,1],[1,1,1],[0,0,0] ], [ [0,1,0],[0,1,0],[0,1,1] ], [ [0,0,0],[1,1,1],[1,0,0] ], [ [1,1,0],[0,1,0],[0,1,0] ]];
+    const O = [[ [0,0,0,0],[0,1,1,0],[0,1,1,0],[0,0,0,0] ]];
+    const S = [[ [0,1,1],[1,1,0],[0,0,0] ], [ [0,1,0],[0,1,1],[0,0,1] ], [ [0,0,0],[0,1,1],[1,1,0] ], [ [1,0,0],[1,1,0],[0,1,0] ]];
+    const T = [[ [0,1,0],[1,1,1],[0,0,0] ], [ [0,1,0],[0,1,1],[0,1,0] ], [ [0,0,0],[1,1,1],[0,1,0] ], [ [0,1,0],[1,1,0],[0,1,0] ]];
+    const Z = [[ [1,1,0],[0,1,1],[0,0,0] ], [ [0,0,1],[0,1,1],[0,1,0] ], [ [0,0,0],[1,1,0],[0,1,1] ], [ [0,1,0],[1,1,0],[1,0,0] ]];
+
+    const PIECES = [
+        [Z, "#ef4444"], [S, "#22c55e"], [T, "#a855f7"],
+        [O, "#eab308"], [L, "#f97316"], [I, "#06b6d4"], [J, "#3b82f6"]
+    ];
+
+    function drawSquare(x, y, color, context = ctx, isGhost = false) {
+        context.fillStyle = color;
+        if (isGhost) {
+            context.globalAlpha = 0.2;
+            context.strokeStyle = color;
+            context.lineWidth = 2;
+            context.strokeRect(x * SQ + 2, y * SQ + 2, SQ - 4, SQ - 4);
+            context.globalAlpha = 1.0;
+            return;
+        }
+        
+        // Block base
+        context.fillRect(x * SQ, y * SQ, SQ, SQ);
+        
+        // Sleek border/shine effect
+        context.strokeStyle = "rgba(255,255,255,0.1)";
+        context.strokeRect(x * SQ + 1, y * SQ + 1, SQ - 2, SQ - 2);
+    }
+
+    let board = [];
+    for (r = 0; r < ROW; r++) {
+        board[r] = [];
+        for (c = 0; c < COL; c++) {
+            board[r][c] = VACANT;
+        }
+    }
+
+    function drawBoard() {
+        for (r = 0; r < ROW; r++) {
+            for (c = 0; c < COL; c++) {
+                drawSquare(c, r, board[r][c]);
+            }
+        }
+    }
+
+    function Piece(tetromino, color) {
+        this.tetromino = tetromino;
+        this.color = color;
+        this.tetrominoN = 0;
+        this.activeTetromino = this.tetromino[this.tetrominoN];
+        this.x = 3;
+        this.y = -2;
+    }
+
+    Piece.prototype.fill = function(color, isGhost = false) {
+        for (r = 0; r < this.activeTetromino.length; r++) {
+            for (c = 0; c < this.activeTetromino.length; c++) {
+                if (this.activeTetromino[r][c]) {
+                    drawSquare(this.x + c, this.y + r, color, ctx, isGhost);
+                }
+            }
+        }
+    }
+
+    Piece.prototype.draw = function() { this.fill(this.color); }
+    Piece.prototype.unDraw = function() { this.fill(VACANT); }
+
+    Piece.prototype.moveDown = function() {
+        if (!this.collision(0, 1, this.activeTetromino)) {
+            this.unDraw();
+            this.y++;
+            this.draw();
+            return true;
+        } else {
+            this.lock();
+            return false;
+        }
+    }
+
+    Piece.prototype.hardDrop = function() {
+        this.unDraw();
+        while(!this.collision(0, 1, this.activeTetromino)) {
+            this.y++;
+            score += 2;
+        }
+        this.draw();
+        this.lock();
+    }
+
+    Piece.prototype.moveRight = function() {
+        if (!this.collision(1, 0, this.activeTetromino)) {
+            this.unDraw();
+            this.x++;
+            this.draw();
+        }
+    }
+
+    Piece.prototype.moveLeft = function() {
+        if (!this.collision(-1, 0, this.activeTetromino)) {
+            this.unDraw();
+            this.x--;
+            this.draw();
+        }
+    }
+
+    Piece.prototype.rotate = function() {
+        let nextPattern = this.tetromino[(this.tetrominoN + 1) % this.tetromino.length];
+        let kick = 0;
+        if (this.collision(0, 0, nextPattern)) {
+            if (this.x > COL / 2) kick = -1;
+            else kick = 1;
+        }
+        if (!this.collision(kick, 0, nextPattern)) {
+            this.unDraw();
+            this.x += kick;
+            this.tetrominoN = (this.tetrominoN + 1) % this.tetromino.length;
+            this.activeTetromino = nextPattern;
+            this.draw();
+        }
+    }
+
+    Piece.prototype.collision = function(x, y, piece) {
+        for (r = 0; r < piece.length; r++) {
+            for (c = 0; c < piece.length; c++) {
+                if (!piece[r][c]) continue;
+                let newX = this.x + c + x;
+                let newY = this.y + r + y;
+                if (newX < 0 || newX >= COL || newY >= ROW) return true;
+                if (newY < 0) continue;
+                if (board[newY][newX] != VACANT) return true;
+            }
+        }
+        return false;
+    }
+
+    Piece.prototype.lock = function() {
+        for (r = 0; r < this.activeTetromino.length; r++) {
+            for (c = 0; c < this.activeTetromino.length; c++) {
+                if (!this.activeTetromino[r][c]) continue;
+                if (this.y + r < 0) {
+                    gameOver = true;
+                    gameOverOverlay.style.display = 'flex';
+                    break;
+                }
+                board[this.y + r][this.x + c] = this.color;
+            }
+        }
+        
+        let linesCleared = 0;
+        for (r = 0; r < ROW; r++) {
+            let isFull = true;
+            for (c = 0; c < COL; c++) {
+                if (board[r][c] == VACANT) isFull = false;
+            }
+            if (isFull) {
+                for (y = r; y > 1; y--) {
+                    for (c = 0; c < COL; c++) board[y][c] = board[y - 1][c];
+                }
+                for (c = 0; c < COL; c++) board[0][c] = VACANT;
+                linesCleared++;
+            }
+        }
+        
+        if (linesCleared > 0) {
+            score += [0, 100, 300, 500, 800][linesCleared] * level;
+            lines += linesCleared;
+            level = Math.floor(lines / 10) + 1;
+            scoreEl.innerHTML = score;
+            levelEl.innerHTML = level;
+        }
+        
+        if (!gameOver) {
+            p = nextP;
+            nextP = randomPiece();
+            drawNext();
+        }
+    }
+
+    Piece.prototype.drawGhost = function() {
+        let ghostY = this.y;
+        while (!this.collision(0, ghostY - this.y + 1, this.activeTetromino)) {
+            ghostY++;
+        }
+        for (r = 0; r < this.activeTetromino.length; r++) {
+            for (c = 0; c < this.activeTetromino.length; c++) {
+                if (this.activeTetromino[r][c]) {
+                    drawSquare(this.x + c, ghostY + r, this.color, ctx, true);
+                }
+            }
+        }
+    }
+
+    function randomPiece() {
+        let r = Math.floor(Math.random() * PIECES.length);
+        return new Piece(PIECES[r][0], PIECES[r][1]);
+    }
+
+    let p = randomPiece();
+    let nextP = randomPiece();
+    let score = 0;
+    let lines = 0;
+    let level = 1;
+    let gameOver = false;
+
+    function drawNext() {
+        nextCtx.fillStyle = "black";
+        nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+        const offset = nextP.tetromino === I ? 0 : 0.5;
+        for (r = 0; r < nextP.activeTetromino.length; r++) {
+            for (c = 0; c < nextP.activeTetromino.length; c++) {
+                if (nextP.activeTetromino[r][c]) {
+                    drawSquare(c + offset, r + offset, nextP.color, nextCtx);
+                }
+            }
+        }
+    }
+
+    document.addEventListener("keydown", event => {
+        if (gameOver) return;
+        if (event.keyCode == 37) p.moveLeft();
+        else if (event.keyCode == 38) p.rotate();
+        else if (event.keyCode == 39) p.moveRight();
+        else if (event.keyCode == 40) p.moveDown();
+        else if (event.keyCode == 32) p.hardDrop();
+    });
+
+    let dropStart = Date.now();
+    function drop() {
+        let now = Date.now();
+        let delta = now - dropStart;
+        let speed = Math.max(100, 1000 - (level - 1) * 100);
+        
+        if (delta > speed) {
+            p.moveDown();
+            dropStart = Date.now();
+        }
+        
+        if (!gameOver) {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            drawBoard();
+            p.drawGhost();
+            p.draw();
+            requestAnimationFrame(drop);
+        }
+    }
+
+    function resetGame() {
+        board = Array.from({length: ROW}, () => Array(COL).fill(VACANT));
+        score = 0;
+        level = 1;
+        lines = 0;
+        gameOver = false;
+        scoreEl.innerHTML = 0;
+        levelEl.innerHTML = 1;
+        gameOverOverlay.style.display = 'none';
+        p = randomPiece();
+        nextP = randomPiece();
+        drawNext();
+        drop();
+    }
+
+    drawNext();
+    drop();
+</script>
+
+</body>
+</html>

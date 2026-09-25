@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Clone</title>
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #game-container {
+            position: relative;
+            border: 4px solid #222;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        canvas {
+            display: block;
+            background-color: black;
+        }
+        #ui {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid yellow;
+            text-align: center;
+            display: none;
+        }
+        #start-btn {
+            background: yellow;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: inherit;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <div>SCORE: <span id="score">0</span></div>
+        <div>LIVES: <span id="lives">3</span></div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="game-over" class="message">
+            <h1 id="status-text">GAME OVER</h1>
+            <button id="start-btn" onclick="resetGame()">RESTART</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const gameOverEl = document.getElementById('game-over');
+        const statusText = document.getElementById('status-text');
+
+        const TILE_SIZE = 20;
+        const MAP = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,1],
+            [1,3,1,1,2,1,1,1,2,1,2,1,1,1,2,1,1,3,1],
+            [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+            [1,2,1,1,2,1,2,1,1,1,1,1,2,1,2,1,1,2,1],
+            [1,2,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,2,1],
+            [1,1,1,1,2,1,1,1,0,1,0,1,1,1,2,1,1,1,1],
+            [0,0,0,1,2,1,0,0,0,0,0,0,0,1,2,1,0,0,0],
+            [1,1,1,1,2,1,0,1,1,4,1,1,0,1,2,1,1,1,1],
+            [0,0,0,0,2,0,0,1,0,0,0,1,0,0,2,0,0,0,0],
+            [1,1,1,1,2,1,0,1,1,1,1,1,0,1,2,1,1,1,1],
+            [0,0,0,1,2,1,0,0,0,0,0,0,0,1,2,1,0,0,0],
+            [1,1,1,1,2,1,0,1,1,1,1,1,0,1,2,1,1,1,1],
+            [1,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,1],
+            [1,2,1,1,2,1,1,1,2,1,2,1,1,1,2,1,1,2,1],
+            [1,3,2,1,2,2,2,2,2,0,2,2,2,2,2,1,2,3,1],
+            [1,1,2,1,2,1,2,1,1,1,1,1,2,1,2,1,2,1,1],
+            [1,2,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,2,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        canvas.width = MAP[0].length * TILE_SIZE;
+        canvas.height = MAP.length * TILE_SIZE;
+
+        let score = 0;
+        let lives = 3;
+        let gameRunning = false;
+        let powerMode = false;
+        let powerTimer = null;
+
+        const DIRECTIONS = {
+            UP: { x: 0, y: -1, angle: Math.PI * 1.5 },
+            DOWN: { x: 0, y: 1, angle: Math.PI * 0.5 },
+            LEFT: { x: -1, y: 0, angle: Math.PI },
+            RIGHT: { x: 1, y: 0, angle: 0 }
+        };
+
+        class Entity {
+            constructor(x, y, speed) {
+                this.gridX = x;
+                this.gridY = y;
+                this.x = x * TILE_SIZE + TILE_SIZE / 2;
+                this.y = y * TILE_SIZE + TILE_SIZE / 2;
+                this.speed = speed;
+                this.dir = DIRECTIONS.RIGHT;
+                this.nextDir = null;
+            }
+
+            getCenter() {
+                return { x: this.x, y: this.y };
+            }
+
+            canMove(dir) {
+                const nextX = this.gridX + dir.x;
+                const nextY = this.gridY + dir.y;
+                
+                // Wrap around logic for tunnel (row 9)
+                if (nextX < 0 || nextX >= MAP[0].length) return true;
+
+                const tile = MAP[nextY][nextX];
+                return tile !== 1 && tile !== 4; // 1 is wall, 4 is ghost gate
+            }
+
+            updatePosition() {
+                // If we are close enough to the center of a tile, try to change direction
+                const centerX = this.gridX * TILE_SIZE + TILE_SIZE / 2;
+                const centerY = this.gridY * TILE_SIZE + TILE_SIZE / 2;
+
+                if (Math.abs(this.x - centerX) < this.speed && Math.abs(this.y - centerY) < this.speed) {
+                    if (this.nextDir && this.canMove(this.nextDir)) {
+                        this.dir = this.nextDir;
+                        this.nextDir = null;
+                    }
+                    
+                    if (!this.canMove(this.dir)) {
+                        this.x = centerX;
+                        this.y = centerY;
+                        return; // Stopped by wall
+                    }
+                    
+                    // Snap to center when turning
+                    this.x = centerX;
+                    this.y = centerY;
+                }
+
+                this.x += this.dir.x * this.speed;
+                this.y += this.dir.y * this.speed;
+
+                // Handle tunnel wrap around
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+
+                this.gridX = Math.floor(this.x / TILE_SIZE);
+                this.gridY = Math.floor(this.y / TILE_SIZE);
+                
+                // Keep grid coordinates in bounds for tunnel
+                if (this.gridX < 0) this.gridX = MAP[0].length - 1;
+                if (this.gridX >= MAP[0].length) this.gridX = 0;
+            }
+        }
+
+        class Pacman extends Entity {
+            constructor(x, y) {
+                super(x, y, 2);
+                this.mouthOpen = 0;
+                this.mouthSpeed = 0.15;
+            }
+
+            draw() {
+                this.mouthOpen += this.mouthSpeed;
+                if (this.mouthOpen > 0.2 || this.mouthOpen < 0) this.mouthSpeed *= -1;
+
+                ctx.fillStyle = 'yellow';
+                ctx.beginPath();
+                const startAngle = this.dir.angle + (this.mouthOpen * Math.PI);
+                const endAngle = this.dir.angle + (2 * Math.PI) - (this.mouthOpen * Math.PI);
+                ctx.moveTo(this.x, this.y);
+                ctx.arc(this.x, this.y, TILE_SIZE / 2 - 2, startAngle, endAngle);
+                ctx.fill();
+            }
+        }
+
+        class Ghost extends Entity {
+            constructor(x, y, color) {
+                super(x, y, 1.5);
+                this.color = color;
+                this.scared = false;
+                this.spawnX = x;
+                this.spawnY = y;
+            }
+
+            updateAI() {
+                const centerX = this.gridX * TILE_SIZE + TILE_SIZE / 2;
+                const centerY = this.gridY * TILE_SIZE + TILE_SIZE / 2;
+
+                // Only change direction at intersections or when hitting a wall
+                if (Math.abs(this.x - centerX) < this.speed && Math.abs(this.y - centerY) < this.speed) {
+                    const possibleDirs = Object.values(DIRECTIONS).filter(d => {
+                        // Don't immediately reverse direction unless necessary
+                        if (d.x === -this.dir.x && d.y === -this.dir.y) return false;
+                        return this.canMove(d);
+                    });
+
+                    if (possibleDirs.length > 0) {
+                        this.dir = possibleDirs[Math.floor(Math.random() * possibleDirs.length)];
+                    } else {
+                        // If blocked, reverse
+                        this.dir = { x: -this.dir.x, y: -this.dir.y, angle: (this.dir.angle + Math.PI) % (2 * Math.PI) };
+                    }
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = this.scared ? 'blue' : this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y - 2, TILE_SIZE / 2 - 2, Math.PI, 0);
+                ctx.lineTo(this.x + TILE_SIZE / 2 - 2, this.y + TILE_SIZE / 2 - 2);
+                ctx.lineTo(this.x - TILE_SIZE / 2 + 2, this.y + TILE_SIZE / 2 - 2);
+                ctx.fill();
+
+                // Eyes
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(this.x - 4, this.y - 4, 3, 0, Math.PI * 2);
+                ctx.arc(this.x + 4, this.y - 4, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(this.x - 4 + this.dir.x * 2, this.y - 4 + this.dir.y * 2, 1.5, 0, Math.PI * 2);
+                ctx.arc(this.x + 4 + this.dir.x * 2, this.y - 4 + this.dir.y * 2, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            reset() {
+                this.gridX = this.spawnX;
+                this.gridY = this.spawnY;
+                this.x = this.gridX * TILE_SIZE + TILE_SIZE / 2;
+                this.y = this.gridY * TILE_SIZE + TILE_SIZE / 2;
+                this.scared = false;
+            }
+        }
+
+        let pacman;
+        let ghosts = [];
+        let mapData = [];
+
+        function initGame() {
+            pacman = new Pacman(9, 15);
+            ghosts = [
+                new Ghost(9, 9, 'red'),
+                new Ghost(8, 9, 'pink'),
+                new Ghost(10, 9, 'cyan'),
+                new Ghost(9, 8, 'orange')
+            ];
+            mapData = MAP.map(row => [...row]);
+            score = 0;
+            lives = 3;
+            updateUI();
+            gameRunning = true;
+            gameOverEl.style.display = 'none';
+        }
+
+        function updateUI() {
+            scoreElement.innerText = score;
+            livesElement.innerText = lives;
+        }
+
+        function drawMap() {
+            for (let y = 0; y < mapData.length; y++) {
+                for (let x = 0; x < mapData[y].length; x++) {
+                    const tile = mapData[y][x];
+                    if (tile === 1) {
+                        ctx.fillStyle = '#2222ff';
+                        ctx.fillRect(x * TILE_SIZE + 2, y * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+                    } else if (tile === 2) {
+                        ctx.fillStyle = '#ffb8ae';
+                        ctx.beginPath();
+                        ctx.arc(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (tile === 3) {
+                        ctx.fillStyle = '#ffb8ae';
+                        ctx.beginPath();
+                        ctx.arc(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (tile === 4) {
+                        ctx.fillStyle = 'pink';
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE / 2 - 2, TILE_SIZE, 4);
+                    }
+                }
+            }
+        }
+
+        function checkCollisions() {
+            // Pellets
+            const tile = mapData[pacman.gridY][pacman.gridX];
+            if (tile === 2) {
+                mapData[pacman.gridY][pacman.gridX] = 0;
+                score += 10;
+                updateUI();
+            } else if (tile === 3) {
+                mapData[pacman.gridY][pacman.gridX] = 0;
+                score += 50;
+                activatePowerMode();
+                updateUI();
+            }
+
+            // Win condition
+            if (!mapData.some(row => row.includes(2) || row.includes(3))) {
+                gameRunning = false;
+                statusText.innerText = "YOU WIN!";
+                gameOverEl.style.display = 'block';
+            }
+
+            // Ghosts
+            ghosts.forEach(ghost => {
+                const dx = pacman.x - ghost.x;
+                const dy = pacman.y - ghost.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < TILE_SIZE * 0.8) {
+                    if (ghost.scared) {
+                        ghost.reset();
+                        score += 200;
+                        updateUI();
+                    } else {
+                        lives--;
+                        updateUI();
+                        if (lives <= 0) {
+                            gameRunning = false;
+                            statusText.innerText = "GAME OVER";
+                            gameOverEl.style.display = 'block';
+                        } else {
+                            resetPositions();
+                        }
+                    }
+                }
+            });
+        }
+
+        function activatePowerMode() {
+            powerMode = true;
+            ghosts.forEach(g => g.scared = true);
+            if (powerTimer) clearTimeout(powerTimer);
+            powerTimer = setTimeout(() => {
+                powerMode = false;
+                ghosts.forEach(g => g.scared = false);
+            }, 8000);
+        }
+
+        function resetPositions() {
+            pacman.x = 9 * TILE_SIZE + TILE_SIZE / 2;
+            pacman.y = 15 * TILE_SIZE + TILE_SIZE / 2;
+            pacman.gridX = 9;
+            pacman.gridY = 15;
+            pacman.dir = DIRECTIONS.RIGHT;
+            pacman.nextDir = null;
+            ghosts.forEach(g => g.reset());
+        }
+
+        function resetGame() {
+            initGame();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawMap();
+            
+            pacman.updatePosition();
+            pacman.draw();
+
+            ghosts.forEach(ghost => {
+                ghost.updateAI();
+                ghost.updatePosition();
+                ghost.draw();
+            });
+
+            checkCollisions();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w') pacman.nextDir = DIRECTIONS.UP;
+            if (e.key === 'ArrowDown' || e.key === 's') pacman.nextDir = DIRECTIONS.DOWN;
+            if (e.key === 'ArrowLeft' || e.key === 'a') pacman.nextDir = DIRECTIONS.LEFT;
+            if (e.key === 'ArrowRight' || e.key === 'd') pacman.nextDir = DIRECTIONS.RIGHT;
+        });
+
+        initGame();
+        gameLoop();
+    </script>
+</body>
+</html>

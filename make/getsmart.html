@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ka" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Academy - Full Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --bg: #f8f9fa; --text: #212529; --card-bg: #ffffff; --border: #dee2e6;
+            --primary: #2563eb; --accent: #f59e0b; --success: #10b981; --danger: #ef4444;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08); --glass: rgba(255, 255, 255, 0.98);
+        }
+        [data-theme="dark"] {
+            --bg: #111827; --text: #f9fafb; --card-bg: #1f2937; --border: #374151;
+            --primary: #60a5fa; --shadow: 0 4px 15px rgba(0,0,0,0.4); --glass: rgba(31, 41, 55, 0.98);
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-top: 200px; transition: 0.3s; }
+        
+        /* --- HEADER CONTAINER --- */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: var(--glass); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+            padding: 10px 5%; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Top Row: Logo & Actions */
+        .nav-top { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        .nav-actions { display: flex; gap: 8px; }
+        .btn-icon { background: var(--bg); border: 1px solid var(--border); color: var(--text); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .btn-icon:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-lucky { color: var(--accent); border-color: var(--accent); }
+        .btn-lucky:hover { background: var(--accent); transform: rotate(180deg); }
+
+        /* Middle Row: Search & View */
+        .nav-middle { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .search-box { position: relative; flex-grow: 1; display: flex; align-items: center; min-width: 250px; }
+        .search-input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); outline: none; transition: 0.2s; }
+        .voice-btn { position: absolute; right: 10px; background: none; border: none; color: #888; cursor: pointer; }
+        .voice-btn.listening { color: var(--danger); animation: pulse 1s infinite; }
+        
+        /* Dropdown History */
+        .history-dropdown { position: absolute; top: 110%; left: 0; width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; display: none; z-index: 20; box-shadow: var(--shadow); overflow: hidden; }
+        .history-item { padding: 10px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .history-item:hover { background: var(--bg); }
+
+        .view-toggles { display: flex; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); padding: 3px; gap: 2px; margin-left: auto; }
+        .view-btn { padding: 6px 10px; border: none; background: transparent; color: var(--text); cursor: pointer; border-radius: 8px; }
+        .view-btn.active { background: var(--primary); color: white; }
+
+        /* --- FILTERS TOOLBAR (Moved Outside) --- */
+        .filter-toolbar {
+            display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+            padding: 8px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+        }
+        
+        .f-group { display: flex; align-items: center; gap: 10px; }
+        .f-divider { width: 1px; height: 25px; background: var(--border); }
+        
+        .p-input { width: 70px; padding: 6px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.9rem; }
+        
+        .check-label { font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 500; }
+        .check-input { accent-color: var(--primary); cursor: pointer; }
+
+        /* Switch */
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* Bottom Row: Categories */
+        .nav-bottom { width: 100%; overflow-x: auto; padding-bottom: 5px; }
+        .filters { display: flex; gap: 8px; align-items: center; }
+        .filter-pill { padding: 6px 16px; border-radius: 30px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); cursor: pointer; white-space: nowrap; font-size: 0.9rem; transition: 0.2s; }
+        .filter-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-tags { background: var(--text); color: var(--bg); border: none; }
+        .btn-print { display:none; background: transparent; color: var(--text); border:1px solid var(--border); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-left: auto; }
+
+        /* --- GRID --- */
+        .container { padding: 20px 5%; max-width: 1400px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .grid.list-view { grid-template-columns: 1fr; }
+        .grid.list-view .card { flex-direction: row; height: 160px; align-items: center; }
+        .grid.list-view .card-img-wrap { width: 250px; height: 100%; flex-shrink: 0; aspect-ratio: auto; }
+        .grid.list-view .card-body { padding: 15px 20px; flex-direction: row; align-items: center; justify-content: space-between; }
+        .grid.list-view .card-main { flex: 1; padding-right: 20px; }
+
+        /* --- CARD --- */
+        .card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; position: relative; transition: all 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+        .card-img-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; cursor: pointer; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .card-img { transform: scale(1.1); }
+        
+        .badges { position: absolute; top: 10px; left: 10px; display: flex; gap: 5px; z-index: 2; }
+        .badge { padding: 3px 8px; border-radius: 4px; color: white; font-size: 0.7rem; font-weight: 700; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+        
+        .actions { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 8px; z-index: 2; opacity: 0; transition: 0.3s; transform: translateX(20px); }
+        .card:hover .actions { opacity: 1; transform: translateX(0); }
+        .action-btn { width: 32px; height: 32px; border-radius: 50%; background: white; color: #333; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .action-btn:hover { background: var(--primary); color: white; }
+        .action-btn.active { color: var(--danger); }
+
+        .card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-cat { font-size: 0.75rem; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        .card-title { font-size: 1.1rem; font-weight: 700; margin: 0 0 10px 0; color: var(--text); }
+        .star-rating { color: #ddd; font-size: 0.8rem; cursor: pointer; }
+        .star-rating .fa-star.checked { color: var(--accent); }
+        
+        .price-row { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; }
+        .price { font-size: 1.2rem; font-weight: 800; color: var(--success); }
+        .old-price { font-size: 0.8rem; text-decoration: line-through; color: #aaa; margin-right: 5px; }
+        .btn-view { padding: 6px 15px; border-radius: 12px; background: var(--bg); color: var(--text); border: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+
+        /* --- MODALS --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; justify-content: center; align-items: center; }
+        .modal-box { background: var(--card-bg); width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; border-radius: 16px; position: relative; display: flex; flex-direction: column; padding: 0; }
+        
+        /* Stats & Tags Specific */
+        #tagsModal .modal-box, #statsModal .modal-box { max-width: 600px; padding: 25px; }
+        
+        /* Stats Styles */
+        .stat-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+        .stat-bar-bg { flex-grow: 1; height: 8px; background: #eee; margin: 0 15px; border-radius: 4px; }
+        .stat-bar-fill { height: 100%; background: var(--primary); border-radius: 4px; }
+
+        /* Tags Styles */
+        .tags-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; max-height: 400px; overflow-y: auto; }
+        .tag-chip { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; background: var(--bg); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .tag-chip:hover { border-color: var(--primary); }
+        .tag-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Course Modal */
+        .modal-body { display: flex; flex-wrap: wrap; }
+        .modal-left { flex: 1.5; padding: 30px; }
+        .modal-right { flex: 1; background: var(--bg); padding: 30px; border-left: 1px solid var(--border); text-align: center; }
+        .modal-img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: white; border-radius: 50%; width: 35px; height: 35px; border: none; cursor: pointer; font-size: 1.2rem; z-index: 10; }
+
+        .similar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .similar-card { display: flex; gap: 10px; padding: 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+        .similar-thumb { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }
+
+        /* Extras */
+        .skeleton { background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 16px; height: 350px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .confetti { position: fixed; width: 8px; height: 8px; animation: fall linear forwards; z-index: 9999; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+        @keyframes pulse { 0% {transform:scale(1);} 50% {transform:scale(1.2);} 100% {transform:scale(1);} }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 4000; }
+        .toast.show { opacity: 1; bottom: 50px; }
+
+        @media (max-width: 900px) {
+            body { padding-top: 260px; }
+        }
+        @media (max-width: 768px) {
+            .nav-middle { flex-wrap: wrap; }
+            .search-box { width: 100%; order: 1; }
+            .view-toggles { order: 2; margin-left: auto; }
+            .modal-body { flex-direction: column; }
+            .modal-right { border-left: none; border-top: 1px solid var(--border); }
+            .grid.list-view .card { flex-direction: column; height: auto; }
+            .grid.list-view .card-img-wrap { width: 100%; height: 180px; }
+            .filter-toolbar { gap: 10px; justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-top">
+            <div class="logo"><i class="fas fa-layer-group"></i> Smart Academy <span style="font-size:0.5em; background:var(--accent); color:white; padding:2px 5px; border-radius:4px; margin-left:5px;">FULL</span></div>
+            <div class="nav-actions">
+                <button class="btn-icon btn-lucky" onclick="imFeelingLucky()" title="I'm Feeling Lucky"><i class="fas fa-dice"></i></button>
+                <button class="btn-icon" onclick="showStats()" title="Stats"><i class="fas fa-chart-pie"></i></button>
+                <button class="btn-icon" onclick="toggleTheme()" title="Theme"><i class="fas fa-adjust"></i></button>
+            </div>
+        </div>
+        
+        <div class="nav-middle">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search courses..." autocomplete="off">
+                <button class="voice-btn" onclick="startVoice()"><i class="fas fa-microphone"></i></button>
+                <div class="history-dropdown" id="searchHistory"></div>
+            </div>
+            <div class="view-toggles">
+                <button class="view-btn active" onclick="setView('grid')" id="btnGrid"><i class="fas fa-th-large"></i></button>
+                <button class="view-btn" onclick="setView('list')" id="btnList"><i class="fas fa-list"></i></button>
+            </div>
+        </div>
+
+        <div class="filter-toolbar">
+            <div class="f-group">
+                <input type="number" id="minPrice" class="p-input" placeholder="Min ₾" onchange="applyFilters()">
+                <input type="number" id="maxPrice" class="p-input" placeholder="Max ₾" onchange="applyFilters()">
+            </div>
+            <div class="f-divider"></div>
+            
+            <div class="f-group">
+                <label class="check-label"><input type="checkbox" class="dur-check check-input" value="short" onchange="applyFilters()"> < 15h</label>
+                <label class="check-label"><input type="checkbox" class="dur-check check-input" value="medium" onchange="applyFilters()"> 15-40h</label>
+                <label class="check-label"><input type="checkbox" class="dur-check check-input" value="long" onchange="applyFilters()"> > 40h</label>
+            </div>
+            <div class="f-divider"></div>
+
+            <div class="f-group">
+                <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem; font-weight:bold; cursor:pointer;">
+                    <span>🔥 Sale</span>
+                    <div class="switch">
+                        <input type="checkbox" id="saleToggle" onchange="applyFilters()">
+                        <span class="slider"></span>
+                    </div>
+                </label>
+            </div>
+
+            <button onclick="resetAll()" style="color:var(--danger); background:none; border:none; cursor:pointer; font-weight:bold; margin-left:auto;">Reset</button>
+        </div>
+
+        <div class="nav-bottom">
+            <div class="filters">
+                <button class="filter-pill btn-tags" onclick="openTagsModal()">🏷️ Explore Topics</button>
+                <div style="width:1px; height:20px; background:var(--border); margin:0 5px;"></div>
+                <button class="filter-pill active" onclick="filterCat('all', this)">All</button>
+                <button class="filter-pill" onclick="filterCat('prog', this)">💻 Dev</button>
+                <button class="filter-pill" onclick="filterCat('design', this)">🎨 Design</button>
+                <button class="filter-pill" onclick="filterCat('business', this)">💼 Business</button>
+                <button class="filter-pill" onclick="filterCat('marketing', this)">📢 Marketing</button>
+                <button class="filter-pill" onclick="filterCat('favorites', this)" style="color:var(--danger)">❤️ Wishlist</button>
+                <button class="btn-print" id="printBtn" onclick="window.print()"><i class="fas fa-print"></i> PDF</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div style="font-size:0.9rem; color:#888; margin-bottom:15px; text-align:right;" id="resultCount">Loading...</div>
+        <div id="grid" class="grid"></div>
+        <div id="sentinel" style="height:50px; text-align:center; padding:20px;">
+            <i class="fas fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="courseModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('courseModal')">&times;</button>
+            <div class="modal-body">
+                <div class="modal-left">
+                    <img src="" id="mImg" class="modal-img">
+                    <div style="color:var(--primary); font-weight:bold; margin-bottom:10px;" id="mCat"></div>
+                    <h2 id="mTitle" style="margin:0 0 10px 0;"></h2>
+                    <p id="mDesc" style="line-height:1.6; color:#666; font-size:0.95rem;"></p>
+                    <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:10px;">
+                        <div style="font-weight:bold; margin-bottom:10px;">💡 Recommendations:</div>
+                        <div class="similar-grid" id="similarGrid"></div>
+                    </div>
+                </div>
+                <div class="modal-right">
+                    <div id="mPrice" style="font-size:2rem; font-weight:800; color:var(--success);"></div>
+                    <div style="margin-bottom:20px; color:#888;">Full Access</div>
+                    <a href="#" id="mLink" target="_blank" class="btn-apply" style="display:block; text-decoration:none; text-align:center; box-sizing:border-box;">
+                        Go to Course <i class="fas fa-external-link-alt"></i>
+                    </a>
+                    <div style="margin-top:20px; background:white; padding:10px; border-radius:10px; display:inline-block; border:1px solid var(--border);">
+                        <img id="qrImg" src="" style="width:100px; height:100px;">
+                        <div style="font-size:0.8rem; color:#888; margin-top:5px;">Scan for Mobile</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="tagsModal">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="margin:0;">🏷️ Popular Topics (50)</h2>
+                <button class="modal-close" style="position:static;" onclick="closeModal('tagsModal')">&times;</button>
+            </div>
+            <div style="margin-bottom:10px; font-size:0.9rem; color:#666;">Select tags to filter results:</div>
+            <div id="tagsContainer" class="tags-grid"></div>
+            <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+                <button onclick="closeModal('tagsModal')" class="btn-apply" style="width:auto; padding:10px 30px;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="statsModal">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="margin:0;">📊 Course Statistics</h2>
+                <button class="modal-close" style="position:static;" onclick="closeModal('statsModal')">&times;</button>
+            </div>
+            <div id="statsContent" style="margin-top:20px;"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Message</div>
+
+    <script>
+        const API_URL = 'https://corsproxy.io/?' + encodeURIComponent('https://smartacademy.ge/api/courses?limit=100');
+        let state = { all: [], filtered: [], favs: JSON.parse(localStorage.getItem('favs'))||[], ratings: JSON.parse(localStorage.getItem('ratings'))||{}, history: JSON.parse(localStorage.getItem('hist'))||[], displayCount: 0 };
+        let activeTags = [];
+        const LOAD_STEP = 9;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSkeletons();
+            fetchData();
+            setupSearch();
+            setupInfiniteScroll();
+            if(localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        });
+
+        async function fetchData() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                state.all = data.courses.map((c, i) => ({
+                    ...c, id: c.id || i, 
+                    diff: c.duration > 40 ? 'PRO' : 'Beginner',
+                    cat: detectCat(c.title + ' ' + c.slug),
+                    priceVal: c.price.sale || c.price.original || 0,
+                    durationVal: parseFloat(c.duration) || 0,
+                    keywords: (c.title + ' ' + c.slug).toLowerCase().split(/[\s-]+/)
+                }));
+                generateTags(); 
+                applyFilters();
+            } catch(e) { document.getElementById('grid').innerHTML = 'Error loading data.'; }
+        }
+
+        function applyFilters() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const activeBtn = document.querySelector('.filter-pill.active').innerText;
+            const minP = document.getElementById('minPrice').value;
+            const maxP = document.getElementById('maxPrice').value;
+            const saleOnly = document.getElementById('saleToggle').checked;
+            const durShort = document.querySelector('.dur-check[value="short"]').checked;
+            const durMed = document.querySelector('.dur-check[value="medium"]').checked;
+            const durLong = document.querySelector('.dur-check[value="long"]').checked;
+            const anyDur = durShort || durMed || durLong;
+
+            document.getElementById('printBtn').style.display = activeBtn.includes('Wishlist') ? 'inline-block' : 'none';
+
+            state.filtered = state.all.filter(c => {
+                // Basic
+                const searchMatch = c.title.toLowerCase().includes(term);
+                let catMatch = true;
+                if(activeBtn.includes('Wishlist')) catMatch = state.favs.includes(c.id);
+                else if(!activeBtn.includes('All')) {
+                    if(activeBtn.includes('Dev')) catMatch = c.cat === 'prog';
+                    if(activeBtn.includes('Design')) catMatch = c.cat === 'design';
+                    if(activeBtn.includes('Business')) catMatch = c.cat === 'business';
+                    if(activeBtn.includes('Marketing')) catMatch = c.cat === 'marketing';
+                }
+
+                // Advanced (from Toolbar)
+                const matchMin = minP ? c.priceVal >= minP : true;
+                const matchMax = maxP ? c.priceVal <= maxP : true;
+                const matchSale = saleOnly ? (c.price.sale !== null && c.price.sale < c.price.original) : true;
+                
+                let matchDur = true;
+                if (anyDur) {
+                    matchDur = false;
+                    if (durShort && c.durationVal < 15) matchDur = true;
+                    if (durMed && c.durationVal >= 15 && c.durationVal <= 40) matchDur = true;
+                    if (durLong && c.durationVal > 40) matchDur = true;
+                }
+
+                let matchTags = true;
+                if (activeTags.length > 0) matchTags = activeTags.some(tag => c.keywords.includes(tag));
+
+                return searchMatch && catMatch && matchMin && matchMax && matchSale && matchDur && matchTags;
+            });
+
+            state.displayCount = 0;
+            document.getElementById('grid').innerHTML = '';
+            document.getElementById('resultCount').innerText = `${state.filtered.length} Courses`;
+            loadMore();
+        }
+
+        function loadMore() {
+            const batch = state.filtered.slice(state.displayCount, state.displayCount + LOAD_STEP);
+            if(batch.length === 0 && state.displayCount === 0) {
+                document.getElementById('grid').innerHTML = '<div style="grid-column:1/-1; text-align:center;">No courses found.</div>';
+                document.getElementById('sentinel').style.display = 'none';
+                return;
+            }
+            batch.forEach(c => document.getElementById('grid').appendChild(createCard(c)));
+            state.displayCount += batch.length;
+            document.getElementById('sentinel').style.display = state.displayCount >= state.filtered.length ? 'none' : 'block';
+        }
+
+        function createCard(c) {
+            const div = document.createElement('div');
+            div.className = 'card';
+            const isFav = state.favs.includes(c.id) ? 'active' : '';
+            const rating = state.ratings[c.id] || 0;
+            let starsHtml = '';
+            for(let i=1; i<=5; i++) starsHtml += `<i class="fa-star ${i <= rating ? 'fas checked' : 'far'}" onclick="rateCourse(${c.id}, ${i}, event)"></i>`;
+            const discount = c.price.sale ? Math.round((1 - c.price.sale/c.price.original)*100) : 0;
+
+            div.innerHTML = `
+                <div class="card-img-wrap" onclick="openCourseModal(${c.id})">
+                    <img src="${c.crop||c.poster}" class="card-img" loading="lazy">
+                    <div class="badges">
+                        ${discount ? `<span class="badge" style="background:var(--danger)">-${discount}%</span>` : ''}
+                        <span class="badge" style="background:rgba(0,0,0,0.6)">${c.durationVal}h</span>
+                    </div>
+                    <div class="actions" onclick="event.stopPropagation()">
+                        <button class="action-btn ${isFav}" onclick="toggleFav(${c.id}, this)"><i class="fas fa-heart"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-main">
+                        <div class="card-cat"><span>${c.cat}</span> <span class="star-rating" onclick="event.stopPropagation()">${starsHtml}</span></div>
+                        <h3 class="card-title" onclick="openCourseModal(${c.id})">${c.title}</h3>
+                        <div class="price-row">
+                            <div>
+                                ${c.price.sale ? `<span class="old-price">${c.price.original}₾</span>` : ''}
+                                <span class="price">${c.price.formatted}</span>
+                            </div>
+                            <button class="btn-view" onclick="openCourseModal(${c.id})">Quick View</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        // --- TAGS ---
+        function generateTags() {
+            const map = {};
+            const stopWords = ['and', 'for', 'the', 'course', 'intro', 'advanced', 'with', 'part'];
+            state.all.forEach(c => c.keywords.forEach(w => { 
+                if(w.length>2 && isNaN(w) && !stopWords.includes(w)) map[w]=(map[w]||0)+1; 
+            }));
+            const top50 = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,50).map(e=>e[0]);
+            document.getElementById('tagsContainer').innerHTML = top50.map(t=>`<span class="tag-chip" onclick="toggleTag('${t}', this)">${t}</span>`).join('');
+        }
+
+        function toggleTag(t, el) {
+            if(activeTags.includes(t)) { activeTags=activeTags.filter(x=>x!==t); el.classList.remove('selected'); }
+            else { activeTags.push(t); el.classList.add('selected'); }
+            applyFilters();
+        }
+
+        // --- STATS LOGIC ---
+        function showStats() {
+            if(state.all.length === 0) return;
+            const counts = {};
+            state.all.forEach(c => counts[c.cat] = (counts[c.cat] || 0) + 1);
+            let html = '';
+            for(let [k,v] of Object.entries(counts)) {
+                let pct = Math.round((v / state.all.length) * 100);
+                html += `
+                    <div class="stat-row">
+                        <span style="width:100px; font-weight:bold; text-transform:uppercase;">${k}</span>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%"></div></div>
+                        <span style="width:50px; text-align:right;">${v}</span>
+                    </div>
+                `;
+            }
+            document.getElementById('statsContent').innerHTML = html;
+            document.getElementById('statsModal').style.display = 'flex';
+        }
+
+        // --- UTILS ---
+        function openCourseModal(id) {
+            const c = state.all.find(x => x.id === id);
+            document.getElementById('mImg').src = c.crop || c.poster;
+            document.getElementById('mCat').innerText = c.cat.toUpperCase();
+            document.getElementById('mTitle').innerText = c.title;
+            document.getElementById('mDesc').innerText = c.description.replace(/(<([^>]+)>)/gi, "").substring(0, 300) + '...';
+            document.getElementById('mPrice').innerText = c.price.formatted;
+            document.getElementById('mLink').href = c.link;
+            document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(c.link)}`;
+            
+            const similar = state.all.filter(x => x.cat === c.cat && x.id !== c.id).slice(0, 2);
+            document.getElementById('similarGrid').innerHTML = similar.length ? similar.map(s => `
+                <div class="similar-card" onclick="openCourseModal(${s.id})">
+                    <img src="${s.crop||s.poster}" class="similar-thumb">
+                    <div style="font-size:0.8rem; font-weight:bold; overflow:hidden;">${s.title}</div>
+                </div>
+            `).join('') : 'No recommendations.';
+
+            document.getElementById('courseModal').style.display = 'flex';
+        }
+
+        function imFeelingLucky() {
+            if(state.all.length === 0) return;
+            openCourseModal(state.all[Math.floor(Math.random() * state.all.length)].id);
+            showToast("🎲 Random Course Selected!");
+        }
+
+        window.rateCourse = function(id, rating, e) {
+            e.stopPropagation();
+            state.ratings[id] = rating; localStorage.setItem('ratings', JSON.stringify(state.ratings));
+            e.target.parentNode.innerHTML = Array(5).fill(0).map((_,i)=>`<i class="fa-star ${i+1<=rating?'fas checked':'far'}" onclick="rateCourse(${id},${i+1},event)"></i>`).join('');
+            showToast(`Rated ${rating} Stars!`);
+        }
+
+        function toggleFav(id, btn) {
+            if(state.favs.includes(id)) { state.favs = state.favs.filter(x=>x!==id); btn.classList.remove('active'); }
+            else { state.favs.push(id); btn.classList.add('active'); triggerConfetti(); showToast('Added to Wishlist'); }
+            localStorage.setItem('favs', JSON.stringify(state.favs));
+            if(document.querySelector('.filter-pill.active').innerText.includes('Wishlist')) applyFilters();
+        }
+
+        function triggerConfetti() {
+            for(let i=0; i<30; i++) { const c=document.createElement('div'); c.className='confetti'; c.style.left=Math.random()*100+'vw'; c.style.background=`hsl(${Math.random()*360},100%,50%)`; c.style.animationDuration=Math.random()*2+1+'s'; document.body.appendChild(c); setTimeout(()=>c.remove(),3000); }
+        }
+
+        function startVoice() {
+            if(!('webkitSpeechRecognition' in window)) return showToast('Browser not supported');
+            const r = new webkitSpeechRecognition(); const b = document.querySelector('.voice-btn');
+            r.onstart = () => b.classList.add('listening'); r.onend = () => b.classList.remove('listening');
+            r.onresult = (e) => { document.getElementById('searchInput').value = e.results[0][0].transcript; applyFilters(); };
+            r.start();
+        }
+
+        function setupSearch() {
+            const i = document.getElementById('searchInput'); const d = document.getElementById('searchHistory');
+            i.addEventListener('focus', () => { if(state.history.length) { d.innerHTML=state.history.map(h=>`<div class="history-item" onclick="setSearch('${h}')"><i class="far fa-clock"></i> ${h}</div>`).join(''); d.style.display='block'; } });
+            i.addEventListener('blur', ()=>setTimeout(()=>d.style.display='none',200));
+            i.addEventListener('change', () => { const v=i.value.trim(); if(v && !state.history.includes(v)) { state.history.unshift(v); if(state.history.length>5)state.history.pop(); localStorage.setItem('hist',JSON.stringify(state.history)); } applyFilters(); });
+        }
+        function setSearch(v) { document.getElementById('searchInput').value=v; applyFilters(); }
+        function setView(v) { 
+            const g = document.getElementById('grid');
+            document.getElementById('btnGrid').classList.toggle('active',v==='grid'); 
+            document.getElementById('btnList').classList.toggle('active',v==='list'); 
+            v==='list' ? g.classList.add('list-view') : g.classList.remove('list-view'); 
+        }
+        function filterCat(c,b) { document.querySelectorAll('.filter-pill').forEach(x=>x.classList.remove('active')); b.classList.add('active'); applyFilters(); }
+        function toggleTheme() { const h=document.documentElement; const d=h.getAttribute('data-theme')==='dark'; h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('theme',d?'light':'dark'); }
+        function resetAll() { document.getElementById('minPrice').value=''; document.getElementById('maxPrice').value=''; document.getElementById('saleToggle').checked=false; document.querySelectorAll('.dur-check').forEach(x=>x.checked=false); activeTags=[]; document.querySelectorAll('.tag-chip').forEach(x=>x.classList.remove('selected')); applyFilters(); }
+        function detectCat(t) { t=t.toLowerCase(); if(t.includes('design')||t.includes('adobe'))return 'design'; if(t.includes('market'))return 'marketing'; if(t.includes('business')||t.includes('hr'))return 'business'; return 'prog'; }
+        function renderSkeletons() { document.getElementById('grid').innerHTML = Array(8).fill('<div class="skeleton"></div>').join(''); }
+        function setupInfiniteScroll() { new IntersectionObserver(e=>{if(e[0].isIntersecting && state.displayCount < state.filtered.length) setTimeout(loadMore, 300)}).observe(document.getElementById('sentinel')); }
+        function openTagsModal() { document.getElementById('tagsModal').style.display='flex'; }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+        function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000); }
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+    </script>
+</body>
+</html>
