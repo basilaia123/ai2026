@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>შეთავაზებების მიმდინარეობა</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css">
+  <style>
+    :root {
+      --ink: #14202b;
+      --muted: #5c6b78;
+      --line: #d5dde4;
+      --paper: #f4f7f8;
+      --card: #ffffff;
+      --stamp: #1d4e89;
+      --late: #9a3412;
+      --ok: #1f6b4a;
+      --hold: #8a6a12;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: FiraGO, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      padding: 28px 32px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--card);
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .lede {
+      margin: 0;
+      color: var(--muted);
+      max-width: 46rem;
+      line-height: 1.45;
+    }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, .file-btn {
+      font-family: inherit;
+      font-size: 0.92rem;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    button.ghost, .file-btn {
+      background: #fff;
+      color: var(--ink);
+    }
+    .file-btn input { display: none; }
+    main { padding: 20px 32px 48px; }
+    .spine {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .spine section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      min-height: 92px;
+    }
+    .spine h2 {
+      margin: 0 0 8px;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .spine ul { margin: 0; padding: 0; list-style: none; }
+    .spine li { font-size: 0.92rem; line-height: 1.4; }
+    .spine .empty { color: var(--muted); }
+    .late-name { color: var(--late); font-weight: 600; }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .filters button { background: #fff; color: var(--ink); }
+    .filters button.on { background: var(--stamp); color: #fff; border-color: var(--stamp); }
+    .wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--card); }
+    table { width: 100%; border-collapse: collapse; min-width: 1180px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+    th {
+      font-size: 0.75rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      background: #f8fafb;
+      position: sticky;
+      top: 0;
+    }
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 0.92rem;
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      padding: 4px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 1px solid var(--stamp);
+      background: #fff;
+    }
+    textarea { min-height: 52px; resize: vertical; }
+    .date { font-variant-numeric: tabular-nums; width: 9.2rem; }
+    .stamp { font-size: 0.78rem; color: var(--muted); white-space: nowrap; padding-top: 10px; }
+    tr.waiting { box-shadow: inset 3px 0 0 var(--stamp); }
+    tr.late { box-shadow: inset 3px 0 0 var(--late); }
+    tr.won { box-shadow: inset 3px 0 0 var(--ok); }
+    tr.lost, tr.silent { box-shadow: inset 3px 0 0 var(--hold); }
+    a.folder { color: var(--stamp); }
+    .hint { margin-top: 10px; color: var(--muted); font-size: 0.88rem; }
+    @media (max-width: 800px) {
+      header, main { padding-left: 16px; padding-right: 16px; }
+      header { flex-direction: column; align-items: flex-start; }
+      .spine { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>შეთავაზებების მიმდინარეობა</h1>
+      <p class="lede">რა გაიგზავნა, როდის და ვისთან. გაგზავნის თარიღი ცალკეა. შექმნა არის ჩანაწერის დაწყება, ბოლო განახლება კი ავტომატურად იცვლება, როცა ველს ასწორებთ.</p>
+    </div>
+    <div class="actions">
+      <button type="button" id="add">ახალი ჩანაწერი</button>
+      <label class="file-btn">ფაილიდან ჩატვირთვა<input type="file" id="load" accept="application/json,.json"></label>
+      <button type="button" class="ghost" id="save">ჩამოტვირთე JSON</button>
+    </div>
+  </header>
+  <main>
+    <div class="spine">
+      <section>
+        <h2>ვადაგადაცილებული</h2>
+        <ul id="late"></ul>
+      </section>
+      <section>
+        <h2>დღეს და ამ კვირაში</h2>
+        <ul id="soon"></ul>
+      </section>
+      <section>
+        <h2>ველოდები პასუხს</h2>
+        <ul id="waiting"></ul>
+      </section>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>კლიენტი</th>
+            <th>კონტაქტი</th>
+            <th>მასალა</th>
+            <th>გაგზავნა</th>
+            <th>არხი</th>
+            <th>სტატუსი</th>
+            <th>შეხსენება</th>
+            <th>შექმნა</th>
+            <th>ბოლო განახლება</th>
+            <th>შენიშვნა</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="hint">ცვლილება ჯერ ბრაუზერში რჩება. ფაილში ჩასაწერად დააჭირეთ „ჩამოტვირთე JSON“ და ჩაანაცვლეთ <code>pipeline/proposals.json</code>.</p>
+  </main>
+  <script id="seed" type="application/json">
+[
+  {"id":"avita","client":"ავიტა","contact":"","folder":"avita","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"bog","client":"საქართველოს ბანკი","contact":"","folder":"bog","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"elplus","client":"ელპლუსი","contact":"","folder":"elplus","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"mbc","client":"MBC","contact":"","folder":"mbc","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"pashabank","client":"პაშა ბანკი","contact":"","folder":"pashabank","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"medpharma","client":"მედფარმა +","contact":"","folder":"medpharma","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"heidelberg","client":"ჰაიდელბერგცემენტი","contact":"","folder":"heidelberg","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"silk","client":"Silk Development","contact":"","folder":"silk","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"eurodrug","client":"Eurodrug","contact":"","folder":"eurodrug","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"orbi","client":"ORBI Group","contact":"","folder":"orbi","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"mcdonalds","client":"მაკდონალდს საქართველო","contact":"","folder":"mcdonalds","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"gh","client":"ჯეო ჰოსპიტალსი","contact":"","folder":"gh","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"mardi","client":"Mardi Holding","contact":"","folder":"mardi","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"tempo","client":"Tempo Holding","contact":"","folder":"tempo","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""},
+  {"id":"oppa","client":"OPPA","contact":"","folder":"oppa","channel":"","sentAt":"","createdAt":"2026-09-26","updatedAt":"2026-09-26","status":"draft","followUpAt":"","note":""}
+]
+  </script>
+  <script>
+    const KEY = "pipeline-proposals-v2";
+    const STATUSES = [
+      ["draft", "მზადდება"],
+      ["sent", "გაგზავნილი"],
+      ["waiting", "ველოდები პასუხს"],
+      ["replied", "პასუხი მოვიდა"],
+      ["meeting", "შეხვედრა"],
+      ["won", "მოვიგეთ"],
+      ["lost", "უარი"],
+      ["silent", "პასუხი არ არის"]
+    ];
+    const CHANNELS = ["", "ელფოსტა", "LinkedIn", "პირადად", "სხვა"];
+    const OPEN = new Set(["sent", "waiting", "silent"]);
+    let rows = [];
+    let filter = "all";
+
+    function today() {
+      const d = new Date();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return d.getFullYear() + "-" + m + "-" + day;
+    }
+    function addDays(iso, n) {
+      const d = new Date(iso + "T00:00:00");
+      d.setDate(d.getDate() + n);
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return d.getFullYear() + "-" + m + "-" + day;
+    }
+    function load() {
+      const saved = localStorage.getItem(KEY);
+      if (saved) {
+        rows = JSON.parse(saved);
+        return;
+      }
+      rows = JSON.parse(document.getElementById("seed").textContent);
+    }
+    function persist() {
+      localStorage.setItem(KEY, JSON.stringify(rows));
+    }
+    function touch(row) {
+      row.updatedAt = today();
+    }
+    function statusLabel(id) {
+      const found = STATUSES.find(function (s) { return s[0] === id; });
+      return found ? found[1] : id;
+    }
+    function fillList(id, items, mapper) {
+      const ul = document.getElementById(id);
+      ul.innerHTML = "";
+      if (!items.length) {
+        const li = document.createElement("li");
+        li.className = "empty";
+        li.textContent = "არაფერი";
+        ul.appendChild(li);
+        return;
+      }
+      items.forEach(function (row) {
+        const li = document.createElement("li");
+        li.innerHTML = mapper(row);
+        ul.appendChild(li);
+      });
+    }
+    function renderSpine() {
+      const t = today();
+      const week = addDays(t, 7);
+      const late = rows.filter(function (r) {
+        return r.followUpAt && r.followUpAt < t && OPEN.has(r.status);
+      });
+      const soon = rows.filter(function (r) {
+        return r.followUpAt && r.followUpAt >= t && r.followUpAt <= week && OPEN.has(r.status);
+      });
+      const waiting = rows.filter(function (r) { return r.status === "waiting" || r.status === "sent"; });
+      fillList("late", late, function (r) {
+        return '<span class="late-name">' + escapeHtml(r.client) + "</span> · " + escapeHtml(r.followUpAt);
+      });
+      fillList("soon", soon, function (r) {
+        return escapeHtml(r.client) + " · " + escapeHtml(r.followUpAt);
+      });
+      fillList("waiting", waiting, function (r) {
+        const who = r.contact ? " · " + escapeHtml(r.contact) : "";
+        const when = r.sentAt ? " · " + escapeHtml(r.sentAt) : "";
+        return escapeHtml(r.client) + who + when;
+      });
+    }
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+    function options(list, current, pairs) {
+      return list.map(function (item) {
+        const value = pairs ? item[0] : item;
+        const label = pairs ? item[1] : (item || "არხი");
+        const selected = value === current ? " selected" : "";
+        return '<option value="' + escapeHtml(value) + '"' + selected + ">" + escapeHtml(label) + "</option>";
+      }).join("");
+    }
+    function renderFilters() {
+      const host = document.getElementById("filters");
+      const items = [["all", "ყველა"]].concat(STATUSES);
+      host.innerHTML = items.map(function (item) {
+        const on = item[0] === filter ? " on" : "";
+        return '<button type="button" class="' + on + '" data-filter="' + item[0] + '">' + item[1] + "</button>";
+      }).join("");
+    }
+    function renderTable() {
+      const body = document.getElementById("rows");
+      const t = today();
+      const visible = rows.filter(function (r) { return filter === "all" || r.status === filter; });
+      body.innerHTML = visible.map(function (r) {
+        let cls = r.status;
+        if (r.followUpAt && r.followUpAt < t && OPEN.has(r.status)) cls = "late";
+        const href = r.folder ? "../" + encodeURI(r.folder) + "/index.html" : "";
+        const link = href ? '<a class="folder" href="' + href + '">გახსნა</a>' : "";
+        return '<tr class="' + cls + '" data-id="' + escapeHtml(r.id) + '">' +
+          '<td><input data-field="client" value="' + escapeHtml(r.client) + '"></td>' +
+          '<td><input data-field="contact" value="' + escapeHtml(r.contact) + '" placeholder="სახელი"></td>' +
+          '<td><input data-field="folder" value="' + escapeHtml(r.folder) + '" placeholder="საქაღალდე">' + link + "</td>" +
+          '<td><input class="date" type="date" data-field="sentAt" value="' + escapeHtml(r.sentAt) + '"></td>' +
+          '<td><select data-field="channel">' + options(CHANNELS, r.channel, false) + "</select></td>" +
+          '<td><select data-field="status">' + options(STATUSES, r.status, true) + "</select></td>" +
+          '<td><input class="date" type="date" data-field="followUpAt" value="' + escapeHtml(r.followUpAt) + '"></td>' +
+          '<td class="stamp">' + escapeHtml(r.createdAt) + "</td>" +
+          '<td class="stamp">' + escapeHtml(r.updatedAt) + "</td>" +
+          '<td><textarea data-field="note">' + escapeHtml(r.note) + "</textarea></td>" +
+          "</tr>";
+      }).join("");
+    }
+    function render() {
+      renderSpine();
+      renderFilters();
+      renderTable();
+    }
+    function find(id) {
+      return rows.find(function (r) { return r.id === id; });
+    }
+    document.getElementById("rows").addEventListener("input", function (event) {
+      const field = event.target.getAttribute("data-field");
+      const tr = event.target.closest("tr");
+      if (!field || !tr) return;
+      const row = find(tr.getAttribute("data-id"));
+      row[field] = event.target.value;
+      touch(row);
+      persist();
+      renderSpine();
+      tr.querySelectorAll(".stamp")[1].textContent = row.updatedAt;
+    });
+    document.getElementById("rows").addEventListener("change", function (event) {
+      const field = event.target.getAttribute("data-field");
+      const tr = event.target.closest("tr");
+      if (!field || !tr) return;
+      const row = find(tr.getAttribute("data-id"));
+      row[field] = event.target.value;
+      touch(row);
+      persist();
+      render();
+    });
+    document.getElementById("filters").addEventListener("click", function (event) {
+      const button = event.target.closest("button");
+      if (!button) return;
+      filter = button.getAttribute("data-filter");
+      render();
+    });
+    document.getElementById("add").addEventListener("click", function () {
+      const stamp = today();
+      rows.unshift({
+        id: "p" + Date.now(),
+        client: "",
+        contact: "",
+        folder: "",
+        channel: "",
+        sentAt: "",
+        createdAt: stamp,
+        updatedAt: stamp,
+        status: "draft",
+        followUpAt: "",
+        note: ""
+      });
+      filter = "all";
+      persist();
+      render();
+    });
+    document.getElementById("save").addEventListener("click", function () {
+      const blob = new Blob([JSON.stringify(rows, null, 2) + "\n"], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "proposals.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+    document.getElementById("load").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        rows = JSON.parse(reader.result);
+        persist();
+        render();
+      };
+      reader.readAsText(file, "utf-8");
+    });
+    load();
+    render();
+  </script>
+</body>
+</html>

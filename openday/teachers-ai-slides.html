@@ -73,6 +73,11 @@
       --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
     }
 
+    html {
+      font-size: 19px; /* გაზრდილია 3 ერთეულით (16px -> 19px) */
+      scroll-behavior: smooth;
+    }
+
     * {
       font-family: 'FiraGO', 'Outfit', sans-serif;
       box-sizing: border-box;
@@ -373,6 +378,11 @@
 
   <!-- Top Right Utility Header -->
   <div class="fixed top-4 right-4 z-40 flex items-center gap-2">
+    <!-- Font Size Controls (A- / A+) -->
+    <div class="flex items-center bg-white/90 dark:bg-gray-800/90 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-xl p-0.5 shadow-sm">
+      <button onclick="changeFontSize(-1)" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="ფონტის დაპატარავება">A-</button>
+      <button onclick="changeFontSize(1)" class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="ფონტის გაზრდა">A+</button>
+    </div>
     <!-- Table of Contents Toggle -->
     <button onclick="toggleToc()" class="px-3 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-cyan-500 shadow-sm transition-colors flex items-center gap-1.5" title="სარჩევი / სლაიდებზე გადასვლა">
       <span>📑</span>
@@ -1436,7 +1446,7 @@
     </section>
 
     <!-- ════════════════════════════════════════════════════════════
-         SLIDE 18: VISUAL GENERATION FOR CLASSROOMS
+         SLIDE 18: VISUAL GENERATION FOR CLASSROOMS (5 PROMPTS)
     ════════════════════════════════════════════════════════════ -->
     <section class="slide" id="slide-18" data-title="მოდული 3: ვიზუალური გენერაცია">
       <span class="slide-num">18 / 28</span>
@@ -1445,46 +1455,104 @@
           <span>🎨</span> ვიზუალური ინსტრუმენტები
         </div>
         <h2 class="slide-title">ვიზუალური გენერაცია საკლასო ოთახისთვის</h2>
-        <p class="slide-subtitle">როგორ შევქმნათ ილუსტრაციები სახელმძღვანელოს მოთხრობებისთვის (Canva Magic, DALL-E, Recraft, Midjourney).</p>
+        <p class="slide-subtitle">მზა, გამოცდილი პრომპტები საგნების მიხედვით (Midjourney, Recraft, DALL-E 3, Ideogram, Canva Magic).</p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-6 my-auto">
-        <div class="feature-card">
-          <div class="text-3xl mb-2">🏛️</div>
-          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">მოთხრობის ილუსტრაცია: „გიმნაზიაში“</h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
-            პერსონაჟების ემოციები, ეპოქალური სამოსი (ჩოხა, ახალუხი) და საკლასო ოთახი.
-          </p>
-          <div class="p-2.5 rounded bg-slate-100 dark:bg-slate-900 text-[11px] font-mono text-cyan-600 dark:text-cyan-400">
-            „Children book illustration: 19th-century Georgian gymnasium classroom, 10-year-old Akaki Tsereteli hiding a warm cornbread in his pocket, kind teacher with mustache, strict inspector, watercolor storybook style“
+      <!-- 5 Subject Tab Buttons -->
+      <div class="flex flex-wrap gap-2 my-2">
+        <button onclick="switchVisualTab(1, this)" class="vis-tab-btn active px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow">📖 ქართული (მოთხრობა)</button>
+        <button onclick="switchVisualTab(2, this)" class="vis-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">🧬 ბიოლოგია (3D ჭრილი)</button>
+        <button onclick="switchVisualTab(3, this)" class="vis-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">🏛️ ისტორია (რეკონსტრუქცია)</button>
+        <button onclick="switchVisualTab(4, this)" class="vis-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">📐 მათემატიკა (წილადები)</button>
+        <button onclick="switchVisualTab(5, this)" class="vis-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">🌟 პოსტერი (წესები)</button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="my-auto">
+        <!-- Tab 1 -->
+        <div id="vis-pane-1" class="vis-pane p-5 rounded-2xl bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">📖 ქართული ენა & ლიტერატურა · აკაკი წერეთლის „გიმნაზიაში“</span>
+            <span class="text-[11px] bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded font-semibold">Midjourney / Recraft / DALL-E</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mb-3"><strong>მიზანი:</strong> ტექსტის გააზრება, პერსონაჟის ემოციების ამოცნობა და დეტალების ანალიზი საკლასო დისკუსიისთვის.</p>
+          <div class="p-3 bg-white dark:bg-slate-900 rounded-xl font-mono text-[11px] text-slate-800 dark:text-slate-200 border border-indigo-100 dark:border-indigo-900 leading-relaxed mb-3 relative">
+            „A detailed, heartwarming children's book watercolor illustration depicting a scene from 19th-century Georgian gymnasium classroom. In the foreground, a 10-year-old Georgian schoolboy in traditional dark wool choxa is sitting at a vintage wooden school desk, secretly keeping a warm, freshly baked round cornbread (mchadi) wrapped in clean linen inside his pocket, smiling nervously. In the background, a dignified Georgian schoolmaster with kind eyes and a classic moustache stands beside a chalkboard written with Georgian alphabet chalk inscriptions. Soft warm morning sunlight, storybook style --ar 16:9“
+            <button onclick="copyText('A detailed, heartwarming children\'s book watercolor illustration depicting a scene from 19th-century Georgian gymnasium classroom. In the foreground, a 10-year-old Georgian schoolboy in traditional dark wool choxa is sitting at a vintage wooden school desk, secretly keeping a warm, freshly baked round cornbread (mchadi) wrapped in clean linen inside his pocket, smiling nervously. In the background, a dignified Georgian schoolmaster with kind eyes and a classic moustache stands beside a chalkboard written with Georgian alphabet chalk inscriptions. Soft warm morning sunlight, storybook style --ar 16:9', this)" class="absolute top-2 right-2 px-2 py-0.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold">კოპირება</button>
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            💡 <strong>საკლასო აქტივობა:</strong> „ვიზუალური დეტექტივი“ — მოსწავლეები აკვირდებიან ნახატს და პოულობენ ეპოქალურ დეტალებს (ჩოხა, მერხი, მჭადი), რაც ტექსტის გაგებას აღრმავებს.
           </div>
         </div>
 
-        <div class="feature-card">
-          <div class="text-3xl mb-2">🔬</div>
-          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">სამეცნიერო ილუსტრაციები</h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
-            უჯრედის 3D მოდელები, ატომის აგებულება, ვულკანის ამოფრქვევის ჭრილი, ეკოსისტემების სქემები.
-          </p>
-          <div class="p-2.5 rounded bg-slate-100 dark:bg-slate-900 text-[11px] font-mono text-indigo-600 dark:text-indigo-400">
-            „3D cross-section diagram of plant cell with labeled organelles, colorful educational illustration for school“
+        <!-- Tab 2 -->
+        <div id="vis-pane-2" class="vis-pane hidden p-5 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">🧬 ბიოლოგია & ბუნებისმეტყველება · მცენარეული უჯრედის ანატომია</span>
+            <span class="text-[11px] bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded font-semibold">Recraft (3D) / Midjourney</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mb-3"><strong>მიზანი:</strong> ორგანელების სივრცითი განლაგების ვიზუალიზაცია; დასაბეჭდი სავარჯიშო ცარიელი მანიშნებლებით.</p>
+          <div class="p-3 bg-white dark:bg-slate-900 rounded-xl font-mono text-[11px] text-slate-800 dark:text-slate-200 border border-emerald-100 dark:border-emerald-900 leading-relaxed mb-3 relative">
+            „Educational isometric 3D cross-section diagram of a eukaryotic plant cell, scientific textbook illustration style. High-detail cutaway view revealing nucleus, chloroplasts, mitochondria, large central vacuole, Golgi apparatus, and cell wall. Vibrant distinct contrasting colors for each organelle, clean studio lighting, isolated on solid pure white background --ar 4:3 --stylize 200“
+            <button onclick="copyText('Educational isometric 3D cross-section diagram of a eukaryotic plant cell, scientific textbook illustration style. High-detail cutaway view revealing nucleus, chloroplasts, mitochondria, large central vacuole, Golgi apparatus, and cell wall. Vibrant distinct contrasting colors for each organelle, clean studio lighting, isolated on solid pure white background --ar 4:3 --stylize 200', this)" class="absolute top-2 right-2 px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold">კოპირება</button>
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            💡 <strong>საკლასო აქტივობა:</strong> „ორგანელების რუკა“ — თეთრ ფონზე გენერირებულ ნახატზე მოსწავლეები ისრებით თავად აწერენ ორგანელების სახელებს და ფუნქციებს.
           </div>
         </div>
 
-        <div class="feature-card">
-          <div class="text-3xl mb-2">📊</div>
-          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">პრეზენტაციები Gamma.app-ით</h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
-            ერთი ტექსტური პრომპტიდან სრული, დიზაინერული 10-სლაიდიანი პრეზენტაციის აწყობა 40 წამში.
-          </p>
-          <div class="p-2.5 rounded bg-slate-100 dark:bg-slate-900 text-[11px] font-mono text-rose-600 dark:text-rose-400">
-            Gamma.app იღებს თქვენს გაკვეთილის გეგმას და ავტომატურად ქმნის ვებ-სლაიდებს.
+        <!-- Tab 3 -->
+        <div id="vis-pane-3" class="vis-pane hidden p-5 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-amber-600 dark:text-amber-400">🏛️ ისტორია · დავით აღმაშენებელი & გელათის მშენებლობა</span>
+            <span class="text-[11px] bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded font-semibold">Midjourney v6 / Ideogram / Flux</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mb-3"><strong>მიზანი:</strong> ეპოქის ყოფის, სამშენებლო ტექნოლოგიებისა და ისტორიული კონტექსტის გაცოცხლება.</p>
+          <div class="p-3 bg-white dark:bg-slate-900 rounded-xl font-mono text-[11px] text-slate-800 dark:text-slate-200 border border-amber-100 dark:border-amber-900 leading-relaxed mb-3 relative">
+            „Cinematic historical reconstruction of medieval Georgia in early 12th century. King David the Builder in royal Byzantine-Georgian ceremonial robes with silver embroidery, reviewing architectural blueprints on parchment table outdoors overlooking construction of Gelati Monastery. Stonemasons carving stones, wooden scaffolding, verdant Imereti hills, golden hour --ar 16:9“
+            <button onclick="copyText('Cinematic historical reconstruction of medieval Georgia in early 12th century. King David the Builder in royal Byzantine-Georgian ceremonial robes with silver embroidery, reviewing architectural blueprints on parchment table outdoors overlooking construction of Gelati Monastery. Stonemasons carving stones, wooden scaffolding, verdant Imereti hills, golden hour --ar 16:9', this)" class="absolute top-2 right-2 px-2 py-0.5 rounded bg-amber-600 hover:bg-amber-500 text-white text-[10px] font-bold">კოპირება</button>
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            💡 <strong>საკლასო აქტივობა:</strong> „როლური ინტერვიუ მეფესთან“ — მოსწავლეები წერენ მეფის მონოლოგს: რატომ ჩადო სახელმწიფომ უდიდესი რესურსი აკადემიის მშენებლობაში?
+          </div>
+        </div>
+
+        <!-- Tab 4 -->
+        <div id="vis-pane-4" class="vis-pane hidden p-5 rounded-2xl bg-sky-50/40 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-800">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-sky-600 dark:text-sky-400">📐 მათემატიკა & გეომეტრია · წილადები და ფიგურები საცხობში</span>
+            <span class="text-[11px] bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded font-semibold">Recraft (Clay/3D) / Midjourney</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mb-3"><strong>მიზანი:</strong> წილადებისა და სივრცითი ფიგურების გაგება ყოველდღიური მაგალითით (1/2, 1/4, 1/8).</p>
+          <div class="p-3 bg-white dark:bg-slate-900 rounded-xl font-mono text-[11px] text-slate-800 dark:text-slate-200 border border-sky-100 dark:border-sky-900 leading-relaxed mb-3 relative">
+            „Charming 3D animated educational scene demonstrating fractions and geometry in a playful bakery town. Friendly cartoon baker slicing round pizza into exact fractions: 1/2, 1/4, and 1/8 pieces, alongside colorful hexagonal honeycakes, triangular pies. Vibrant pastel lighting, Pixar 3D render style, claymation aesthetic, clear geometric shapes --ar 16:9“
+            <button onclick="copyText('Charming 3D animated educational scene demonstrating fractions and geometry in a playful bakery town. Friendly cartoon baker slicing round pizza into exact fractions: 1/2, 1/4, and 1/8 pieces, alongside colorful hexagonal honeycakes, triangular pies. Vibrant pastel lighting, Pixar 3D render style, claymation aesthetic, clear geometric shapes --ar 16:9', this)" class="absolute top-2 right-2 px-2 py-0.5 rounded bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-bold">კოპირება</button>
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            💡 <strong>საკლასო აქტივობა:</strong> „საცხობის ამოცანა“ — მოსწავლეები პოულობენ ყველა გეომეტრიულ ფიგურას და ითვლიან წილადების ამოცანას.
+          </div>
+        </div>
+
+        <!-- Tab 5 -->
+        <div id="vis-pane-5" class="vis-pane hidden p-5 rounded-2xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-rose-600 dark:text-rose-400">🌟 საკლასო კულტურა · Growth Mindset & წესების პოსტერი</span>
+            <span class="text-[11px] bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded font-semibold">Ideogram (ტექსტით) / Recraft / Canva</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mb-3"><strong>მიზანი:</strong> პოზიტიური საკლასო გარემოსა და ზრდის აზროვნების ჩამოყალიბება (A3/A4 დასაბეჭდი).</p>
+          <div class="p-3 bg-white dark:bg-slate-900 rounded-xl font-mono text-[11px] text-slate-800 dark:text-slate-200 border border-rose-100 dark:border-rose-900 leading-relaxed mb-3 relative">
+            „Modern minimalist educational wall poster for classroom decor, flat vector art style. Diverse cheerful school children working together to build a towering creative rocket made of books, pencils, gears, and glowing lightbulbs. Inspiring warm palette: navy, mustard yellow, sage green, coral. Central typography space, Scandinavian aesthetic --ar 3:4“
+            <button onclick="copyText('Modern minimalist educational wall poster for classroom decor, flat vector art style. Diverse cheerful school children working together to build a towering creative rocket made of books, pencils, gears, and glowing lightbulbs. Inspiring warm palette: navy, mustard yellow, sage green, coral. Central typography space, Scandinavian aesthetic --ar 3:4', this)" class="absolute top-2 right-2 px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold">კოპირება</button>
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400">
+            💡 <strong>საკლასო აქტივობა:</strong> „საკლასო შეთანხმება“ — პოსტერის ცენტრში Canva-ში იწერება კლასის 5 ოქროს წესი, რომელზეც მოსწავლეები ხელს აწერენ.
           </div>
         </div>
       </div>
 
-      <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300">
-        <strong>რჩევა მასწავლებელს:</strong> გამოიყენეთ <strong>Canva for Education</strong> (სრულიად უფასოა სკოლებისთვის) და <strong>Recraft.ai</strong> ვექტორული ილუსტრაციებისა და პლაკატებისთვის.
+      <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 flex items-center justify-between">
+        <span>💡 <strong>რჩევა:</strong> გამოსახულება დააგენერირეთ ტექსტის გარეშე, შემდეგ კი გახსენით <strong>Canva</strong>-ში და დაადეთ ქართული წარწერები (FiraGO / Sylfaen).</span>
+        <span class="text-[11px] font-bold text-indigo-500">Recraft.ai & Canva for Education</span>
       </div>
     </section>
 
@@ -1501,37 +1569,71 @@
         <p class="slide-subtitle">როგორ გადავაქციოთ მშრალი შემოწმება საინტერესო გამოწვევად შეცდომის პოვნისა და Jeopardy-ს ფორმატებით.</p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-6 my-auto">
-        <div class="feature-card">
-          <div class="text-3xl mb-2">🕵️‍♂️</div>
-          <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1">„იპოვე შეცდომა“ (Detective)</h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            AI წერს მოკლე ისტორიას, რომელშიც განზრახ დამალულია 3 ისტორიული ან ენობრივი შეცდომა. მოსწავლეები მუშაობენ როგორც დეტექტივები.
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 my-auto">
+        <!-- 1. Detective -->
+        <div class="feature-card p-4">
+          <div class="text-2xl mb-1">🕵️‍♂️</div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">1. „იპოვე შეცდომა“ (Detective)</h3>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
+            AI წერს ისტორიას 3 ჩამალული შეცდომით. მოსწავლეები დეტექტივებივით პოულობენ და ასწორებენ.
           </p>
-          <span class="inline-block mt-3 text-[11px] font-bold text-rose-500">ავითარებს კრიტიკულ აზროვნებას</span>
+          <span class="inline-block text-[10px] font-bold text-rose-500">კრიტიკული აზროვნება</span>
         </div>
 
-        <div class="feature-card">
-          <div class="text-3xl mb-2">🏆</div>
-          <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1">საკლასო Jeopardy / ვიქტორინა</h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            თემები დაყოფილია 100, 200, 300, 400, 500 ქულიან კატეგორიებად. გუნდები თავად ირჩევენ რისკის დონეს და ეჯიბრებიან ერთმანეთს.
+        <!-- 2. Jeopardy -->
+        <div class="feature-card p-4">
+          <div class="text-2xl mb-1">🏆</div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">2. საკლასო Jeopardy / ვიქტორინა</h3>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
+            100–500 ქულიანი თემატური კატეგორიები. გუნდები თავად ირჩევენ რისკს და ეჯიბრებიან.
           </p>
-          <span class="inline-block mt-3 text-[11px] font-bold text-amber-500">ჩართულობა მთელ კლასში</span>
+          <span class="inline-block text-[10px] font-bold text-amber-500">100% ჩართულობა</span>
         </div>
 
-        <div class="feature-card">
-          <div class="text-3xl mb-2">🧩</div>
-          <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1">ანაგრამები & სიტყვების თამაში</h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            ტერმინების არეული ასოები, თემატური კროსვორდის მინიშნებები და სიტყვების ჯაჭვები (Word Chains) გაკვეთილის პირველი 5 წუთისთვის.
+        <!-- 3. Word Play / Anagrams -->
+        <div class="feature-card p-4">
+          <div class="text-2xl mb-1">🧩</div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">3. ანაგრამები & სიტყვების ჯაჭვი</h3>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
+            არეული ასოები, თემატური კროსვორდის მინიშნებები და სიტყვების ჯაჭვი გაკვეთილის პირველი 5 წუთისთვის.
           </p>
-          <span class="inline-block mt-3 text-[11px] font-bold text-sky-500">იდეალურია Warm-up ფაზისთვის</span>
+          <span class="inline-block text-[10px] font-bold text-sky-500">იდეალური Warm-up</span>
+        </div>
+
+        <!-- 4. Escape Room / Safe Lock -->
+        <div class="feature-card p-4 bg-purple-50/40 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800">
+          <div class="text-2xl mb-1">🔐</div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">4. Escape Room & სეიფის კოდი</h3>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
+            3 ეტაპიანი ლოგიკური მისია. ყოველი ამოხსნილი თავსატეხი იძლევა სეიფის კოდის 1 ციფრს.
+          </p>
+          <span class="inline-block text-[10px] font-bold text-purple-600 dark:text-purple-400">გუნდური დედუქცია</span>
+        </div>
+
+        <!-- 5. Two Truths and a Lie -->
+        <div class="feature-card p-4 bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800">
+          <div class="text-2xl mb-1">⚖️</div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">5. „2 სიმართლე & 1 ტყუილი“</h3>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
+            საგნობრივი ბლეფ-ქვიზი: 2 უცნაური ფაქტი და 1 ოსტატურად შენიღბული ტყუილი არგუმენტაციით.
+          </p>
+          <span class="inline-block text-[10px] font-bold text-emerald-600 dark:text-emerald-400">ფაქტების ანალიზი</span>
+        </div>
+
+        <!-- 6. Knowledge Auction -->
+        <div class="feature-card p-4 bg-amber-50/40 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
+          <div class="text-2xl mb-1">🎯</div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">6. ცოდნის აუქციონი & რისკი</h3>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
+            საწყისი 100 ქულა. გუნდები ფსონს დებენ ცოდნის დარწმუნებულობაზე კითხვის გამოჩენამდე.
+          </p>
+          <span class="inline-block text-[10px] font-bold text-amber-600 dark:text-amber-400">მეტაკოგნიცია & სტრატეგია</span>
         </div>
       </div>
 
-      <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 font-mono">
-        <strong>პრომპტი:</strong> „შექმენი IV კლასისთვის თამაშის „იპოვე შეცდომა“ ტექსტი [თემაზე]. ტექსტში ჩამალე 3 აშკარა და 1 რთული შეცდომა (შინაარსობრივი და მართლწერის). ბოლოში მომეცი გასაღები განმარტებით.“
+      <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 flex items-center justify-between">
+        <span><strong>პრომპტი:</strong> <em>„შექმენი [Escape Room / 2 სიმართლე და 1 ტყუილი / ცოდნის აუქციონი] 15 წთ სცენარით თემაზე [თემა], ესგ-ის მიხედვით.“</em></span>
+        <button class="px-2.5 py-1 bg-rose-600 text-white rounded text-xs font-semibold" onclick="copyText('შექმენი საგანმანათლებლო Escape Room-ის (გაქცევის ოთახის) 15-წუთიანი სცენარი თემაზე: [ჩასვით თემა], კლასი: [მიუთითეთ]. 1. საინტერესო მისია; 2. სამი ლოგიკური თავსატეხი (თითოეული იძლევა კოდის 1 ციფრს); 3. სეიფის 3-ციფრიანი გასაღები განმარტებით; 4. მასწავლებლის გზამკვლევი დაფაზე ან ფურცელზე ჩასატარებლად.')">პრომპტის კოპირება</button>
       </div>
     </section>
 
@@ -2223,6 +2325,26 @@
         toast.classList.add('translate-y-10', 'opacity-0');
         toast.classList.remove('translate-y-0', 'opacity-100');
       }, 2500);
+    }
+
+    function switchVisualTab(index, btn) {
+      document.querySelectorAll('.vis-pane').forEach((pane, i) => {
+        pane.classList.toggle('hidden', i + 1 !== index);
+      });
+      document.querySelectorAll('.vis-tab-btn').forEach(b => {
+        b.classList.remove('bg-indigo-600', 'text-white', 'shadow');
+        b.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+      });
+      btn.classList.add('bg-indigo-600', 'text-white', 'shadow');
+      btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+    }
+
+    // Font size controls
+    let currentBaseFontSize = 19;
+    function changeFontSize(delta) {
+      currentBaseFontSize = Math.min(26, Math.max(15, currentBaseFontSize + delta));
+      document.documentElement.style.fontSize = currentBaseFontSize + 'px';
+      showToast('ფონტის ზომა: ' + currentBaseFontSize + 'px');
     }
 
     updateProgress();

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSVP - ბანკი X 20 წლის იუბილე</title>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--gold:#AC845D;--dark:#262120;--cream:#F8F5F1;--line:rgba(172,132,93,.35)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--dark);font-family:'DM Sans','FiraGO',sans-serif;display:flex;justify-content:center;padding:24px 16px}
+  .card{background:#fff;max-width:460px;width:100%;border:1px solid var(--line);border-radius:18px;padding:28px 24px;box-shadow:0 10px 30px rgba(38,33,32,.08)}
+  h1{font-family:'Marcellus',serif;font-weight:400;font-size:26px;margin:0 0 4px;color:var(--dark)}
+  .sub{color:var(--gold);font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px}
+  label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+  input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:#fff}
+  .row{display:flex;gap:10px}.row>div{flex:1}
+  .chk{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px}.chk input{width:auto}
+  button{margin-top:22px;width:100%;padding:13px;border:0;border-radius:999px;background:var(--gold);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.6}
+  .msg{margin-top:16px;padding:12px;border-radius:10px;font-size:14px;display:none}
+  .ok{background:#ecfdf5;color:#065f46}.err{background:#fef2f2;color:#991b1b}
+  .note{margin-top:14px;font-size:11px;color:#8a8380;text-align:center}
+</style>
+</head>
+<body>
+<form class="card" id="f">
+  <h1>ბანკი X - 20 წლის იუბილე</h1>
+  <div class="sub">Vanilla Events · RSVP · 19 დეკემბერი</div>
+  <label>სახელი და გვარი</label><input name="name" required placeholder="ტესტ სტუმარი 1">
+  <label>კომპანია</label><input name="company" placeholder="კომპანია A">
+  <label>ელფოსტა (აქ მოვა QR ბილეთი)</label><input name="email" type="email" required>
+  <label>დასწრება</label>
+  <select name="attendance"><option>დავესწრები</option><option>ვერ დავესწრები</option></select>
+  <label>კვება</label>
+  <select name="diet"><option>სტანდარტული</option><option>ვეგანური</option><option>ვეგეტარიანული</option><option>თხილის ალერგია</option><option>გლუტენ-ფრი</option><option>ჰალალი</option></select>
+  <div class="chk"><input type="checkbox" id="p1"><label for="p1" style="margin:0;font-weight:400">+1 სტუმარი</label></div>
+  <div class="chk"><input type="checkbox" id="tr"><label for="tr" style="margin:0;font-weight:400">ტრანსფერი მჭირდება</label></div>
+  <button type="submit" id="b">გაგზავნა</button>
+  <div class="msg" id="m"></div>
+  <div class="note">სადემონსტრაციო ფორმა - გამოიყენეთ სინთეზური მონაცემები</div>
+</form>
+<script>
+/* Make.com Webhook-ის მისამართი - ჩასვით აქ (Make → სცენარი → Webhook → Copy address) */
+const WEBHOOK_URL = "https://hook.eu1.make.com/lbc8klbuduz25q6tj1xd97e60q6ky9mn";
+const f=document.getElementById('f'), m=document.getElementById('m'), b=document.getElementById('b');
+function show(t,ok){m.textContent=t;m.className='msg '+(ok?'ok':'err');m.style.display='block'}
+f.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(!WEBHOOK_URL){show('Webhook-ის მისამართი ჯერ არ არის ჩასმული (WEBHOOK_URL).',false);return}
+  const d=new URLSearchParams(new FormData(f));
+  d.set('plus_one', document.getElementById('p1').checked?'true':'false');
+  d.set('transfer', document.getElementById('tr').checked?'true':'false');
+  b.disabled=true;
+  try{ await fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',body:d}); show('✓ გაგზავნილია! შეამოწმეთ ელფოსტა - QR ბილეთი რამდენიმე წამში მოვა.',true); f.reset(); }
+  catch(err){ show('შეცდომა: '+err.message,false) }
+  finally{ b.disabled=false }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanilla Events - AI შესაძლებლობების Showcase და პროგრამის შერჩევა (150 წთ / 2.5 სთ)</title>
+
+<link rel="icon" href="https://vanillaevents.ge/wp-content/uploads/2020/04/cropped-favicon-120x120.png" sizes="32x32" />
+<link rel="apple-touch-icon" href="https://vanillaevents.ge/wp-content/uploads/2020/04/cropped-favicon-300x300.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=GFS+Didot&family=Marcellus&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            gold: '#AC845D',
+            goldHover: '#916942',
+            goldLight: '#DC9B42',
+            goldSoft: 'rgba(172, 132, 93, 0.12)',
+            dark: '#262120',
+            darker: '#1d1918',
+            black: '#141110',
+            cream: '#F8F5F1',
+            border: 'rgba(172, 132, 93, 0.28)',
+            textLight: '#8a7f78',
+            textMain: '#1D1918'
+          }
+        },
+        fontFamily: {
+          serif: ['Marcellus', 'GFS Didot', 'FiraGO', 'Georgia', 'serif'],
+          sans: ['DM Sans', 'FiraGO', '-apple-system', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  * { font-family: 'DM Sans', 'FiraGO', sans-serif; }
+  h1, h2, h3, h4, .serif-font { font-family: 'Marcellus', 'GFS Didot', 'FiraGO', serif; }
+  html { scroll-behavior: smooth; font-size: 17px; }
+  body { background-color: #F8F5F1; color: #1D1918; }
+
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(172,132,93,0.35); border-radius: 2px; }
+  .nav-link.active { background: rgba(172,132,93,0.16); border-left: 3px solid #DC9B42; }
+  .nav-link:hover { background: rgba(255,255,255,0.06); }
+  pre { white-space: pre-wrap; word-wrap: break-word; }
+
+  .topic-card { border-left: 4px solid #AC845D; }
+
+  .prompt-box {
+    background: #181413;
+    border: 1px solid rgba(172,132,93,0.4);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    position: relative;
+  }
+  .prompt-box pre {
+    color: #E6D2BF;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    font-family: 'Courier New', monospace;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.55rem; right: 0.55rem;
+    background: rgba(172,132,93,0.25);
+    color: #E5C39E;
+    border: 1px solid rgba(172,132,93,0.45);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: #AC845D; color: #fff; }
+
+  .warning-box { background: #FDF2EC; border-left: 4px solid #C0492B; border-radius: 0 0.5rem 0.5rem 0; }
+  .tip-box { background: #F0F6F1; border-left: 4px solid #2F7A4D; border-radius: 0 0.5rem 0.5rem 0; }
+  .note-box { background: #F4EFEA; border-left: 4px solid #AC845D; border-radius: 0 0.5rem 0.5rem 0; }
+
+  #backToTop { opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; }
+  #backToTop.visible { opacity: 1; pointer-events: auto; }
+  #backToTop:hover { transform: translateY(-2px); }
+
+  #fontControls {
+    position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 45;
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(29, 25, 24, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 5px; border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  #fontControls button {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; color: #E5C39E;
+    border: none; border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 700;
+    transition: background 0.2s ease;
+  }
+  #fontControls button:hover { background: rgba(255,255,255,0.12); }
+
+  @media print {
+    #sidebar, #menuBtn, #overlay, #backToTop, #fontControls { display: none !important; }
+    main, #mainContent { margin-left: 0 !important; }
+    body { background: white; }
+    .topic-card { break-inside: avoid; }
+    @page { margin: 1.5cm; }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay" class="hidden fixed inset-0 bg-black/60 z-30" onclick="toggleSidebar()" aria-hidden="true"></div>
+
+<!-- Toggle button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-brand-darker text-white p-2.5 rounded-lg shadow-lg border border-brand-border hover:border-brand-gold transition-colors" title="მენიუ">
+  <svg id="menuIcon" class="w-5 h-5 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 text-brand-gold hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-brand-darker text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300 border-r border-brand-border/40">
+  <div class="px-5 py-6 border-b border-brand-border/30">
+    <div class="flex items-center gap-2 mb-2">
+      <img src="https://vanillaevents.ge/wp-content/uploads/2024/10/logo-inverse.png" alt="Vanilla Events" class="h-5 w-auto object-contain" />
+      <span class="text-brand-goldLight text-[11px] font-semibold uppercase tracking-wider">AI შესაძლებლობების Showcase</span>
+    </div>
+    <h1 class="text-base font-bold leading-tight">დეტალური სესიის გზამკვლევი</h1>
+    <p class="text-brand-textLight text-xs mt-1.5">I ეტაპი · 150 წუთი შესვენების ჩათვლით · ოქტომბერი 2026</p>
+  </div>
+  <div class="px-5 py-3 bg-brand-gold/10 border-b border-brand-border/30">
+    <p class="text-[10px] font-semibold uppercase tracking-wider text-brand-goldLight mb-2">სწრაფი მარშრუტი</p>
+    <p class="text-xs text-gray-300 leading-relaxed mb-1"><span class="text-emerald-400 font-bold">✅ 10 მენეჯერი:</span> ბრიფი, იდეაცია, Run of Show &amp; Cue-Sheets, Plan B/C, Seating</p>
+    <p class="text-xs text-gray-300 leading-relaxed mb-1"><span class="text-purple-300 font-bold">✅ დიზაინერები:</span> Flow, Veo, Live Gala Portraits, Print Workflow, Gamma</p>
+    <p class="text-xs text-blue-300 leading-relaxed"><span class="text-blue-400 font-bold">⭐ ბირთვი:</span> Make.com ავტომატიზაცია &amp; Notion Event Hub</p>
+  </div>
+
+  <nav class="py-3">
+    <a href="#seg-landscape" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-landscape">
+      <span class="leading-snug pr-2">1. AI 2026 ლანდშაფტი &amp; სტრატეგია</span>
+      <span class="shrink-0 text-[10px] bg-brand-gold/20 text-brand-goldLight px-1.5 py-0.5 rounded">9 წთ</span>
+    </a>
+    <a href="#seg-roi" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-roi">
+      <span class="leading-snug pr-2">2. ROI ჰიპოთეზები &amp; გაზომვა</span>
+      <span class="shrink-0 text-[10px] bg-brand-gold/20 text-brand-goldLight px-1.5 py-0.5 rounded">5 წთ</span>
+    </a>
+    <a href="#seg-audit" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-audit">
+      <span class="leading-snug pr-2">3. აქტივობა: პროცესების აუდიტი</span>
+      <span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">4 წთ</span>
+    </a>
+    <a href="#seg-demo1" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-emerald-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo1">
+      <span class="leading-snug pr-2">4. DEMO 1: ბრიფის სინთეზი</span>
+      <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">8 წთ</span>
+    </a>
+    <a href="#seg-demo2" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-amber-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo2">
+      <span class="leading-snug pr-2">5. DEMO 2: იდეაცია &amp; 5 გრძნობა</span>
+      <span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-demo3" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-emerald-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo3">
+      <span class="leading-snug pr-2">6. DEMO 3: Run of Show &amp; Cue-Sheets</span>
+      <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">9 წთ</span>
+    </a>
+    <a href="#seg-demo4" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-emerald-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo4">
+      <span class="leading-snug pr-2">7. DEMO 4: Plan B &amp; Plan C</span>
+      <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">8 წთ</span>
+    </a>
+    <a href="#seg-demo5" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-emerald-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo5">
+      <span class="leading-snug pr-2">8. DEMO 5: Seating &amp; კეტერინგი</span>
+      <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">8 წთ</span>
+    </a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-break">
+      <span class="leading-snug pr-2">☕ შესვენება</span>
+      <span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-demo6" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-purple-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo6">
+      <span class="leading-snug pr-2">10. DEMO 6: Google Flow კონცეფცია</span>
+      <span class="shrink-0 text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded">9 წთ</span>
+    </a>
+    <a href="#seg-demo7" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-purple-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo7">
+      <span class="leading-snug pr-2">11. DEMO 7: Veo 3.1 ვიდეო-გასეირნება</span>
+      <span class="shrink-0 text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded">6 წთ</span>
+    </a>
+    <a href="#seg-demo8" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-purple-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo8">
+      <span class="leading-snug pr-2">12. DEMO 8: Live AI Gala Portraits</span>
+      <span class="shrink-0 text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded">8 წთ</span>
+    </a>
+    <a href="#seg-demo9" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-purple-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo9">
+      <span class="leading-snug pr-2">13. DEMO 9: Print Workflow &amp; Preflight</span>
+      <span class="shrink-0 text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded">9 წთ</span>
+    </a>
+    <a href="#seg-demo10" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-purple-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo10">
+      <span class="leading-snug pr-2">14. DEMO 10: Gamma Pitch Decks</span>
+      <span class="shrink-0 text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded">4 წთ</span>
+    </a>
+    <a href="#seg-demo11" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-blue-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo11">
+      <span class="leading-snug pr-2">15. DEMO 11: Make.com RSVP &amp; QR</span>
+      <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">10 წთ</span>
+    </a>
+    <a href="#seg-demo12" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-blue-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo12">
+      <span class="leading-snug pr-2">16. DEMO 12: Notion Event Hub</span>
+      <span class="shrink-0 text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">11 წთ</span>
+    </a>
+    <a href="#seg-security" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-red-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-security">
+      <span class="leading-snug pr-2">17. ⚠️ უსაფრთხოება &amp; NDA</span>
+      <span class="shrink-0 text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded">7 წთ</span>
+    </a>
+    <a href="#seg-roadmap" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-brand-goldLight transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-roadmap">
+      <span class="leading-snug pr-2">18. მომავალი პროგრამის შერჩევა</span>
+      <span class="shrink-0 text-[10px] bg-brand-gold/20 text-brand-goldLight px-1.5 py-0.5 rounded">9 წთ</span>
+    </a>
+    <a href="#seg-qna" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-brand-goldLight transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-qna">
+      <span class="leading-snug pr-2">19. კითხვა-პასუხი &amp; შეჯამება</span>
+      <span class="shrink-0 text-[10px] bg-brand-gold/20 text-brand-goldLight px-1.5 py-0.5 rounded">6 წთ</span>
+    </a>
+  </nav>
+
+  <div class="px-5 py-4 border-t border-brand-border/30 mt-2 space-y-1.5">
+    <p class="text-[10px] text-brand-textLight uppercase tracking-wider mb-1">დაკავშირებული მასალები</p>
+    <a href="index.html" class="block text-xs text-gray-300 hover:text-brand-goldLight">📋 კორპორატიული შეთავაზება</a>
+    <a href="prompt-library.html" class="block text-xs text-gray-300 hover:text-brand-goldLight">✨ პრომპტების ბიბლიოთეკა</a>
+  </div>
+  <div class="px-5 py-4 border-t border-brand-border/30">
+    <p class="text-[10px] text-brand-textLight uppercase tracking-wider mb-1">ტრენერი</p>
+    <p class="text-sm font-semibold text-white">გიორგი ბასილაია</p>
+    <p class="text-xs text-brand-textLight">Smart Academy · 2026</p>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+<!-- Header -->
+<header class="bg-gradient-to-r from-brand-black to-brand-dark text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10">
+  <div class="max-w-5xl">
+    <div class="flex items-center gap-3 mb-3">
+      <img src="https://vanillaevents.ge/wp-content/uploads/2024/10/logo-inverse.png" alt="Vanilla Events" class="h-6 w-auto object-contain" />
+      <span class="text-brand-goldLight text-sm font-medium">კორპორატიული AI შესაძლებლობების Showcase</span>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-3 serif-font">ხელოვნური ინტელექტი ივენთ-მენეჯმენტსა და დიზაინში<br><span class="text-brand-goldLight italic">დეტალური სესიის გზამკვლევი</span></h1>
+    <p class="text-gray-300 text-base max-w-2xl leading-relaxed mb-5">ეს არის Vanilla Events-სა და Smart Academy-ს შორის შეთანხმებული <strong>I ეტაპი</strong> - 160-წუთიანი (2.5 – 2.7 სთ) AI შესაძლებლობების საჩვენებელი და მომავალი პროგრამის შერჩევის სესია. დღევანდელი მიზანი არ არის ყველა ხელსაწყოს სრულად სწავლა: გუნდი ნახავს Vanilla Events-ისთვის შესაძლო მიმართულებებს, შეაფასებს მათ ბიზნესღირებულებას და შეარჩევს თემებს, რომლებიც შევა ძირითად პრაქტიკულ ტრენინგში.</p>
+    <div class="flex flex-wrap gap-4">
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        160 წუთი · შესვენების ჩათვლით
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        14 შესაძლებლობის დემო
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        22 სეგმენტი
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        ოქტომბერი, 2026
+      </span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-brand-goldLight font-semibold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        ივენთ-ინდუსტრიის სპეციფიკური
+      </span>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
+
+  <!-- Discovery & Selection Purpose -->
+  <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8">
+    <div class="flex items-start gap-3">
+      <span class="text-2xl shrink-0">🧭</span>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1">სესიის მიზანი · ნახვა, შეფასება, არჩევა</p>
+        <h2 class="text-lg font-bold text-brand-darker serif-font mb-2">დღეს ვქმნით Vanilla Events-ის მომავალი AI ტრენინგის რუკას</h2>
+        <p class="text-sm text-gray-700 leading-relaxed mb-3">თითოეული დემო არის შესაძლებლობის მოკლე Preview. სრული პროგრამის თემები შეირჩევა გუნდის რეალური საჭიროებების, გამოყენების სიხშირის, ბიზნესღირებულებისა და დანერგვის მზადყოფნის მიხედვით.</p>
+        <div class="grid sm:grid-cols-3 gap-2 text-xs">
+          <div class="bg-white rounded-lg p-3 border border-amber-100"><strong class="text-brand-darker block">1. ბიზნესღირებულება</strong><span class="text-gray-600">რამდენ დროს, გადაკეთებას ან რისკს ამცირებს?</span></div>
+          <div class="bg-white rounded-lg p-3 border border-amber-100"><strong class="text-brand-darker block">2. გამოყენების სიხშირე</strong><span class="text-gray-600">რამდენად ხშირად გვჭირდება ეს Workflow?</span></div>
+          <div class="bg-white rounded-lg p-3 border border-amber-100"><strong class="text-brand-darker block">3. არჩევანი</strong><span class="text-gray-600">აუცილებელი · სასურველი · არ გვჭირდება</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route Table -->
+  <div class="bg-brand-darker text-white rounded-xl p-6 mb-10">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">⏱</span>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-brand-goldLight mb-0.5">სესიის მარშრუტი</p>
+        <h2 class="text-lg font-bold serif-font">150 წუთი - სრული სესიის ქრონომეტრაჟი</h2>
+      </div>
+    </div>
+
+    <p class="text-xs font-semibold uppercase tracking-wider text-brand-goldLight mb-2">ნაწილი I · სტრატეგია, იდეაცია &amp; 10 ივენთ-მენეჯერის ნაკადი (61 წთ)</p>
+    <div class="overflow-x-auto mb-4">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-white/20">
+            <th class="text-left py-2 pr-3 text-brand-goldLight font-semibold w-6">#</th>
+            <th class="text-left py-2 pr-4 text-brand-goldLight font-semibold">სეგმენტი</th>
+            <th class="text-left py-2 pr-3 text-brand-goldLight font-semibold">დრო</th>
+            <th class="text-left py-2 text-brand-goldLight font-semibold">ტიპი</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-200">
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-brand-goldLight font-bold">1</td>
+            <td class="py-2 pr-4">2026 AI ლანდშაფტი &amp; სააგენტოს სტრატეგია</td>
+            <td class="py-2 pr-3 font-semibold text-white">9 წთ</td>
+            <td class="py-2"><span class="bg-brand-gold/20 text-brand-goldLight text-xs px-2 py-0.5 rounded">მიმოხილვა</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-brand-goldLight font-bold">2</td>
+            <td class="py-2 pr-4">ROI ჰიპოთეზები - რას და როგორ გავზომავთ</td>
+            <td class="py-2 pr-3 font-semibold text-white">5 წთ</td>
+            <td class="py-2"><span class="bg-brand-gold/20 text-brand-goldLight text-xs px-2 py-0.5 rounded">მიმოხილვა</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-amber-400 font-bold">3</td>
+            <td class="py-2 pr-4">აქტივობა - Vanilla Events-ის პროცესების აუდიტი</td>
+            <td class="py-2 pr-3 font-semibold text-white">4 წთ</td>
+            <td class="py-2"><span class="bg-amber-500/20 text-amber-300 text-xs px-2 py-0.5 rounded">აქტივობა</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-emerald-400 font-bold">4</td>
+            <td class="py-2 pr-4">DEMO 1 - დამკვეთის ბრიფის მყისიერი სინთეზი</td>
+            <td class="py-2 pr-3 font-semibold text-white">8 წთ</td>
+            <td class="py-2"><span class="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-amber-400 font-bold">5</td>
+            <td class="py-2 pr-4">DEMO 2 - კრეატიული იდეაციის ტექნიკები &amp; 5 გრძნობა</td>
+            <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+            <td class="py-2"><span class="bg-amber-500/20 text-amber-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-emerald-400 font-bold">6</td>
+            <td class="py-2 pr-4">DEMO 3 - Run of Show წუთობრივი სცენარი &amp; Cue-Sheets</td>
+            <td class="py-2 pr-3 font-semibold text-white">9 წთ</td>
+            <td class="py-2"><span class="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-emerald-400 font-bold">7</td>
+            <td class="py-2 pr-4">DEMO 4 - Plan B &amp; Plan C ფორსმაჟორი</td>
+            <td class="py-2 pr-3 font-semibold text-white">8 წთ</td>
+            <td class="py-2"><span class="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-emerald-400 font-bold">8</td>
+            <td class="py-2 pr-4">DEMO 5 - Seating Dynamics &amp; კეტერინგის მატრიცა</td>
+            <td class="py-2 pr-3 font-semibold text-white">8 წთ</td>
+            <td class="py-2"><span class="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex items-center gap-3 my-4 py-2 px-4 bg-white/10 rounded-lg">
+      <span class="text-amber-300 font-bold text-sm">☕</span>
+      <p class="text-sm text-amber-200 font-semibold">კომფორტის შესვენება - 10 წუთი (150 წუთში შედის)</p>
+    </div>
+
+    <p class="text-xs font-semibold uppercase tracking-wider text-brand-goldLight mb-2">ნაწილი II · დიზაინერები, Live აქტივაცია, Notion &amp; ავტომატიზაცია (79 წთ)</p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <tbody class="text-gray-200">
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-purple-300 font-bold">10</td>
+            <td class="py-2 pr-4">DEMO 6 - Google Flow: კონცეფციური სივრცითი ვიზუალიზაცია</td>
+            <td class="py-2 pr-3 font-semibold text-white">9 წთ</td>
+            <td class="py-2"><span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-purple-300 font-bold">11</td>
+            <td class="py-2 pr-4">DEMO 7 - Veo 3.1: კინემატოგრაფიული ვიდეო-გასეირნება</td>
+            <td class="py-2 pr-3 font-semibold text-white">6 წთ</td>
+            <td class="py-2"><span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-purple-300 font-bold">12</td>
+            <td class="py-2 pr-4">DEMO 8 - Live AI Editorial Gala Portraits (Upsell)</td>
+            <td class="py-2 pr-3 font-semibold text-white">8 წთ</td>
+            <td class="py-2"><span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-purple-300 font-bold">13</td>
+            <td class="py-2 pr-4">DEMO 9 - Print Workflow: FLUX.2 Pro, Recraft, 300 DPI &amp; Preflight</td>
+            <td class="py-2 pr-3 font-semibold text-white">9 წთ</td>
+            <td class="py-2"><span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-purple-300 font-bold">14</td>
+            <td class="py-2 pr-4">DEMO 10 - Gamma AI: Pitch Decks 15 წუთში</td>
+            <td class="py-2 pr-3 font-semibold text-white">4 წთ</td>
+            <td class="py-2"><span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-blue-300 font-bold">15</td>
+            <td class="py-2 pr-4">DEMO 11 - Make.com: RSVP &amp; QR ავტომატიზაცია</td>
+            <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+            <td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-blue-300 font-bold">16</td>
+            <td class="py-2 pr-4">DEMO 12 - Vanilla Event Hub (Notion) - სააგენტოს ბირთვი</td>
+            <td class="py-2 pr-3 font-semibold text-white">11 წთ</td>
+            <td class="py-2"><span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-red-400 font-bold">17</td>
+            <td class="py-2 pr-4">⚠️ უსაფრთხოება, NDA &amp; კონფიდენციალურობა</td>
+            <td class="py-2 pr-3 font-semibold text-white">7 წთ</td>
+            <td class="py-2"><span class="bg-red-500/20 text-red-300 text-xs px-2 py-0.5 rounded">კრიტიკული</span></td>
+          </tr>
+          <tr class="border-b border-white/10">
+            <td class="py-2 pr-3 text-brand-goldLight font-bold">18</td>
+            <td class="py-2 pr-4">მომავალი პრაქტიკული პროგრამის თემების შერჩევა</td>
+            <td class="py-2 pr-3 font-semibold text-white">9 წთ</td>
+            <td class="py-2"><span class="bg-brand-gold/20 text-brand-goldLight text-xs px-2 py-0.5 rounded">მიმოხილვა</span></td>
+          </tr>
+          <tr>
+            <td class="py-2 pr-3 text-brand-goldLight font-bold">19</td>
+            <td class="py-2 pr-4">კითხვა-პასუხი &amp; შეჯამება</td>
+            <td class="py-2 pr-3 font-semibold text-white">6 წთ</td>
+            <td class="py-2"><span class="bg-brand-gold/20 text-brand-goldLight text-xs px-2 py-0.5 rounded">ბუფერი</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SEGMENT 1: LANDSCAPE ═══ -->
+  <section id="seg-landscape" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-brand-darker text-white flex items-center justify-center font-bold text-base">1</div>
+        <div class="flex-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-gold">9 წუთი · მიმოხილვა · სრული გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">2026 AI ლანდშაფტი & სააგენტოს ახალი საოპერაციო რეალობა</h2>
+          <p class="text-gray-500 text-sm mt-1">მიზანი არ არის ყველა მოდელის სწავლა - გუნდი ნახავს ტექსტის, ანალიზის, მულტიმოდალური კვლევისა და ავტომატიზაციის შესაძლებლობებს და გადაწყვეტს, რომელი მათგანი სჭირდება ძირითად პროგრამაში.</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-3 mb-5">
+        <div class="bg-brand-goldSoft rounded-lg p-4">
+          <div class="text-2xl mb-1">🧠</div>
+          <p class="font-bold text-brand-darker text-sm mb-1">Reasoning & Agents</p>
+          <p class="text-xs text-gray-500 leading-snug">თანამედროვე მოდელები ამუშავებენ რთულ ინსტრუქციებს, დოკუმენტებსა და მრავალსაფეხურიან ამოცანებს, თუმცა შედეგი ყოველთვის საჭიროებს პასუხისმგებელი თანამშრომლის შემოწმებას.</p>
+        </div>
+        <div class="bg-brand-goldSoft rounded-lg p-4">
+          <div class="text-2xl mb-1">🎨</div>
+          <p class="font-bold text-brand-darker text-sm mb-1">ფოტორეალიზმი & ვიდეო</p>
+          <p class="text-xs text-gray-500 leading-snug">Google Flow, Veo 3.1 და FLUX.2 Pro სწრაფად ქმნიან მასალების, განათებისა და ატმოსფეროს კონცეფციურ ვიზუალურ ვარიანტებს; სივრცითი სიზუსტე და საწარმოო ფაილები ცალკე მოწმდება.</p>
+        </div>
+        <div class="bg-brand-goldSoft rounded-lg p-4">
+          <div class="text-2xl mb-1">⚡</div>
+          <p class="font-bold text-brand-darker text-sm mb-1">No-Code ავტომატიზაცია</p>
+          <p class="text-xs text-gray-500 leading-snug">Make.com-ით შესაძლებელია რეგისტრაციის, QR კოდირებისა და შეხსენებების დაკავშირებული ნაკადის აწყობა - მონიტორინგით, შეცდომების დამუშავებითა და ადამიანის კონტროლით.</p>
+        </div>
+      </div>
+
+      <div class="warning-box p-4 mb-5 flex gap-3 items-center">
+        <span class="text-2xl shrink-0">🛡️</span>
+        <div>
+          <p class="text-sm font-bold text-red-900">უსაფრთხოების ოქროს წესი:</p>
+          <p class="text-xs text-red-800 leading-relaxed">არასოდეს გაუგზავნოთ დაუმტკიცებელ AI გარემოს VIP სტუმრის პირადი მონაცემები, საბანკო რეკვიზიტები ან დაუანონსებელი ლოკაცია. გამოიყენეთ მინიმიზაცია, ანონიმიზაცია და კომპანიის მიერ დამტკიცებული სამუშაო გარემო. დეტალები მე-17 სეგმენტში.</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4">
+        <p class="text-sm font-semibold text-brand-darker mb-3">🛠️ მოდელების როლური მატრიცა Vanilla Events-ისთვის</p>
+        <div class="grid md:grid-cols-3 gap-3">
+          <div class="border-t-4 border-amber-500 rounded-lg p-3 bg-white">
+            <p class="font-bold text-sm text-brand-darker">Claude</p>
+            <p class="text-xs text-brand-gold mb-1.5">ივენთ-მენეჯერის ტექსტური ტვინი</p>
+            <ul class="text-xs text-gray-600 space-y-0.5">
+              <li>• საუკეთესო ქართული ენა</li>
+              <li>• Run of Show სცენარები</li>
+              <li>• ტექნიკური Cue-Sheets</li>
+              <li>• დამკვეთის ბრიფის სინთეზი</li>
+            </ul>
+          </div>
+          <div class="border-t-4 border-emerald-500 rounded-lg p-3 bg-white">
+            <p class="font-bold text-sm text-brand-darker">ChatGPT (მიმდინარე დამტკიცებული მოდელი)</p>
+            <p class="text-xs text-brand-gold mb-1.5">კრეატივი & ლოგიკა</p>
+            <ul class="text-xs text-gray-600 space-y-0.5">
+              <li>• ივენთის თემატიკა და იდეაცია</li>
+              <li>• Advanced Data & Excel ფორმულები</li>
+              <li>• Custom GPT ასისტენტები</li>
+              <li>• ხმოვანი ბრიფინგი მობილურიდან</li>
+            </ul>
+          </div>
+          <div class="border-t-4 border-blue-500 rounded-lg p-3 bg-white">
+            <p class="font-bold text-sm text-brand-darker">Gemini 3.8 Flash / Live</p>
+            <p class="text-xs text-brand-gold mb-1.5">მულტიმოდალობა & Drive</p>
+            <ul class="text-xs text-gray-600 space-y-0.5">
+              <li>• ლოკაციის ვიდეო/ფოტოს სკანირება</li>
+              <li>• Google Docs & Sheets ინტეგრაცია</li>
+              <li>• დიდი დოკუმენტებისა და მედიის ანალიზი</li>
+              <li>• Google Flow-სთან (Veo 3.1 & Imagen 3) ხიდი</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box p-3 text-sm text-gray-700 mt-4">
+        <strong>💡 მთავარი მესიჯი:</strong> AI არ ანაცვლებს ივენთ-მენეჯერსა და დიზაინერს - ის აძლიერებს მათ. რეალური სარგებელი განისაზღვრება მხოლოდ Vanilla Events-ის შერჩეულ პროცესზე ჩატარებული პილოტით და „მანამდე / შემდეგ“ გაზომვით.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 2: ROI ═══ -->
+  <section id="seg-roi" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-brand-darker text-white flex items-center justify-center font-bold text-base">2</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-gold">5 წუთი · მიმოხილვა · სრული გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">ROI ჰიპოთეზები - რას და როგორ გავზომავთ?</h2>
+          <p class="text-gray-500 text-sm mt-1">ქვემოთ მოცემული დროები საორიენტაციო საპილოტე ჰიპოთეზებია და არა Vanilla Events-ის დადასტურებული შედეგები. ზუსტი ROI გაიზომება შერჩეულ პროცესებზე.</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs sm:text-sm">
+          <thead>
+            <tr class="border-b border-brand-border text-brand-gold">
+              <th class="text-left py-2 pr-4 font-bold">ამოცანა</th>
+              <th class="text-left py-2 pr-4 font-bold">ტრადიციული დრო</th>
+              <th class="text-left py-2 pr-4 font-bold">AI Workflow-ით</th>
+              <th class="text-left py-2 font-bold text-emerald-600">რას ვამოწმებთ პილოტში</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 text-gray-700">
+            <tr>
+              <td class="py-2.5 font-bold text-brand-darker">კონცეფციური სივრცითი ვიზუალიზაცია</td>
+              <td class="py-2.5">გაიზომება Vanilla-ს პროცესზე</td>
+              <td class="py-2.5 font-bold text-brand-gold">სწრაფი პირველი კონცეფცია</td>
+              <td class="py-2.5 text-emerald-600 font-semibold">იდეიდან პირველ განხილვამდე დრო</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-bold text-brand-darker">Run of Show (წუთობრივი სცენარი)</td>
+              <td class="py-2.5">გაიზომება Vanilla-ს პროცესზე</td>
+              <td class="py-2.5 font-bold text-brand-gold">AI პირველი ვერსია + ადამიანის QA</td>
+              <td class="py-2.5 text-emerald-600 font-semibold">მომზადების დრო და გადაკეთებების რაოდენობა</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-bold text-brand-darker">ბეჭდური მასალების კომპლექტი (300 DPI)</td>
+              <td class="py-2.5">გაიზომება Vanilla-ს პროცესზე</td>
+              <td class="py-2.5 font-bold text-brand-gold">კონცეფცია + preflight შემოწმება</td>
+              <td class="py-2.5 text-emerald-600 font-semibold">ვერსიების დრო და ბეჭდვის შეცდომები</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-bold text-brand-darker">დამკვეთის Pitch Decks (Gamma)</td>
+              <td class="py-2.5">გაიზომება Vanilla-ს პროცესზე</td>
+              <td class="py-2.5 font-bold text-brand-gold">სტრუქტურირებული პირველი ვერსია</td>
+              <td class="py-2.5 text-emerald-600 font-semibold">პირველი შეთავაზების გაგზავნის დრო</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-bold text-brand-darker">სტუმრების RSVP რეგისტრაცია & QR</td>
+              <td class="py-2.5">გაიზომება Vanilla-ს პროცესზე</td>
+              <td class="py-2.5 font-bold text-brand-gold">ავტომატიზებული ნაკადი + მონიტორინგი</td>
+              <td class="py-2.5 text-emerald-600 font-semibold">ხელით ოპერაციები, შეცდომები და გამონაკლისები</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3 mt-5">
+        <div class="bg-brand-darker text-white rounded-lg p-4 text-center">
+          <p class="text-2xl font-black text-brand-goldLight">BASELINE</p>
+          <p class="text-[11px] text-gray-300 mt-1">პირველ რიგში ვზომავთ მიმდინარე დროსა და გადაკეთებებს</p>
+        </div>
+        <div class="bg-brand-darker text-white rounded-lg p-4 text-center">
+          <p class="text-2xl font-black text-brand-goldLight">PILOT</p>
+          <p class="text-[11px] text-gray-300 mt-1">შერჩეულ Workflow-ს ვტესტავთ რეალურ, ანონიმიზებულ ქეისზე</p>
+        </div>
+        <div class="bg-brand-darker text-white rounded-lg p-4 text-center">
+          <p class="text-2xl font-black text-brand-goldLight">ROI</p>
+          <p class="text-[11px] text-gray-300 mt-1">ვადარებთ დროს, ხარისხს, შეცდომებსა და ადამიანის კონტროლს</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 3: AUDIT ACTIVITY ═══ -->
+  <section id="seg-audit" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#d97706;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-base">3</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-amber-600">4 წუთი · აქტივობა · სრული გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Vanilla Events-ის პროცესების აუდიტი</h2>
+          <p class="text-gray-500 text-sm mt-1">მონაწილეები აფიქსირებენ საკუთარ „მტანჯველ" ამოცანას - ტრენერი აჯგუფებს პასუხებს და აკავშირებს მათ სესიის შემდეგ დემოებთან.</p>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-4">
+        <p class="font-semibold text-amber-900 mb-2">📱 ინტერაქტიული შეკითხვა გუნდს (1 წუთი):</p>
+        <div class="bg-white border border-amber-300 rounded-lg p-4 text-center">
+          <p class="text-lg font-bold text-brand-darker mb-1 serif-font">„ჩემს ყოველდღიურ სამუშაოში ყველაზე მეტ დროს მართმევს: _______"</p>
+          <p class="text-xs text-gray-400">პასუხები ჯგუფდება მენეჯერებისა და დიზაინერების მიხედვით</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-xs font-bold text-gray-500 uppercase mb-2">10 ივენთ-მენეჯერი - ტიპური პასუხები</p>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>🗒️ სცენარების გადაკეთება ბოლო წუთის ცვლილებებზე</li>
+            <li>📤 Cue-Sheets-ის ცალ-ცალკე გუნდებისთვის დაგზავნა</li>
+            <li>📋 სტუმრების RSVP რეგისტრაცია ხელით</li>
+            <li>💰 Excel ბიუჯეტის გადახრების ხელით შემოწმება</li>
+          </ul>
+        </div>
+        <div class="bg-brand-goldSoft rounded-lg p-4">
+          <p class="text-xs font-bold text-brand-gold uppercase mb-2">დიზაინერები - ტიპური პასუხები</p>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>🎨 პირველი ვიზუალური კონცეფციის მომზადების ხანგრძლივი დრო</li>
+            <li>✏️ ბეჭდური მასალების ტექსტური ჩასწორებები</li>
+            <li>🖼️ პრეზენტაციის სლაიდების ხელით აწყობა</li>
+            <li>📐 დაბალი გარჩევადობის ფაილების ხელახლა რენდერი</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note-box p-3 text-sm text-gray-700 mt-4">
+        <strong>📌 კავშირი დემოებთან:</strong> ყოველი ზემოთ ჩამოთვლილი ამოცანა პირდაპირ განიხილება მომდევნო 12 ლაივ დემოში - 4-8 სეგმენტი მენეჯერებისთვის, 10-14 სეგმენტი დიზაინერებისთვის, 15-16 სეგმენტი ავტომატიზაციისა და ბაზისთვის.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 4: DEMO 1 BRIEF SYNTHESIS ═══ -->
+  <section id="seg-demo1" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#059669;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-base">4</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">8 წუთი · ლაივ დემო 1 · Claude / Gemini / ChatGPT · 10 ივენთ-მენეჯერი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">დამკვეთის ბრიფის მყისიერი სინთეზი</h2>
+          <p class="text-gray-500 text-sm mt-1">ქაოსური სატელეფონო ჩანაწერებიდან და მიმოწერიდან &rarr; სტრუქტურირებულ ტექნიკურ დავალებამდე (TOR) 3 წუთში (ხელსაწყო: <strong>Claude / Gemini / ChatGPT</strong>).</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც Vanilla Events-ის უფროსმა პროექტ-მენეჯერმა.
+დაამუშავე ქვემოთ მოცემული ქაოსური სატელეფონო ჩანაწერები და შექმენი სტრუქტურირებული სააგენტოს ბრიფი:
+1. ღონისძიების მთავარი მიზანი და ფორმატი;
+2. სტუმართა რაოდენობა, სეგმენტი და VIP სტატუსი;
+3. ლოკაციის მოთხოვნები და ტექნიკური შეზღუდვები;
+4. ბიუჯეტის ფარგლები და მკაცრი Deadlines;
+5. კრიტიკული კითხვები დამკვეთთან, რომლებიც ჯერ გაურკვეველია.
+
+[ჩასვით დამკვეთის ჩანაწერები]</pre>
+      </div>
+
+      <div class="tip-box p-3 text-sm text-gray-700 mt-4">
+        <strong>💡 რატომ Claude / Gemini / ChatGPT ამ დემოში:</strong> მოდელი გამოიყენება გრძელი, არასტრუქტურირებული ქართული ჩანაწერების დასაჯგუფებლად. ხარისხი მოწმდება Vanilla Events-ის რეალურ, ანონიმიზებულ მაგალითზე და შედეგს საბოლოოდ ამტკიცებს პროექტ-მენეჯერი.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 5: DEMO 2 CREATIVE IDEATION ═══ -->
+  <section id="seg-demo2" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#d97706;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-base">5</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-amber-600">10 წუთი · ლაივ დემო 2 · Claude / Gemini / ChatGPT · მენეჯერები &amp; დიზაინერები</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">კრეატიული იდეაციის ტექნიკები &amp; მრავალსენსორული კონცეპტინგი</h2>
+          <p class="text-gray-500 text-sm mt-1">ბანალური კლიშეების („Gatsby", „Black Tie") ნაცვლად - უნიკალური თემატიკის, 5 გრძნობის დიზაინისა და Thematic Cascade-ის გენერაცია (ხელსაწყო: <strong>Claude / Gemini / ChatGPT</strong>).</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-2.5 mb-4 text-xs">
+        <div class="bg-amber-50 rounded-lg p-3 border border-amber-200">
+          <strong class="text-brand-darker block mb-1">1. Lateral Synthesis</strong>
+          <span class="text-gray-600">ორი კონტრასტული სამყაროს შერწყმა: ქართული არქიტექტურული მოდერნიზმი × ბიოლუმინესცენტური ბოტანიკა.</span>
+        </div>
+        <div class="bg-amber-50 rounded-lg p-3 border border-amber-200">
+          <strong class="text-brand-darker block mb-1">2. Multi-Sensory (5 გრძნობა)</strong>
+          <span class="text-gray-600">Sight (2700K შუქი), Sound (Soundscape), Scent (ქარვა და ხე), Touch (ნედლი ტრავერტინი), Taste (გასტრონომია).</span>
+        </div>
+        <div class="bg-amber-50 rounded-lg p-3 border border-amber-200">
+          <strong class="text-brand-darker block mb-1">3. Persona Stress-Test</strong>
+          <span class="text-gray-600">იდეის შემოწმება VIP სტუმრის, გამგეობის თავმჯდომარისა და ტექნიკური დირექტორის თვალით.</span>
+        </div>
+        <div class="bg-amber-50 rounded-lg p-3 border border-amber-200">
+          <strong class="text-brand-darker block mb-1">4. Thematic Cascade</strong>
+          <span class="text-gray-600">თემიდან მყისიერად იშლება: სლოგანი, დრეს-კოდის აღწერა, კოქტეილები და The Reveal Moment.</span>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც Vanilla Events-ის წამყვანმა კრეატიულმა დირექტორმა.
+დამკვეთი: საერთაშორისო ბანკი (20 წლის საიუბილეო გალა-საღამო, 350 VIP სტუმარი).
+მოთხოვნა: კატეგორიულად არ გვინდა ბანალური კლიშეები (არავითარი Gatsby ან Oscar Gala).
+
+გამოიყენე Lateral Thinking და შექმენი 3 რადიკალურად განსხვავებული, პრემიუმ კონცეფცია:
+თითოეულ კონცეფციაზე განსაზღვრე:
+1. კონცეფციის სახელი და ფილოსოფიური მეტაფორა;
+2. მრავალსენსორული დიზაინ-პასპორტი:
+   - Sight: განათების ტემპერატურა (2700K) და ვიზუალური პალიტრა;
+   - Sound: აკუსტიკური დრამატურგია და მუსიკალური ჟანრები;
+   - Scent: დარბაზის ბრენდირებული სურნელი (Scent Branding);
+   - Touch: დეკორის მასალები და ტექსტურები (მაგ. Travertine, Brushed Brass, Velvet);
+   - Taste: საფირმო თემატური კოქტეილები და გასტრონომიული აქცენტი;
+3. The Reveal Moment - საღამოს საკულმინაციო, დაუვიწყარი ეფექტი;
+4. დრეს-კოდის პოეტური აღწერა მოსაწვევისთვის;
+5. Persona Stress-Test: რატომ მოეწონება ეს კონცეფცია სკეპტიკოს დირექტორთა საბჭოს?</pre>
+      </div>
+
+      <div class="tip-box p-3 text-sm text-gray-700 mt-4">
+        <strong>💡 რატომ არის ეს Pitch-ის მომგები:</strong> დამკვეთი იღებს არა უბრალოდ „დეკორაციის იდეას", არამედ ჰოლისტურ, 5-სენსორულ გამოცდილებას, რაც სააგენტოს მომენტალურად გამოარჩევს კონკურენტებისგან პირველივე შეხვედრაზე.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 6: DEMO 3 RUN OF SHOW & CUE-SHEETS ═══ -->
+  <section id="seg-demo3" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#059669;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-base">6</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">9 წუთი · ლაივ დემო 3 · Claude / Gemini / ChatGPT · 10 ივენთ-მენეჯერი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Run of Show &amp; ტექნიკური Cue-Sheets - წუთობრივი სცენარის არქიტექტურა</h2>
+          <p class="text-gray-500 text-sm mt-1">გალა-საღამოს წუთობრივი გრაფიკი სრული ლოგისტიკური და რეჟისორული დეტალიზაციით, და იმავე სცენარიდან ტექნიკური Cue-Sheets-ის (განათება, აუდიო, LED) მყისიერი ექსპორტი (ხელსაწყო: <strong>Claude / Gemini / ChatGPT</strong>).</p>
+        </div>
+      </div>
+
+      <div class="prompt-box mb-4">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>შექმენი სრული Run-of-Show წუთობრივი ცხრილი Vanilla Events-ის გალა-საღამოსთვის (19:00 - 23:30):
+სვეტები:
+1. დრო (ზუსტი წუთები)
+2. ეტაპი / აქტივობა
+3. მთავარ სცენაზე რა ხდება (სპიკერი, არტისტი, ვიდეო)
+4. Cue: განათება (Ambient, Spotlight, Blackout, Flash)
+5. Cue: აუდიო / მიკროფონი (სპიკერი, მუსიკა, ჯინგლი)
+6. Cue: LED ეკრანი (ვიდეო, ლოგო, პრეზენტაცია)
+7. დარბაზის მენეჯერის შენიშვნა (კეტერინგი, VIP დახვედრა)
+
+გაითვალისწინე 5-წუთიანი დროითი ბუფერები და ექსპორტი გააკეთე სუფთა ცხრილის სახით.
+შემდეგ, ამავე ცხრილიდან მომენტალურად დააგენერირე 3 დამოუკიდებელი ტექნიკური Cue-Sheet:
+ა) განათების რეჟისორისთვის (Cue დროები და შუქის ტიპები);
+ბ) ხმის ინჟინრისთვის (მიკროფონები, ჯინგლები და მუსიკალური ჩანართები);
+გ) LED ეკრანის ოპერატორისთვის (სლაიდები და ვიდეო-ფაილები).</pre>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-brand-darker text-sm mb-1">💡 განათების რეჟისორი</p>
+          <p class="text-xs text-gray-600">ზუსტი სიგნალები: როდის ჩაქრეს დარბაზი, როდის აინთოს Spotlight VIP სპიკერზე, როდის ჩაირთოს Ambient.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-brand-darker text-sm mb-1">🎙️ ხმის ინჟინერი</p>
+          <p class="text-xs text-gray-600">მიკროფონების ნუმერაცია (Mic 1, Mic 2), მუსიკალური ჩანართები, ფანფარები დაჯილდოებაზე.</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="font-bold text-brand-darker text-sm mb-1">🖥️ LED ეკრანის ოპერატორი</p>
+          <p class="text-xs text-gray-600">ვიდეო-ფაილების ზუსტი დასახელებები, სპიკერის სლაიდების გადართვა და ბრენდირებული ლუპები.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 7: DEMO 4 CRISIS ═══ -->
+  <section id="seg-demo4" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#059669;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-base">7</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">8 წუთი · ლაივ დემო 4 · Claude / Gemini / ChatGPT · 10 ივენთ-მენეჯერი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Plan B &amp; Plan C ფორსმაჟორი - კრიზის-მენეჯმენტი</h2>
+          <p class="text-gray-500 text-sm mt-1">გაუთვალისწინებელი რისკების სწრაფი სიმულაცია და სამოქმედო პროტოკოლების პირველი ვერსია დამკვეთთან კომუნიკაციის ტექსტებით (ხელსაწყო: <strong>Claude / Gemini / ChatGPT</strong>; საბოლოო გადაწყვეტილებას იღებს პასუხისმგებელი მენეჯერი).</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც Vanilla Events-ის უსაფრთხოების ოფიცერმა.
+ჩვენ ვგეგმავთ 400-კაციან პრესტიჟულ ღონისძიებას ღია სივრცეში.
+შეადგინე Plan B და Plan C შემდეგი სცენარებისთვის:
+1. ამინდის გაუარესება (ქარიშხალი და წვიმა დაწყებამდე 2 საათით ადრე);
+2. გენერატორის გათიშვა და ხმის აპარატურის გაჩერება;
+3. VIP სპიკერის ფრენის 3 საათით დაგვიანება.
+თითოეულზე განსაზღვრე: პასუხისმგებელი პირი, პირველი 10 წუთის პროტოკოლი და დამკვეთთან კომუნიკაციის ტექსტი.</pre>
+      </div>
+
+      <div class="warning-box p-3 text-sm text-red-800 mt-4">
+        <strong>⚠️ პრაქტიკული რჩევა:</strong> Plan B/C შაბლონები წინასწარ მოამზადეთ ტიპურ სცენარებზე (ამინდი, ტექნიკა, ტრანსპორტი) და შეინახეთ „Vanilla Event Brain"-ში - ღონისძიების დღეს საჭირო იქნება მხოლოდ სპეციფიკის ჩასწორება, არა თავიდან წერა.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 8: DEMO 5 SEATING & DIETARY ═══ -->
+  <section id="seg-demo5" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#059669;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-base">8</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">8 წუთი · ლაივ დემო 5 · Claude / Gemini / ChatGPT · 10 ივენთ-მენეჯერი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Seating Dynamics &amp; კეტერინგის დიეტური მატრიცა</h2>
+          <p class="text-gray-500 text-sm mt-1">სტუმართა რთული პოლიტიკური და სოციალური განაწილება, კონფლიქტების პრევენცია და კეტერინგის ალერგიების/მენიუების უშეცდომო ცხრილი (Constraint-based Seating Optimization).</p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3 mb-4 text-xs">
+        <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200">
+          <strong class="text-emerald-900 block mb-1">🏛️ VIP &amp; დიპლომატიური პროტოკოლი</strong>
+          <span class="text-emerald-800">საპატიო სტუმრების, გამგეობის წევრებისა და პარტნიორების იერარქიული და ლოგიკური განთავსება სცენასთან.</span>
+        </div>
+        <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200">
+          <strong class="text-emerald-900 block mb-1">⚡ Conflict &amp; Negative Constraints</strong>
+          <span class="text-emerald-800">წესი: „სტუმარი A და სტუმარი B არ უნდა ისხდნენ ერთ მაგიდასთან ან მეზობელ მაგიდებზე" - AI წამებში იცავს ყველა წესს.</span>
+        </div>
+        <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200">
+          <strong class="text-emerald-900 block mb-1">🥗 კეტერინგის დიეტური მატრიცა</strong>
+          <span class="text-emerald-800">ალერგიები (თხილი, გლუტენი) და სპეციალური მენიუ (ვეგანური, ჰალალი) ებმება კონკრეტულ სტუმარსა და მაგიდას.</span>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც Vanilla Events-ის VIP პროტოკოლისა და Seating-ის მენეჯერმა.
+გვაქვს 10 მრგვალი მაგიდა (თითო 10-ადგილიანი, სულ 100 VIP სტუმარი).
+დაამუშავე სტუმართა სია და შეადგინე მაგიდების იდეალური განაწილება შემდეგი მკაცრი წესების (Constraints) დაცვით:
+
+[წესები]:
+1. მაგიდა #1 (Presidential): ბანკის გენერალური დირექტორი, მთავრობის წარმომადგენლები და მთავარი უცხოელი პარტნიორები;
+2. კონფლიქტის შეზღუდვა: კომპანია X-ის დირექტორი და კომპანია Y-ის დირექტორი არ უნდა ისხდნენ ერთ მაგიდასთან;
+3. ნეტვორქინგის წესი: საერთაშორისო ინვესტორები გაანაწილე ტექნოლოგიური სტარტაპების დამფუძნებლებთან (მაგიდები #2 და #3);
+4. კეტერინგის დიეტური კონტროლი: გამოყავი თითოეული მაგიდის დიეტური შეზღუდვები (ვეგანური, თხილის ალერგია, გლუტენ-ფრი).
+
+გამოიტანე შედეგი:
+ა) მაგიდების მიხედვით სტუმართა სია მათი სტატუსით;
+ბ) შემოწმების ანგარიში: დაცულია თუ არა ყველა უარყოფითი წესი;
+გ) კეტერინგის სერვის-ცხრილი მზარეულებისთვის (მაგიდის ნომერი | კერძების ტიპები | ალერგიის გაფრთხილება).</pre>
+      </div>
+
+      <div class="tip-box p-3 text-sm text-gray-700 mt-4">
+        <strong>💡 რატომ არის ეს გადამწყვეტი:</strong> ქორწილებსა და გალებზე მაგიდების ხელით გადანაწილება მენეჯერს 4-6 საათს ართმევს და ბოლო წუთის ცვლილებებზე ხშირად იკარგება ალერგიის ჩანაწერები. AI ალგორითმით ეს პროცესი 3 წუთში სრულდება ნულოვანი შეცდომით.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ BREAK ═══ -->
+  <section id="seg-break" class="scroll-mt-20 mb-12">
+    <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-8 text-center">
+      <span class="text-4xl">☕</span>
+      <h2 class="text-2xl font-bold text-brand-darker mt-2 serif-font">კომფორტის შესვენება - 10 წუთი</h2>
+      <p class="text-gray-600 text-sm max-w-md mx-auto mt-2">ყავის შესვენება და კითხვების გაცვლა. შემდეგი ბლოკი: <strong>დიზაინერების გუნდის ვიზუალური არსენალი, Live Gala აქტივაციები და Notion Event Hub</strong>.</p>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 10: DEMO 6 CONCEPT VISUALIZATION ═══ -->
+  <section id="seg-demo6" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#7c3aed;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-base">10</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-purple-600">9 წუთი · ლაივ დემო 6 · Google Flow & Imagen · დიზაინერების გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">ღონისძიების კონცეფციური სივრცითი ვიზუალიზაცია (Google Flow)</h2>
+          <p class="text-gray-500 text-sm mt-1">დარბაზის, სცენოგრაფიის, ფოტოზონებისა და დეკორის სწრაფი ვიზუალური კონცეფცია. ეს არის იდეის განხილვის მასალა და არა ზუსტი 3D, საინჟინრო ან საწარმოო მოდელი.</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>Ultra-photorealistic architectural photograph of a luxury gala event ballroom designed by Vanilla Events. Grand neoclassical hall with high ceilings, contemporary luxury scenography. Central runway stage with curved LED screen wall displaying abstract golden fluid waves. Tables decorated with travertine stone pedestals, brushed brass candelabras, deep velvet dark chocolate tablecloths, and cascading dark calla lilies. Cinematic atmospheric lighting, warm 2700K amber spotlights, soft atmospheric haze, Hasselblad H6D-100c, 24mm f/2.8 lens, crisp 8K resolution --ar 16:9</pre>
+      </div>
+
+      <div class="note-box p-3 text-sm text-gray-700 mt-4">
+        <strong>📌 Vanilla-ს ბრენდის მასალები:</strong> Brass, Travertine, Velvet - შეადგინეთ სააგენტოს „მასალების ლექსიკონი" (Style Glossary), რომ ყოველ პრომპტში ერთი და იგივე ვიზუალური ხელწერა განმეორდეს.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 11: DEMO 7 VEO 3.1 ═══ -->
+  <section id="seg-demo7" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#7c3aed;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-base">11</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-purple-600">6 წუთი · ლაივ დემო 7 · Google Veo 3.1 · დიზაინერების გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">კინემატოგრაფიული ვიდეო-გასეირნება (Google Veo 3.1)</h2>
+          <p class="text-gray-500 text-sm mt-1">სტატიკური რენდერის გარდაქმნა დინამიურ ვიდეო-გასეირნებად რეალური განათებისა და სივრცის ეფექტით (Google Veo 3.1) - დამკვეთის აღსაფრთოვანებლად.</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>Cinematic smooth camera glide through a magnificent luxury ballroom event. The camera moves forward at eye level, slowly panning across lavishly decorated round gala tables with glowing brass candles and exotic dark florals, approaching a dramatic illuminated main stage with glowing ambient LED backdrop. Realistic depth of field, gentle golden bokeh, authentic motion blur, 4K HDR interior cinematography.</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 12: DEMO 8 LIVE AI EDITORIAL GALA PORTRAITS ═══ -->
+  <section id="seg-demo8" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#7c3aed;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-base">12</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-purple-600">8 წუთი · ლაივ დემო 8 · Live AI Style Transfer & LoRA · ახალი Upsell სერვისი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Live AI Editorial Gala Portraits - ინტერაქტიული საჟურნალო პორტრეტები</h2>
+          <p class="text-gray-500 text-sm mt-1">დამკვეთისთვის მაღალი მარჟის ექსკლუზიური სერვისი (Upsell): ივენთის ფოტოგრაფის მიერ გადაღებული სტუმრის პორტრეტი 45 წამში გარდაიქმნება Vanity Fair Gala-ს სტილის მაღალმხატვრულ საჟურნალო კადრად და QR-ით ეგზავნება სტუმარს.</p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3 text-xs mb-4">
+        <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+          <strong class="text-purple-900 block mb-1">📸 1. სწრაფი კადრი</strong>
+          <span class="text-purple-800">ფოტოგრაფი იღებს სტუმარს ნეიტრალურ ფონზე (10 წამი).</span>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+          <strong class="text-purple-900 block mb-1">✨ 2. AI Style Transfer</strong>
+          <span class="text-purple-800">წინასწარ მომზადებული თემატური LoRA/Style ადებს ივენთის ოფიციალურ ვიზუალურ კოდს (30 წამი).</span>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+          <strong class="text-purple-900 block mb-1">📲 3. QR & Social Viral</strong>
+          <span class="text-purple-800">სტუმარი მომენტალურად იწერს Editorial ფოტოს Vanilla Events-ის ბრენდირებული ჩარჩოთი.</span>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>Editorial studio portrait of an elegant gala attendee, Vanity Fair style, luxury gala event lighting. Atmospheric dark emerald and gold gradient background, soft diffused key light, cinematic rim light, crisp medium-format Hasselblad 100MP camera aesthetic, high-end high-fashion grading, maintaining authentic facial likeness and expression --ar 4:5</pre>
+      </div>
+
+      <div class="tip-box p-3 text-sm text-gray-700 mt-4">
+        <strong>💡 ბიზნეს-ღირებულება:</strong> ეს არ არის მხოლოდ ტექნიკური დემო - ეს არის მზა, პრემიუმ დამატებითი სერვისი (Upsell), რომელიც სააგენტოს აძლევს კონკურენტულ უპირატესობას და ქმნის სტუმრებში ვირუსულ სოციალურ გაზიარებებს.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 13: DEMO 9 PRINT WORKFLOW & PREFLIGHT ═══ -->
+  <section id="seg-demo9" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#7c3aed;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-base">13</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-purple-600">9 წუთი · ლაივ დემო 9 · FLUX.2 Pro, Recraft &amp; Magnific · დიზაინერების გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">ბეჭდური მასალები - კონცეფციიდან Print-Ready Preflight-მდე</h2>
+          <p class="text-gray-500 text-sm mt-1">ერთიანი workflow: მოსაწვევის, მენიუს, მაგიდის ბარათის ან ბანერის კონცეფცია → ვექტორიზაცია/აპსკეილინგი → რეალური ზომის, ეფექტური DPI-ის, bleed-ის, ფერთა პროფილის, ტექსტისა და ლოგოს შემოწმება. საბოლოო საწარმოო ფაილს დიზაინერი ამტკიცებს.</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>Luxury event stationery concept designed for Vanilla Events. Clean flatlay mockup on warm ivory handmade paper with deckled edges. High-end gold foil details, elegant minimal aesthetics, macro studio lighting. Include a formal dinner menu, guest place card and gold-trimmed VIP invitation envelope with wax seal. Use clean placeholder areas for all final text and logos; no invented brand copy. High-resolution concept mockup for designer review - not a print-ready production file.</pre>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3 text-xs mt-4">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <span class="font-bold text-brand-gold block mb-1">1. Magnific AI 8K</span>
+          <span class="text-gray-600">ტექსტურების, ქსოვილებისა და ტიპოგრაფიის ხელახალი დახატვა პიქსელაციის გარეშე.</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <span class="font-bold text-brand-gold block mb-1">2. Recraft Vectorize</span>
+          <span class="text-gray-600">ლოგოებისა და იკონოგრაფიის გარდაქმნა SVG ვექტორულ ფორმატში.</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <span class="font-bold text-brand-gold block mb-1">3. 300 DPI CMYK</span>
+          <span class="text-gray-600">ფერების პროფილირება დიდი ფორმატის Press-wall-ისა და Roll-up ბანერებისთვის.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 14: DEMO 10 GAMMA ═══ -->
+  <section id="seg-demo10" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#7c3aed;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-base">14</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-purple-600">4 წუთი · ლაივ დემო 10 · Gamma App · დიზაინერები & მენეჯერები</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Pitch Decks 15 წუთში (Gamma App)</h2>
+          <p class="text-gray-500 text-sm mt-1">დამკვეთისთვის ინტერაქტიული, მობილურზე ადაპტირებული ვებ-შეთავაზების აწყობა - კონცეფცია, ვიზუალები, ვიდეო-ტური, ბეჭდური ნიმუშები, განრიგი.</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>შექმენი 10-ბარათიანი პრემიუმ საპრეზენტაციო ვებ-დოკუმენტი Gamma-ში Vanilla Events-ის სახელით.
+დამკვეთი: საერთაშორისო ბანკის დირექტორატი (საზეიმო წლიური დაჯილდოება).
+სტრუქტურა:
+1. Title Card: "Vanilla Events Presents: The Golden Innovation Gala 2026"
+2. ივენთის კონცეფცია & ფილოსოფია
+3. დარბაზის არქიტექტურა & განათების სქემა
+4. დეკორი: მასალები და ფერთა პალიტრა (Travertine, Brass, Dark Floral)
+5. ბეჭდური მასალების კომპლექტი (მოსაწვევები, მენიუ, ბეიჯები)
+6. Run of Show: საღამოს წუთობრივი განრიგი
+7. ტექნიკური რეჟისურა: LED ეკრანი და ხმა
+8. სტუმართა რეგისტრაცია და უსაფრთხოება
+9. სააგენტოს გუნდი და კონტაქტები
+10. შემდეგი ნაბიჯები, გადაწყვეტილებები და დამკვეთის დასამტკიცებელი საკითხები</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 15: DEMO 11 MAKE.COM ═══ -->
+  <section id="seg-demo11" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#2563eb;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-base">15</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-blue-600">10 წუთი · ლაივ დემო 11 · Make.com & Webhooks · ივენთ-მენეჯერები & ოპერაციები</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Make.com No-Code ავტომატიზაცია</h2>
+          <p class="text-gray-500 text-sm mt-1">RSVP, QR, შეხსენებებისა და ვენდორების Triage-ის ავტომატიზაციის შესაძლებლობის ჩვენება - სინთეზური მონაცემებით, მონიტორინგითა და ადამიანის დამტკიცების წერტილებით.</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-2xl p-5 space-y-3 mb-4">
+        <div class="font-mono text-xs sm:text-sm text-brand-gold font-bold break-words">
+          [სტუმარი ავსებს ფორმას] &rarr; [Make.com Webhook] &rarr; [Notion CRM + QR ბილეთი] &rarr; [WhatsApp / Email შეხსენებები]
+        </div>
+        <div class="grid sm:grid-cols-3 gap-3 text-xs text-gray-600 pt-2">
+          <div><strong class="text-brand-darker">1. RSVP რეგისტრაცია:</strong> ფორმის შევსებიდან 2 წამში სტუმარი იღებს პერსონალიზებულ მოწვევას.</div>
+          <div><strong class="text-brand-darker">2. QR Check-in:</strong> ლოკაციაზე სწრაფი სკანირება მობილურით, ნულოვანი რიგები.</div>
+          <div><strong class="text-brand-darker">3. Auto-Reminders:</strong> ავტომატური შეხსენებები 3 დღით, 24 სთ-ით და 2 სთ-ით ადრე.</div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3 text-xs">
+        <div class="bg-blue-50 rounded-lg p-4">
+          <p class="font-bold text-blue-700 mb-1">⏰ დროზე დაფუძნებული შეხსენებების ჯაჭვი</p>
+          <p class="text-gray-600">3 დღით ადრე - დრეს-კოდი და ლოკაცია · 24 სთ ადრე - პარკინგი/ტრანსფერი · 2 სთ ადრე - QR ბილეთი.</p>
+        </div>
+        <div class="bg-blue-50 rounded-lg p-4">
+          <p class="font-bold text-blue-700 mb-1">🤝 მომწოდებლების (Vendors) Triage</p>
+          <p class="text-gray-600">კეტერინგისა და ტექნიკური პარტნიორების წინადადებების ავტომატური შედარების ცხრილი.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 16: DEMO 12 NOTION KNOWLEDGE BASE ═══ -->
+  <section id="seg-demo12" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#2563eb;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-base">16</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-blue-600">11 წუთი · ლაივ დემო 12 · Notion Databases & AI · სრული გუნდი - აუცილებელი საოპერაციო ბაზა</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">Vanilla Event Hub - ცენტრალიზებული საოპერაციო ტვინი (Notion)</h2>
+          <p class="text-gray-500 text-sm mt-1">სააგენტოს ოპერაციული ტრანსფორმაცია: მიმოფანტული ჩატებისა და ექსელების ჩანაცვლება ერთიანი, ინტელექტუალური საკონტროლო სისტემით.</p>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 border border-amber-300 rounded-xl p-4 mb-4 text-xs text-amber-950">
+        <strong class="text-amber-900 block font-bold mb-1">⚠️ Vanilla Events-ის ამჟამინდელი რეალობა და აუცილებლობა:</strong>
+        ამჟამად Vanilla Events-ში არ არსებობს ერთიანი ცენტრალიზებული სისტემა. კომუნიკაცია, ამოცანები, ფაილები და ვენდორების კონტრაქტები გაფანტულია WhatsApp-ის ჩატებში, ელფოსტაში, Google Drive-სა და მენეჯერების პირად ჩანაწერებში. ეს იწვევს ინფორმაციის გაჟონვას, დუბლირებას და კრიტიკული დეტალების დაკარგვას. <strong>Notion-ის დანერგვა არის #1 აუცილებლობა</strong>, რათა სააგენტომ შეძლოს მასშტაბირება და ნულოვანი საოპერაციო შეცდომით მუშაობა.
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-blue-50 rounded-lg p-4">
+          <p class="text-xs font-bold text-blue-700 uppercase mb-2">დღეს ნახავთ (Live Dashboard)</p>
+          <ul class="text-sm text-gray-700 space-y-1.5">
+            <li>• ერთი ივენთის Dashboard-ს სტატუსით, ვადებითა და პასუხისმგებლებით;</li>
+            <li>• დაკავშირებულ ბაზებს (Relational DBs): Brief, Vendors, Tasks, Seating Matrix & Run of Show;</li>
+            <li>• დამტკიცებული შაბლონებისა და გადაწყვეტილებების ცენტრალურ ისტორიას;</li>
+            <li>• Make.com-იდან ავტომატურად შემოსულ RSVP მონაცემებსა და ალერგიების აღრიცხვას.</li>
+          </ul>
+        </div>
+        <div class="bg-brand-goldSoft rounded-lg p-4">
+          <p class="text-xs font-bold text-brand-gold uppercase mb-2">სრულ ტრენინგზე დავნერგავთ</p>
+          <ul class="text-sm text-gray-700 space-y-1.5">
+            <li>• Vanilla Events-ის სრულ მზა Master Workspace შაბლონს;</li>
+            <li>• როლებზე დაფუძნებულ ხედებს: მენეჯერებისთვის, დიზაინერებისთვის და დამკვეთისთვის (Read-only);</li>
+            <li>• Notion AI Q&A ასისტენტს, რომელიც პასუხობს ნებისმიერ კითხვას ივენთის ისტორიიდან;</li>
+            <li>• საოპერაციო გამონაკლისებისა და რისკების ავტომატურ მონიტორინგს.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="warning-box p-3 text-sm text-red-900 mb-4">
+        <strong>🔐 უსაფრთხოების საზღვარი:</strong> დემო გამოიყენებს მხოლოდ სინთეზურ მონაცემებს. VIP სტუმრების პირადი მონაცემები, დაცვის მარშრუტები, საბანკო დეტალები და კონფიდენციალური კონტრაქტები Notion-ში არ განთავსდება დამტკიცებული პოლიტიკის, წვდომებისა და retention წესის გარეშე.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 17: SECURITY ═══ -->
+  <section id="seg-security" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6" style="border-left-color:#dc2626;">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-base">17</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-red-600">7 წუთი · კრიტიკული · სრული გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">უსაფრთხოება, NDA & კონფიდენციალურობა</h2>
+          <p class="text-gray-500 text-sm mt-1">Vanilla Events მუშაობს VIP დამკვეთებთან და ექსკლუზიურ ლოკაციებთან - AI გამოყენების წესები აქ არ არის ფორმალობა, არამედ ბიზნეს-რისკის მართვა.</p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4 text-xs">
+        <div class="warning-box p-5">
+          <h4 class="font-bold text-red-700 uppercase mb-2">🚫 რა არ უნდა გაიგზავნოს AI-ში:</h4>
+          <ul class="text-red-900 space-y-1.5">
+            <li>❌ VIP სტუმრების პირადი ნომრები და ტელეფონები;</li>
+            <li>❌ საბანკო რეკვიზიტები და კონფიდენციალური კონტრაქტები;</li>
+            <li>❌ დაუანონსებელი ექსკლუზიური ლოკაციები;</li>
+            <li>❌ დაცვისა და უსაფრთხოების ზუსტი მარშრუტები.</li>
+          </ul>
+        </div>
+        <div class="tip-box p-5">
+          <h4 class="font-bold text-emerald-700 uppercase mb-2">✔️ მუშაობის მინიმალური სტანდარტი:</h4>
+          <ul class="text-emerald-900 space-y-1.5">
+            <li>✅ ანონიმიზაცია: „კომპანია X", „სტუმარი VIP-1";</li>
+            <li>✅ მხოლოდ კომპანიის მიერ დამტკიცებული Business / Enterprise სამუშაო გარემო;</li>
+            <li>✅ წვდომების, გაზიარების და შენახვის ვადის წინასწარი განსაზღვრა;</li>
+            <li>✅ ადამიანის საბოლოო შემოწმება და პასუხისმგებელი owner.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note-box p-3 text-sm text-gray-700 mt-4">
+        <strong>⚖️ სამართლებრივი ასპექტი:</strong> GDPR-ისა და საქართველოს კანონის მოთხოვნები მოიცავს კანონიერ საფუძველს, მიზნის შეზღუდვას, მონაცემთა მინიმიზაციას, წვდომის კონტროლს, შენახვის ვადასა და უსაფრთხოებას. დამტკიცებული პლატფორმა აუცილებელი კონტროლია, მაგრამ თავისთავად შესაბამისობას არ უზრუნველყოფს - სრული პოლიტიკა მომავალი ტრენინგის ცალკე მოდული იქნება.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 18: ROADMAP ═══ -->
+  <section id="seg-roadmap" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-brand-darker text-white flex items-center justify-center font-bold text-base">18</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-gold">9 წუთი · პროგრამის შერჩევა · სრული გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">მომავალი ტრენინგის თემების შერჩევა</h2>
+          <p class="text-gray-500 text-sm mt-1">გუნდი აფასებს ნანახ მიმართულებებს და ადგენს Vanilla Events-ის მორგებული ძირითადი პროგრამის პრიორიტეტებს.</p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs mb-4">
+        <div class="bg-gray-50 rounded-lg p-3">
+          <strong class="text-brand-darker block mb-1">მოდული 1 (ფიზიკური)</strong>
+          <span class="text-gray-600">10 მენეჯერის AI საოპერაციო სტეკი & Run of Show</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <strong class="text-brand-darker block mb-1">მოდული 2 (ონლაინ)</strong>
+          <span class="text-gray-600">დიზაინერების კონცეფციური ვიზუალიზაციისა და production-ready მომზადების ლაბი</span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <strong class="text-brand-darker block mb-1">მოდული 3 (ონლაინ)</strong>
+          <span class="text-gray-600">Make.com No-Code ავტომატიზაცია & Gamma</span>
+        </div>
+        <div class="bg-brand-goldSoft rounded-lg p-3 border border-brand-gold/40">
+          <strong class="text-brand-gold block mb-1">მოდული 4 (ჰაკათონი)</strong>
+          <span class="text-gray-600">სრული გუნდის ჰაკათონი + Smart Academy სერტიფიცირება</span>
+        </div>
+      </div>
+
+      <div class="bg-brand-darker text-white rounded-lg p-4 text-sm">
+        <p class="font-semibold text-brand-goldLight mb-2">📅 სესიის საბოლოო პროდუქტი:</p>
+        <p class="text-xs text-gray-300 leading-relaxed">შერჩეული 4–6 პრიორიტეტული Workflow, სამიზნე გუნდები, უსაფრთხოების საზღვრები, ერთი საპილოტე პროცესი და მათზე დაფუძნებული მორგებული სასწავლო პროგრამა. 14-საათიანი ჰიბრიდული მოდელი არის საწყისი ვარიანტი და დაზუსტდება არჩევანის შემდეგ - დეტალური ჩარჩო ხელმისაწვდომია <a href="index.html#syllabus" class="text-brand-goldLight underline hover:text-white">კორპორატიულ შეთავაზებაში</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SEGMENT 19: Q&A ═══ -->
+  <section id="seg-qna" class="scroll-mt-20 mb-12">
+    <div class="topic-card bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="shrink-0 w-10 h-10 rounded-full bg-brand-darker text-white flex items-center justify-center font-bold text-base">19</div>
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-brand-gold">6 წუთი · კითხვა-პასუხი · სრული გუნდი</span>
+          <h2 class="text-xl font-bold text-brand-darker serif-font">კითხვა-პასუხი & შეჯამება</h2>
+          <p class="text-gray-500 text-sm mt-1">ცოცხალი დისკუსია Vanilla Events-ის მიმდინარე პროექტების რეალურ გამოწვევებზე.</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-5">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-xs font-bold text-gray-500 uppercase mb-2">🔗 ბმულები (გახსენით ახლავე)</p>
+          <ul class="text-sm space-y-2">
+            <li><a href="https://claude.ai" target="_blank" class="text-brand-gold hover:underline">claude.ai</a> - Claude / Projects &amp; Artifacts</li>
+            <li><a href="https://chatgpt.com" target="_blank" class="text-brand-gold hover:underline">chatgpt.com</a> - ChatGPT / Custom GPT</li>
+            <li><a href="https://gemini.google.com" target="_blank" class="text-brand-gold hover:underline">gemini.google.com</a> - Gemini / Google Flow</li>
+            <li><a href="https://gamma.app" target="_blank" class="text-brand-gold hover:underline">gamma.app</a> - Pitch Decks</li>
+            <li><a href="https://make.com" target="_blank" class="text-brand-gold hover:underline">make.com</a> - RSVP ავტომატიზაცია</li>
+            <li><a href="https://www.notion.so" target="_blank" class="text-brand-gold hover:underline">notion.so</a> - Vanilla Event Hub</li>
+          </ul>
+        </div>
+        <div class="bg-brand-goldSoft rounded-lg p-4">
+          <p class="text-xs font-bold text-brand-gold uppercase mb-2">📌 დაკავშირებული Vanilla მასალები</p>
+          <ul class="text-sm space-y-2 text-gray-700">
+            <li><a href="index.html" class="text-brand-gold hover:underline">კორპორატიული შეთავაზება</a> - სრული შეთავაზება და სილაბუსი</li>
+            <li><a href="prompt-library.html" class="text-brand-gold hover:underline">პრომპტების ბიბლიოთეკა</a> - ყველა დემოს პრომპტი ერთად</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-brand-darker text-white rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">❓</span>
+          <h3 class="text-lg font-bold serif-font">მოსალოდნელი კითხვები</h3>
+        </div>
+        <div class="grid md:grid-cols-2 gap-2 text-xs text-gray-300">
+          <div>💭 „ჩამოგვერთმევა AI-ს გამო დიზაინის ავტორობა?"</div>
+          <div>💭 „როგორ გადავამოწმოთ კონცეფციური ვიზუალი რეალურ დარბაზთან?"</div>
+          <div>💭 „რა ღირს ეს ხელსაწყოები კომპანიისთვის?"</div>
+          <div>💭 „როგორ ვიცავთ VIP დამკვეთის კონფიდენციალურობას?"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-brand-border/40 pt-8 pb-12 text-center text-sm text-gray-400">
+    <div class="flex items-center justify-center gap-3 mb-3">
+      <img src="https://vanillaevents.ge/wp-content/uploads/2024/10/logo.png" alt="Vanilla Events" class="h-5 w-auto object-contain opacity-80" />
+      <span class="text-gray-300">×</span>
+      <span class="font-semibold text-brand-darker">Smart Academy</span>
+    </div>
+    <p class="mb-1">ტრენერი: <strong>გიორგი ბასილაია</strong> - 25+ წლიანი გამოცდილება ტექნოლოგიებში</p>
+    <p class="text-gray-300">გვერდი შექმნილია სესიის დეტალურ სახელმძღვანელოდ გამოსაყენებლად · © 2026 Smart Academy</p>
+  </footer>
+
+</div>
+</main>
+
+<!-- Back to top -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-50 bg-brand-darker hover:bg-brand-dark text-white w-11 h-11 rounded-full shadow-lg flex items-center justify-center transition-colors border border-brand-border" title="დასაწყისი">
+  <svg class="w-5 h-5 text-brand-goldLight" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+<!-- Font size controls -->
+<div id="fontControls">
+  <button onclick="changeFontSize(1)" title="შრიფტი +" style="font-size:15px">A+</button>
+  <button onclick="changeFontSize(-1)" title="შრიფტი -" style="font-size:11px">A-</button>
+</div>
+
+<script>
+  // Sidebar toggle
+  let sidebarOpen = false;
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    if (sidebarOpen) {
+      sidebar.classList.remove('-translate-x-full');
+      main.style.marginLeft = window.innerWidth >= 768 ? '18rem' : '0';
+      overlay.classList.remove('hidden');
+      menuIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+    } else {
+      sidebar.classList.add('-translate-x-full');
+      main.style.marginLeft = '0';
+      overlay.classList.add('hidden');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    }
+  }
+
+  // Immediate active state on click
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      if (window.innerWidth < 768) toggleSidebar();
+    });
+  });
+
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link[data-topic]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[data-topic="${entry.target.id}"]`);
+        if (active) {
+          active.classList.add('active');
+          active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // Back to top
+  window.addEventListener('scroll', () => {
+    document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 400);
+  });
+
+  // Font size
+  let fontSize = 17;
+  function changeFontSize(delta) {
+    fontSize = Math.min(22, Math.max(14, fontSize + delta));
+    document.documentElement.style.fontSize = fontSize + 'px';
+  }
+
+  // Copy prompt
+  function copyPrompt(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ კოპირდა';
+      setTimeout(() => btn.textContent = orig, 1500);
+    });
+  }
+</script>
+</body>
+</html>
