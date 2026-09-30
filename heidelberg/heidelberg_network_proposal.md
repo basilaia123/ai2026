@@ -274,5 +274,5 @@
   * **Smart Academy-ის წამყვანი ლექტორი:** 50-ზე მეტი კორპორატიული ტრენინგის ავტორი და ინსტრუქტორი წამყვანი კომპანიებისთვის (საქართველოს ბანკი, მაკდონალდს საქართველო, კრედო ბანკი, ჯიპა, Caritas Georgia, LOIALTE / EBRD და სხვ.).
 * **პროფესიული ბმულები:**
   * [თბილისის თავისუფალი უნივერსიტეტის პროფილის ბმული](https://freeuni.edu.ge/ge/details/?person=giorgi-basilaia)
-  * [Google Scholar პროფილი (3388+ ციტირება)](https://scholar.google.com/citations?user=basilaia)
+  * [Google Scholar პროფილი (3525+ ციტირება)](https://scholar.google.com/citations?user=basilaia)
   * [პირადი პორტფოლიო და ვებ-გვერდი (basilaia.com)](https://basilaia.com)

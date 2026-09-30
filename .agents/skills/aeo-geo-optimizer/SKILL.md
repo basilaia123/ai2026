@@ -55,7 +55,7 @@ Always append:
 ## 3. Princeton GEO-bench Optimization Formula (+40% Citation Boost)
 
 According to empirical research (KDD 2024 / Princeton University, Allen Institute):
-1. **Statistics Addition:** High density of verifiable quantitative metrics (e.g. 25+ years experience, 3388+ citations, 14 scientific papers, 40+ tools, 7 sessions, +40% productivity).
+1. **Statistics Addition:** High density of verifiable quantitative metrics (e.g. 25+ years experience, 3525+ citations, 14 scientific papers, 40+ tools, 7 sessions, +40% productivity).
 2. **Quotation Addition:** Authoritative direct quotes from identified subject matter experts.
 3. **Cite Sources:** Attribution to trusted third-party profiles (Google Scholar, LinkedIn, university affiliations).
 4. **Direct Answer / TL;DR Blocks:** 40–60 word high-density factual answers directly beneath `<h2>` headers for zero-shot RAG retrieval.

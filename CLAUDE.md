@@ -127,4 +127,4 @@ Newer corporate decks (`Green/`, `megalab/`, `mardi/`, `eurodrug/`) instead use 
 
 ## Instructor
 
-**Giorgi Basilaia** — 25+ years technology experience, university professor, 14 scientific papers (3388 citations), 18 international research projects (NATO, USAID, ERASMUS). Teaches at Smart Academy, Tbilisi.
+**Giorgi Basilaia** — 25+ years technology experience, university professor, 14 scientific papers (3525 citations), 18 international research projects (NATO, USAID, ERASMUS). Teaches at Smart Academy, Tbilisi.

@@ -67,7 +67,7 @@ SITES = [
         "badge_text": "EXECUTIVE AUTHORITY & AI ADVISORY",
         "title": "გიორგი ბასილაია - Giorgi Basilaia",
         "subtitle": "Associate Professor, Free University of Tbilisi  *  IT Director",
-        "meta": "25+ Years Experience  *  3388+ Citations  *  basilaia.com",
+        "meta": "25+ Years Experience  *  3525+ Citations  *  basilaia.com",
         "accent": (99, 102, 241),
         "icon": "🏛️"
     },
