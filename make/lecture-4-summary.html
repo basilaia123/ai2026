@@ -218,18 +218,20 @@
         <a href="lecture-4-quick-ref.html" class="nav-link">📋 სწრაფი ცნობარი</a>
         <a href="lecture-4-exercises.html" class="nav-link">💪 სავარჯიშოები</a>
         <a href="lecture-4-study-guide.html" class="nav-link">📖 სასწავლო გზამკვლევი</a>
+        <a href="executive-agents.html" class="nav-link">🤖 Executive Agents</a>
     </nav>
     <div class="container">
         
-        <h1>ლექცია 4: შეჯამება (n8n, ლოკალური მოდელები და UI აგენტები)</h1>
+        <h1>ლექცია 4: შეჯამება (n8n, ლოკალური მოდელები, Deep Research და Executive Agents)</h1>
         
         <div class="highlight-box">
             <h3>📚 ლექციის მიზნები</h3>
             <ul>
                 <li>გადასვლა Cloud პლატფორმიდან (Make.com) Self-Hosted ეკოსისტემაზე (n8n).</li>
-                <li>მონაცემთა ნულოვანი გაჟონვის (Zero Data Leakage) კონცეფცია და Ollama-ს ინტეგრაცია.</li>
+                <li>მონაცემთა ნულოვანი გაჟონვის (Zero Data Leakage) კონცეფცია და Ollama-ს ინტეგრაცია (Llama 4, DeepSeek-V4.1).</li>
                 <li>Deep Research (ღრმა კვლევის) აგენტური არქიტექტურის გაცნობა.</li>
                 <li>Computer Use API და UI აგენტების დანერგვა კომპიუტერული გარემოს სამართავად.</li>
+                <li>Executive Briefing აგენტის აწყობა (Python, LiteLLM, Telegram, Windows Task Scheduler).</li>
             </ul>
         </div>
 
@@ -239,7 +241,7 @@
             <p>ბანკები, სადაზღვევო და ჯანდაცვის კომპანიები ვერ იყენებენ Make.com-ს, რადგან Cloud სერვერებზე კონფიდენციალური მონაცემების ატვირთვა არღვევს უსაფრთხოების რეგულაციებს (Compliance). გამოსავალი არის <strong>n8n</strong> - პლატფორმა, რომელიც შეგიძლიათ დააინსტალიროთ პირდაპირ თქვენს ლოკალურ სერვერზე (Docker-ის მეშვეობით) და მონაცემები არასოდეს ტოვებს თქვენს ინფრასტრუქტურას.</p>
             
             <h3>Zero Data Leakage ლოკალური მოდელებით (Ollama)</h3>
-            <p>უსაფრთხოება არ სრულდება მხოლოდ n8n-ით. თუ თქვენი სისტემა ტექსტს აანალიზებს OpenAI-ს (ChatGPT) API-ით, მონაცემები მაინც იგზავნება ინტერნეტში. ამიტომ ვიყენებთ <strong>Ollama</strong>-ს, რომელიც ლოკალურად რთავს ძლიერ მოდელებს (DeepSeek, Llama 3). ამ კომბინაციით (n8n + Ollama), ავტომატიზაცია მუშაობს მაშინაც კი, თუ ინტერნეტს გავთიშავთ (Wi-Fi Off ექსპერიმენტი).</p>
+            <p>უსაფრთხოება არ სრულდება მხოლოდ n8n-ით. თუ თქვენი სისტემა ტექსტს აანალიზებს OpenAI-ს (ChatGPT) API-ით, მონაცემები მაინც იგზავნება ინტერნეტში. ამიტომ ვიყენებთ <strong>Ollama</strong>-ს, რომელიც ლოკალურად რთავს ძლიერ მოდელებს (DeepSeek-V4.1, DeepSeek-R1, Llama 4). ამ კომბინაციით (n8n + Ollama), ავტომატიზაცია მუშაობს მაშინაც კი, თუ ინტერნეტს გავთიშავთ (Wi-Fi Off ექსპერიმენტი).</p>
         </div>
 
         <h2>2️⃣ Deep Research (ღრმა კვლევა)</h2>
@@ -261,6 +263,21 @@
             <p>ძალიან ბევრ ძველ Enterprise სისტემას ან ლოკალურ პროგრამას არ აქვს API. აქ შემოდის <strong>Claude Computer Use</strong>. ეს არის AI აგენტი, რომელიც ხედავს და მართავს თქვენს ეკრანს ზუსტად ისე, როგორც ადამიანი.</p>
             <p><strong>პროცესი:</strong> Screenshot ➔ LLM აანალიზებს პიქსელებს ➔ Action (მაუსის გადაადგილება, კლიკი, კლავიატურაზე ბეჭდვა).</p>
             <p><strong>უსაფრთხოება:</strong> ასეთი აგენტების გაშვება უნდა მოხდეს იზოლირებულ გარემოში (Sandboxing - Virtual Machines ან Docker Containers), რათა მათ არ შეცვალონ კრიტიკული სისტემური ფაილები.</p>
+        </div>
+
+        <h2>4️⃣ Executive Briefing აგენტი და OS Scheduling</h2>
+        <div class="section-summary">
+            <h3>დილის ბრიფინგის აგენტი (Morning Briefing Agent)</h3>
+            <p>20 პერსონალურ აგენტს შორის ყველაზე მარტივი და უსაფრთხო დასაწყისია <strong>დილის ბრიფინგის აგენტი</strong>, რადგან ის მხოლოდ კითხულობს (Read-only API) მონაცემებს და არაფერს წერს ან შლის:</p>
+            <ul>
+                <li><strong>მონაცემთა წყაროები:</strong> ამინდი (Open-Meteo), გაცვლითი კურსი (NBG/Frankfurter), ელფოსტა (IMAP Read-only), კალენდარი (CalDAV/ICS), ტექნოლოგიური სიახლეები (RSS Feeds).</li>
+                <li><strong>AI სინთეზი:</strong> <code>LiteLLM</code> ფენის მეშვეობით აგენტი იყენებს <code>gemini/gemini-3.8-flash</code>-ს / <code>gemini-4-argon</code>-ს (ან Fallback-ად <code>groq/llama-3.3-70b-versatile</code> / <code>xai/grok-4.7</code>), ახდენს მონაცემების გასუფთავებას (PII Scrubbing) და აგენერირებს ლაკონურ, პუნქტობრივ ბრიფინგს ქართულ ენაზე.</li>
+                <li><strong>დისტრიბუცია:</strong> შეტყობინება იგზავნება პირად Telegram არხში ან ბოტში Markdown ფორმატირებით.</li>
+                <li><strong>ავტონომიური გაშვება:</strong> სისტემის მუშაობისთვის არ გვჭირდება ხელით ჩართვა — ვიყენებთ <strong>Windows Task Scheduler</strong>-ს (ან Linux <code>cron</code>-ს), რომელიც ყოველ დილით 08:00 საათზე ავტომატურად უშვებს სკრიპტს ფონურ რეჟიმში.</li>
+            </ul>
+            <div class="highlight-box">
+                <p>💡 იხილეთ 20-ვე აღმასრულებელი აგენტის დეტალური კატალოგი და არქიტექტურა: <a href="executive-agents.html" style="color: #667eea; font-weight: bold;">Executive & Personal AI Agents გზამკვლევში</a>.</p>
+            </div>
         </div>
 
     </div>

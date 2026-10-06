@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>ლექცია 6: სამუშაო პროცესების ავტომატიზაცია და AI Agents | AI პრაქტიკაში</title>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #2c3e50;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      padding-bottom: 6rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .slide {
+      background: white;
+      border-radius: 15px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      border-left: 8px solid #667eea;
+      position: relative;
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    h2 {
+      color: #764ba2;
+      font-size: 1.9rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 0.5rem;
+    }
+
+    h3 {
+      color: #667eea;
+      font-size: 1.4rem;
+      margin-top: 1.8rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    h4 {
+      font-size: 1.15rem;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+
+    .slide-number {
+      position: absolute;
+      top: 1rem;
+      right: 2rem;
+      background: #667eea;
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .highlight-box {
+      background: #e3f2fd;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1.5rem 0;
+      border-left: 5px solid #2196f3;
+    }
+
+    .highlight-box h4 {
+      color: #1976d2;
+    }
+
+    .warning-box {
+      background: #fff3e0;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1.5rem 0;
+      border-left: 5px solid #ff9800;
+    }
+
+    .warning-box h4 {
+      color: #f57c00;
+    }
+
+    .key-points {
+      background: #e8f5e9;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1.5rem 0;
+      border-left: 5px solid #4caf50;
+    }
+
+    .key-points h4 {
+      color: #388e3c;
+    }
+
+    .demo-box {
+      background: #f3e5f5;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1.5rem 0;
+      border-left: 5px solid #ab47bc;
+    }
+
+    .demo-box h4 {
+      color: #7b1fa2;
+    }
+
+    .agent-box {
+      background: #e0f2fe;
+      border: 2px solid #0284c7;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .agent-box h4 {
+      color: #0369a1;
+      font-size: 1.25rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 1.5rem 0;
+    }
+
+    .three-column {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .card h4 {
+      color: #667eea;
+      margin-bottom: 0.8rem;
+    }
+
+    ul, ol {
+      padding-left: 1.8rem;
+      margin: 1rem 0;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      background: white;
+    }
+
+    th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 0.98rem;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .zebra-row {
+      background: #f8f9ff;
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1.2rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      border-left: 4px solid #667eea;
+    }
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: #ede9fe;
+      color: #5b21b6;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .tool-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+
+    .chip {
+      background: #ede9fe;
+      color: #5b21b6;
+      padding: 0.35rem 0.9rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    .chip-accent {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .chip-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .top-nav-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .top-nav-link {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .top-nav-link:hover, .top-nav-link.active {
+      background: rgba(255,255,255,0.35);
+      transform: translateY(-1px);
+    }
+
+    /* Fixed Bottom Navigation */
+    .navigation {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 0.9rem 1.5rem;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+      z-index: 1000;
+      border-top: 3px solid #667eea;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.6rem 1.4rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-info {
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.2rem;
+      background: white;
+      border: 2px solid #667eea;
+      color: #667eea;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      color: #e2e8f0;
+    }
+
+    body.dark .slide {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-left-color: #818cf8;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    }
+
+    body.dark h1 { color: #a5b4fc; }
+    body.dark h2 { color: #c4b5fd; border-bottom-color: #818cf8; }
+    body.dark h3 { color: #a5b4fc; }
+    body.dark h4 { color: #e2e8f0; }
+    body.dark .card { background: #0f172a; border-color: #334155; }
+    body.dark .highlight-box { background: #172554; border-left-color: #3b82f6; }
+    body.dark .highlight-box h4 { color: #93c5fd; }
+    body.dark .warning-box { background: #451a03; border-left-color: #f97316; }
+    body.dark .warning-box h4 { color: #fdba74; }
+    body.dark .key-points { background: #064e3b; border-left-color: #10b981; }
+    body.dark .key-points h4 { color: #6ee7b7; }
+    body.dark .demo-box { background: #3b0764; border-left-color: #c084fc; }
+    body.dark .demo-box h4 { color: #e9d5ff; }
+    body.dark .agent-box { background: #082f49; border-color: #0284c7; }
+    body.dark .agent-box h4 { color: #7dd3fc; }
+    body.dark table { background: #0f172a; color: #e2e8f0; }
+    body.dark .zebra-row { background: #1e293b; }
+    body.dark th { background: linear-gradient(135deg, #4338ca 0%, #5b21b6 100%); }
+    body.dark td { border-bottom-color: #334155; }
+    body.dark tr:hover { background: #1e293b; }
+    body.dark .navigation { background: #0f172a; border-top-color: #818cf8; }
+    body.dark .nav-info { color: #cbd5e1; }
+    body.dark .theme-toggle { background: #1e293b; color: #fbbf24; border-color: #fbbf24; }
+
+    @media (max-width: 768px) {
+      body { padding: 1rem 0.5rem 6rem; }
+      .slide { padding: 1.5rem; }
+      h1 { font-size: 1.8rem; }
+      h2 { font-size: 1.5rem; }
+      .two-column, .three-column { grid-template-columns: 1fr; }
+      .nav-container { flex-direction: column; gap: 0.5rem; }
+      .nav-center { order: -1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Theme Toggle Button -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="თემა / Theme">🌙</button>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+  <div class="top-nav-container">
+    <a class="top-nav-link" href="index.html">🏠 მთავარი</a>
+    <a class="top-nav-link active" href="v2-lecture-6-slides.html">📊 სლაიდები</a>
+    <a class="top-nav-link" href="lecture-6-study-guide.html">📖 გზამკვლევი</a>
+    <a class="top-nav-link" href="homework-6.html">⚡ დავალება 6</a>
+    <a class="top-nav-link" href="lecture-6-summary.html">📝 რეზიუმე</a>
+    <a class="top-nav-link" href="make-com-detailed-guide.html">🤖 Make.com გზამკვლევი</a>
+    <a class="top-nav-link" href="final-project-ideas.html">💡 ფინალური პროექტები</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Slide 1: Title -->
+  <div class="slide">
+    <span class="slide-number">1/24</span>
+    <h1>🤖 ლექცია 6: სამუშაო პროცესების ავტომატიზაცია და AI Agents</h1>
+    <p style="font-size: 1.3rem; color: #555; margin-top: 1rem;">
+      AI - ხელოვნური ინტელექტის პრაქტიკაში
+    </p>
+    <p style="font-size: 1.1rem; color: #777; margin-top: 0.5rem;">
+      ავტორი: გიორგი ბასილაია
+    </p>
+    <p style="font-size: 1.15rem; color: #667eea; font-weight: 600; margin-top: 0.8rem;">
+      ⏱️ ხანგრძლივობა: 3 საათი (ინტენსიური პრაქტიკა და ცოცხალი დემოები)
+    </p>
+    <div class="tool-chips" style="margin-top: 1.2rem;">
+      <span class="chip">Make.com 2026</span>
+      <span class="chip chip-accent">Run an Agent მოდული</span>
+      <span class="chip chip-green">Model Context Protocol (MCP)</span>
+      <span class="chip">n8n AI Agents</span>
+      <span class="chip chip-accent">Orchestrator-Workers</span>
+      <span class="chip">Computer Use & Browser-Use</span>
+    </div>
+  </div>
+
+  <!-- Slide 2: 3-Hour Agenda & Objectives -->
+  <div class="slide">
+    <span class="slide-number">2/24</span>
+    <h2>📚 3-საათიანი სალექციო გეგმა და მიზნები</h2>
+    <div class="three-column">
+      <div class="card">
+        <h4>🕐 საათი 1: საფუძვლები & Make.com</h4>
+        <ul>
+          <li>ავტომატიზაციის პარადიგმის ცვლილება (2026)</li>
+          <li>ROI და No-Code ეკონომიკა</li>
+          <li>Zapier vs Make.com vs n8n</li>
+          <li>Make.com ვიზუალური ტილო, Triggers & Routers</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🕑 საათი 2: Agentic Architecture & MCP</h4>
+        <ul>
+          <li>Make-ის ახალი <strong>"Run an Agent"</strong> მოდული</li>
+          <li><strong>Model Context Protocol (MCP)</strong> სტანდარტი</li>
+          <li>n8n AI Agents და ლოკალური მონაცემთა უსაფრთხოება (Ollama)</li>
+          <li>Reasoning View და Glass-Box გამჭვირვალობა</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🕒 საათი 3: Patterns & ქართული ქეისები</h4>
+        <ul>
+          <li>Anthropic Agentic Patterns (Orchestrator, Evaluator)</li>
+          <li>GUI ავტომატიზაცია (Computer Use, Browser-Use)</li>
+          <li>3 რეალური ქართული ბიზნეს-სცენარი (Support, Lead, Invoicing)</li>
+          <li>საშინაო დავალება #6-ის გარჩევა</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: The 2026 Paradigm Shift -->
+  <div class="slide">
+    <span class="slide-number">3/24</span>
+    <h2>🔄 დიდი გარდატეხა: Workflows-დან Agentic Systems-მდე</h2>
+    <div class="two-column">
+      <div>
+        <div class="warning-box">
+          <h4>❌ ძველი ავტომატიზაცია (2020–2023): ხისტი წესები</h4>
+          <p><strong>If-This-Then-That (წრფივი ჯაჭვი):</strong></p>
+          <ul style="margin-top: 0.5rem;">
+            <li>თუ მონაცემის სტრუქტურა ოდნავ შეიცვალა — პროცესი წყდება;</li>
+            <li>არ შეუძლია გაურკვეველი ტექსტის ან არასტრუქტურირებული ფაილის გაგება;</li>
+            <li>მოითხოვს ყოველი შესაძლო შემთხვევის ხელით წინასწარ გაწერას.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="key-points">
+          <h4>✅ ახალი ეპოქა (2025–2026): ავტონომიური აგენტები</h4>
+          <p><strong>Goal-Directed (მიზანზე ორიენტირებული):</strong></p>
+          <ul style="margin-top: 0.5rem;">
+            <li><strong>Objective:</strong> აგენტს ეძლევა მიზანი (მაგ. „დაალაგე შემოსული ინვოისები და მოახდინე ბიუჯეტთან შედარება“);</li>
+            <li><strong>Dynamic Tools:</strong> აგენტი თავად ირჩევს, როდის რომელ API-ს ან ბაზას მიმართოს;</li>
+            <li><strong>Self-Correction:</strong> შეცდომის შემთხვევაში თავად ცვლის სტრატეგიას.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <p style="font-size: 1.05rem;"><strong>💡 მთავარი დასკვნა:</strong> 2026 წელს ავტომატიზაცია აღარ არის უბრალოდ „მონაცემთა გადატანა სისტემიდან სისტემაში“. ეს არის **ინტელექტუალური გადაწყვეტილებების დელეგირება AI აგენტებზე**.</p>
+    </div>
+  </div>
+
+  <!-- Slide 4: Automation ROI & Business Economics -->
+  <div class="slide">
+    <span class="slide-number">4/24</span>
+    <h2>💰 No-Code ავტომატიზაციის ბიზნეს-ეკონომიკა და ROI</h2>
+    <div class="two-column">
+      <div>
+        <h3>📊 რატომ დებს ბიზნესი ინვესტიციას:</h3>
+        <ul>
+          <li><strong>40% დროის დანაკარგი:</strong> ცოდნის მუშაკი (Knowledge Worker) დროის 40%-ს ხარჯავს რუტინულ „კოპირება-ჩასმაზე“;</li>
+          <li><strong>შეცდომების შემცირება:</strong> ადამიანური უყურადღებობით დაშვებული შეცდომები მცირდება <strong>90%-ზე მეტით</strong>;</li>
+          <li><strong>24/7 რეაგირება:</strong> მომხმარებლის მოთხოვნაზე პასუხი 2-3 წამში ნაცვლად 4 საათისა;</li>
+          <li><strong>მასშტაბირება (Scalability):</strong> 10-ჯერ მეტი შეკვეთის დამუშავება გუნდის გაზრდის გარეშე.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="demo-box">
+          <h4>🧮 ROI-ის გაანგარიშების ფორმულა:</h4>
+          <pre><code>დაზოგილი საათები = (ოპერაციის დრო წუთებში × თვიური მოცულობა) / 60
+ფინანსური ეკონომია = დაზოგილი საათები × თანამშრომლის საათობრივი ტარიფი
+წმინდა ROI = (ეკონომია - პლატფორმის ხარჯი) / პლატფორმის ხარჯი × 100%</code></pre>
+          <p style="font-size: 0.95rem; margin-top: 0.6rem;">მაგალითი: თვეში 300 ინვოისის ხელით შეყვანა (10 წთ თითო) = 50 საათი. თანამშრომლის 20 ₾/სთ ტარიფით = <strong>1000 ₾ ეკონომია თვეში</strong> Make.com-ის 9$-იანი გეგმის სანაცვლოდ!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Zapier Overview & Legacy Limits -->
+  <div class="slide">
+    <span class="slide-number">5/24</span>
+    <h2>⚡ Zapier: როლი, შესაძლებლობები და ლიმიტები</h2>
+    <div class="two-column">
+      <div>
+        <div class="card">
+          <h4>👍 ძლიერი მხარეები:</h4>
+          <ul>
+            <li><strong>უდიდესი ეკოსისტემა:</strong> 7000+ ინტეგრირებული აპლიკაცია;</li>
+            <li><strong>მარტივი დაწყება:</strong> არ მოითხოვს ტექნიკურ ცოდნას;</li>
+            <li><strong>სტაბილურობა:</strong> სანდო API კავშირები გლობალურ პლატფორმებთან;</li>
+            <li><strong>Zapier Central & Interfaces:</strong> მარტივი AI ასისტენტები და ფორმები.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h4>⚠️ ლიმიტები 2026 წელს:</h4>
+          <ul>
+            <li><strong>ძალიან ძვირი:</strong> თითოეული ნაბიჯი (Step) ითვლება Task-ად. 5-ნაბიჯიანი პროცესი 5-ჯერ მეტს ხარჯავს;</li>
+            <li><strong>ხისტი ვიზუალური ლოგიკა:</strong> რთული განშტოებები (Branches) და ციკლები მოუხერხებელია;</li>
+            <li><strong>შეზღუდული AI კონტროლი:</strong> არ გააჩნია ღრმა RAG ან MCP არქიტექტურა.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <p>💡 <strong>წესი:</strong> გამოიყენეთ Zapier მარტივი, 2-3-ნაბიჯიანი ტრივიალური გადაბმებისთვის. კომპლექსური, მონაცემებით მდიდარი AI აგენტებისთვის გადადით <strong>Make.com</strong>-ზე ან <strong>n8n</strong>-ზე.</p>
+    </div>
+  </div>
+
+  <!-- Slide 6: Make.com Visual Canvas Architecture -->
+  <div class="slide">
+    <span class="slide-number">6/24</span>
+    <h2>🎨 Make.com: ვიზუალური ტილო და ძირითადი კონცეფციები</h2>
+    <div class="slide-content">
+      <p style="font-size: 1.1rem; margin-bottom: 1.2rem;">Make.com (ყოფილი Integromat) აგებულია <strong>მოდულარულ ვიზუალურ ტილოზე</strong>, სადაც მონაცემები მოძრაობს როგორც წრიული ბუშტუკები (Bundles):</p>
+      <div class="two-column">
+        <div>
+          <h4>🧩 მოდულების ტიპები:</h4>
+          <ul>
+            <li><strong>Instant Triggers (Webhooks):</strong> რეალურ დროში მყისიერი გააქტიურება მოვლენისთანავე;</li>
+            <li><strong>Polling Triggers (Scheduled):</strong> პერიოდული შემოწმება (მაგ. ყოველ 15 წუთში);</li>
+            <li><strong>Actions & Searches:</strong> მონაცემების შექმნა, წაკითხვა, განახლება ან წაშლა;</li>
+            <li><strong>Routers:</strong> ნაკადის დაყოფა რამდენიმე პარალელურ ტოტად ფილტრების მიხედვით.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>⚙️ მოწინავე ინსტრუმენტები:</h4>
+          <ul>
+            <li><strong>Iterator:</strong> მასივის (Array) დაშლა ცალკეულ ერთეულებად;</li>
+            <li><strong>Aggregator:</strong> მრავალი ერთეულის შეკრება ერთ ცხრილად ან ტექსტად;</li>
+            <li><strong>Error Handlers:</strong> შეცდომის დამუშავების 4 რეჟიმი:
+              <code>Resume</code> (ალტერნატივით გაგრძელება), <code>Ignore</code> (იგნორირება), <code>Rollback</code>, <code>Commit</code>.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Comparison Table: Make vs Zapier vs n8n -->
+  <div class="slide">
+    <span class="slide-number">7/24</span>
+    <h2>⚖️ 2026 წლის დიდი შედარება: Make vs Zapier vs n8n</h2>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>პარამეტრი</th>
+            <th>Zapier</th>
+            <th>Make.com</th>
+            <th>n8n</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>არქიტექტურა</strong></td>
+            <td>ხაზოვანი სიები (Linear Steps)</td>
+            <td>ვიზუალური ტილო (Visual Canvas)</td>
+            <td>კვანძოვანი გრაფი (Node Graph / Code)</td>
+          </tr>
+          <tr class="zebra-row">
+            <td><strong>ფასი & ერთეული</strong></td>
+            <td>ძვირი ($20-$50/თვე მცირე ლიმიტზე)</td>
+            <td>ხელმისაწვდომი (10,000 ოპერაცია ~$9)</td>
+            <td>უფასო (Self-hosted) ან Cloud ($20)</td>
+          </tr>
+          <tr>
+            <td><strong>AI აგენტების შესაძლებლობები</strong></td>
+            <td>ბაზისური (Zapier Central)</td>
+            <td><strong>Run an Agent</strong> + RAG + Glass-Box</td>
+            <td><strong>LangChain Native</strong> + Vector Stores</td>
+          </tr>
+          <tr class="zebra-row">
+            <td><strong>MCP მხარდაჭერა</strong></td>
+            <td>შეზღუდული</td>
+            <td>MCP Toolboxes (2026)</td>
+            <td><strong>სრული (Client & Server)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>მონაცემთა დაცვა / ლოკალური</strong></td>
+            <td>მხოლოდ Cloud (აშშ სერვერები)</td>
+            <td>Cloud (ევროპული სერვერები GDPR)</td>
+            <td><strong>Self-Hosted (ლოკალური სერვერი + Ollama)</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="key-points">
+      <p>🎯 <strong>ვერდიქტი:</strong> ბიზნეს-მომხმარებლებისთვის საუკეთესო ოქროს შუალედი არის <strong>Make.com</strong>, ხოლო მკაცრად კონფიდენციალური და ტექნიკური გუნდებისთვის — <strong>n8n</strong>.</p>
+    </div>
+  </div>
+
+  <!-- Slide 8: Custom Webhooks & Data Mapping -->
+  <div class="slide">
+    <span class="slide-number">8/24</span>
+    <h2>🔗 Custom Webhooks & მონაცემთა Mapping</h2>
+    <div class="two-column">
+      <div>
+        <div class="agent-box">
+          <h4>🌐 რა არის Webhook?</h4>
+          <p>თუ API Polling არის „კარზე ყოველ 5 წუთში დაკაკუნება და კითხვა: რამე ახალი ხომ არაა?“, Webhook არის **„ზარი, რომელიც თავად რეკავს მოვლენის მომენტში“**.</p>
+          <ul style="margin-top: 0.8rem;">
+            <li>0-წამიანი დაყოვნება (Real-time);</li>
+            <li>არ ხარჯავს ზედმეტ ოპერაციებს უშედეგო შემოწმებებზე;</li>
+            <li>იღებს JSON Payload-ს ნებისმიერი ვებ-ფორმიდან, აპლიკაციიდან ან გადახდის სისტემიდან.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h4>🛠️ Data Mapping-ის საიდუმლოებები Make-ში:</h4>
+        <pre><code>// 1. თარიღის ქართულ ფორმატში გარდაქმნა:
+{{formatDate(1.createdAt; "DD.MM.YYYY HH:mm")}}
+
+// 2. ტექსტის გასუფთავება და სტრიპინგი:
+{{trim(lower(1.customerEmail))}}
+
+// 3. მასივიდან ელემენტების ამოღება:
+{{map(1.orderItems; "productName")}}</code></pre>
+        <p style="font-size: 0.95rem; color: #555;">Make-ის ჩაშენებული ფორმულები საშუალებას გაძლევთ დაამუშაოთ ტექსტი, რიცხვები და მასივები კოდის დაწერის გარეშე.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Make.com 2026 "Run an Agent" Module -->
+  <div class="slide">
+    <span class="slide-number">9/24</span>
+    <h2>🚀 Make.com 2026 სიახლე: "Run an Agent" ექვსკუთხა მოდული</h2>
+    <div class="slide-content">
+      <p style="font-size: 1.15rem; margin-bottom: 1.5rem;">2026 წლის თებერვალში Make-მა წარადგინა რევოლუციური **"Run an Agent"** მოდული, რომელმაც ჩაანაცვლა ადრინდელი დაქსაქსული AI ბლოკები ერთიან სრულფასოვან სისტემაში:</p>
+      <div class="two-column">
+        <div class="card" style="border-left: 5px solid #667eea;">
+          <h4>🧠 1. Brain (ტვინი / LLM არჩევა)</h4>
+          <p>მოდელის თავისუფალი შერჩევა ამოცანის მიხედვით: <strong>GPT-4o / GPT-5, Claude 3.5/3.7 Sonnet, Gemini 2.0 Flash</strong>. მოდელი იღებს სისტემურ ინსტრუქციას და მოქმედებს როგორც ავტონომიური ექსპერტი.</p>
+        </div>
+        <div class="card" style="border-left: 5px solid #2196f3;">
+          <h4>📚 2. Knowledge (RAG / ცოდნის ბაზა)</h4>
+          <p>ჩატვირთეთ PDF ბროშურები, FAQ, ფასების ცხრილები და წესები პირდაპირ აგენტში. აგენტი პასუხობს მხოლოდ თქვენს ოფიციალურ დოკუმენტებზე დაყრდნობით (Zero Hallucination).</p>
+        </div>
+        <div class="card" style="border-left: 5px solid #10b981;">
+          <h4>🛠️ 3. Tools (ინსტრუმენტები & Scenarios)</h4>
+          <p>აგენტს შეუძლია თავად გადაწყვიტოს, როდის გაუშვას Make-ის სხვა სცენარი, როდის შეამოწმოს CRM ან გაგზავნოს შეტყობინება. მას აქვს <strong>ქმედების უფლება</strong>.</p>
+        </div>
+        <div class="card" style="border-left: 5px solid #f59e0b;">
+          <h4>💾 4. Memory & Context (მეხსიერება)</h4>
+          <p>ინახავს სესიის ისტორიას და მომხმარებლის წინა ინტერაქციებს, რაც აგენტს საშუალებას აძლევს მრავალეტაპიანი საუბარი წარმართოს ბუნებრივად.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Glass-Box Transparency & Reasoning View -->
+  <div class="slide">
+    <span class="slide-number">10/24</span>
+    <h2>🔍 „Glass-Box“ გამჭვირვალობა და Reasoning View</h2>
+    <div class="two-column">
+      <div>
+        <div class="warning-box">
+          <h4>⚠️ „Black-Box“ AI-ის საფრთხე ბიზნესში:</h4>
+          <p>თუ ვერ ვხედავთ, როგორ მივიდა AI გადაწყვეტილებამდე, ბიზნესი ვერ ანდობს მას ფულად ტრანზაქციებს ან მომხმარებელთან პირდაპირ კომუნიკაციას.</p>
+        </div>
+        <div class="key-points">
+          <h4>👁️ Make-ის Reasoning View (2026):</h4>
+          <ul>
+            <li>ტილოზე რეალურ დროში ჩანს აგენტის ფიქრის პროცესი (Chain-of-Thought);</li>
+            <li>თვალსაჩინოა: რატომ შეარჩია კონკრეტული Tool-ი და რა არგუმენტები გადასცა მას;</li>
+            <li>სრული აუდიტის ლოგი (Audit Trail) კომპანიის უსაფრთხოებისთვის.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="demo-box">
+          <h4>🧪 Chat Sandbox: უფასო ტესტირება</h4>
+          <p>სცენარის რედაქტორში ჩაშენებულია ინტერაქტიული <strong>Chat Sandbox</strong>:</p>
+          <ul style="margin-top: 0.5rem;">
+            <li>ტესტავთ აგენტის რეაქციებს პირდაპირ ბრაუზერში;</li>
+            <li>არ იხარჯება Make-ის ოპერაციების კრედიტები ტესტირებისას;</li>
+            <li>მყისიერად ხედავთ შეცდომებს პრომპტსა და ხელსაწყოების გამოძახებაში.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Model Context Protocol (MCP) -->
+  <div class="slide">
+    <span class="slide-number">11/24</span>
+    <h2>🌐 Model Context Protocol (MCP) — 2026 წლის ოქროს სტანდარტი</h2>
+    <div class="highlight-box">
+      <h3>🔌 რა არის MCP? „USB-C ხელოვნური ინტელექტისთვის“</h3>
+      <p>Anthropic-ის მიერ შექმნილი ღია სტანდარტი, რომელმაც 2025–2026 წლებში გააერთიანა AI ინდუსტრია. ყოველი ხელსაწყოსთვის ცალკე API კონექტორის წერის ნაცვლად, სისტემები ერთმანეთს უკავშირდებიან ერთიანი JSON-RPC პროტოკოლით.</p>
+    </div>
+    <div class="two-column">
+      <div class="card">
+        <h4>🖥️ MCP Host (კლიენტი):</h4>
+        <p>აპლიკაცია, სადაც ცხოვრობს AI მოდელი და იღებს გადაწყვეტილებებს:</p>
+        <ul>
+          <li>Claude Desktop</li>
+          <li>Cursor AI / Antigravity IDE</li>
+          <li>n8n (Native MCP Client)</li>
+          <li>Make.com (MCP Toolboxes)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🗄️ MCP Server (სერვერი):</h4>
+        <p>სერვისი, რომელიც აწვდის კონტექსტს და ხელსაწყოებს:</p>
+        <ul>
+          <li><strong>PostgreSQL / MySQL:</strong> ბაზაში მონაცემების მოძიება</li>
+          <li><strong>Google Drive / Notion:</strong> დოკუმენტების კითხვა</li>
+          <li><strong>GitHub / GitLab:</strong> კოდის მართვა</li>
+          <li><strong>Slack / Telegram:</strong> შეტყობინებების გაგზავნა</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12: n8n AI Agents & Self-Hosted Powerhouse -->
+  <div class="slide">
+    <span class="slide-number">12/24</span>
+    <h2>🛡️ n8n AI Agents: Open-Source და ლოკალური კონფიდენციალურობა</h2>
+    <div class="two-column">
+      <div>
+        <div class="agent-box">
+          <h4>🚀 n8n-ის უპირატესობები:</h4>
+          <ul>
+            <li><strong>LangChain-ის ნატიური ინტეგრაცია:</strong> AI Agent, Tool, Memory, Vector Store კვანძები პირდაპირ ტილოზე;</li>
+            <li><strong>MCP Native:</strong> n8n მუშაობს როგორც MCP სერვერი (სხვებს უზიარებს ფუნქციებს) და როგორც MCP კლიენტი;</li>
+            <li><strong>Code + No-Code:</strong> JavaScript და Python კოდის ჩასმა ნებისმიერ ეტაპზე;</li>
+            <li><strong>არანაირი ლიმიტი:</strong> საკუთარ სერვერზე გაშვებისას ოპერაციების რაოდენობა შეუზღუდავია.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="key-points">
+          <h4>🔒 სრული კონფიდენციალურობა (Local Privacy):</h4>
+          <p>ქართული ბანკების, სამედიცინო და იურიდიული ორგანიზაციებისთვის:</p>
+          <ul style="margin-top: 0.5rem;">
+            <li>n8n ეშვება <strong>ლოკალურ სერვერზე (Docker)</strong>;</li>
+            <li>უერთდება ლოკალურ LLM-ს (მაგ. <strong>Ollama + Llama 3.3 / DeepSeek</strong>);</li>
+            <li><strong>მონაცემები არასოდეს ტოვებს ორგანიზაციის ქსელს</strong> — სრული შესაბამისობა პერსონალურ მონაცემთა დაცვის კანონთან და GDPR-თან!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 13: Agentic Design Patterns (Part 1) -->
+  <div class="slide">
+    <span class="slide-number">13/24</span>
+    <h2>📐 Anthropic Agentic Patterns (ნაწილი 1): საბაზისო არქიტექტურა</h2>
+    <p style="font-size: 1.1rem; margin-bottom: 1.2rem;">Anthropic-ის კვლევის (<em>„Building Effective Agents“</em>) მიხედვით, წარმატებული სისტემები იყენებენ მკაფიო არქიტექტურულ შაბლონებს:</p>
+    <div class="three-column">
+      <div class="card">
+        <h4>1. Prompt Chaining</h4>
+        <p>დავალების დაშლა თანმიმდევრულ ნაბიჯებად, სადაც ყოველი ნაბიჯის შედეგი ხდება შემდეგის შეყვანა:</p>
+        <pre><code>[Input] → [LLM 1: მონახაზი] 
+  → [LLM 2: თარგმანი] 
+  → [Output]</code></pre>
+        <p style="font-size: 0.88rem; color: #666;">იდეალურია მარტივი ტრანსფორმაციებისთვის.</p>
+      </div>
+      <div class="card">
+        <h4>2. Routing (მარშრუტიზაცია)</h4>
+        <p>საწყისი LLM აანალიზებს მოთხოვნას და ამისამართებს სპეციალიზებულ ქვემოდელთან:</p>
+        <pre><code>[შემოსული მოთხოვნა] 
+  ↓ (Classifier)
+├─► [ტექნიკური მხარდაჭერა]
+├─► [გაყიდვების შეკითხვა]
+└─► [ბუღალტერია/ინვოისი]</code></pre>
+        <p style="font-size: 0.88rem; color: #666;">ზოგავს ხარჯს და ზრდის სიზუსტეს.</p>
+      </div>
+      <div class="card">
+        <h4>3. Parallelization</h4>
+        <p>დავალების პარალელური დამუშავება სიჩქარის ან შედარების მიზნით:</p>
+        <pre><code>[დოკუმენტი] 
+  ├─► [სექცია A ანალიზი]
+  ├─► [სექცია B ანალიზი]
+  └─► [სინთეზი ერთად]</code></pre>
+        <p style="font-size: 0.88rem; color: #666;">Sectioning (დაყოფა) ან Voting (კონსენსუსი).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 14: Agentic Design Patterns (Part 2) -->
+  <div class="slide">
+    <span class="slide-number">14/24</span>
+    <h2>📐 Anthropic Agentic Patterns (ნაწილი 2): კომპლექსური სისტემები</h2>
+    <div class="two-column">
+      <div class="agent-box">
+        <h4>4. Orchestrator-Workers (კოორდინატორი და მუშაკები)</h4>
+        <p>ცენტრალური „ორკესტრატორი“ იღებს რთულ მიზანს, დინამიკურად ყოფს ქვესამუშაოებად, ანაწილებს სპეციალიზებულ მუშაკ აგენტებზე და აერთიანებს პასუხს:</p>
+        <pre><code>[Orchestrator LLM]
+   ├──► Worker 1: მონაცემთა ამოღება ბაზიდან
+   ├──► Worker 2: ანალიტიკური გათვლა
+   └──► Worker 3: ანგარიშის აწყობა
+[Orchestrator synthesizes final result]</code></pre>
+        <p style="font-size: 0.9rem; color: #555;">გამოიყენება კომპლექსურ კვლევებსა და ავტომატიზაციებში.</p>
+      </div>
+      <div>
+        <div class="key-points">
+          <h4>5. Evaluator-Optimizer (თვითშემოწმებადი მარყუჟი)</h4>
+          <p>გენერატორი ქმნის შედეგს, ხოლო შემმოწმებელი (Critic) ამოწმებს კრიტერიუმებზე. თუ შეცდომაა, უბრუნებს უკუკავშირს მანამ, სანამ ხარისხი არ დაკმაყოფილდება:</p>
+          <pre><code>[Generator] ──► [Candidate Output]
+     ▲                     │
+     │ (უკუკავშირი)       ▼
+[Optimizer] ◄── [Evaluator / Critic]
+                     │ (დამტკიცებულია)
+                     ▼
+                  [Final]</code></pre>
+        </div>
+        <div class="warning-box" style="margin-top: 1rem;">
+          <h4>🛑 6. Human-in-the-Loop (HITL)</h4>
+          <p>მაღალი რისკის ქმედებებზე (თანხის გადარიცხვა, მეილის გაგზავნა VIP პარტნიორთან) აგენტი ჩერდება და ითხოვს ადამიანის თანხმობის ღილაკს Telegram-ში ან Make-ში.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 15: Computer Use & Browser Agents -->
+  <div class="slide">
+    <span class="slide-number">15/24</span>
+    <h2>🖥️ Computer Use & Browser Agents: როცა API არ არსებობს</h2>
+    <div class="slide-content">
+      <p style="font-size: 1.1rem; margin-bottom: 1.2rem;">რა ვქნათ, თუ ძველ სახელმწიფო პორტალს, საბანკო ინტერფეისს ან შიდა CRM-ს არ აქვს API? გამოსავალია **GUI და Browser ავტომატიზაცია**:</p>
+      <div class="three-column">
+        <div class="card">
+          <h4>Anthropic Computer Use</h4>
+          <p>Claude-ის შესაძლებლობა მართოს ოპერაციული სისტემა ადამიანის მსგავსად:</p>
+          <ul>
+            <li>იღებს ეკრანის სქრინშოტს;</li>
+            <li>ხვდება სად არის ღილაკი ან ველი;</li>
+            <li>ამოძრავებს კურსორს, აკეთებს კლიკს და კრეფს ტექსტს.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Open-Source Browser-Use</h4>
+          <p>2025–2026 წლების ყველაზე პოპულარული Python/TS ბიბლიოთეკა:</p>
+          <ul>
+            <li>ბრაუზერის ავტონომიური მართვა;</li>
+            <li>საიტებზე შესვლა, ძებნა, ფორმების შევსება, ფასების ამოღება;</li>
+            <li>თავსებადია ნებისმიერ LLM-თან.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>OpenAI & Gemini Operator</h4>
+          <p>კომერციული ბრაუზერ-აგენტები:</p>
+          <ul>
+            <li>დავალების შესრულება ბრაუზერში ერთი წინადადებით;</li>
+            <li>მაგ. „დამიჯავშნე სასტუმრო ბათუმში 15-18 ივლისს რეიტინგით > 9“.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 16: Georgian Business Case 1 - Customer Support & Triage -->
+  <div class="slide">
+    <span class="slide-number">16/24</span>
+    <h2>🇬🇪 ქართული ბიზნეს ქეისი 1: მომხმარებელთა მოთხოვნების ჭკვიანი ტრიაჟი</h2>
+    <div class="agent-box">
+      <h4>კომპანია: ელექტრონული კომერციის მაღაზია საქართველოში</h4>
+      <p><strong>პრობლემა:</strong> თვეში შემოდის 2000+ შეტყობინება Facebook, Instagram და Telegram ჩატებში. ოპერატორები ვერ ასწრებენ პასუხს, რაც იწვევს გაყიდვების დაკარგვას.</p>
+    </div>
+    <div class="highlight-box">
+      <h4>🛠️ Make.com AI სცენარის არქიტექტურა:</h4>
+      <ol>
+        <li><strong>Trigger:</strong> შემოსული შეტყობინება Facebook Messenger / Telegram Bot-იდან;</li>
+        <li><strong>AI Router & Classifier (OpenAI/Claude):</strong>
+          <ul>
+            <li>თუ კითხვაა ფასზე ან მიტანის ვადებზე → პასუხობს მყისიერად RAG ბაზიდან (3 წამში);</li>
+            <li>თუ პრეტენზიაა ან დაზიანებული ნივთი → აგენტი სვამს მაღალ პრიორიტეტს, აკეთებს ჩანაწერს CRM-ში და უგზავნის ალერტს მენეჯერს Telegram-ში;</li>
+            <li>თუ შეკვეთის გაფორმებაა → აგროვებს სახელს, ტელეფონს, მისამართს და წერს Google Sheets / 1C-ში.</li>
+          </ul>
+        </li>
+        <li><strong>შედეგი:</strong> რუტინული კითხვების <strong>70% ავტომატურად გვარდება</strong>, მომხმარებლის კმაყოფილება გაიზარდა 45%-ით.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Slide 17: Georgian Business Case 2 - Lead Qualification & CRM -->
+  <div class="slide">
+    <span class="slide-number">17/24</span>
+    <h2>🇬🇪 ქართული ბიზნეს ქეისი 2: B2B Lead Qualification & გამდიდრება</h2>
+    <div class="agent-box">
+      <h4>კომპანია: B2B საკონსულტაციო & IT სერვისების კომპანია</h4>
+      <p><strong>პრობლემა:</strong> ვებსაიტის ფორმიდან შემოდის ლიდები, თუმცა გაყიდვების გუნდს საათები სჭირდება თითოეული კომპანიის მოსაძიებლად და შესაფასებლად.</p>
+    </div>
+    <div class="highlight-box">
+      <h4>🛠️ ავტომატიზაციის პროცესი (Make + Perplexity/Claude):</h4>
+      <ol>
+        <li><strong>Trigger:</strong> ახალი შევსებული ფორმა Typeform / Webflow-ზე (სახელი, მეილი, კომპანიის საიტი);</li>
+        <li><strong>AI Research Agent (Perplexity / Gemini API):</strong>
+          <ul>
+            <li>აგენტი შედის მითითებულ საიტზე, ამოწმებს კომპანიის სფეროს, თანამშრომლების სავარაუდო რაოდენობას და ბოლო სიახლეებს;</li>
+            <li>ანიჭებს <strong>Lead Score-ს (1-დან 100-მდე)</strong> წინასწარ განსაზღვრული კრიტერიუმებით;</li>
+          </ul>
+        </li>
+        <li><strong>Action:</strong> მონაცემები ინახება HubSpot / Notion CRM-ში + მზადდება <strong>პერსონალიზებული პირველი მეილის მონახაზი</strong> გაყიდვების მენეჯერისთვის.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Slide 18: Georgian Business Case 3 - Invoice OCR & Approval -->
+  <div class="slide">
+    <span class="slide-number">18/24</span>
+    <h2>🇬🇪 ქართული ბიზნეს ქეისი 3: ინვოისების OCR & შესყიდვების აგენტი</h2>
+    <div class="agent-box">
+      <h4>კომპანია: დისტრიბუტორი / სამშენებლო კომპანია</h4>
+      <p><strong>პრობლემა:</strong> მომწოდებლები აგზავნიან ასობით PDF ინვოისს მეილზე. ბუღალტერი ხელით კრეფს მონაცემებს და ამოწმებს ხელშეკრულების ფასებს.</p>
+    </div>
+    <div class="two-column">
+      <div>
+        <div class="highlight-box">
+          <h4>🛠️ სცენარი Make.com-ზე:</h4>
+          <ol>
+            <li><strong>Trigger:</strong> შემოსული მეილი თანდართული PDF ინვოისით;</li>
+            <li><strong>Claude 3.5 / Gemini 2.0 Flash Vision:</strong>
+              <ul>
+                <li>ამოიცნობს კომპანიის საიდენტიფიკაციო კოდს, ინვოისის ნომერს, პროდუქციის სიას და თანხას;</li>
+              </ul>
+            </li>
+            <li><strong>Google Sheets Budget Check:</strong> ამოწმებს, ჯდება თუ არა ფასი წინასწარ შეთანხმებულ ლიმიტში;</li>
+          </ol>
+        </div>
+      </div>
+      <div>
+        <div class="warning-box">
+          <h4>🛑 Human-in-the-Loop (HITL) დასტური:</h4>
+          <ul>
+            <li>თუ ინვოისი < 500 ₾: ავტომატურად რეგისტრირდება ბაზაში;</li>
+            <li>თუ ინვოისი > 500 ₾: დირექტორს მისდის შეტყობინება Telegram-ში ღილაკებით: <code>[✅ დამტკიცება]</code> და <code>[❌ უარყოფა]</code>;</li>
+            <li>მხოლოდ დასტურის შემდეგ ეგზავნება ბუღალტერიას გადასარიცხად.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 19: Security, Governance & Risk Management -->
+  <div class="slide">
+    <span class="slide-number">19/24</span>
+    <h2>🛡️ უსაფრთხოება, რისკები და მართვა (Governance 2026)</h2>
+    <div class="two-column">
+      <div>
+        <div class="warning-box">
+          <h4>⚠️ მთავარი საფრთხეები ავტომატიზაციაში:</h4>
+          <ul>
+            <li><strong>Infinite Loops (უსასრულო ციკლები):</strong> აგენტი უგზავნის მეილს საკუთარ თავს ან ორ აგენტს შორის იწყება დაუსრულებელი საუბარი → იწვის ბიუჯეტი;</li>
+            <li><strong>Prompt Injection:</strong> მომხმარებლის მიერ გამოგზავნილი ტექსტი აიძულებს აგენტს გაამჟღავნოს შიდა სისტემები;</li>
+            <li><strong>PII გაჟონვა:</strong> კლიენტის პერსონალური მონაცემების შემთხვევითი გაგზავნა საჯარო არხებში.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="key-points">
+          <h4>✅ დაცვის 4 ოქროს წესი:</h4>
+          <ul>
+            <li><strong>Rate Limits & Budgets:</strong> დააწესეთ მკაცრი მაქსიმალური ლიმიტი ოპერაციებსა და API ხარჯებზე;</li>
+            <li><strong>Least Privilege (მინიმალური წვდომა):</strong> აგენტს მიეცით მხოლოდ იმ ცხრილის წაკითხვის უფლება, რაც სჭირდება (არასდროს მისცეთ სრული Admin უფლებები);</li>
+            <li><strong>Input Sanitization:</strong> გაასუფთავეთ შემოსული მონაცემები AI მოდულამდე;</li>
+            <li><strong>HITL ბარიერები:</strong> შეუქცევად ქმედებებზე ყოველთვის ჩართეთ ადამიანის დასტური.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 20: Step-by-Step Guide: First Automation in Make -->
+  <div class="slide">
+    <span class="slide-number">20/24</span>
+    <h2>📋 პრაქტიკული გზამკვლევი: პირველი AI სცენარის აწყობა Make-ზე</h2>
+    <div class="slide-content">
+      <div class="two-column">
+        <div>
+          <div class="card">
+            <h4>ნაბიჯი 1: ტრიგერის გამართვა</h4>
+            <p>შექმენით <strong>Custom Webhook</strong> ან აირჩიეთ <strong>Google Sheets → Watch New Rows</strong>. დააკავშირეთ თქვენი ცხრილი და მიიღეთ პირველი სატესტო მონაცემი (Bundle).</p>
+          </div>
+          <div class="card" style="margin-top: 1rem;">
+            <h4>ნაბიჯი 2: AI მოდულის კონფიგურაცია</h4>
+            <p>დაამატეთ <strong>OpenAI (Create a Chat Completion)</strong> ან <strong>Make AI Agent</strong>. გაწერეთ System Prompt: როლი, მოთხოვნები და პასუხის ფორმატი (მაგ. JSON).</p>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h4>ნაბიჯი 3: Action & დისტრიბუცია</h4>
+            <p>დაამატეთ <strong>Telegram Bot → Send a Text Message</strong> ან <strong>Gmail → Send an Email</strong>. ჩასვით AI-ს მიერ დაგენერირებული პასუხი შეტყობინების ტექსტში.</p>
+          </div>
+          <div class="card" style="margin-top: 1rem;">
+            <h4>ნაბიჯი 4: ტესტირება და გაშვება</h4>
+            <p>დააჭირეთ <strong>„Run once“</strong>. დარწმუნდით, რომ ყველა მოდულზე გაჩნდა მწვანე ინდიკატორი. ჩართეთ სცენარი (Active: ON).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 21: Best Practices & Common Mistakes -->
+  <div class="slide">
+    <span class="slide-number">21/24</span>
+    <h2>💡 საუკეთესო პრაქტიკები და გავრცელებული შეცდომები</h2>
+    <div class="two-column">
+      <div>
+        <div class="key-points">
+          <h4>✅ რა უნდა გააკეთოთ (Best Practices):</h4>
+          <ul>
+            <li><strong>დაიწყეთ უმარტივესით:</strong> ჯერ ააწყვეთ 2-3 მოდულიანი მუშა პროცესი, შემდეგ დაამატეთ AI სირთულე;</li>
+            <li><strong>გამოიყენეთ Structured Outputs:</strong> ყოველთვის მოსთხოვეთ AI-ს მკაცრი JSON ფორმატი, რათა შემდეგმა მოდულმა შეცდომის გარეშე წაიკითხოს ველები;</li>
+            <li><strong>ჩაამატეთ Error Handler:</strong> ყოველ კრიტიკულ მოდულს დაუმატეთ <code>Resume</code> ან შეტყობინება ადმინისტრატორს შეცდომის შესახებ;</li>
+            <li><strong>დაადოკუმენტირეთ სცენარი:</strong> მიაწერეთ შენიშვნები (Notes) მოდულებს ტილოზე.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="warning-box">
+          <h4>❌ რა არ უნდა გააკეთოთ (Common Pitfalls):</h4>
+          <ul>
+            <li><strong>ზედმეტი სირთულე დასაწყისში:</strong> 20-მოდულიანი გიგანტური სცენარები, რომელთა დებაგირება შეუძლებელია;</li>
+            <li><strong>უფასო API გასაღებების გამოყენება პროდაქშენში:</strong> უფასო ლიმიტების ამოწურვისას სცენარი ჩერდება;</li>
+            <li><strong>ავტომატიზაცია ცუდი პროცესისთვის:</strong> თუ ხელით პროცესი ქაოტურია, ავტომატიზაცია მხოლოდ ქაოსს გაამრავლებს.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 22: Resources & Platforms -->
+  <div class="slide">
+    <span class="slide-number">22/24</span>
+    <h2>📚 რესურსები, პლატფორმები და ხელსაწყოები</h2>
+    <div class="two-column">
+      <div>
+        <h4>🛠️ წამყვანი პლატფორმები:</h4>
+        <ul>
+          <li><strong>Make.com:</strong> <a href="https://make.com" target="_blank" style="color: #667eea; font-weight: 600;">make.com</a> — No-Code ავტომატიზაციის ვიზუალური ლიდერი;</li>
+          <li><strong>n8n:</strong> <a href="https://n8n.io" target="_blank" style="color: #667eea; font-weight: 600;">n8n.io</a> — Open-Source AI აგენტების პლატფორმა;</li>
+          <li><strong>Zapier:</strong> <a href="https://zapier.com" target="_blank" style="color: #667eea; font-weight: 600;">zapier.com</a> — მარტივი სწრაფი ინტეგრაციები;</li>
+          <li><strong>Ollama:</strong> <a href="https://ollama.com" target="_blank" style="color: #667eea; font-weight: 600;">ollama.com</a> — ლოკალური მოდელების გაშვება n8n-ისთვის.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>📖 ოფიციალური დოკუმენტაცია & კვლევები:</h4>
+        <ul>
+          <li><strong>Anthropic Model Context Protocol:</strong> <a href="https://modelcontextprotocol.io" target="_blank" style="color: #667eea; font-weight: 600;">modelcontextprotocol.io</a>;</li>
+          <li><strong>Anthropic: Building Effective Agents:</strong> ოფიციალური არქიტექტურული გზამკვლევი;</li>
+          <li><strong>Browser-Use GitHub:</strong> <a href="https://github.com/browser-use/browser-use" target="_blank" style="color: #667eea; font-weight: 600;">github.com/browser-use/browser-use</a>;</li>
+          <li><strong>ჩვენი დეტალური გზამკვლევი:</strong> <a href="make-com-detailed-guide.html" style="color: #667eea; font-weight: 600;">Make.com გზამკვლევი ↗</a>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 23: Homework 6 & Next Steps -->
+  <div class="slide">
+    <span class="slide-number">23/24</span>
+    <h2>📝 საშინაო დავალება #6 & შემდეგი ნაბიჯები</h2>
+    <div class="highlight-box">
+      <h3 style="color: #1976d2; margin-top: 0;">სამუშაო პროცესების ავტომატიზაცია Make.com-ზე (7 ქულა)</h3>
+      <p style="font-size: 1.1rem; margin-top: 0.5rem;">თქვენი ამოცანაა ააწყოთ მინიმუმ <strong>3-მოდულიანი რეალური AI ავტომატიზაცია</strong> Make.com-ზე და დათვალოთ ROI:</p>
+      <div class="two-column" style="margin-top: 1rem;">
+        <div>
+          <ul>
+            <li><strong>ნაწილი 1: სცენარის აწყობა (3 ქულა):</strong> Trigger (Webhook/Sheets) → AI მოდული (OpenAI/Claude) → Action (Telegram/Gmail/Sheets);</li>
+            <li><strong>ნაწილი 2: Execution Proof (2 ქულა):</strong> წარმატებული Run-ის სქრინშოტი და Input/Output ლოგები;</li>
+            <li><strong>ნაწილი 3: ROI & MCP ანალიზი (2 ქულა):</strong> დაზოგილი დროისა და თანხის გათვლა + MCP გაფართოების ხედვა.</li>
+          </ul>
+        </div>
+        <div style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <a href="homework-6.html" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">📋 დავალება #6-ის გახსნა ↗</a>
+          <p style="font-size: 0.9rem; color: #666; margin-top: 0.8rem;">ვადა: 1 კვირა ლექციის შემდეგ</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 24: Q&A & Discussion -->
+  <div class="slide">
+    <span class="slide-number">24/24</span>
+    <h2>🙏 მადლობა ყურადღებისთვის!</h2>
+    <div style="text-align: center; padding: 2rem 0;">
+      <h3 style="font-size: 2.2rem; color: #667eea; margin-bottom: 1.2rem;">კითხვა-პასუხი &amp; დისკუსია</h3>
+      <p style="font-size: 1.25rem; color: #555; max-width: 800px; margin: 0 auto 2rem;">
+        რომელი რუტინული პროცესის ავტომატიზაცია იქნებოდა ყველაზე ღირებული თქვენს ყოველდღიურ საქმიანობაში?
+      </p>
+      <div class="card" style="display: inline-block; text-align: left; max-width: 600px; margin: 0 auto;">
+        <h4 style="color: #764ba2; margin-bottom: 0.5rem;">🔜 მომდევნო შეხვედრა:</h4>
+        <p style="font-size: 1.1rem;"><strong>ლექცია 7: No-Code ვებ-დეველოპმენტი (Lovable 2.0) და Android აპლიკაციები Google AI Studio-ში</strong></p>
+        <p style="font-size: 0.95rem; color: #666; margin-top: 0.3rem;">სრული ვებ და მობაილ აპლიკაციების შექმნა პრომპტებით კოდის ცოდნის გარეშე + Cursor & Antigravity Demo!</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom Navigation Bar -->
+<div class="navigation">
+  <div class="nav-container">
+    <a href="v2-lecture-5-slides.html" class="nav-btn">← ლექცია 5</a>
+    <div class="nav-center">
+      <span class="nav-info">ლექცია 6: ავტომატიზაცია და AI Agents</span>
+      <a href="index.html" class="nav-btn">🏠 მთავარი გვერდი</a>
+    </div>
+    <a href="v2-lecture-7-slides.html" class="nav-btn">ლექცია 7 →</a>
+  </div>
+</div>
+
+<script>
+  // Theme Toggle Logic
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('aiTheme', isDark ? 'dark' : 'light');
+    document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+  }
+
+  // Load saved theme
+  if (localStorage.getItem('aiTheme') === 'dark') {
+    document.body.classList.add('dark');
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('themeToggle');
+      if (btn) btn.textContent = '☀️';
+    });
+  }
+</script>
+
+</body>
+</html>

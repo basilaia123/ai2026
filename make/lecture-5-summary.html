@@ -218,17 +218,19 @@
         <a href="lecture-5-quick-ref.html" class="nav-link">📋 სწრაფი ცნობარი</a>
         <a href="lecture-5-exercises.html" class="nav-link">💪 სავარჯიშოები</a>
         <a href="lecture-5-study-guide.html" class="nav-link">📖 სასწავლო გზამკვლევი</a>
+        <a href="executive-agents.html" class="nav-link">🤖 Executive Agents</a>
     </nav>
     <div class="container">
         
-        <h1>ლექცია 5: შეჯამება (B2B Case Studies და ROI)</h1>
+        <h1>ლექცია 5: შეჯამება (B2B Case Studies, Graceful Degradation და ROI)</h1>
         
         <div class="highlight-box">
             <h3>📚 ლექციის მიზნები</h3>
             <ul>
                 <li>ენთერფრაიზ ავტომატიზაციის პარადიგმების გაგება (Deterministic VS Reasoning).</li>
-                <li>რეალური ბიზნეს-პრობლემების გადაჭრა ულტრა-თანამედროვე მეთოდებით (Support Automation, Vision AI).</li>
-                <li>Human-in-the-Loop (HITL) მექანიზმის დანერგვა რისკების დასაზღვევად.</li>
+                <li>რეალური ბიზნეს-პრობლემების გადაჭრა ულტრა-თანამედროვე მეთოდებით (Support Automation, Multimodal Vision AI).</li>
+                <li>Lovable-ში ბიზნეს-პორტალის შექმნა და Make Webhook-თან უსაფრთხოდ დაკავშირება.</li>
+                <li>Human-in-the-Loop (HITL) და <strong>Graceful Degradation</strong> (Failover Chains) მექანიზმების დანერგვა.</li>
                 <li>უსაფრთხოება (PII Masking) და პროექტის ფინანსური შეფასება (ROI გამოთვლა).</li>
             </ul>
         </div>
@@ -244,16 +246,28 @@
         <h2>2️⃣ B2B Case Studies</h2>
         <div class="section-summary">
             <h3>Customer Support (ტექსტის ანალიზი)</h3>
-            <p>კლიენტების იმეილები მუშავდება AI-ის მიერ, რომელიც ჯერ აკეთებს <strong>Categorization-ს</strong> (რა ტიპის პრობლემაა). სტანდარტულ პრობლემებზე (მაგ. პაროლის აღდგენა) სისტემა პირდაპირ აგზავნის პასუხს. რთულ პრობლემებზე (მაგ. ფინანსური დავა) სისტემა ამზადებს Draft პასუხს და უგზავნის մենეჯერს Slack-ში დასადასტურებლად.</p>
+            <p><strong>Lovable</strong> ქმნის ქართულენოვან Support Portal-ს — ფორმას, სტატუსის გვერდსა და ოპერატორის dashboard-ს. მოთხოვნა JSON-ად გადადის <strong>Make Webhook</strong>-ში, სადაც PII იფარება, AI აკეთებს კატეგორიზაციასა და urgency შეფასებას, ხოლო Router არჩევს ავტომატურ პასუხსა და <code>needs_review</code> მარშრუტს შორის.</p>
+            <p>კლიენტების იმეილები მუშავდება AI-ის მიერ, რომელიც ჯერ აკეთებს <strong>Categorization-ს</strong> (რა ტიპის პრობლემაა). სტანდარტულ პრობლემებზე (მაგ. პაროლის აღდგენა) სისტემა პირდაპირ აგზავნის პასუხს. რთულ პრობლემებზე (მაგ. ფინანსური დავა) სისტემა ამზადებს Draft პასუხს და უგზავნის მენეჯერს Slack-ში დასადასტურებლად.</p>
             
             <h3>დოკუმენტების კონვეიერი (Vision AI)</h3>
-            <p>კომპანიებს აქვთ ბევრი არა-სტრუქტურირებული დოკუმენტი (დასკანერებული PDF ინვოისები, ხელშეკრულებები). GPT-4o-ს (Vision) გამოყენებით, სისტემა პირდაპირ "კითხულობს" სურათს, იღებს მონაცემებს (კომპანიის სახელი, თანხა) და წერს სუფთა სახით Google Sheets-ში ან ERP ბაზაში.</p>
+            <p>კომპანიებს აქვთ ბევრი არა-სტრუქტურირებული დოკუმენტი (დასკანერებული PDF ინვოისები, ხელშეკრულებები). Frontier მულტიმოდალური მოდელების (<strong>GPT-6.1 Sol / GPT-5.4 Vision</strong>, <strong>Claude 5.5 Sonnet Vision</strong>) გამოყენებით, სისტემა პირდაპირ "კითხულობს" სურათს, იღებს მონაცემებს (კომპანიის სახელი, თანხა) და წერს სუფთა სახით Google Sheets-ში ან ERP ბაზაში.</p>
         </div>
 
-        <h2>3️⃣ უსაფრთხოება და ROI</h2>
+        <h2>3️⃣ Graceful Degradation და Failover არქიტექტურა</h2>
+        <div class="section-summary">
+            <h3>რა ხდება, როდესაც მთავარი AI მოდელი მიუწვდომელია?</h3>
+            <p>Production გარემოში დაუშვებელია მთელი ბიზნეს-პროცესის გაჩერება იმის გამო, რომ პროვაიდერს აქვს ტექნიკური შეფერხება ან Rate Limit. ამისთვის ინერგება <strong>Graceful Degradation</strong>:</p>
+            <ul>
+                <li><strong>Primary Layer:</strong> Frontier Reasoning მოდელი (მაგ. GPT-6.1 Sol ან Claude 5.5 Sonnet) რთული შემთხვევებისთვის.</li>
+                <li><strong>Fallback Layer:</strong> მაღალსიჩქარიანი და დაბალბიუჯეტიანი მოდელი (მაგ. Gemini 3.8 Flash / Gemini 4 Argon ან DeepSeek-V4.1), რომელიც მომენტალურად ერთვება პირველადი მოდელის შეფერხებისას.</li>
+                <li><strong>Safe Emergency Route:</strong> თუ ორივე LLM მიუწვდომელია, სისტემა არ „ითიშება“ — იგზავნება წინასწარ გამზადებული შაბლონური პასუხი, ხოლო ინციდენტის შესახებ მენეჯერი იღებს დაუყოვნებლივ შეტყობინებას Telegram/Slack-ში.</li>
+            </ul>
+        </div>
+
+        <h2>4️⃣ უსაფრთხოება და ROI</h2>
         <div class="section-summary">
             <h3>PII (Personal Identifiable Information) Masking</h3>
-            <p>როდესაც არ გვაქვს Local LLM-ის ფუფუნება და Cloud (OpenAI) უნდა გამოვიყენოთ, აუცილებელია <strong>მონაცემების დაფარვა (Masking)</strong>. სანამ კლიენტის საჩივარი წავა OpenAI-ში, ლოკალური სკრიპტით ყველა სახელი, ტელეფონის ნომერი და პირადი ნომერი უნდა შეიცვალოს XXXXX-ით.</p>
+            <p>როდესაც არ გვაქვს Local LLM-ის ფუფუნება და Cloud (OpenAI/Anthropic) უნდა გამოვიყენოთ, აუცილებელია <strong>მონაცემების დაფარვა (Masking)</strong>. სანამ კლიენტის საჩივარი წავა LLM-ში, ლოკალური სკრიპტით ყველა სახელი, ტელეფონის ნომერი და პირადი ნომერი უნდა შეიცვალოს XXXXX-ით.</p>
             
             <h3>ROI (Return on Investment)</h3>
             <p>ROI არის ინვესტიციის უკუგება. ბიზნესს არ აინტერესებს რა ტექნოლოგიას იყენებთ, მას აინტერესებს რამდენ ფულს დაუზოგავთ. ROI ითვლება: <strong>(ადამიანის დროის ფასი - API ტოკენების ხარჯი) / პროექტის დანერგვის ღირებულება</strong>.</p>

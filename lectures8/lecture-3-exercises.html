@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ლექცია 3: პრაქტიკული სავარჯიშოები | AI Research, RAG &amp; Content Creation</title>
+    <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'FiraGO', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.6rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.15rem;
+            opacity: 0.95;
+        }
+
+        .navigation {
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .nav-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.4rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-link.current {
+            background: #2c3e50;
+        }
+
+        .exercise-intro {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #4caf50;
+        }
+
+        .exercise-intro h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .exercise-card {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+            position: relative;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .exercise-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            flex-shrink: 0;
+        }
+
+        .exercise-title {
+            flex-grow: 1;
+        }
+
+        .exercise-title h2 {
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+            font-size: 1.5rem;
+        }
+
+        .exercise-time {
+            background: #fff3e0;
+            color: #ff9800;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .step-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-section h3 {
+            color: #667eea;
+            margin-bottom: 0.8rem;
+            font-size: 1.25rem;
+        }
+
+        .step-section h4 {
+            color: #2c3e50;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .prompt-box {
+            background: #e8f5e9;
+            padding: 1.4rem;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 1rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #1e3a1e;
+        }
+
+        .code-box {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 1.4rem;
+            border-radius: 10px;
+            border-left: 5px solid #61afef;
+            margin: 1rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.92rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .highlight-box {
+            background: #e3f2fd;
+            padding: 1.3rem;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            margin: 1rem 0;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 1.3rem;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 1rem 0;
+        }
+
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+            margin: 1rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin: 0.8rem 0;
+            padding: 0.8rem 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            background: #f1f8e9;
+            border-color: #4caf50;
+            transform: translateX(5px);
+        }
+
+        .checklist-item input {
+            margin-right: 0.8rem;
+            margin-top: 0.25rem;
+            transform: scale(1.2);
+        }
+
+        .footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #dee2e6;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .exercise-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>✏️ ლექცია 3: პრაქტიკული სავარჯიშოები</h1>
+            <p>AI Research, RAG, OpenAI Canvas, Claude Projects/Artifacts &amp; SMM Content Engine</p>
+        </header>
+
+        <nav class="navigation">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">🏠 მთავარი</a>
+                <a href="v2-lecture-3-slides.html" class="nav-link">📊 სლაიდები</a>
+                <a href="lecture-3-summary.html" class="nav-link">📚 შეჯამება</a>
+                <a href="lecture-3-study-guide.html" class="nav-link">📖 სასწავლო გეგმა</a>
+                <a href="lecture-3-exercises.html" class="nav-link current">✏️ სავარჯიშოები</a>
+                <a href="lecture-3-quick-ref.html" class="nav-link">⚡ სწრაფი ცნობარი</a>
+                <a href="homework-3.html" class="nav-link">📝 დავალება 3</a>
+            </div>
+        </nav>
+
+        <section class="exercise-intro">
+            <h2>🎯 სავარჯიშოების მიზნები და კომპლექსური ხედვა</h2>
+            <p>ეს სავარჯიშოები შექმნილია იმისათვის, რომ პრაქტიკულად დაეუფლოთ 2026 წლის უახლეს კვლევით და საკონტენტო ეკოსისტემას:</p>
+            <ul style="padding-left: 2rem; margin-top: 0.8rem;">
+                <li><strong>ავტონომიური კვლევა:</strong> Perplexity Pro Search &amp; OpenAI Deep Research მრავალეტაპიანი ძიებითა და ციტირებებით;</li>
+                <li><strong>Grounded RAG &amp; Audio:</strong> Google NotebookLM მრავალდოკუმენტიანი ბაზითა და Studio Audio Overview-ით;</li>
+                <li><strong>Long Context Ingestion:</strong> 1M-2M ტოკენიანი სინთეზი vs ტრადიციული ვექტორული Chunking;</li>
+                <li><strong>ინტერაქტიული სამუშაო სივრცეები:</strong> OpenAI Canvas-ის ინლაინ რედაქტირება და Claude Projects/Artifacts-ის გაშვებადი ვიჯეტები;</li>
+                <li><strong>SMM კონტენტ-ძრავი:</strong> 1 კვლევა → 5 სოციალური ფორმატი (LinkedIn, IG კარუსელი, TikTok სცენარი, 7-დღიანი კალენდარი).</li>
+            </ul>
+            <p style="margin-top: 1rem; color: #667eea; font-weight: 600;">⏱️ სავარჯიშოების საერთო ხანგრძლივობა: ~115 წუთი (ინტენსიური პრაქტიკა)</p>
+        </section>
+
+        <!-- სავარჯიშო 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">1</div>
+                <div class="exercise-title">
+                    <h2>ავტონომიური სიღრმისეული კვლევა (Perplexity &amp; OpenAI Deep Research)</h2>
+                    <p style="color: #666;">მრავალეტაპიანი ავტონომიური ვებ-ძიება, Focus რეჟიმები და პირველწყაროების გადამოწმება</p>
+                </div>
+                <div class="exercise-time">⏱️ 25 წუთი</div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 1: Perplexity Pro Search &amp; Academic Focus</h3>
+                <p>გახსენით <strong>perplexity.ai</strong>. აირჩიეთ Focus რეჟიმი: <em>Academic</em> (Semantic Scholar, ArXiv) ან <em>All</em>, და გაუშვით კომპლექსური ინდუსტრიული შეკითხვა:</p>
+                <div class="prompt-box">"გააანალიზე ხელოვნური ინტელექტის გავლენა ფინანსურ სექტორსა და საბანკო რისკების მართვაზე 2025-2026 წლებში.
+მოიყვანე კონკრეტული სტატისტიკა (ROI, ხარჯების შემცირება, თაღლითობის გამოვლენის სიზუსტე).
+ყველა ციფრს დაურთე აკადემიური ან ინდუსტრიული პირველწყარო."</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex1_s1">
+                        <label for="ex1_s1">დავაკვირდი Perplexity-ის მიერ დაგენერირებულ 3-4 ქვე-ძიებას (CoT search queries).</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex1_s2">
+                        <label for="ex1_s2">დავაწკაპუნე მინიმუმ 2 ციტირების ნომერს (Footnote) და გადავამოწმე პირველწყარო რეალურ ვებ-გვერდზე.</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 2: OpenAI Deep Research (ან Pro Reasoning Search)</h3>
+                <p>გახსენით ChatGPT Plus / Pro (o3-mini ან Deep Research რეჟიმი) და მიეცით ავტონომიური კვლევის დავალება:</p>
+                <div class="prompt-box">"ჩაატარე სიღრმისეული კონკურენტული ანალიზი B2B AI აგენტების პლატფორმებზე (OpenAI Agents SDK, LangGraph, CrewAI, AutoGen).
+შეადარე მათი არქიტექტურა, Enterprise მზაობა, ფასწარმოქმნა და დეველოპერის გამოცდილება.
+წარმოადგინე სრული შედარებითი ცხრილი და 3 სტრატეგიული რეკომენდაცია CTO-სთვის."</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex1_s3">
+                        <label for="ex1_s3">დავაკვირდი მოდელის მიერ ათობით საიტის სკანირებასა და კვლევითი რეპორტის სტრუქტურას.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex1_s4">
+                        <label for="ex1_s4">შეინახეთ მიღებული რეპორტი Markdown ან PDF ფორმატში შემდგომი სავარჯიშოებისთვის.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">2</div>
+                <div class="exercise-title">
+                    <h2>Google NotebookLM &amp; Grounded RAG (Audio Overviews)</h2>
+                    <p style="color: #666;">მრავალდოკუმენტიანი ანალიზი, ნულოვანი ჰალუცინაცია და AI პოდკასტის გენერაცია</p>
+                </div>
+                <div class="exercise-time">⏱️ 25 წუთი</div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 1: Notebook-ის შექმნა და დოკუმენტების იმპორტი</h3>
+                <p>გახსენით <strong>notebooklm.google.com</strong>. შექმენით ახალი ბლოკნოტი და ატვირთეთ მინიმუმ 2 სხვადასხვა ტიპის წყარო:</p>
+                <div class="highlight-box">
+                    <ul>
+                        <li>წყარო A: წინა სავარჯიშოში მიღებული კვლევის ტექსტი ან კომპანიის PDF ანგარიში;</li>
+                        <li>წყარო B: YouTube ვიდეოს ბმული (ტექნოლოგიური პრეზენტაცია ან ინტერვიუ);</li>
+                        <li>წყარო C: ვებ-სტატიის URL.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 2: Grounded კითხვა-პასუხი &amp; Studio Artifacts</h3>
+                <p>დაუსვით შეკითხვა NotebookLM-ს და შეამოწმეთ ზუსტი ციტირებები:</p>
+                <div class="prompt-box">"ამ დოკუმენტებზე დაყრდნობით, რა არის 3 ყველაზე დიდი ბიზნეს რისკი და მათი გადაჭრის გზები?
+მიუთითე მხოლოდ ის ფაქტები, რაც პირდაპირ წერია წყაროებში. არ გამოიგონო გარე ინფორმაცია."</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex2_s1">
+                        <label for="ex2_s1">დავაჭირე პასუხში მოცემულ ციტირებებს და დავინახე ზუსტი აბზაცი საწყის PDF-ში.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex2_s2">
+                        <label for="ex2_s2">Studio პანელში დავაგენერირე FAQ და Study Guide ერთი კლიკით.</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 3: Audio Overview (Deep Dive AI პოდკასტი)</h3>
+                <p>დააჭირეთ <strong>Generate Audio Overview</strong> ღილაკს. სურვილისამებრ გამოიყენეთ <em>Customize</em> ოპცია (მაგ: "Focus on actionable advice for marketing leaders").</p>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex2_s3">
+                        <label for="ex2_s3">მოვისმინე 2 AI წამყვანის დიალოგი ჩემს მასალაზე და გადმოვწერე MP3 ჩანაწერი.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">3</div>
+                <div class="exercise-title">
+                    <h2>Long Context Ingestion vs Traditional Vector RAG</h2>
+                    <p style="color: #666;">1M-2M ტოკენიანი კონტექსტი, Prompt Caching და Needle-in-a-Haystack სინთეზი</p>
+                </div>
+                <div class="exercise-time">⏱️ 20 წუთი</div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 1: დიდი დოკუმენტის სრული ჩატვირთვა (Full Ingestion)</h3>
+                <p>Google AI Studio-ში (Gemini 2.0 Flash / Pro) ან Claude 3.7 Sonnet-ში ჩატვირთეთ 100+ გვერდიანი დოკუმენტი (ან წიგნი/კვლევა 100k+ ტოკენი):</p>
+                <div class="prompt-box">"წაიკითხე მთლიანი დოკუმენტი.
+1. იპოვე მე-4 თავში ნახსენები კონკრეტული მეტრიკა და შეადარე მე-8 თავის დასკვნებს.
+2. არსებობს თუ არა წინააღმდეგობა ავტორის საწყის დაშვებებსა და საბოლოო რეკომენდაციებს შორის?
+3. ამოიღე 5 ციტატა, რომლებიც ყველაზე კარგად ასახავს პროექტის მთავარ ინსაიტს."</div>
+                <div class="highlight-box">
+                    <h4>💡 რატომ არის ეს უპირატესი ჩვეულებრივ Vector Chunking-ზე?</h4>
+                    <p>ტრადიციული RAG ტექსტს ჭრის 500-ტოკენიან ნაჭრებად. თუ პასუხი გაბნეულია მე-4 და მე-8 თავებზე, ვექტორული ძიება ხშირად ვერ აკავშირებს მათ. Long-Context მოდელი კი მთელ სურათს ერთიანობაში ხედავს.</p>
+                </div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex3_s1">
+                        <label for="ex3_s1">მოდელმა უშეცდომოდ იპოვა დეტალები დიდი ტექსტის სხვადასხვა ნაწილებიდან.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">4</div>
+                <div class="exercise-title">
+                    <h2>OpenAI Canvas &amp; Claude Projects/Artifacts</h2>
+                    <p style="color: #666;">ინლაინ რედაქტირება, Reading Level სლაიდერი და ინტერაქტიული HTML/React არტეფაქტები</p>
+                </div>
+                <div class="exercise-time">⏱️ 25 წუთი</div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 1: OpenAI Canvas — Targeted Inline Editing</h3>
+                <p>გახსენით ChatGPT და აირჩიეთ <strong>Canvas</strong> რეჟიმი. ჩასვით წინა კვლევის დრაფტი:</p>
+                <div class="highlight-box">
+                    <ol>
+                        <li>მონიშნეთ კონკრეტული აბზაცი მაუსით;</li>
+                        <li>მენიუში აირჩიეთ <strong>Ask ChatGPT</strong> და მიეცით ლოკალური დავალება: <em>"გადაწერე ეს აბზაცი უფრო ენერგიული და ლაკონიური ტონით"</em>;</li>
+                        <li>შეამჩნიეთ, რომ შეიცვალა <strong>მხოლოდ მონიშნული ნაწილი</strong> მთლიანი ტექსტის ხელახალი გენერირების გარეშე;</li>
+                        <li>გამოსცადეთ ქვედა მარჯვენა ინსტრუმენტები: <strong>Adjust length</strong>, <strong>Reading level</strong>, <strong>Suggest edits</strong>.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 2: Claude Projects &amp; Interactive Artifacts</h3>
+                <p>გახსენით Claude და შექმენით ახალი <strong>Project</strong>. Project Knowledge-ში ატვირთეთ კვლევის მასალები. შემდეგ მოითხოვეთ ინტერაქტიული არტეფაქტი:</p>
+                <div class="prompt-box">"ჩემი კვლევის შედეგებზე დაყრდნობით, შექმენი ინტერაქტიული ROI კალკულატორი HTML/React-ის გამოყენებით Artifact-ის სახით.
+მომხმარებელმა უნდა შეძლოს:
+- კომპანიის თანამშრომლების რაოდენობის შეყვანა (Input slider);
+- საშუალო ხელფასის მითითება;
+- კვირაში დაზოგილი საათების არჩევა (1-დან 10 საათამდე).
+კალკულატორმა რეალურ დროში უნდა დათვალოს წლიური ფინანსური ეკონომია და ROI პროცენტი ლამაზი გრაფიკით."</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex4_s1">
+                        <label for="ex4_s1">Canvas-ში შევასრულე 2 ლოკალური ინლაინ რედაქტირება და გამოვიყენე სლაიდერი.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex4_s2">
+                        <label for="ex4_s2">Claude-ის მარჯვენა პანელში გაეშვა ინტერაქტიული Artifact ვიჯეტი ცოცხალი ინტერფეისით.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- სავარჯიშო 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">5</div>
+                <div class="exercise-title">
+                    <h2>SMM Content Engine: 1 კვლევა → 5 სოციალური ფორმატი</h2>
+                    <p style="color: #666;">ვირუსული ჰუკები, LinkedIn პოსტი, Instagram კარუსელი და 7-დღიანი კალენდარი</p>
+                </div>
+                <div class="exercise-time">⏱️ 20 წუთი</div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 1: ჰუკების გენერატორი (5 არქეტიპი)</h3>
+                <p>მიეცით მოდელს კვლევის მთავარი მიგნება და მოითხოვეთ 5 სხვადასხვა ტიპის ჰუკი:</p>
+                <div class="prompt-box">"თემა: AI ინსტრუმენტების დანერგვა კომპანიაში 2026 წელს.
+დამიწერე 5 განსხვავებული ჰუკი პირველი 2 ხაზისთვის:
+1. კონტრ-ინტუიციური (Contrarian)
+2. რიცხვებზე და შედეგზე ორიენტირებული (Outcome)
+3. შეცდომაზე / FOMO-ზე აგებული
+4. კურატორობა (Curated list)
+5. პერსონალური ისტორია (Storytelling).
+ტონი: ცოცხალი, დამაინტრიგებელი ქართული, ყოველგვარი რობოტული კლიშეების გარეშე."</div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 2: LinkedIn &amp; Instagram კარუსელის ადაპტაცია</h3>
+                <p>საუკეთესო ჰუკის საფუძველზე შექმენით 2 ფორმატი:</p>
+                <div class="prompt-box">"აირჩიე #2 ჰუკი და დაწერე:
+1. LinkedIn Thought Leadership პოსტი: მოკლე ჰაეროვანი აბზაცები (1-2 წინადადება), 3 ძირითადი ინსაიტი ბულეტებად, პირადი ექსპერტული პოზიცია და დისკუსიის CTA + 3 ჰეშთეგი.
+2. Instagram 7-სლაიდიანი კარუსელის გეგმა:
+   - სლაიდი 1: ქავერი
+   - სლაიდი 2: პრობლემა
+   - სლაიდი 3-5: 3 კონკრეტული ნაბიჯი
+   - სლაიდი 6: შეჯამება (Cheat sheet)
+   - სლაიდი 7: Save & Share CTA."</div>
+            </div>
+
+            <div class="step-section">
+                <h3>🔵 ნაბიჯი 3: მეგა-პრომპტი 1-კვირიანი კალენდრისთვის</h3>
+                <div class="code-box">"შექმენი სრული 7-დღიანი კონტენტ-კალენდარი ამ კვლევის გარშემო ცხრილის სახით:
+სვეტები:
+| დღე | პლატფორმა | Content Pillar | ჰუკი (პირველი 2 ხაზი) | ვიზუალური იდეა | CTA |
+
+გადაანაწილე არხები: LinkedIn (ორშ/ხუთ), Instagram (სამშ/შაბ), TikTok/Reels (ოთხშ), Newsletter (პარ)."</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex5_s1">
+                        <label for="ex5_s1">დავაგენერირე 5 ჰუკი და შევარჩიე ყველაზე ძლიერი.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="ex5_s2">
+                        <label for="ex5_s2">მზად მაქვს LinkedIn პოსტი, Instagram კარუსელი და 1-კვირიანი კალენდრის ცხრილი.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>AI - ხელოვნური ინტელექტი პრაქტიკაში | ლექტორი: გიორგი ბასილაია | Smart Academy 2026</p>
+        </footer>
+    </div>
+</body>
+</html>

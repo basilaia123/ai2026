@@ -31,12 +31,13 @@ def test_parse_command_strips_bot_suffix_and_args():
 def test_registry_lists_the_briefing_commands():
     names = [item.name for item in COMMANDS]
     assert "start" in names
-    assert [item.name for item in menu_commands()] == ["brief", "weather", "fx", "quote", "news", "help"]
+    assert [item.name for item in menu_commands()] == ["brief", "weather", "fx", "quote", "news", "markets", "help"]
     assert button_rows() == [
         [("📋 ბრიფინგი", "brief")],
         [("🌤 ამინდი", "weather"), ("💱 კურსი", "fx")],
         [("💬 ციტატა და ფაქტი", "quote")],
         [("📰 სიახლეები", "news")],
+        [("📈 ბაზრები", "markets")],
     ]
 
 

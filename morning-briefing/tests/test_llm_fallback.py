@@ -233,7 +233,7 @@ def test_default_complete_passes_the_configured_model_id(monkeypatch):
     monkeypatch.setattr(litellm, "completion", fake_completion)
     from providers.llm_litellm import default_complete
 
-    model_id = "gemini/gemini-3.5-flash-lite"
+    model_id = "gemini/gemini-3.8-flash"
     assert default_complete(model=model_id, messages=[], max_tokens=8) == "კარგი"
     assert seen["model"] == model_id
     assert "temperature" not in seen

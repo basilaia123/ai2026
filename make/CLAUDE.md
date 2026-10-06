@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This directory contains a comprehensive Georgian language course on "AI ასისტენტები, აგენტები და No-Code ავტომატიზაცია" (AI Assistants, Agents, and No-Code Automation). The course is structured as 11 sessions (8 online + 3 physical workshops, 22 hours total) covering Custom GPTs, Claude Projects, Make.com, Zapier, n8n, API integration, and RAG systems.
+This directory contains a comprehensive Georgian language course on "AI ასისტენტები, აგენტები და No-Code ავტომატიზაცია" (AI Assistants, Agents, and No-Code Automation). The course is structured as 11 sessions (8 online + 3 physical workshops, 22 hours total) covering Gemini Gems, Claude Projects, Make.com, Zapier, n8n, API integration, and RAG systems.
 
 **Course Hub Files:**
 - **index.html**: Course landing page with syllabus, session schedule, pricing, and registration
@@ -19,7 +19,7 @@ This directory contains a comprehensive Georgian language course on "AI ას�
 - **lecture-X-study-guide.html**: Comprehensive study guide for students
 
 **Homework Assignments:**
-- **homework-X.html**: Standalone homework assignments (30-40 minutes each)
+- **homework-X.html**: Standalone homework assignments (60 mins for HW 1-2, 60-90 mins for HW 3-5; average 60-90 mins, 2-3 hours/week recommended)
 
 ## Architecture
 

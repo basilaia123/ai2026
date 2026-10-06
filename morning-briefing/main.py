@@ -19,6 +19,7 @@ from core.briefing import (
     TRANSLATION_NOTE,
     Runtime,
     append_fx,
+    append_markets,
     append_news_links,
     build_briefing,
     build_system_prompt,
@@ -65,6 +66,8 @@ def build_runtime(config: Mapping[str, Any], env: Mapping[str, str], *, dry_run:
     fx_enabled = bool(fx_block.get("enabled", False))
     news_block = config.get("news") if isinstance(config.get("news"), Mapping) else {}
     news_enabled = bool(news_block.get("enabled", False))
+    markets_block = config.get("markets") if isinstance(config.get("markets"), Mapping) else {}
+    markets_enabled = bool(markets_block.get("enabled", False))
     notifier = None
     if not dry_run:
         channel = str(config["delivery"]["channel"])
@@ -84,6 +87,8 @@ def build_runtime(config: Mapping[str, Any], env: Mapping[str, str], *, dry_run:
         fx_enabled=fx_enabled,
         news=_optional_source(config, env, "news") if news_enabled else None,
         news_enabled=news_enabled,
+        markets=_optional_source(config, env, "markets") if markets_enabled else None,
+        markets_enabled=markets_enabled,
         notifier=notifier,
     )
 
@@ -142,7 +147,8 @@ def _with_model(runtime: Runtime, today: date) -> str:
     except Exception as exc:
         return _factual_fallback(runtime, exc)
     written = append_news_links(runtime, written)
-    return append_fx(runtime, written)
+    written = append_fx(runtime, written)
+    return append_markets(runtime, written)
 
 
 def _factual_fallback(runtime: Runtime, exc: BaseException) -> str:

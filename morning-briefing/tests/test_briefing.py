@@ -83,6 +83,8 @@ def _runtime(**overrides):
         fx_enabled=False,
         news=None,
         news_enabled=False,
+        markets=None,
+        markets_enabled=False,
         notifier=ExplodingNotifier(),
     )
     base.update(overrides)

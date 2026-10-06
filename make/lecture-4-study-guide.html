@@ -218,10 +218,11 @@
         <a href="lecture-4-quick-ref.html" class="nav-link">📋 სწრაფი ცნობარი</a>
         <a href="lecture-4-exercises.html" class="nav-link">💪 სავარჯიშოები</a>
         <a href="lecture-4-study-guide.html" class="nav-link current">📖 სასწავლო გზამკვლევი</a>
+        <a href="executive-agents.html" class="nav-link">🤖 Executive Agents</a>
     </nav>
     <div class="container">
         
-        <h1>📖 სასწავლო გზამკვლევი: ლექცია 4 (n8n & UI Agents)</h1>
+        <h1>📖 სასწავლო გზამკვლევი: ლექცია 4 (n8n, ლოკალური მოდელები & Executive Agents)</h1>
 
         <h2>1. არქიტექტურული სხვაობა: Make.com VS n8n</h2>
         <table style="margin-top: 1rem;">
@@ -255,7 +256,7 @@
         <h2>2. Privacy Compliance (რეგულაციები)</h2>
         <div class="highlight-box">
             <p>კომპანიებს (განსაკუთრებით ევროკავშირსა და აშშ-ში) აქვთ მკაცრი <strong>GDPR / HIPAA</strong> რეგულაციები. თუ სადაზღვევო კომპანია პაციენტის ჯანმრთელობის ისტორიას აგზავნის OpenAI-ში გასაანალიზებლად, ეს არის დანაშაული. გამოსავალი არის <strong>Local LLMs (Ollama)</strong>.</p>
-            <p><strong>Ollama-ს მუშაობის პრინციპი:</strong> ის თქვენს კომპიუტერში/სერვერზე ტვირთავს მოდელების წონებს (Weights), ისევე როგორც პროგრამის ინსტალაციას. გაგზავნილი Prompt თქვენს კომპიუტერს არასოდეს ტოვებს.</p>
+            <p><strong>Ollama-ს მუშაობის პრინციპი:</strong> ის თქვენს კომპიუტერში/სერვერზე ტვირთავს მოდელების წონებს (Weights), ისევე როგორც პროგრამის ინსტალაციას (Llama 4, DeepSeek-V4.1, DeepSeek-R1). გაგზავნილი Prompt თქვენს კომპიუტერს არასოდეს ტოვებს.</p>
         </div>
 
         <h2>3. n8n Expressions (გამოსახულებები)</h2>
@@ -270,6 +271,27 @@
             <p>UI აგენტი ხედავს და მართავს ეკრანს. შეცდომის (Hallucination) გამო მას შეუძლია წაშალოს მნიშვნელოვანი ფაილები, ან გააგზავნოს არასწორი ელ.ფოსტები. ამიტომ <strong>არასოდეს გაუშვათ UI აგენტი თქვენს პირად/სამუშაო კომპიუტერზე!</strong></p>
             <p>გამოიყენეთ <strong>Docker Container</strong> ან ვირტუალური მანქანა (VM). თუ აგენტი რამეს გააფუჭებს, უბრალოდ წაშლით Container-ს და სისტემა არ დაზიანდება.</p>
         </div>
+
+        <h2>5. Executive Agents არქიტექტურა და რისკების კლასიფიკაცია</h2>
+        <div class="highlight-box">
+            <h3>რატომ არის დილის ბრიფინგის აგენტი საუკეთესო სასტარტო პროექტი?</h3>
+            <p>20 აღმასრულებელი/პერსონალური აგენტის ანალიზისას ჩანს მკაფიო ზღვარი რისკების მიხედვით:</p>
+            <ul>
+                <li><strong>დაბალი რისკის (Read-only) აგენტები:</strong> დილის ბრიფინგი, შეხვედრის შეჯამება, კვლევა & Digest. ისინი მხოლოდ <strong>კითხულობენ</strong> მონაცემებს (Open-Meteo, CalDAV, IMAP) და არ გააჩნიათ ბაზაში ჩაწერის ან წაშლის უფლება. ჰალუცინაციის შედეგი მინიმალურია.</li>
+                <li><strong>მაღალი რისკის (Action/Write) აგენტები:</strong> ფინანსური გადარიცხვები, სამოგზაურო ჯავშნები, ჭკვიანი სახლის მართვა. მათ სჭირდებათ საბანკო API-ები და მკაცრი <strong>Human-in-the-Loop (HITL)</strong> ავტორიზაცია ყოველ ტრანზაქციაზე.</li>
+            </ul>
+        </div>
+
+        <h2>6. OS-Level დაგეგმარება (Windows Task Scheduler & Cron)</h2>
+        <p>როდესაც აგენტს ვუშვებთ ლოკალურად ან VPS სერვერზე Make.com-ის SaaS ტრიგერების გარეშე, ავტონომიურობისთვის ვიყენებთ ოპერაციული სისტემის ჩაშენებულ დაგეგმარებას:</p>
+        <div class="code-block">
+# Windows PowerShell (Task Scheduler - გაშვება ყოველ დილით 08:00-ზე):
+schtasks /create /tn "MorningBriefingAgent" /tr "python C:\ai_agents\morning-briefing\main.py" /sc daily /st 08:00
+
+# Linux / macOS (Crontab):
+0 8 * * * /usr/bin/python3 /home/user/morning-briefing/main.py >> /var/log/briefing.log 2>&1
+        </div>
+        <p>💡 იხილეთ აგენტების დეტალური კატალოგი და მუშაობის პრინციპი: <a href="executive-agents.html" style="color: #667eea; font-weight: bold;">Executive & Personal AI Agents გზამკვლევში</a>.</p>
 
     </div>
 </body>

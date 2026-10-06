@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7 თემის პროგრესიული დაფარვა - GIPA AI ტრენინგი</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Noto+Sans+Georgian:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #1F4788;
+            --navy-dark: #153559;
+            --navy-light: #2E5C8A;
+            --gold: #B8860B;
+            --gold-light: #DAA520;
+            --light-blue: #4472C4;
+            --cream: #FFF8E7;
+            --white: #FFFFFF;
+            --gray-light: #F5F5F5;
+            --gray: #666666;
+            --success: #2E8B57;
+            
+            /* Progressive depth colors */
+            --level-1: #E8EFF7;
+            --level-2: #C5D9ED;
+            --level-3: #8AB0D6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans Georgian', sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: var(--white);
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: var(--cream);
+            font-weight: 300;
+        }
+        
+        .legend {
+            background: var(--gray-light);
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .legend-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        
+        .legend-text {
+            font-weight: 600;
+            color: var(--navy);
+        }
+        
+        .legend-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .table-wrapper {
+            padding: 2rem;
+            overflow-x: auto;
+        }
+        
+        .topics-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .topics-table thead th {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: var(--white);
+            padding: 1.5rem 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .topics-table thead th:first-child {
+            border-top-left-radius: 15px;
+            width: 20%;
+        }
+        
+        .topics-table thead th:last-child {
+            border-top-right-radius: 15px;
+        }
+        
+        .topics-table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .topics-table tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .topic-name-cell {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: var(--white);
+            padding: 1.5rem 1rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            vertical-align: top;
+            position: relative;
+        }
+        
+        .topic-name-cell::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: var(--gold);
+        }
+        
+        .topics-table td {
+            padding: 1.5rem 1rem;
+            vertical-align: top;
+            border-bottom: 1px solid #e0e0e0;
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+        
+        .topics-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .package-cell {
+            position: relative;
+        }
+        
+        .package-cell.level-1 {
+            background: linear-gradient(135deg, var(--level-1) 0%, var(--white) 100%);
+        }
+        
+        .package-cell.level-2 {
+            background: linear-gradient(135deg, var(--level-2) 0%, var(--level-1) 100%);
+        }
+        
+        .package-cell.level-3 {
+            background: linear-gradient(135deg, var(--level-3) 0%, var(--level-2) 100%);
+        }
+        
+        .package-cell:hover {
+            transform: scale(1.02);
+            box-shadow: inset 0 0 0 2px var(--gold);
+            z-index: 5;
+        }
+        
+        .cell-title {
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .depth-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .depth-basic {
+            background: var(--level-1);
+            color: var(--navy);
+            border: 2px solid var(--navy-light);
+        }
+        
+        .depth-intermediate {
+            background: var(--level-2);
+            color: var(--navy);
+            border: 2px solid var(--light-blue);
+        }
+        
+        .depth-advanced {
+            background: var(--level-3);
+            color: var(--white);
+            border: 2px solid var(--navy);
+        }
+        
+        .cell-content {
+            color: #333;
+            line-height: 1.7;
+        }
+        
+        .cell-content ul {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+        
+        .cell-content li {
+            padding: 0.4rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .cell-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-weight: 700;
+        }
+        
+        .output-cell {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--white) 100%);
+            border-left: 4px solid var(--gold);
+        }
+        
+        .output-title {
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .output-content {
+            color: #444;
+            font-weight: 600;
+        }
+        
+        .footer {
+            background: var(--gray-light);
+            padding: 2rem;
+            text-align: center;
+            color: var(--gray);
+        }
+        
+        .footer-note {
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        
+        .print-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(184, 134, 11, 0.3);
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans Georgian', sans-serif;
+        }
+        
+        .print-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(184, 134, 11, 0.4);
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .print-button {
+                display: none;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .topics-table thead th {
+                position: static;
+            }
+            
+            .topics-table tbody tr:hover {
+                transform: none;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .table-wrapper {
+                overflow-x: scroll;
+            }
+            
+            .topics-table {
+                min-width: 1000px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .legend {
+                gap: 1rem;
+            }
+            
+            .print-button {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>7 თემის პროგრესიული დაფარვა</h1>
+            <p>GIPA AI ინსტრუმენტების ტრენინგი - სამივე პაკეტის შედარება</p>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--level-1);"></div>
+                <div>
+                    <div class="legend-text">პაკეტი 1: Basic</div>
+                    <div class="legend-desc">საფუძვლები</div>
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--level-2);"></div>
+                <div>
+                    <div class="legend-text">პაკეტი 2: Intermediate</div>
+                    <div class="legend-desc">გაღრმავება</div>
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--level-3);"></div>
+                <div>
+                    <div class="legend-text">პაკეტი 3: Advanced</div>
+                    <div class="legend-desc">ოსტატობა</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-wrapper">
+            <table class="topics-table">
+                <thead>
+                    <tr>
+                        <th>თემა</th>
+                        <th>პაკეტი 1: საბაზისო (4 სთ)</th>
+                        <th>პაკეტი 2: პროფესიონალური (8 სთ)</th>
+                        <th>პაკეტი 3: პრემიუმ (12 სთ)</th>
+                        <th>Output რას იღებს</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Topic 1 -->
+                    <tr>
+                        <td class="topic-name-cell">
+                            1. AI-ის შესაძლებლობები და რისკები აკადემიურ საქმიანობაში
+                        </td>
+                        <td class="package-cell level-1">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-basic">Basic</span>
+                                Overview
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>რა შეუძლია AI-ს აკადემიაში</li>
+                                    <li>რა ვერ/არ უნდა გააკეთოს</li>
+                                    <li>5 კრიტიკული რისკი</li>
+                                    <li>Hallucinations, Bias, Privacy</li>
+                                    <li>Over-reliance, Student misuse</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-2">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-intermediate">Intermediate</span>
+                                Deep Dive
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>10 რისკი დეტალურად</li>
+                                    <li>რისკების მართვის სტრატეგიები</li>
+                                    <li>GDPR compliance</li>
+                                    <li>Quality degradation prevention</li>
+                                    <li>Job displacement discussions</li>
+                                    <li>Technical failures - backup plans</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-3">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-advanced">Advanced</span>
+                                Cases & Policy
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>რთული სცენარების განხილვა</li>
+                                    <li>Institutional risk management</li>
+                                    <li>დეპარტამენტ-სპეციფიკური რისკები</li>
+                                    <li>Crisis management protocols</li>
+                                    <li>Long-term sustainability planning</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="output-cell">
+                            <div class="output-title">🎯 მონაწილე იცის:</div>
+                            <div class="output-content">
+                                როგორ გამოიყენოს AI უსაფრთხოდ და ეფექტურად აკადემიურ საქმიანობაში, როგორ მართოს რისკები და როგორ შექმნას institutional safeguards
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Topic 2 -->
+                    <tr>
+                        <td class="topic-name-cell">
+                            2. Prompt Engineering აკადემიურ საქმიანობაში
+                        </td>
+                        <td class="package-cell level-1">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-basic">Basic</span>
+                                5 ოქროს წესი
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>იყავი კონკრეტული</li>
+                                    <li>მიეცი კონტექსტი</li>
+                                    <li>მოითხოვე სტრუქტურა</li>
+                                    <li>გამოიყენე მაგალითები</li>
+                                    <li>იტერაცია და refinement</li>
+                                    <li>Hands-on: პირველი prompts</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-2">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-intermediate">Intermediate</span>
+                                15 ტექნიკა
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>Role prompting</li>
+                                    <li>Few-shot learning</li>
+                                    <li>Chain of thought</li>
+                                    <li>Context stacking</li>
+                                    <li>Constraints & Format specs</li>
+                                    <li>Temperature control</li>
+                                    <li>Multi-turn conversations</li>
+                                    <li>Meta-prompting</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-3">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-advanced">Advanced</span>
+                                Custom Workflows
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>Claude Projects setup</li>
+                                    <li>Custom GPTs creation</li>
+                                    <li>Persona libraries</li>
+                                    <li>Automated pipelines</li>
+                                    <li>Department-specific assistants</li>
+                                    <li>Advanced prompt chaining</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="output-cell">
+                            <div class="output-title">🎯 მონაწილე იცის:</div>
+                            <div class="output-content">
+                                როგორ დაწეროს ეფექტური prompts, შექმნას custom AI assistants და ავტომატიზებული workflows-ები თავისი სასწავლო პროცესისთვის
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Topic 3 -->
+                    <tr>
+                        <td class="topic-name-cell">
+                            3. AI ინსტრუმენტების პრაქტიკული უნარები სწავლებასა და კვლევაში
+                        </td>
+                        <td class="package-cell level-1">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-basic">Basic</span>
+                                2-3 სავარჯიშო
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>სილაბუსის შექმნა AI-ით</li>
+                                    <li>შეფასების რუბრიკა</li>
+                                    <li>ლექციის outline</li>
+                                    <li>Hands-on: breakout rooms</li>
+                                    <li>Quality checking basics</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-2">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-intermediate">Intermediate</span>
+                                6-8 სავარჯიშო
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>სრული სასწავლო cycle</li>
+                                    <li>დაგეგმვა → სწავლება → შეფასება</li>
+                                    <li>Case studies generation</li>
+                                    <li>Discussion prompts</li>
+                                    <li>Personalized feedback</li>
+                                    <li>Perplexity research</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-3">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-advanced">Advanced</span>
+                                10+ სავარჯიშო
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>მულტიმედია შექმნა</li>
+                                    <li>ვიდეო (Runway, Veo)</li>
+                                    <li>აუდიო (ElevenLabs ქართულად)</li>
+                                    <li>Grant writing (Horizon Europe)</li>
+                                    <li>Full automation workflows</li>
+                                    <li>Bring Your Own Material</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="output-cell">
+                            <div class="output-title">🎯 მონაწილე იცის:</div>
+                            <div class="output-content">
+                                როგორ შექმნას სასწავლო მასალები, კვლევითი პროექტები და მულტიმედია კონტენტი AI-ის დახმარებით სრული სასწავლო cycle-ისთვის
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Topic 4 -->
+                    <tr>
+                        <td class="topic-name-cell">
+                            4. აკადემიური ეთიკა და პლაგიატი AI-ის პირობებში
+                        </td>
+                        <td class="package-cell level-1">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-basic">Basic</span>
+                                საფუძვლები
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>რა არის პლაგიატი AI-თან</li>
+                                    <li>Traditional vs AI plagiarism</li>
+                                    <li>Gray zones განსაზღვრა</li>
+                                    <li>10 კონკრეტული სცენარი</li>
+                                    <li>ეთიკური საფუძვლები</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-2">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-intermediate">Intermediate</span>
+                                ამოცნობის გამოწვევები
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>Detection tools demo</li>
+                                    <li>GPTZero (~85% accuracy)</li>
+                                    <li>Turnitin AI (~90% accuracy)</li>
+                                    <li>False positives analysis</li>
+                                    <li>Prevention >> Detection</li>
+                                    <li>AI-proof assignments design</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-3">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-advanced">Advanced</span>
+                                Institutional Policy
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>GIPA AI Policy co-creation</li>
+                                    <li>8-section comprehensive policy</li>
+                                    <li>Enforcement strategies</li>
+                                    <li>Appeal procedures</li>
+                                    <li>Educational vs punitive approach</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="output-cell">
+                            <div class="output-title">🎯 მონაწილე იცის:</div>
+                            <div class="output-content">
+                                როგორ ამოიცნოს და თავიდან აიცილოს პლაგიატი, გამოიყენოს detection tools და შექმნას institutional policy AI-ის ეთიკური გამოყენებისთვის
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Topic 5 -->
+                    <tr>
+                        <td class="topic-name-cell">
+                            5. AI-ის დასაშვები და დაუშვებელი გამოყენების მაგალითები
+                        </td>
+                        <td class="package-cell level-1">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-basic">Basic</span>
+                                10 მაგალითი
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>5 დასაშვები სცენარი</li>
+                                    <li>5 დაუშვებელი სცენარი</li>
+                                    <li>მკაფიო, black & white cases</li>
+                                    <li>პედაგოგისთვის და სტუდენტისთვის</li>
+                                    <li>Brainstorming vs copy-paste</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-2">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-intermediate">Intermediate</span>
+                                20+ სცენარი
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>Gray zones დეტალური განხილვა</li>
+                                    <li>AI-assisted vs AI-generated</li>
+                                    <li>Translation & paraphrasing</li>
+                                    <li>Feedback loops</li>
+                                    <li>Collaboration scenarios</li>
+                                    <li>Group discussion & peer review</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-3">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-advanced">Advanced</span>
+                                Custom სცენარები
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>სამართლის ფაკულტეტი</li>
+                                    <li>საჯარო მმართველობა</li>
+                                    <li>მედია და კომუნიკაცია</li>
+                                    <li>ეკონომიკა და ბიზნესი</li>
+                                    <li>Department-specific cases</li>
+                                    <li>Real-world dilemmas</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="output-cell">
+                            <div class="output-title">🎯 მონაწილე იცის:</div>
+                            <div class="output-content">
+                                როგორ განასხვავოს დასაშვები და დაუშვებელი AI გამოყენება, როგორ მართოს gray zones და როგორ გადაწყვიტოს დეპარტამენტ-სპეციფიკური სიტუაციები
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Topic 6 -->
+                    <tr>
+                        <td class="topic-name-cell">
+                            6. AI სასწავლო მასალების, დავალებების და შეფასების შექმნაში
+                        </td>
+                        <td class="package-cell level-1">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-basic">Basic</span>
+                                Templates
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>სილაბუსის template</li>
+                                    <li>დავალების template</li>
+                                    <li>შეფასების რუბრიკა</li>
+                                    <li>10-15 მზა template</li>
+                                    <li>Google Drive integration</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-2">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-intermediate">Intermediate</span>
+                                Full Toolkit
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>15 კვირის სილაბუსი</li>
+                                    <li>კვირეული lesson plans</li>
+                                    <li>MCQ, Essay, Case studies</li>
+                                    <li>Detailed rubrics (Bloom's)</li>
+                                    <li>Personalized feedback templates</li>
+                                    <li>30+ professional templates</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-3">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-advanced">Advanced</span>
+                                Advanced Creation
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>Interactive presentations (Gamma)</li>
+                                    <li>Video lectures (Runway, Veo)</li>
+                                    <li>Audio content (ElevenLabs)</li>
+                                    <li>Visual aids (Midjourney, DALL-E)</li>
+                                    <li>Automation workflows</li>
+                                    <li>50+ advanced templates</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="output-cell">
+                            <div class="output-title">🎯 მონაწილე იცის:</div>
+                            <div class="output-content">
+                                როგორ შექმნას სრული სასწავლო მასალები, დავალებები და შეფასების სისტემები AI-ით, მულტიმედია კონტენტის ჩათვლით
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Topic 7 -->
+                    <tr>
+                        <td class="topic-name-cell">
+                            7. სტუდენტებისთვის AI-ის გამოყენების წესების ფორმულირება
+                        </td>
+                        <td class="package-cell level-1">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-basic">Basic</span>
+                                Template
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>მზა Google Doc template</li>
+                                    <li>4-section სტრუქტურა</li>
+                                    <li>რა დაშვებულია</li>
+                                    <li>რა აკრძალულია</li>
+                                    <li>როგორ დავაციტირო AI</li>
+                                    <li>შედეგები წესების დარღვევისას</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-2">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-intermediate">Intermediate</span>
+                                Customization
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>კურსის-სპეციფიკური წესები</li>
+                                    <li>სამართლის კურსი</li>
+                                    <li>მედია კურსი</li>
+                                    <li>ეკონომიკის კურსი</li>
+                                    <li>Peer review workshop</li>
+                                    <li>Gray zones განხილვა</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="package-cell level-3">
+                            <div class="cell-title">
+                                <span class="depth-badge depth-advanced">Advanced</span>
+                                Co-creation
+                            </div>
+                            <div class="cell-content">
+                                <ul>
+                                    <li>GIPA AI Policy Workshop</li>
+                                    <li>8-section comprehensive doc</li>
+                                    <li>Purpose, Scope, Definitions</li>
+                                    <li>Faculty vs Student rules</li>
+                                    <li>Detection & Enforcement</li>
+                                    <li>Support, Training, Updates</li>
+                                    <li>Ready for Senate approval</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="output-cell">
+                            <div class="output-title">🎯 მონაწილე იცის:</div>
+                            <div class="output-content">
+                                როგორ ჩამოაყალიბოს მკაფიო წესები სტუდენტებისთვის AI-ის გამოყენებაზე და როგორ შექმნას institutional policy GIPA-ს დონეზე
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-note">
+                <strong style="color: var(--navy);">შენიშვნა:</strong> 
+                ყველა პაკეტი აგებულია წინაზე - პაკეტი 2 მოიცავს პაკეტი 1-ის ყველა თემას პლუს დამატებით, 
+                პაკეტი 3 მოიცავს პაკეტი 2-ის ყველაფერს პლუს პრემიუმ შინაარსს.
+                <br><br>
+                <strong style="color: var(--gold);">რეკომენდებული:</strong> 
+                პაკეტი 2 (პროფესიონალური) გთავაზობთ საუკეთესო ფასი/ღირებულების თანაფარდობას და 
+                მოიცავს ყველა ძირითად თემას სრული დეტალებით.
+            </div>
+        </div>
+    </div>
+    
+    <button class="print-button" onclick="window.print()">🖨️ დაბეჭდვა / PDF</button>
+    
+    <script>
+        // Smooth scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.topics-table tbody tr').forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(20px)';
+            row.style.transition = `all 0.6s ease-out ${index * 0.1}s`;
+            observer.observe(row);
+        });
+    </script>
+</body>
+</html>

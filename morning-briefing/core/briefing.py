@@ -11,6 +11,7 @@ from typing import Any
 
 from core.interfaces import MailItem, Meeting
 from sources.fx import format_fx
+from sources.markets import format_markets
 from sources.news import format_headlines
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,8 @@ class Runtime:
     fx_enabled: bool
     news: Any
     news_enabled: bool
+    markets: Any
+    markets_enabled: bool
     notifier: Any
 
 
@@ -177,6 +180,13 @@ def append_fx(runtime: Runtime, text: str) -> str:
     return text.rstrip() + "\n\n" + build_briefing(runtime, sections=("fx",))
 
 
+def append_markets(runtime: Runtime, text: str) -> str:
+    """Attach code-formatted prices. The model must not rewrite them or add advice."""
+    if not runtime.markets_enabled:
+        return text
+    return text.rstrip() + "\n\n" + build_briefing(runtime, sections=("markets",))
+
+
 def append_news_links(runtime: Runtime, text: str) -> str:
     """Attach the headline links. The model only sees titles."""
     if not runtime.news_enabled:
@@ -195,6 +205,8 @@ def _default_sections(runtime: Runtime) -> list[str]:
         names.append("news")
     if runtime.fx_enabled:
         names.append("fx")
+    if runtime.markets_enabled:
+        names.append("markets")
     return names
 
 
@@ -215,6 +227,8 @@ def _render_section(runtime: Runtime, name: str, *, quote_note: str | None = Non
             return "ვალუტის კურსი: გამორთულია", False
         body = _fx_body(runtime) or FX_UNAVAILABLE
         return body, body != FX_UNAVAILABLE
+    if name == "markets":
+        return _markets_section(runtime)
     raise ValueError(f"unknown section {name}")
 
 
@@ -261,6 +275,27 @@ def _news_limit(runtime: Runtime, key: str, default: int) -> int:
         if isinstance(value, int) and not isinstance(value, bool) and value > 0:
             return value
     return default
+
+
+def _markets_section(runtime: Runtime) -> tuple[str, bool]:
+    if not runtime.markets_enabled:
+        return "ბაზრები: გამორთულია", False
+    text = format_markets(_markets_data(runtime))
+    useful = "$" in text
+    return text, useful
+
+
+def _markets_data(runtime: Runtime) -> dict:
+    if runtime.markets is None:
+        return {"crypto": None, "stocks": None}
+    try:
+        data = runtime.markets.fetch()
+    except Exception as exc:
+        _unavailable("markets", exc)
+        return {"crypto": None, "stocks": None}
+    if not isinstance(data, dict):
+        return {"crypto": None, "stocks": None}
+    return data
 
 
 def _fx_body(runtime: Runtime) -> str | None:

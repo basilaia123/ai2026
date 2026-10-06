@@ -121,6 +121,21 @@ def validate_config(config: Mapping[str, Any]) -> None:
             timeout = block.get("timeout_seconds")
             if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or timeout <= 0:
                 raise ValueError("news.timeout_seconds must be a positive number")
+    if "markets" in config:
+        block = _mapping(config, "markets")
+        if "enabled" not in block or not isinstance(block["enabled"], bool):
+            raise ValueError("markets.enabled must be true or false")
+        if block["enabled"]:
+            _nonempty_str(block, "source")
+            _nonempty_str(block, "user_agent")
+            _nonempty_str(block, "vs_currency")
+            crypto = _string_list(block.get("crypto"), "markets.crypto")
+            stocks = _string_list(block.get("stocks"), "markets.stocks")
+            if not crypto and not stocks:
+                raise ValueError("markets needs at least one crypto id or stock symbol")
+            timeout = block.get("timeout_seconds")
+            if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or timeout <= 0:
+                raise ValueError("markets.timeout_seconds must be a positive number")
 
 
 def _mapping(config: Mapping[str, Any], key: str) -> Mapping[str, Any]:
@@ -128,6 +143,12 @@ def _mapping(config: Mapping[str, Any], key: str) -> Mapping[str, Any]:
     if not isinstance(value, Mapping):
         raise ValueError(f"{key} must be a mapping")
     return value
+
+
+def _string_list(value: Any, name: str) -> list[str]:
+    if not isinstance(value, list) or not all(isinstance(item, str) and item.strip() for item in value):
+        raise ValueError(f"{name} must be a list of strings")
+    return [item.strip() for item in value]
 
 
 def _nonempty_str(block: Mapping[str, Any], key: str) -> None:

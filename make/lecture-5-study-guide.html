@@ -218,12 +218,24 @@
         <a href="lecture-5-quick-ref.html" class="nav-link">📋 სწრაფი ცნობარი</a>
         <a href="lecture-5-exercises.html" class="nav-link">💪 სავარჯიშოები</a>
         <a href="lecture-5-study-guide.html" class="nav-link current">📖 სასწავლო გზამკვლევი</a>
+        <a href="executive-agents.html" class="nav-link">🤖 Executive Agents</a>
     </nav>
     <div class="container">
         
         <h1>📖 სასწავლო გზამკვლევი: ლექცია 5 (Enterprise, Security & ROI)</h1>
 
-        <h2>1. Human-in-the-Loop (HITL) არქიტექტურა</h2>
+        <h2>1. Lovable როგორც UI Layer</h2>
+        <div class="highlight-box">
+            <p>Lovable prompt-იდან ქმნის responsive ვებაპის ეკრანებს, მონაცემთა ფორმებსა და მომხმარებლის flow-ს. ამ კურსში ის არ ცვლის Make/n8n-ს: <strong>Lovable არის ინტერფეისი</strong>, ხოლო <strong>Make/n8n — ბიზნეს-პროცესის ორკესტრატორი</strong>.</p>
+            <ul>
+                <li><strong>Input:</strong> Support Form აგზავნის POST JSON-ს Make Webhook-ში.</li>
+                <li><strong>Processing:</strong> Make ამოწმებს schema-ს, ფარავს PII-ს და იძახებს AI-ს.</li>
+                <li><strong>Output:</strong> Lovable აჩვენებს სტატუსს; მაღალი რისკის შედეგი ელოდება Human Approval-ს.</li>
+                <li><strong>Security:</strong> საიდუმლო გასაღებები ინახება backend/workflow გარემოში და არა browser code-ში.</li>
+            </ul>
+        </div>
+
+        <h2>2. Human-in-the-Loop (HITL) არქიტექტურა</h2>
         <div class="highlight-box">
             <p>როდესაც საქმე ეხება ფინანსურ გადარიცხვებს, კონტრაქტებს ან კლიენტებთან სენსიტიურ კომუნიკაციას, AI-ის ბრმად ნდობა კატასტროფაა.</p>
             <ul>
@@ -232,8 +244,8 @@
             </ul>
         </div>
 
-        <h2>2. Vision AI - Prompt სტრუქტურა სურათებისთვის</h2>
-        <p>PDF დოკუმენტებიდან მონაცემების ამოსაღებად (Invoice OCR-ის ნაცვლად), Prompt-ს უნდა ჰქონდეს მკაცრი სტრუქტურა:</p>
+        <h2>3. Vision AI - Prompt სტრუქტურა სურათებისთვის</h2>
+        <p>PDF დოკუმენტებიდან და ინვოისებიდან მონაცემების ამოსაღებად (GPT-6.1 Sol / GPT-5.4 Vision, Claude 5.5 Sonnet Vision), Prompt-ს უნდა ჰქონდეს მკაცრი სტრუქტურა:</p>
         <div class="code-block">
 Role: შენ ხარ მთავარი ბუღალტერი, რომლის საქმეა სურათებიდან ტექსტის ამოღება.
 Task: მოწოდებული ინვოისის სურათიდან ამოიღე შემდეგი ველები:
@@ -243,7 +255,7 @@ Task: მოწოდებული ინვოისის სურათი
 Format: დააბრუნე მხოლოდ და მხოლოდ ვალიდური JSON. არ დაწერო არანაირი სხვა ტექსტი.
         </div>
 
-        <h2>3. PII (პერსონალური მონაცემების) მართვა</h2>
+        <h2>4. PII (პერსონალური მონაცემების) მართვა</h2>
         <p>GDPR-ის მიხედვით, პერსონალური მონაცემები (PII) მოიცავს:</p>
         <ul>
             <li>სახელი და გვარი</li>
@@ -253,12 +265,23 @@ Format: დააბრუნე მხოლოდ და მხოლოდ �
         </ul>
         <p><strong>წესი:</strong> LLM მოდელებს არ სჭირდებათ იცოდნენ, რომ კლიენტს ჰქვია "გიორგი". მათ შეუძლიათ ემოცია ან საჩივრის შინაარსი გააანალიზონ PII მონაცემების გარეშეც (Data Masking).</p>
 
-        <h2>4. Production Readiness Checklist</h2>
-        <p>სანამ ავტომატიზაციას ბიზნესს ჩააბარებთ, შეამოწმეთ ეს 3 პუნქტი:</p>
+        <h2>5. Graceful Degradation (Failover Chain)</h2>
+        <div class="highlight-box">
+            <p><strong>არქიტექტურული მდგრადობა:</strong> სისტემა არასოდეს უნდა ჩამოიშალოს 1 API-ის გათიშვის გამო. განვიხილავთ სამდონიან დაცვას:</p>
+            <ul>
+                <li><strong>Primary:</strong> Frontier LLM (მაგ. Claude 5.5 Sonnet / GPT-6.1 Sol) უმაღლესი სიზუსტისთვის.</li>
+                <li><strong>Secondary (Fallback):</strong> სწრაფი და ეკონომიური მოდელი (მაგ. Gemini 3.8 Flash / Gemini 4 Argon / DeepSeek-V4.1), რომელიც ავტომატურად იღებს დატვირთვას Primary მოდელის 429/500 შეცდომისას.</li>
+                <li><strong>Safe Error State:</strong> თუ ყველა LLM მიუწვდომელია, მომხმარებელი იღებს სტანდარტულ თავაზიან შეტყობინებას („თქვენი მოთხოვნა მიღებულია და ოპერატორი განიხილავს“), ხოლო ინჟინერი იღებს Alert-ს Slack-ში/Telegram-ში.</li>
+            </ul>
+        </div>
+
+        <h2>6. Production Readiness Checklist</h2>
+        <p>სანამ ავტომატიზაციას ბიზნესს ჩააბარებთ, შეამოწმეთ ეს 4 პუნქტი:</p>
         <ol>
-            <li><strong>Error Handling:</strong> თუ OpenAI-ის სერვერი გაითიშა, თქვენი Make.com-ის სცენარი ხომ არ წყვეტს მუშაობას? გაქვთ Error Route (Break Node)?</li>
-            <li><strong>Logging:</strong> სად ინახება წარმატებული და წარუმატებელი პროცესების ისტორია? (Google Sheets Database).</li>
-            <li><strong>Cost Monitoring:</strong> თუ ვინმემ System-ში ჩაყარა 10,000 PDF ფაილი, API-ის ბალანსი ხომ არ ამოიწურება 1 საათში?</li>
+            <li><strong>Error Handling & Fallback:</strong> გაქვთ Graceful Degradation და Error Route (Break Node / Alternative LLM)?</li>
+            <li><strong>Logging & Audit:</strong> სად ინახება წარმატებული და წარუმატებელი პროცესების ისტორია? (Google Sheets / PostgreSQL).</li>
+            <li><strong>Cost Monitoring:</strong> თუ სისტემაში შემოვიდა 10,000 PDF ფაილი, API-ის ბალანსი და ლიმიტები ხომ კონტროლდება?</li>
+            <li><strong>HITL Escalation:</strong> არის თუ არა გარკვეული ზღვრები, როცა გადაწყვეტილებას აუცილებლად ადამიანი ამოწმებს?</li>
         </ol>
 
     </div>

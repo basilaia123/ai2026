@@ -32,7 +32,7 @@ def cmd_help(runtime: Runtime) -> str:
 
 
 def cmd_brief(runtime: Runtime) -> str:
-    return build_briefing(runtime, sections=("weather", "quote", "news", "fx"))
+    return build_briefing(runtime, sections=("weather", "quote", "news", "fx", "markets"))
 
 
 def cmd_weather(runtime: Runtime) -> str:
@@ -51,6 +51,10 @@ def cmd_news(runtime: Runtime) -> str:
     return build_briefing(runtime, sections=("news",))
 
 
+def cmd_markets(runtime: Runtime) -> str:
+    return build_briefing(runtime, sections=("markets",))
+
+
 # New command: one handler above, one line here.
 # menu=True registers it in set_my_commands. button and row add an inline button.
 COMMANDS: tuple[BotCommand, ...] = (
@@ -60,6 +64,7 @@ COMMANDS: tuple[BotCommand, ...] = (
     BotCommand("fx", "მხოლოდ ვალუტის კურსი", cmd_fx, button="💱 კურსი", row=1),
     BotCommand("quote", "მხოლოდ ციტატა და ფაქტი", cmd_quote, button="💬 ციტატა და ფაქტი", row=2),
     BotCommand("news", "სიახლეები", cmd_news, button="📰 სიახლეები", row=3),
+    BotCommand("markets", "ბაზრები", cmd_markets, button="📈 ბაზრები", row=4),
     BotCommand("help", "ბრძანებების სია", cmd_help, show_buttons=True),
 )
 

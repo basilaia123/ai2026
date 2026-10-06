@@ -232,12 +232,16 @@ def test_shipped_config_is_valid_and_guarded():
     assert config["llm"]["enabled"] is True
     assert config["llm"]["api_key_env"] == "GEMINI_API_KEY"
     assert config["llm"]["models"] == [
-        "gemini/gemini-3.5-flash-lite",
         "gemini/gemini-3.8-flash",
+        "gemini/gemini-4-argon",
     ]
     assert config["llm"]["rate_limit_retry_seconds"] == 3
     assert "temperature" not in config["llm"]
     assert "სტაბილურად" in prompt
+    assert config["markets"]["enabled"] is True
+    assert config["markets"]["crypto"] == ["bitcoin", "ethereum"]
+    assert config["markets"]["stocks"] == ["NVDA", "GOOGL"]
+    assert "ყიდვა-გაყიდვის რჩევა ნუ მისცე" in prompt
     assert config["news"]["enabled"] is True
     assert config["news"]["max_links"] == 5
     assert "ქალაქი" in prompt

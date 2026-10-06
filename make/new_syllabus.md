@@ -3,7 +3,7 @@
 www.smartacademy.ge | info@smartacademy.ge | +995 596 60 00 11
 
 **ლექტორი:** გიორგი ბასილაია
-**ხანგრძლივობა:** 7 შეხვედრა (17.5 საათი) - *პრაქტიკულ ვორქშოპზე დაფუძნებული ფორმატი*
+**ხანგრძლივობა:** 7 შეხვედრა (20 საათი) - *5 შეხვედრა × 3 საათი და 2 შეხვედრა × 2.5 საათი; პრაქტიკულ ვორქშოპზე დაფუძნებული ფორმატი*
 
 ---
 
@@ -17,66 +17,83 @@ www.smartacademy.ge | info@smartacademy.ge | +995 596 60 00 11
 
 ## ლექციების განრიგი და თემატიკა
 
-### შეხვედრა 1: AI საფუძვლები, ლოკალური მოდელები და პირველი ავტომატიზაციები (ონლაინ)
+### შეხვედრა 1: AI საფუძვლები, ლოკალური მოდელები და პირველი ავტომატიზაციები (ონლაინ, 3 საათი)
 * AI აგენტური არქიტექტურის საფუძვლები (Stateful vs Stateless სისტემები)
-* ლოკალური მოდელების ინსტალაცია და ორკესტრაცია (Llama 3.3/4, DeepSeek-R1 ლოკალურად)
+* Frontier LLMs & 2026 წლის Always-On აგენტები (GPT-6.1 Sol, Claude Sonnet 5.5, xAI GrokBot / Grok 4.7, Gemini 3.8 Flash, Gemini 4 Argon)
+* ლოკალური მოდელების ინსტალაცია და ორკესტრაცია (Llama 4 Scout/Maverick, DeepSeek-V4.1-Flash Ollama-თი)
 * Advanced Multimodal AI ინტეგრაციები (Voice/Vision) აგენტურ გარემოში
-* **Live Build:** პერსონალური პროექტის კონფიგურაცია
+* **Live Build:** პერსონალური ასისტენტის კონფიგურაცია (Gemini Gems / Claude Projects)
 * **Live Build:** პირველი ვიზუალური ავტომატიზაცია (Make.com)
 
-### შეხვედრა 2: პერსონალური ასისტენტები, MCP, RAG და AI აგენტები (ონლაინ)
-* JSON სტრუქტურა, მონაცემთა ფორმატირება და გარანტირებული პასუხები (Structured Outputs)
-* Embeddings, ვექტორული ბაზები (Qdrant/ChromaDB) და სემანტიკური ძიება
-* ცოდნის ბაზების (Knowledge Bases) მართვა და Agentic RAG სისტემები
-* AI აგენტის კონცეფცია - ასისტენტისა და აგენტის განსხვავება
-* Model Context Protocol (MCP) - ახალი სტანდარტი ლოკალური სერვისების დასაკავშირებლად
-* ხელსაწყოები (Tools), ფუნქციის გამოძახება და ReAct Framework მოქმედებაში
+### შეხვედრა 2: Make.com, მონაცემთა სტრუქტურები, Webhooks და API (ონლაინ, 3 საათი)
+* Make.com-ის მონაცემთა სტრუქტურები: JSON, arrays, iterators და aggregators;
+* Triggers, Actions, Filters, Routers და Webhooks რეალურ დროში;
+* Google Sheets-ის გამოყენება, როგორც მარტივი მონაცემთა ბაზა;
+* API და HTTP მოთხოვნები: GET/POST, headers, parameters და responses;
+* გარე API-ებიდან მონაცემების მიღება, დამუშავება და პირობითი განაწილება;
+* Execution History, debugging და error handling-ის საფუძვლები;
+* AI Coding Assistant-ის გამოყენება JSON/Regex-ისა და რთული mapping-ისთვის;
+* **Live Build:** API ➔ JSON parsing ➔ Router ➔ Sheets ➔ Notification.
 
-### შეხვედრა 3: No-Code ავტომატიზაცია, AI Scrapers და Coding ასისტენტები (ონლაინ)
-* რა არის Webhook და როგორ მუშაობს ის რეალურ დროში
-* დეტერმინისტული ლოგიკა და განშტოებები Make.com-ში (IF, Switch nodes, Routers)
-* Google Sheets-ის გამოყენება, როგორც მონაცემთა ბაზა (Database)
-* API-ის კონცეფცია და გარე სერვისებთან დაკავშირება (HTTP მოდული)
-* Advanced Web Scraping: Firecrawl-ის ინტეგრაცია
-* **Live Build:** Google Antigravity-ს (AI Coding) გამოყენება ურთულესი Regex/JSON კოდისთვის ავტომატიზაციაში
+### შეხვედრა 3: ცოდნის ბაზები, RAG, MCP და AI აგენტები (ონლაინ, 3 საათი)
+* Custom Assistant/Project-ის გაღრმავება და ცოდნის ბაზის სწორად ორგანიზება;
+* Embeddings, ვექტორული ბაზები (Qdrant/ChromaDB) და სემანტიკური ძიება;
+* RAG სისტემის მუშაობა, ტესტირება და ჰალუცინაციების შემცირება;
+* AI აგენტის კონცეფცია: memory, tools, planning და task decomposition;
+* Function Calling და ReAct Framework API-ებთან მუშაობის შემდეგ;
+* Model Context Protocol (MCP) და გარე სერვისების უსაფრთხო დაკავშირება;
+* Error handling, self-correction და Multi-Agent სისტემების მიმოხილვა;
+* **Live Build:** Knowledge Base Agent + Tool/MCP მოქმედების დემო.
 
-### შეხვედრა 4: n8n, Deep Research და Computer Use (ონლაინ)
+### შეხვედრა 4: n8n, Deep Research და Computer Use (ონლაინ, 3 საათი)
 * n8n-ის გაცნობა და თვითჰოსტინგის (Self-hosted) უპირატესობები მონაცემთა დაცვისთვის
 * Workflow-ების დროული გაშვება (Scheduling) და ლოგირება/მონიტორინგი
 * რთული სამუშაო პროცესების პატერნები და Error Handling (შეცდომების მართვა და Retry ლოგიკა)
+* **Live Build & Case Study: Morning Briefing Executive Agent:**
+  * ჰიბრიდული არქიტექტურა (Python + LiteLLM + Gemini 3.8 Flash / Gemini 4 Argon / Grok 4.7);
+  * მონაცემთა წაკითხვა უსაფრთხოდ: Gmail IMAP (`BODY.PEEK` readonly) და Calendar (ICS/CalDAV);
+  * მიწოდების არხები: Telegram Bot (ინტერაქტიული ბრძანებებით `/markets` და Inline ღილაკებით) და SMTP Email;
+  * **OS Scheduling:** Windows Task Scheduler-ის გამართვა PowerShell-ით (`Register-ScheduledTask`) დილის 07:30-ზე ავტო-გაშვებისთვის;
+  * უსაფრთხოება და ტესტირება: `--dry-run` რეჟიმი და საიდუმლოებების იზოლაცია (`.env`);
 * ავტომატური კვლევის (Deep Research) პროცესის აწყობა n8n-ში
 * **Computer Use და Browser Agents:** AI აგენტები კომპიუტერისა და ბრაუზერის (Browser-Use / Playwright) სამართავად
 
-### შეხვედრა 5: B2B ავტომატიზაციები, მონაცემთა უსაფრთხოება და ROI (ონლაინ)
-* დეტერმინისტული Workflow ენთერფრაიზში VS მსჯელობაზე დაფუძნებული (Reasoning) აგენტი (DeepSeek-R1 / CoT)
-* **Case Study:** მომხმარებელთა მხარდაჭერის (Customer Support) სრულყოფილი ტექსტური ავტომატიზაცია
+### შეხვედრა 5: B2B ავტომატიზაციები, მონაცემთა უსაფრთხოება და ROI (ონლაინ, 3 საათი)
+* დეტერმინისტული Workflow ენთერფრაიზში VS მსჯელობაზე დაფუძნებული (Reasoning) აგენტი (DeepSeek-V4.1 Thinking Mode / R1, GPT-6 CoT)
+* **Graceful Degradation Pattern:** სისტემის მედეგობა (თუ ერთი API გაითიშა, ბრიფინგი გამოდის ნიშნით „მიუწვდომელია“, ხოლო LLM-ის გათიშვისას ფაქტები იგზავნება ნედლად);
+* **Lovable Live Build:** ქართულენოვანი Support Portal → Make Webhook → AI Triage → Human Approval
 * Agentic RAG და სისტემების უსაფრთხოების (GDPR, Data Masking) მართვა რეალურ გარემოში
 * **Case Study:** PDF და Vision AI დოკუმენტების დამუშავების კონვეიერი (Human-in-the-Loop მექანიზმით)
 * ROI-ის გამოთვლა - როგორ ავუხსნათ ბიზნესს დაზოგილი დრო და ფინანსები
 * Agentic Workflow-ების ტოკენების ღირებულების (Cost) ოპტიმიზაცია
 
-### შეხვედრა 6: AI Agent ეკოსისტემა 2026 - ხელსაწყოები, SDK და ნდობა (ონლაინ)
+### შეხვედრა 6: AI Agent ეკოსისტემა 2026 - ხელსაწყოები, SDK და ნდობა (ონლაინ, 2.5 საათი)
 * Agent-Native No-Code პლატფორმების შედარება: Lindy vs Gumloop vs Make.com AI Modules (ცოცხალი დემო)
-* Claude Agent SDK და Managed Agents production-ში: scheduler, hooks და rubric-based outcome grading
+* Claude Agent SDK (Sonnet 5.5), xAI Grok Bot (Grok 4.7) და Managed Agents production-ში: scheduler, hooks და rubric-based outcome grading
+* **Grok API + X Search Live Build:** X-ის აქტუალური სიგნალები, თარიღისა და ანგარიშების ფილტრები, ციტირებადი წყაროები, Structured JSON და Human Review
 * MCP Registry-ის გამოყენება: მზა სერვერების მოძებნა და დაკავშირება (mcp.so, smithery.ai)
-* Context Engineering Workshop: prompt-ის მაგივრად აგენტის მთლიანი კონტექსტის დაგეგმვა
+* Context Engineering Workshop: prompt-ის მაგივრად აგენტის მთლიანი კონტექსტის დაგეგმვა (Gemini 3+ Prompt Optimization temperature/top_p-ს გარეშე)
 * Agent Trust: credentials-ის, დამტკიცების (approvals) და აუდიტის (audit trail) აწყობა ავტონომიურ workflow-ში
 * Vertical AI Agents - ინდუსტრიის სპეციფიკური აგენტების მაგალითები და ROI
 
-### შეხვედრა 7: ფინალური ვორქშოპი და კარიერული განვითარება (ფიზიკური შეხვედრა)
-* საბოლოო პროექტების პრეზენტაციები (Pitch-deck ფორმატი)
-* ⚡ Live დემონსტრაციები, ROI-ის პრეზენტაცია და Q&A
-* Peer Voting კოლეგების მიერ: საუკეთესო ტექნიკური, საუკეთესო ROI, ყველაზე კრეატიული
-* **Trend Analysis Workshop:** უახლოესი 4 წლის ტენდენციები, AGI-სკენ სვლა და ახალი ინსტრუმენტები (AI Software Engineers)
-* კარიერული რჩევები: Value-Based Pricing (ფასის დადება ღირებულების მიხედვით)
-* როგორ შევინარჩუნოთ ცოდნა აქტუალური - პერსონალური News Feed-ის ავტომატიზაცია
+### შეხვედრა 7: Production Agent Masterclass და ფინალური პროექტები (ფიზიკური შეხვედრა, 2.5 საათი)
+* **60-წუთიანი ინტეგრაციული ლექცია:** Local LLM + Claude Agent SDK + Computer Use ერთ Production Agent არქიტექტურაში;
+* **ფინალური პროექტის არჩევითი UI ფენა:** Lovable ფორმა, dashboard ან კლიენტის პორტალი;
+* Local-first მონაცემთა დამუშავება, მოდელის routing და კონფიდენციალური მონაცემების საზღვრები;
+* Claude Agent SDK-ის agent loop, tools, hooks, permissions და audit trail;
+* Computer Use როგორც last-mile ინტეგრაცია იმ სისტემებისთვის, რომლებსაც API არ აქვთ;
+* უსაფრთხოების წესი: allowlist, Human-in-the-Loop approval და მოქმედებების ჟურნალი;
+* საბოლოო პროექტების პრეზენტაციები: 5 წუთი დემო + 2 წუთი Q&A თითო სტუდენტზე;
+* Peer Voting, მენტორის უკუკავშირი, ნომინაციები და სერტიფიცირება;
+* Trend Analysis და კარიერული მასალები ხელმისაწვდომია დამატებით თვითსასწავლო ბლოკად.
 
 ---
 
 ## კურსის დასრულების შემდეგ მსმენელები შეძლებენ:
 * დამოუკიდებელი მოაზროვნე აგენტებისა (Reasoning Agents) და მკაცრი (Deterministic) სამუშაო პროცესების ჰიბრიდული სისტემების პროექტირებას;
-* ლოკალური მოდელებისა (Ollama, DeepSeek-R1), ვექტორული ბაზებისა (Qdrant) და MCP პროტოკოლის გამოყენებით 100%-ით უსაფრთხო, დახურული (Zero-leakage) ეკოსისტემების აწყობას;
+* ლოკალური მოდელებისა (Ollama: Llama 4, DeepSeek-V4.1), ვექტორული ბაზებისა (Qdrant) და MCP პროტოკოლის გამოყენებით 100%-ით უსაფრთხო, დახურული (Zero-leakage) ეკოსისტემების აწყობას;
 * Make.com და n8n პლატფორმებზე კომპლექსური B2B ავტომატიზაციების შექმნას;
+* პერსონალური და აღმასრულებელი აგენტების (Executive Assistant Agents: Morning Briefing, Inbox Triage, Meeting Prep) აწყობას, ტესტირებასა და OS დონეზე (Windows Task Scheduler / cron) ავტონომიურ გაშვებას;
 * გარე API სერვისებთან ინტეგრაციასა და AI Coding ასისტენტების გამოყენებას რთული ლოგიკის დასაწერად;
 * ავტომატიზაციის ფინანსური ღირებულების (ROI) დათვლასა და ხარჯების მართვას ენთერფრაიზ გარემოში;
 * "Computer Use" (UI Agents) და Deep Research სისტემების პრაქტიკულ გამოყენებას;

@@ -328,6 +328,6 @@
 
 **პროგრამის წამყვანი: გიორგი ბასილაია**  
 ტელეფონი / WhatsApp: +995 599 55 08 07  
-ელფოსტა: `giorgi@basilaia.com` | `corporate@smartacademy.ge`  
+ელფოსტა: `corporate@smartacademy.ge`  
 LinkedIn: [linkedin.com/in/gbasilaia](https://www.linkedin.com/in/gbasilaia/)  
 Masterbrand: [basilaia.com](https://basilaia.com)
