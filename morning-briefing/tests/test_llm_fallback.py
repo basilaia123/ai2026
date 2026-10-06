@@ -8,7 +8,7 @@ from providers.llm_litellm import LiteLLMProvider
 def test_fallback_stops_on_first_success():
     calls = []
 
-    def complete_fn(*, model, messages, temperature, max_tokens):
+    def complete_fn(*, model, messages, max_tokens):
         calls.append(model)
         if model == "first":
             raise RuntimeError("rate limit secret-token-value")
@@ -18,7 +18,6 @@ def test_fallback_stops_on_first_success():
 
     provider = LiteLLMProvider(
         ["first", "second", "third"],
-        temperature=0.0,
         max_tokens=20,
         complete_fn=complete_fn,
     )
@@ -30,7 +29,7 @@ def test_fallback_stops_on_first_success():
 def messages_are_plain(complete_fn, provider):
     seen = {}
 
-    def spy(*, model, messages, temperature, max_tokens):
+    def spy(*, model, messages, max_tokens):
         seen["messages"] = messages
         seen["keys"] = set()
         return "ok"
@@ -49,7 +48,7 @@ def messages_are_plain(complete_fn, provider):
 def test_empty_completion_tries_the_next_model():
     calls = []
 
-    def complete_fn(*, model, messages, temperature, max_tokens):
+    def complete_fn(*, model, messages, max_tokens):
         calls.append(model)
         if model == "first":
             return "   "
@@ -57,7 +56,6 @@ def test_empty_completion_tries_the_next_model():
 
     provider = LiteLLMProvider(
         ["first", "second"],
-        temperature=0.1,
         max_tokens=10,
         complete_fn=complete_fn,
     )
@@ -66,12 +64,11 @@ def test_empty_completion_tries_the_next_model():
 
 
 def test_all_models_failed_hides_exception_text():
-    def complete_fn(*, model, messages, temperature, max_tokens):
+    def complete_fn(*, model, messages, max_tokens):
         raise RuntimeError("secret-token-value")
 
     provider = LiteLLMProvider(
         ["first"],
-        temperature=0.0,
         max_tokens=10,
         complete_fn=complete_fn,
     )
@@ -88,7 +85,7 @@ def test_rate_limit_retries_the_same_model_once():
     class Limited(Exception):
         status_code = 429
 
-    def complete_fn(*, model, messages, temperature, max_tokens):
+    def complete_fn(*, model, messages, max_tokens):
         calls.append(model)
         if len(calls) == 1:
             raise Limited("secret-token-value")
@@ -96,7 +93,6 @@ def test_rate_limit_retries_the_same_model_once():
 
     provider = LiteLLMProvider(
         ["first", "second"],
-        temperature=0.0,
         max_tokens=10,
         complete_fn=complete_fn,
         sleep_fn=lambda seconds: waits.append(seconds),
@@ -113,7 +109,7 @@ def test_rate_limit_twice_moves_to_the_next_model():
     class Limited(Exception):
         status_code = 429
 
-    def complete_fn(*, model, messages, temperature, max_tokens):
+    def complete_fn(*, model, messages, max_tokens):
         calls.append(model)
         if model == "first":
             raise Limited("secret-token-value")
@@ -121,7 +117,6 @@ def test_rate_limit_twice_moves_to_the_next_model():
 
     provider = LiteLLMProvider(
         ["first", "second"],
-        temperature=0.0,
         max_tokens=10,
         complete_fn=complete_fn,
         sleep_fn=lambda seconds: None,
@@ -133,7 +128,7 @@ def test_rate_limit_twice_moves_to_the_next_model():
 def test_timeout_does_not_retry_the_same_model():
     calls = []
 
-    def complete_fn(*, model, messages, temperature, max_tokens):
+    def complete_fn(*, model, messages, max_tokens):
         calls.append(model)
         if model == "first":
             raise TimeoutError("slow")
@@ -142,7 +137,6 @@ def test_timeout_does_not_retry_the_same_model():
     waits = []
     provider = LiteLLMProvider(
         ["first", "second"],
-        temperature=0.0,
         max_tokens=10,
         complete_fn=complete_fn,
         sleep_fn=lambda seconds: waits.append(seconds),
@@ -161,11 +155,10 @@ def test_missing_library_is_not_called_a_missing_model():
 
 def test_from_config_reads_models_without_hardcoding_them():
     provider = LiteLLMProvider.from_config(
-        {"llm": {"models": ["  custom/one  ", "custom/two"], "temperature": 0.2, "max_tokens": 30}},
+        {"llm": {"models": ["  custom/one  ", "custom/two"], "max_tokens": 30}},
         {},
     )
     assert provider._models == ["custom/one", "custom/two"]
-    assert provider._temperature == 0.2
     assert provider._max_tokens == 30
 
 
@@ -188,7 +181,7 @@ def test_failure_reasons_and_the_logged_error_hide_the_key(caplog, monkeypatch):
 
     seen = {"kind": "auth"}
 
-    def complete_fn(*, model, messages, temperature, max_tokens):
+    def complete_fn(*, model, messages, max_tokens):
         kind = seen["kind"]
         if kind == "auth":
             raise Auth("bad secret-token-value")
@@ -198,7 +191,6 @@ def test_failure_reasons_and_the_logged_error_hide_the_key(caplog, monkeypatch):
 
     provider = LiteLLMProvider(
         ["first"],
-        temperature=0.0,
         max_tokens=10,
         complete_fn=complete_fn,
         sleep_fn=lambda seconds: None,
@@ -223,7 +215,7 @@ def test_default_complete_passes_the_configured_model_id(monkeypatch):
     seen = {}
 
     def fake_completion(**kwargs):
-        seen["model"] = kwargs["model"]
+        seen.update(kwargs)
 
         class Message:
             content = "კარგი"
@@ -242,5 +234,8 @@ def test_default_complete_passes_the_configured_model_id(monkeypatch):
     from providers.llm_litellm import default_complete
 
     model_id = "gemini/gemini-3.5-flash-lite"
-    assert default_complete(model=model_id, messages=[], temperature=1.0, max_tokens=8) == "კარგი"
+    assert default_complete(model=model_id, messages=[], max_tokens=8) == "კარგი"
     assert seen["model"] == model_id
+    assert "temperature" not in seen
+    assert "top_p" not in seen
+    assert "top_k" not in seen

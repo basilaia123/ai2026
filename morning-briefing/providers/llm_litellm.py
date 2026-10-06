@@ -28,7 +28,6 @@ class LiteLLMProvider(LLMProvider):
         self,
         models: Sequence[str],
         *,
-        temperature: float,
         max_tokens: int,
         complete_fn: CompleteFn | None = None,
         sleep_fn: SleepFn | None = None,
@@ -38,7 +37,6 @@ class LiteLLMProvider(LLMProvider):
         if not cleaned:
             raise ValueError("llm.models must be a non-empty list")
         self._models = cleaned
-        self._temperature = temperature
         self._max_tokens = max_tokens
         self._complete_fn = complete_fn or default_complete
         self._sleep = sleep_fn or time.sleep
@@ -50,7 +48,6 @@ class LiteLLMProvider(LLMProvider):
         llm = config["llm"]
         return cls(
             models=list(llm["models"]),
-            temperature=float(llm.get("temperature", 0.1)),
             max_tokens=int(llm.get("max_tokens", 800)),
             rate_limit_retry_seconds=float(llm.get("rate_limit_retry_seconds", 3)),
         )
@@ -95,7 +92,6 @@ class LiteLLMProvider(LLMProvider):
         text = self._complete_fn(
             model=model,
             messages=messages,
-            temperature=self._temperature,
             max_tokens=self._max_tokens,
         )
         cleaned = _as_text(text).strip()
@@ -151,7 +147,7 @@ def _is_rate_limit(exc: BaseException) -> bool:
     return type(exc).__name__ == "RateLimitError"
 
 
-def default_complete(*, model: str, messages: list[dict[str, str]], temperature: float, max_tokens: int) -> str:
+def default_complete(*, model: str, messages: list[dict[str, str]], max_tokens: int) -> str:
     import litellm
 
     os.environ.setdefault("LITELLM_LOG", "ERROR")
@@ -168,7 +164,6 @@ def default_complete(*, model: str, messages: list[dict[str, str]], temperature:
     response = litellm.completion(
         model=model,
         messages=messages,
-        temperature=temperature,
         max_tokens=max_tokens,
     )
     return _as_text(response.choices[0].message.content)

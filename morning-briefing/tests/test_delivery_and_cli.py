@@ -236,6 +236,8 @@ def test_shipped_config_is_valid_and_guarded():
         "gemini/gemini-3.8-flash",
     ]
     assert config["llm"]["rate_limit_retry_seconds"] == 3
+    assert "temperature" not in config["llm"]
+    assert "სტაბილურად" in prompt
     assert config["news"]["enabled"] is True
     assert config["news"]["max_links"] == 5
     assert "ქალაქი" in prompt
