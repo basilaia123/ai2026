@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="ka" class="scheme_gold_light theme-day">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanilla Events - დიზაინერების AI მოდული | დღე 2: ვაიბ კოდინგი & RSVP სინქრონიზაცია (სრული პრაქტიკული გაიდი)</title>
+  
+  <!-- Favicon from vanillaevents.ge -->
+  <link rel="icon" href="https://vanillaevents.ge/wp-content/uploads/2020/04/cropped-favicon-120x120.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="https://vanillaevents.ge/wp-content/uploads/2020/04/cropped-favicon-300x300.png" />
+
+  <!-- Fonts: Marcellus, GFS Didot, DM Sans & FiraGO -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=GFS+Didot&family=Marcellus&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#AC845D',
+              goldHover: '#916942',
+              goldLight: '#DC9B42',
+              goldSoft: 'rgba(172, 132, 93, 0.15)',
+              goldBorder: 'rgba(172, 132, 93, 0.28)',
+              dark: '#262120',
+              darker: '#1D1918',
+              black: '#141110',
+              cream: '#FCF7F4',
+              textMutedDark: '#8A827E'
+            }
+          },
+          fontFamily: {
+            serif: ['Marcellus', 'GFS Didot', 'FiraGO', 'Georgia', 'serif'],
+            sans: ['DM Sans', 'FiraGO', '-apple-system', 'sans-serif'],
+            didot: ['GFS Didot', 'Marcellus', 'serif'],
+            mono: ['Consolas', 'Courier New', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('vanilla_theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.remove('theme-day');
+        document.documentElement.classList.remove('scheme_gold_light');
+        document.documentElement.classList.add('scheme_gold_dark');
+      } else {
+        document.documentElement.classList.add('theme-day');
+        document.documentElement.classList.remove('scheme_gold_dark');
+        document.documentElement.classList.add('scheme_gold_light');
+      }
+    })();
+  </script>
+
+  <style>
+    * { font-family: 'DM Sans', 'FiraGO', sans-serif; box-sizing: border-box; }
+    h1, h2, h3, .serif-font { font-family: 'Marcellus', 'GFS Didot', 'FiraGO', serif; }
+    .didot-font { font-family: 'GFS Didot', 'Marcellus', serif; }
+
+    :root {
+      --brand-gold: #AC845D;
+      --brand-dark: #262120;
+      --brand-darker: #1D1918;
+      --brand-border: rgba(172, 132, 93, 0.28);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      background-color: #1D1918;
+      color: #E5DDD6;
+      transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    ::selection {
+      background-color: #AC845D;
+      color: #FFFFFF;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1D1918;
+    }
+    html.theme-day ::-webkit-scrollbar-track {
+      background: #F4EFEA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #AC845D;
+      border-radius: 4px;
+    }
+
+    .vanilla-card {
+      background-color: #262120;
+      border: 1px solid rgba(172, 132, 93, 0.28);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .sub-surface {
+      background-color: #1D1918;
+      border: 1px solid rgba(172, 132, 93, 0.2);
+      border-radius: 12px;
+    }
+
+    .code-box {
+      background-color: #141110 !important;
+      color: #E6DFD5 !important;
+      border: 1px solid rgba(172, 132, 93, 0.3);
+      border-radius: 10px;
+      font-family: 'Consolas', monospace;
+    }
+
+    .prompt-box {
+      background-color: #141110;
+      border: 1px solid rgba(172, 132, 93, 0.35);
+      border-radius: 12px;
+      color: #E5DDD6;
+      font-family: 'Consolas', monospace;
+    }
+
+    .bronze-btn {
+      background-color: #AC845D;
+      color: #FFFFFF !important;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .bronze-btn:hover {
+      background-color: #916942;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(172, 132, 93, 0.35);
+    }
+
+    .bronze-outline-btn {
+      border: 1px solid #AC845D;
+      color: #AC845D;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .bronze-outline-btn:hover {
+      background-color: rgba(172, 132, 93, 0.15);
+      color: #FFFFFF;
+    }
+
+    /* Bilingual Prompt Tabs */
+    .prompt-lang-tab {
+      cursor: pointer;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(172, 132, 93, 0.35);
+      background: transparent;
+      color: #8A827E;
+    }
+    .prompt-lang-tab.active-tab {
+      background: #AC845D !important;
+      color: #FFFFFF !important;
+      border-color: #AC845D !important;
+      box-shadow: 0 2px 6px rgba(172, 132, 93, 0.35);
+    }
+    html.theme-day .prompt-lang-tab {
+      color: #6E625B;
+      border-color: rgba(172, 132, 93, 0.3);
+    }
+    html.theme-day .prompt-lang-tab.active-tab {
+      background: #AC845D !important;
+      color: #FFFFFF !important;
+    }
+
+    .prompt-pane {
+      display: none;
+    }
+    .prompt-pane.active-pane {
+      display: block;
+    }
+
+    .guide-main-container {
+      max-width: 1440px !important;
+    }
+
+    /* ==================== DAY THEME OVERRIDES ==================== */
+    html.theme-day body {
+      background-color: #F8F5F1 !important;
+      color: #1D1918 !important;
+    }
+    html.theme-day .dark-logo { display: none !important; }
+    html.theme-day .light-logo { display: block !important; }
+    html:not(.theme-day) .dark-logo { display: block !important; }
+    html:not(.theme-day) .light-logo { display: none !important; }
+
+    html.theme-day header {
+      background-color: rgba(248, 245, 241, 0.96) !important;
+      border-bottom-color: rgba(172, 132, 93, 0.25) !important;
+    }
+    html.theme-day nav.desktop-nav {
+      background-color: #EDE7E0 !important;
+      border-color: rgba(172, 132, 93, 0.3) !important;
+    }
+    html.theme-day nav.desktop-nav a {
+      color: #5A504B !important;
+    }
+    html.theme-day nav.desktop-nav a:hover {
+      color: #1D1918 !important;
+    }
+    html.theme-day .vanilla-card {
+      background-color: #FFFFFF !important;
+      border-color: rgba(172, 132, 93, 0.22) !important;
+      box-shadow: 0 8px 30px rgba(172, 132, 93, 0.08) !important;
+      color: #1D1918 !important;
+    }
+    html.theme-day .sub-surface {
+      background-color: #F8F5F1 !important;
+      border-color: rgba(172, 132, 93, 0.2) !important;
+      color: #2D2520 !important;
+    }
+    html.theme-day .prompt-box,
+    html.theme-day .code-box {
+      background-color: #1A1716 !important;
+      color: #F4EFEA !important;
+      border-color: rgba(172, 132, 93, 0.35) !important;
+    }
+    html.theme-day footer {
+      background-color: #EFE9E2 !important;
+      border-top-color: rgba(172, 132, 93, 0.22) !important;
+      color: #6E625B !important;
+    }
+    html.theme-day #block-task-1,
+    html.theme-day #block-task-2 {
+      background-color: #F2F9F5 !important;
+      border-color: rgba(16, 185, 129, 0.45) !important;
+    }
+    html.theme-day #block-task-1 .sub-surface,
+    html.theme-day #block-task-2 .sub-surface {
+      background-color: #E6F4EC !important;
+      color: #065F46 !important;
+      border-color: rgba(16, 185, 129, 0.35) !important;
+    }
+    html.theme-day .timer-box {
+      background-color: #E4ECE7 !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+    html.theme-day [id^="timer-display-"] {
+      color: #064E3B !important;
+    }
+    html.theme-day .text-emerald-300,
+    html.theme-day .text-emerald-400 {
+      color: #047857 !important;
+    }
+
+    html.theme-day h1,
+    html.theme-day h2,
+    html.theme-day h3,
+    html.theme-day h4,
+    html.theme-day .partner-text {
+      color: #1D1918 !important;
+    }
+    html.theme-day .text-brand-cream,
+    html.theme-day [class*="text-brand-cream"] {
+      color: #4A423E !important;
+    }
+    html.theme-day .text-brand-textMutedDark {
+      color: #6E625B !important;
+    }
+
+    .bg-brand-gold,
+    .bg-brand-gold *,
+    .bronze-btn,
+    .bronze-btn *,
+    .bg-emerald-500,
+    .bg-emerald-500 *,
+    .bg-emerald-600,
+    .bg-emerald-600 * {
+      color: #FFFFFF !important;
+    }
+
+    html.theme-day .text-white:not(.bg-brand-gold *):not(.bronze-btn *):not(.bg-emerald-500 *):not(.bg-emerald-600 *) {
+      color: #1D1918 !important;
+    }
+    html.theme-day .bronze-outline-btn:hover {
+      color: #916942 !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- HEADER -->
+  <header class="no-print sticky top-0 z-50 bg-[#1D1918]/95 backdrop-blur-md border-b border-brand-goldBorder transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-2 group">
+            <img src="https://vanillaevents.ge/wp-content/uploads/2024/10/logo-inverse.png" alt="Vanilla Events" class="dark-logo h-7 sm:h-9 w-auto" />
+            <img src="https://vanillaevents.ge/wp-content/uploads/2024/10/logo.png" alt="Vanilla Events" class="light-logo hidden h-7 sm:h-9 w-auto" />
+          </a>
+          <span class="text-brand-goldBorder font-light">|</span>
+          <span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-brand-gold">დღე 2 • პრაქტიკული გაიდი</span>
+        </div>
+
+        <nav class="desktop-nav hidden xl:flex items-center gap-1.5 bg-[#262120]/90 p-1.5 rounded-full border border-brand-goldBorder">
+          <a href="#block-vibe" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">1. Vibe Coding</a>
+          <a href="#block-portal" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">2. პორტალის აგება</a>
+          <a href="#block-task-1" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-400 hover:text-white transition-all">დავალება 1 (10 წთ)</a>
+          <a href="#block-backend" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">3. Sheets Webhook</a>
+          <a href="#block-rsvp-sync" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">4. RSVP &amp; QR</a>
+          <a href="#block-task-2" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-400 hover:text-white transition-all">დავალება 2 (10 წთ)</a>
+          <a href="#block-prompt-bank" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">პრომპტ-ბანკი</a>
+        </nav>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Global Language Switcher -->
+          <div class="flex items-center sub-surface rounded-full border border-brand-goldBorder p-0.5 text-xs font-semibold">
+            <button onclick="switchGlobalLang('en')" id="lang-btn-en" class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase transition-all bg-brand-gold text-white shadow-sm">
+              ENG
+            </button>
+            <button onclick="switchGlobalLang('ka')" id="lang-btn-ka" class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase transition-all text-brand-cream/70 hover:text-white">
+              GEO
+            </button>
+          </div>
+
+          <!-- Slides Link -->
+          <a href="day-2-slides.html" class="day-btn-secondary px-3 py-1.5 rounded-full text-xs border border-brand-goldBorder flex items-center gap-1.5 transition-all text-brand-gold hover:text-white" title="სლაიდების ნახვა">
+            <span>📊 სლაიდები</span>
+          </a>
+
+          <!-- Day / Night Theme Toggle -->
+          <button onclick="toggleTheme()" id="theme-toggle-btn" class="day-btn-secondary px-3 py-1.5 rounded-full text-xs border border-brand-goldBorder flex items-center gap-1.5 transition-all" title="თემის გადართვა">
+            <span id="theme-icon">☀️</span>
+            <span id="theme-text" class="hidden sm:inline font-semibold uppercase text-[10px]">Day</span>
+          </button>
+
+          <!-- Back to Hub -->
+          <a href="index.html" class="bronze-outline-btn px-3.5 py-1.5 rounded-full text-xs uppercase flex items-center gap-1">
+            <span>&larr; ჰაბი</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <main class="flex-1 guide-main-container w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-12">
+    
+    <div class="space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">დიზაინერების AI მოდული • ლექცია 02</span>
+        <span class="px-3 py-1 rounded-full border border-brand-goldBorder text-xs font-semibold">ხანგრძლივობა: 2.0 საათი (120 წთ)</span>
+        <span class="px-3 py-1 rounded-full sub-surface border border-brand-goldBorder text-xs text-brand-gold font-semibold">სრული პრაქტიკული გზამკვლევი &amp; Playbook</span>
+        <a href="day-2-slides.html" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold hover:underline">
+          &rarr; 28-სლაიდიანი პრეზენტაციის გახსნა
+        </a>
+      </div>
+
+      <h1 class="serif-font text-3xl sm:text-5xl font-normal text-white leading-tight">
+        ვაიბ კოდინგი: ცოცხალი ვებ პორტალები &amp; <br>
+        <span class="text-brand-gold italic font-serif">Google Sheets RSVP სინქრონიზაცია</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-brand-cream/85 font-light max-w-4xl leading-relaxed">
+        დეტალური, ნაბიჯ-ნაბიჯ სახელმძღვანელო Vanilla Events-ის დიზაინერებისთვის. <strong>როგორ გადააქციოთ იდეა, ესთეტიკა და Day 1-ში გენერირებული მულტიმოდალური რენდერები ინტერნეტში გამოქვეყნებულ, მომუშავე ვებ პორტალად 15 წუთში</strong> კოდის ხელით წერის გარეშე. სრული ინტეგრაცია ცოცხალ RSVP ფორმასთან, Google Sheets ბექენდთან და პერსონალურ QR ბილეთებთან.
+      </p>
+
+      <!-- Lecture Meta Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-brand-gold">
+          <span class="text-[10px] uppercase font-bold text-brand-gold block mb-1">თემა 01 (30 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">Vibe Coding &amp; Lovable</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">პრომპტით UI-ის აგება &amp; სტილი</p>
+        </div>
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-emerald-500">
+          <span class="text-[10px] uppercase font-bold text-emerald-400 block mb-1">პრაქტიკა 1 (10 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">დავალება 1: პორტალი</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">პირველი ცოცხალი ივენთ-საიტი</p>
+        </div>
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-brand-gold">
+          <span class="text-[10px] uppercase font-bold text-brand-gold block mb-1">თემა 02 (35 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">Google Sheets Sync</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">Apps Script &amp; Webhook ბექენდი</p>
+        </div>
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-emerald-500">
+          <span class="text-[10px] uppercase font-bold text-emerald-400 block mb-1">პრაქტიკა 2 &amp; QA (45 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">დავალება 2 &amp; QR Access</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">RSVP შემოწმება &amp; Seating Chart</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== DETAILED 120-MINUTE TIMELINE & SYLLABUS ==================== -->
+    <section id="agenda-timeline" class="space-y-4 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">ქრონომეტრაჟი</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          2-საათიანი ლექციის სრული წუთობრივი გეგმა (120 წთ)
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-brand-gold">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-brand-gold uppercase">00:00 - 00:30 (30 წთ)</span>
+            <span class="text-brand-textMutedDark">თემა 01</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">Vibe Coding ფილოსოფია &amp; Lovable</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            ტრადიციული vs Vibe Coding პროცესი, Lovable.dev და Bolt.new-ს არქიტექტურა, Vanilla Events-ის ლუქს-დიზაინის კოდი (შავი მარმარილო, ოქრო, DM Sans).
+          </p>
+          <div class="text-[10px] text-brand-gold font-semibold pt-1">ფუნდამენტი: პრომპტით პროგრამირება</div>
+        </div>
+
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-emerald-500 bg-emerald-950/10">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-emerald-400 uppercase">00:30 - 00:40 (10 წთ)</span>
+            <span class="text-brand-textMutedDark">პრაქტიკა 1</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">დავალება 1: პორტალის აწყობა Lovable-ში</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            დიზაინერები უშვებენ საკუთარ პორტალს, ათავსებენ Hero-ს, Day 1-ის Veo ვიდეოსა და Suno აუდიოს, Countdown ტაიმერსა და განრიგს.
+          </p>
+          <div class="text-[10px] text-emerald-400 font-semibold pt-1">Deliverable: 1 ცოცხალი საიტი</div>
+        </div>
+
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-brand-gold">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-brand-gold uppercase">00:40 - 01:15 (35 წთ)</span>
+            <span class="text-brand-textMutedDark">თემა 02</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">Live RSVP &amp; Google Sheets Webhook</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            Google Sheets ბაზის სტრუქტურა, Apps Script Webhook-ის აწყობა (Zero-Cost Backend), Fetch POST მოთხოვნის გაგზავნა და Optimistic UI.
+          </p>
+          <div class="text-[10px] text-brand-gold font-semibold pt-1">მონაცემთა ცოცხალი ნაკადი</div>
+        </div>
+
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-emerald-500 bg-emerald-950/10">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-emerald-400 uppercase">01:15 - 02:00 (45 წთ)</span>
+            <span class="text-brand-textMutedDark">თემა 03 &amp; Lab 2</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">დავალება 2, QR Ticket &amp; Seating Chart</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            დავალება 2: RSVP ფორმის დაკავშირება Sheets-თან (10 წთ), პერსონალური QR ბილეთების გენერაცია, Seating Chart, Q&amp;A და ნამუშევრების განხილვა (15 წთ).
+          </p>
+          <div class="text-[10px] text-emerald-400 font-semibold pt-1">Deliverable: სრული ივენთ-პორტალი</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== THEME 01: VIBE CODING PHILOSOPHY & LOVABLE ==================== -->
+    <section id="block-vibe" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 01 • Vibe Coding</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          რა არის ვაიბ კოდინგი (Vibe Coding) და როგორ მუშაობს Lovable.dev?
+        </h2>
+      </div>
+
+      <!-- Comparison Card -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4">
+        <div class="flex items-center gap-2">
+          <span class="text-brand-gold text-base">✦</span>
+          <h3 class="serif-font text-lg sm:text-xl font-bold text-white">
+            ტრადიციული ვებ დეველოპმენტი vs 2026 წლის Vibe Coding
+          </h3>
+        </div>
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          წარსულში ივენთ-დიზაინერი ხატავდა Figma-ში, გადასცემდა დეველოპერს, ელოდებოდა კვირეებს, ასწორებდა შეცდომებს და იხდიდა ათასობით დოლარს. <strong>Vibe Coding არის ახალი პარადიგმა: დიზაინერი საუბრობს ბუნებრივი ენით (ქართულად ან ინგლისურად), აღწერს ესთეტიკასა და ქცევას, ხოლო AI (Lovable, Bolt, Cursor) რეალურ დროში აგენერირებს production-grade კოდს (React, Tailwind CSS, Vite)</strong>.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-2">
+            <span class="text-xs font-bold text-red-400 uppercase tracking-wider block">ძველი პროცესი (3-4 კვირა)</span>
+            <ul class="text-xs text-brand-cream/75 space-y-1 font-light list-disc list-inside">
+              <li>Figma ესკიზი -> Frontend დეველოპერი -> Backend დეველოპერი;</li>
+              <li>სერვერის ყიდვა, ბაზის გამართვა, რთული ავთენტიფიკაცია;</li>
+              <li>მცირე ტექსტის შესაცვლელად დეველოპერის ჩართვა;</li>
+              <li>ხარჯი: 3,000$ - 7,000$ თითოეულ ივენთ-საიტზე.</li>
+            </ul>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-emerald-500/40 space-y-2">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">Vibe Coding (15-30 წუთი)</span>
+            <ul class="text-xs text-brand-cream/75 space-y-1 font-light list-disc list-inside">
+              <li>დიზაინერი პირდაპირ პრომპტით ქმნის და ცვლის ინტერფეისს;</li>
+              <li>Google Sheets გამოიყენება როგორც უფასო, ცოცხალი მონაცემთა ბაზა;</li>
+              <li>მყისიერი 1-Click Publish ინტერნეტში მორგებული დომენით;</li>
+              <li>ხარჯი: 0$ (ინსტრუმენტის სტანდარტული გამოწერის ფარგლებში).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PRACTICAL GUIDE 01: VIBE CODING STARTER KIT ==================== -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border-l-4 border-brand-gold">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">პრაქტიკული გაიდი 01</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              Vibe Coding Starter Kit: გარემოს გამართვა &amp; Vanilla Events-ის დიზაინ-ტოკენები
+            </h3>
+          </div>
+          <span class="text-xs text-brand-gold font-semibold uppercase hidden sm:inline">Environment Setup</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          სანამ Lovable-ში პირველ პრომპტს ჩაწერთ, მიჰყევით ამ 4 ნაბიჯს:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 01</span>
+            <h4 class="font-bold text-white text-xs">Lovable.dev-ზე შესვლა</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              გადადით <strong>lovable.dev</strong> (ან <strong>bolt.new</strong>). გაიარეთ ავტორიზაცია Google ან GitHub ანგარიშით და დააჭირეთ <em>New Project</em>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 02</span>
+            <h4 class="font-bold text-white text-xs">ბრენდის ტოკენების ჩასმა</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              პრომპტის დასაწყისში მიუთითეთ ფერები: <code>Gold: #AC845D, Dark Obsidian: #1D1918, Cream: #F8F5F1, Velvet Emerald: #0F382A</code>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 03</span>
+            <h4 class="font-bold text-white text-xs">შრიფტების განსაზღვრა</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              სათაურებისთვის მოითხოვეთ <code>Marcellus</code> ან <code>GFS Didot</code>, ტექსტისთვის კი <code>DM Sans</code> ან <code>FiraGO</code>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 04</span>
+            <h4 class="font-bold text-white text-xs">Mobile-First შემოწმება</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ყოველთვის დაამატეთ წესი: <em>100% mobile-friendly, no horizontal scroll, clean touch targets (min 44px)</em>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== THEME 02: EVENT PORTAL ARCHITECTURE ==================== -->
+    <section id="block-portal" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 02 • არქიტექტურა</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          ლუქს-ივენთ პორტალის ანატომია (6 საკვანძო სექცია)
+        </h2>
+      </div>
+
+      <!-- ==================== PRACTICAL GUIDE 02: FULL PORTAL PLAYBOOK ==================== -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border-l-4 border-brand-gold">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">პრაქტიკული გაიდი 02</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              ნაბიჯ-ნაბიჯ ინსტრუქცია: 6-სექციიანი პორტალის სტრუქტურა
+            </h3>
+          </div>
+          <span class="text-xs text-brand-gold font-semibold uppercase hidden sm:inline">Portal Blueprint</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          ყოველი პრესტიჟული ივენთ-პორტალი შედგება 6 აუცილებელი მოდულისგან. აი, როგორ იწერება თითოეული Vibe Coding-ის მეშვეობით:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 text-xs">
+          
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>01. Hero &amp; Day 1 ვიდეო</span>
+              <span>Visual Hook</span>
+            </div>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              სრულეკრანიანი ფონი Day 1-ში Veo 3.1-ით შექმნილი ვიდეოსთვის (autoplay, loop, muted). ელეგანტური სათაური, თარიღი და RSVP-ზე ჩამოსასვლელი ღილაკი.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>02. Countdown &amp; Audio</span>
+              <span>Atmosphere</span>
+            </div>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ცოცხალი წამზომი ივენთის დაწყებამდე (დღეები, საათები, წუთები) + მინიმალიზებული აუდიო-ღილაკი Day 1-ში Suno-თი შექმნილი საუნდტრეკის მოსასმენად.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>03. Agenda &amp; განრიგი</span>
+              <span>Timeline</span>
+            </div>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ვერტიკალური ან ჰორიზონტალური დროითი ხაზი: 18:00 Welcome Cocktail, 19:30 Gala Opening, 21:00 Awards Ceremony, 22:30 Afterparty.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>04. Dress Code &amp; სტილი</span>
+              <span>Aesthetic Guide</span>
+            </div>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ვიზუალური გზამკვლევი სტუმრებისთვის: Black Tie / Old Money Luxury, ფერთა პალიტრის ნიმუშები (Emerald, Obsidian, Gold) და ფოტო-მინიშნებები.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>05. ლოკაცია &amp; რუკა</span>
+              <span>Interactive Map</span>
+            </div>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ინტეგრირებული Google Maps ვიჯეტი, ლოკაციის მისამართი (წინანდალი / შატო მუხრანი), VIP პარკინგისა და ტრანსფერის დეტალები.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>06. Realtime RSVP ფორმა</span>
+              <span>Conversion Engine</span>
+            </div>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ინტერაქტიული ფორმა: სახელი, გვარი, ტელეფონი, სტატუსი (ვესწრები / ვერ ვესწრები), +1 სტუმარი, კვების ალერგიები. მყისიერი ჩაწერა Google Sheets-ში.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MASTER UI PROMPT BOX (BILINGUAL) -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border border-brand-gold">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brand-goldBorder">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">Master UI Prompt</span>
+              <span class="text-xs text-brand-cream/70 font-semibold">Lovable.dev / Bolt.new</span>
+            </div>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white mt-1">
+              პორტალის სრული გენერაციის პრომპტი (Full Web Portal Generator)
+            </h3>
+          </div>
+          <div class="flex items-center gap-2 self-start sm:self-auto">
+            <div class="inline-flex items-center gap-1 bg-[#141110] p-1 rounded-full border border-brand-goldBorder/40">
+              <button onclick="setPromptLang('prompt-ui-portal', 'en')" id="tab-prompt-ui-portal-en" class="prompt-lang-tab active-tab">ENG (Original)</button>
+              <button onclick="setPromptLang('prompt-ui-portal', 'ka')" id="tab-prompt-ui-portal-ka" class="prompt-lang-tab">GEO (ქართული)</button>
+            </div>
+            <button onclick="copyBilingualPrompt('prompt-ui-portal')" id="btn-prompt-ui-portal" class="bronze-btn px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider">
+              კოპირება
+            </button>
+          </div>
+        </div>
+
+        <p class="text-xs text-brand-cream/80 font-light">
+          ჩასვით ეს პრომპტი Lovable.dev-ში ახალი პროექტის შექმნისას:
+        </p>
+
+        <!-- EN PANE -->
+        <pre id="prompt-ui-portal-en" class="prompt-box prompt-pane active-pane bg-[#141110] p-4 sm:p-5 rounded-xl border border-brand-goldBorder text-xs text-brand-cream/90 font-mono whitespace-pre-wrap leading-relaxed max-h-[460px] overflow-y-auto">Build an ultra-luxurious, responsive single-page Event Web Portal for "Vanilla Events" presenting an exclusive Annual VIP Gala at Chateau Mukhrani.
+
+Design & Aesthetic Rules:
+1. Palette: Deep obsidian black (#1D1918), rich brushed champagne gold (#AC845D), ivory cream (#F8F5F1), and dark emerald velvet (#0F382A).
+2. Typography: Headings in elegant Serif font (Marcellus or Playfair Display), body text in crisp clean sans-serif (DM Sans).
+3. Mobile Responsiveness: 100% mobile-friendly, fluid touch interactions, zero horizontal overflow.
+
+Required Portal Sections:
+1. HERO SECTION:
+   - Fullscreen dark luxury aesthetic with an ambient video background simulation or subtle moving gradient.
+   - Event Title: "Vanilla Events Annual Innovation Gala 2026"
+   - Date & Venue: "October 24, 2026 • Chateau Mukhrani Estate"
+   - Floating audio toggle button in the top right to play ambient event soundtrack.
+   - Primary CTA button: "Confirm Attendance (RSVP)" that smooth-scrolls to the form.
+
+2. COUNTDOWN & HIGHLIGHTS:
+   - Real-time countdown timer to October 24, 2026 (Days, Hours, Minutes, Seconds) with luxury gold border cards.
+   - 3 Key Event Metrics: "250 VIP Guests", "Michelin-Star Dining", "Symphonic Audio-Visual Show".
+
+3. EVENT TIMELINE (AGENDA):
+   - Vertical interactive timeline with gold dots and glowing connectors:
+     * 18:30 - Welcome Cocktail & Red Carpet Photozone
+     * 19:45 - Grand Ballroom Opening & Architectural Scenography
+     * 20:30 - Gourmet Gala Dinner & Keynote Awards
+     * 22:30 - Midnight Symphonic Afterparty & Champagne Toast
+
+4. DRESS CODE & VIP ETIQUETTE:
+   - Visual moodboard cards: "Black Tie / Old Money Splendor"
+   - Color swatches: Emerald Velvet, Champagne Bronze, Midnight Black.
+
+5. VENUE & CONCIERGE:
+   - Interactive map preview card for Chateau Mukhrani, address details, valet parking notes, VIP helicopter transfer inquiry.
+
+6. REALTIME RSVP FORM:
+   - Form fields: Full Name, Phone Number, Email, Attendance Status (Attending / Unable to Attend), Plus-One Checkbox with Companion Name, Dietary Preferences (Standard / Vegetarian / Gluten-Free).
+   - Submit Button: "Submit RSVP &amp; Generate Digital Ticket".
+   - Include loading spinner state and a luxurious Success Modal that shows a personal Digital Ticket with a dynamic QR Code.
+
+Ensure pristine modern React code, Tailwind CSS styling, and accessible form labels.</pre>
+
+        <!-- KA PANE -->
+        <pre id="prompt-ui-portal-ka" class="prompt-box prompt-pane bg-[#141110] p-4 sm:p-5 rounded-xl border border-brand-goldBorder text-xs text-brand-cream/90 font-mono whitespace-pre-wrap leading-relaxed max-h-[460px] overflow-y-auto">შექმენი ულტრა-ლუქს, რესპონსიული ერთგვერდიანი ივენთ-პორტალი Vanilla Events-ისთვის შატო მუხრანის VIP გალა-საღამოსთვის.
+
+დიზაინისა და ესთეტიკის წესები:
+1. პალიტრა: ღრმა შავი ობსიდიანი (#1D1918), დავარგებული შამპანურის ოქრო (#AC845D), სპილოსძვლისფერი კრემი (#F8F5F1) და ზურმუხტისფერი ხავერდი (#0F382A).
+2. შრიფტები: სათაურები ელეგანტური Serif შრიფტით (Marcellus ან Playfair), ტექსტი სუფთა Sans-Serif-ით (DM Sans).
+3. მობილური ადაპტაცია: 100% მობილურზე მორგებული, სენსორული ღილაკები, ნული ჰორიზონტალური გადახვევა.
+
+პორტალის აუცილებელი სექციები:
+1. HERO სექცია:
+   - სრულეკრანიანი ლუქს-ატმოსფერო ვიდეო-ფონით ან რბილი ანიმაციით.
+   - ივენთის სათაური: "Vanilla Events Annual Innovation Gala 2026"
+   - თარიღი და ადგილი: "24 ოქტომბერი, 2026 • შატო მუხრანი"
+   - მცურავი აუდიო-ღილაკი ზედა მარჯვენა კუთხეში საუნდტრეკის ჩასართავად.
+   - მთავარი ღილაკი: "დასწრების დადასტურება (RSVP)", რომელიც რბილად ჩამოდის ფორმაზე.
+
+2. COUNTDOWN &amp; ჰაილაითები:
+   - ცოცხალი Countdown ტაიმერი 2026 წლის 24 ოქტომბრამდე (დღეები, საათები, წუთები, წამები) ოქროსფერი ბარათებით.
+   - 3 მეტრიკა: "250 VIP სტუმარი", "მიშლენის მენიუ", "სიმფონიური აუდიო-ვიზუალური შოუ".
+
+3. AGENDA (განრიგი):
+   - ვერტიკალური ინტერაქტიული დროითი ხაზი:
+     * 18:30 - Welcome Cocktail &amp; Red Carpet Photozone
+     * 19:45 - მთავარი დარბაზის გახსნა &amp; სცენოგრაფია
+     * 20:30 - გალა-ვახშამი &amp; დაჯილდოება
+     * 22:30 - Midnight Symphonic Afterparty
+
+4. DRESS CODE:
+   - სტილის ბარათები: "Black Tie / Old Money Splendor" (ზურმუხტისფერი, ოქრო, შავი).
+
+5. ლოკაცია &amp; რუკა:
+   - შატო მუხრანის რუკის ბარათი, მისამართი, VIP პარკინგი და ტრანსფერის დეტალები.
+
+6. REALTIME RSVP ფორმა:
+   - ველები: სახელი და გვარი, ტელეფონი, იმეილი, დასწრების სტატუსი (ვესწრები / ვერ ვესწრები), თანმხლები პირი (+1), კვების ალერგიები.
+   - გაგზავნის ღილაკი: "დასტურის გაგზავნა &amp; ციფრული ბილეთის გენერაცია".
+   - ჩატვირთვის ანიმაცია და ლუქს-მოდალი, რომელიც აჩვენებს პერსონალურ ბილეთს დინამიკური QR კოდით.
+
+დაიცავი სუფთა React და Tailwind CSS კოდი და სრულყოფილი მობილური ხედი.</pre>
+      </div>
+
+    </section>
+
+    <!-- ==================== TASK 1 (10 MINS) ==================== -->
+    <section id="block-task-1" class="vanilla-card p-6 sm:p-8 border-2 border-emerald-500/50 bg-emerald-950/10 space-y-5 scroll-mt-24">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-emerald-500/30">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 font-bold flex items-center justify-center shrink-0">
+            01
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">პრაქტიკული დავალება 1 • ლექციის მსვლელობისას</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">10 წუთი</span>
+            </div>
+            <h3 class="serif-font text-lg sm:text-xl font-bold text-white">
+              დავალება 1: პირველი ლუქს-ივენთ პორტალის აწყობა Lovable-ში
+            </h3>
+          </div>
+        </div>
+
+        <!-- Interactive 10-Minute Timer 1 -->
+        <div class="timer-box flex items-center gap-3 bg-[#141110]/80 p-2.5 px-4 rounded-full border border-emerald-500/40">
+          <div class="text-right">
+            <span class="text-[9px] uppercase tracking-wider text-emerald-400 block font-bold">ტაიმერი</span>
+            <span id="timer-display-1" class="text-base font-bold font-mono text-white">10:00</span>
+          </div>
+          <button onclick="toggleTimer(1)" id="timer-btn-1" class="px-3 py-1 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold uppercase transition-colors">
+            Start
+          </button>
+          <button onclick="resetTimer(1)" class="text-xs text-brand-textMutedDark hover:text-white px-1">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs sm:text-sm">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">1. ამოცანა</span>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            დააკოპირეთ ზემოთ მოცემული <strong>Master UI Prompt</strong>, გახსენით Lovable.dev (ან Bolt.new), ჩასვით პრომპტი და მიიღეთ სრულფასოვანი ვებ პორტალი.
+          </p>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">2. შესასრულებელი ნაბიჯები</span>
+          <ol class="text-brand-cream/80 space-y-1 font-light list-decimal list-inside leading-relaxed">
+            <li>ჩასვით Master UI პრომპტი Lovable-ში და დააჭირეთ Generate;</li>
+            <li>შეცვალეთ სათაური Vanilla Events-ის თქვენს სასურველ ივენთზე;</li>
+            <li>შეამოწმეთ მობილური ხედი (Mobile toggle ზედა პანელში).</li>
+          </ol>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">3. Deliverable (შედეგი)</span>
+          <div class="sub-surface p-3 rounded-xl border border-emerald-500/30 text-emerald-300 text-xs font-light">
+            ✓ 1 მზა, მომუშავე ლუქს-პორტალი Hero-თი, Countdown-ითა და RSVP ფორმით, რომელიც მზადაა Google Sheets-თან დასაკავშირებლად!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== THEME 03: GOOGLE SHEETS LIVE BACKEND & WEBHOOK ==================== -->
+    <section id="block-backend" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 03 • Backend</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          Google Sheets როგორც ცოცხალი ბექენდი &amp; Apps Script Webhook
+        </h2>
+      </div>
+
+      <!-- ==================== PRACTICAL GUIDE 03: GOOGLE SHEETS BACKEND PLAYBOOK ==================== -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border-l-4 border-brand-gold">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">პრაქტიკული გაიდი 03</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              ნაბიჯ-ნაბიჯ ინსტრუქცია: Google Sheets ბაზის აწყობა &amp; Apps Script-ის გაშვება
+            </h3>
+          </div>
+          <span class="text-xs text-brand-gold font-semibold uppercase hidden sm:inline">Zero-Cost Backend</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          Google Sheets არის იდეალური ბაზა ივენთებისთვის: ორგანიზატორს აქვს ცოცხალი წვდომა ტელეფონიდან, შეუძლია ფილტრაცია და ექსპორტი. აი, როგორ ვაწყობთ Webhook-ს 3 წუთში:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 01</span>
+            <h4 class="font-bold text-white text-xs">Sheet-ის შექმნა &amp; სვეტები</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              შექმენით ახალი Google Sheet. პირველ სტრიქონში ჩაწერეთ სვეტების სახელები: <code>Timestamp, Guest_ID, Full_Name, Phone, Email, Status, Plus_One, Dietary, Table_No, QR_Code</code>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 02</span>
+            <h4 class="font-bold text-white text-xs">Apps Script რედაქტორის გახსნა</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              მენიუში დააჭირეთ: <strong>Extensions &rarr; Apps Script</strong>. წაშალეთ იქ არსებული ცარიელი ფუნქცია.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 03</span>
+            <h4 class="font-bold text-white text-xs">მზა კოდის ჩასმა</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ჩასვით ქვემოთ მოცემული მზა <strong>Production Apps Script Code</strong> და დააჭირეთ Save (დისკის აიქონი).
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ნაბიჯი 04</span>
+            <h4 class="font-bold text-white text-xs">Deploy as Web App</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              დააჭირეთ: <strong>Deploy &rarr; New Deployment &rarr; Web app</strong>. Execute as: <em>Me</em>, Who has access: <em>Anyone</em>. დააკოპირეთ მიღებული <strong>Web App URL</strong>!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTION APPS SCRIPT CODE BOX -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border border-brand-gold">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brand-goldBorder">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">Backend Code</span>
+              <span class="text-xs text-brand-cream/70 font-semibold">Google Apps Script (.gs)</span>
+            </div>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white mt-1">
+              სრული, ტესტირებული Apps Script Webhook კოდი (CORS-Ready &amp; Auto-ID)
+            </h3>
+          </div>
+          <button onclick="copyBilingualPrompt('code-apps-script')" id="btn-code-apps-script" class="bronze-btn px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider self-start sm:self-auto">
+            კოდის კოპირება
+          </button>
+        </div>
+
+        <p class="text-xs text-brand-cream/80 font-light">
+          ეს კოდი ავტომატურად ამუშავებს როგორც POST (RSVP მონაცემების ჩაწერა), ისე GET (სტატუსის შემოწმება) მოთხოვნებს, ანიჭებს უნიკალურ Guest ID-ს და აბრუნებს JSON პასუხს:
+        </p>
+
+        <pre id="code-apps-script" class="prompt-box bg-[#141110] p-4 sm:p-5 rounded-xl border border-brand-goldBorder text-xs text-brand-cream/90 font-mono whitespace-pre-wrap leading-relaxed max-h-[460px] overflow-y-auto">function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = {};
+    
+    // Parse JSON payload or URL-encoded form data
+    if (e.postData &amp;&amp; e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (err) {
+        data = e.parameter;
+      }
+    } else {
+      data = e.parameter || {};
+    }
+
+    var timestamp = new Date().toISOString();
+    var guestId = 'VN-' + Math.floor(100000 + Math.random() * 900000);
+    var fullName = data.fullName || data.name || 'Anonymous Guest';
+    var phone = data.phone || '';
+    var email = data.email || '';
+    var status = data.status || 'Attending';
+    var plusOne = data.plusOne ? 'Yes (' + (data.plusOneName || 'Guest') + ')' : 'No';
+    var dietary = data.dietary || 'None';
+    var tableNo = data.tableNo || 'TBD';
+    var qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&amp;data=' + encodeURIComponent(guestId + '|' + fullName);
+
+    // Append row to Google Sheet
+    sheet.appendRow([
+      timestamp,
+      guestId,
+      fullName,
+      phone,
+      email,
+      status,
+      plusOne,
+      dietary,
+      tableNo,
+      qrCodeUrl
+    ]);
+
+    var result = {
+      success: true,
+      message: 'RSVP confirmed successfully',
+      guestId: guestId,
+      fullName: fullName,
+      qrCodeUrl: qrCodeUrl
+    };
+
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    var errorResult = {
+      success: false,
+      error: error.toString()
+    };
+    return ContentService
+      .createTextOutput(JSON.stringify(errorResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  var totalGuests = Math.max(0, rows.length - 1);
+  
+  var result = {
+    status: 'online',
+    event: 'Vanilla Events VIP Gala',
+    totalConfirmed: totalGuests
+  };
+
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      </div>
+
+    </section>
+
+    <!-- ==================== THEME 04: REALTIME FORM SYNC & QR TICKETS ==================== -->
+    <section id="block-rsvp-sync" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 04 • ინტეგრაცია</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          RSVP ფორმის დაკავშირება Webhook-თან &amp; პერსონალური QR ბილეთები
+        </h2>
+      </div>
+
+      <!-- ==================== PRACTICAL GUIDES 04, 05, 06 ==================== -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- Guide 04: Form Sync Playbook -->
+        <div class="vanilla-card p-5 space-y-3 border-l-4 border-brand-gold">
+          <div class="flex items-center justify-between pb-2 border-b border-brand-goldBorder">
+            <span class="px-2 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase">გაიდი 04</span>
+            <span class="text-xs font-mono text-brand-gold">RSVP Sync</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">ფორმის დაკავშირება Lovable-ში</h4>
+          <p class="text-xs text-brand-cream/80 font-light leading-relaxed">
+            მიეცით Lovable-ს პრომპტი: <em>"When the user submits the RSVP form, make a fetch POST request to [YOUR_WEBHOOK_URL] with JSON payload { fullName, phone, email, status, plusOne, dietary }. While sending, show loading spinner. On success, show success modal."</em>
+          </p>
+        </div>
+
+        <!-- Guide 05: Seating Chart Playbook -->
+        <div class="vanilla-card p-5 space-y-3 border-l-4 border-brand-gold">
+          <div class="flex items-center justify-between pb-2 border-b border-brand-goldBorder">
+            <span class="px-2 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase">გაიდი 05</span>
+            <span class="text-xs font-mono text-brand-gold">Seating Finder</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">მაგიდის ძიების სისტემა</h4>
+          <p class="text-xs text-brand-cream/80 font-light leading-relaxed">
+            დიზაინერი ამატებს Seating Search კომპონენტს: სტუმარი წერს საკუთარ გვარს და ეკრანზე მყისიერად გამოდის: <strong>Table #03 (VIP Royal Hall)</strong> + მაგიდის გეგმა-რუკა.
+          </p>
+        </div>
+
+        <!-- Guide 06: QR Access Playbook -->
+        <div class="vanilla-card p-5 space-y-3 border-l-4 border-emerald-500">
+          <div class="flex items-center justify-between pb-2 border-b border-brand-goldBorder">
+            <span class="px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-bold uppercase">გაიდი 06</span>
+            <span class="text-xs font-mono text-emerald-400">QR Door Access</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">ციფრული QR ბილეთი &amp; Check-in</h4>
+          <p class="text-xs text-brand-cream/80 font-light leading-relaxed">
+            RSVP-ის დადასტურებისთანავე გენერირდება პერსონალური QR კოდი. სტუმარს შეუძლია ბილეთის ტელეფონში შენახვა, ხოლო ივენთის შესასვლელში ორგანიზატორი სკანერით ადასტურებს შემოსვლას.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- FORM INTEGRATION PROMPT (BILINGUAL) -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border border-brand-gold">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brand-goldBorder">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">Form Sync Prompt</span>
+              <span class="text-xs text-brand-cream/70 font-semibold">Lovable / Bolt</span>
+            </div>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white mt-1">
+              პრომპტი ფორმის Webhook-თან სრული ინტეგრაციისთვის
+            </h3>
+          </div>
+          <div class="flex items-center gap-2 self-start sm:self-auto">
+            <div class="inline-flex items-center gap-1 bg-[#141110] p-1 rounded-full border border-brand-goldBorder/40">
+              <button onclick="setPromptLang('prompt-form-sync', 'en')" id="tab-prompt-form-sync-en" class="prompt-lang-tab active-tab">ENG</button>
+              <button onclick="setPromptLang('prompt-form-sync', 'ka')" id="tab-prompt-form-sync-ka" class="prompt-lang-tab">GEO</button>
+            </div>
+            <button onclick="copyBilingualPrompt('prompt-form-sync')" id="btn-prompt-form-sync" class="bronze-btn px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider">
+              კოპირება
+            </button>
+          </div>
+        </div>
+
+        <!-- EN PANE -->
+        <pre id="prompt-form-sync-en" class="prompt-box prompt-pane active-pane bg-[#141110] p-4 sm:p-5 rounded-xl border border-brand-goldBorder text-xs text-brand-cream/90 font-mono whitespace-pre-wrap leading-relaxed max-h-[380px] overflow-y-auto">Update the RSVP Form component in my project with the following live integration:
+
+1. When the user submits the form:
+   - Prevent default page reload.
+   - Set submit button state to loading (show a luxury gold spinning loader and text "Verifying &amp; Registering...").
+   - Send an asynchronous HTTP POST request to:
+     const WEBHOOK_URL = "REPLACE_WITH_YOUR_GOOGLE_APPS_SCRIPT_URL";
+
+2. Send the payload as JSON:
+   {
+     fullName: formData.fullName,
+     phone: formData.phone,
+     email: formData.email,
+     status: formData.status,
+     plusOne: formData.hasPlusOne,
+     plusOneName: formData.plusOneName,
+     dietary: formData.dietary
+   }
+
+3. Handle the response gracefully:
+   - Use 'mode: no-cors' or handle standard CORS JSON response.
+   - Upon successful submission, display a lavish Modal Dialog:
+     * Header: "RSVP Confirmed • You are cordially invited"
+     * Display Guest Name and a generated QR Code image (using https://api.qrserver.com/v1/create-qr-code/?size=250x250&amp;data=[UniqueGuestCode]).
+     * Button: "Save Digital Pass" or "Add to Apple Wallet (Mockup)".
+     * Option to close and reset the form.
+
+4. Form field validation:
+   - Ensure Phone Number is not empty.
+   - Ensure Full Name has at least 2 words.
+   - Provide toast notifications for any submission errors.</pre>
+
+        <!-- KA PANE -->
+        <pre id="prompt-form-sync-ka" class="prompt-box prompt-pane bg-[#141110] p-4 sm:p-5 rounded-xl border border-brand-goldBorder text-xs text-brand-cream/90 font-mono whitespace-pre-wrap leading-relaxed max-h-[380px] overflow-y-auto">განაახლე RSVP ფორმის კომპონენტი ჩემს პროექტში შემდეგი ცოცხალი ინტეგრაციით:
+
+1. ფორმის გაგზავნისას:
+   - დაბლოკე გვერდის გადატვირთვა (preventDefault).
+   - ღილაკი გადაიყვანე ჩატვირთვის სტატუსში (ოქროსფერი ანიმაცია და ტექსტი "მიმდინარეობს რეგისტრაცია...").
+   - გააგზავნე ასინქრონული HTTP POST მოთხოვნა მისამართზე:
+     const WEBHOOK_URL = "ჩასვით_თქვენი_APPS_SCRIPT_WEBHOOK_URL";
+
+2. გააგზავნე მონაცემები JSON ფორმატში:
+   {
+     fullName: formData.fullName,
+     phone: formData.phone,
+     email: formData.email,
+     status: formData.status,
+     plusOne: formData.hasPlusOne,
+     plusOneName: formData.plusOneName,
+     dietary: formData.dietary
+   }
+
+3. პასუხის დამუშავება:
+   - გამოიყენე 'mode: no-cors' ან სტანდარტული CORS JSON დამუშავება.
+   - წარმატებისას გახსენი საზეიმო მოდალური ფანჯარა (Modal Dialog):
+     * სათაური: "RSVP დადასტურებულია • გელით გალა-საღამოზე"
+     * გამოაჩინე სტუმრის სახელი და პერსონალური QR კოდი (https://api.qrserver.com/v1/create-qr-code/?size=250x250&amp;data=[GuestCode]).
+     * ღილაკი: "ციფრული ბილეთის შენახვა".
+
+4. ვალიდაცია:
+   - შეამოწმე ტელეფონის ნომრისა და სახელის სისწორე.
+   - შეცდომის შემთხვევაში აჩვენე ელეგანტური შეტყობინება (Toast notification).</pre>
+      </div>
+
+    </section>
+
+    <!-- ==================== TASK 2 (10 MINS) ==================== -->
+    <section id="block-task-2" class="vanilla-card p-6 sm:p-8 border-2 border-emerald-500/50 bg-emerald-950/10 space-y-5 scroll-mt-24">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-emerald-500/30">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 font-bold flex items-center justify-center shrink-0">
+            02
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">პრაქტიკული დავალება 2 • ლექციის მსვლელობისას</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">10 წუთი</span>
+            </div>
+            <h3 class="serif-font text-lg sm:text-xl font-bold text-white">
+              დავალება 2: Live RSVP &amp; Google Sheets Webhook სინქრონიზაცია
+            </h3>
+          </div>
+        </div>
+
+        <!-- Interactive 10-Minute Timer 2 -->
+        <div class="timer-box flex items-center gap-3 bg-[#141110]/80 p-2.5 px-4 rounded-full border border-emerald-500/40">
+          <div class="text-right">
+            <span class="text-[9px] uppercase tracking-wider text-emerald-400 block font-bold">ტაიმერი</span>
+            <span id="timer-display-2" class="text-base font-bold font-mono text-white">10:00</span>
+          </div>
+          <button onclick="toggleTimer(2)" id="timer-btn-2" class="px-3 py-1 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold uppercase transition-colors">
+            Start
+          </button>
+          <button onclick="resetTimer(2)" class="text-xs text-brand-textMutedDark hover:text-white px-1">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs sm:text-sm">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">1. ამოცანა</span>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            დააყენეთ Google Apps Script Webhook, დააკავშირეთ თქვენს Lovable პორტალთან და გაგზავნეთ 1 სატესტო RSVP რეგისტრაცია.
+          </p>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">2. შესასრულებელი ნაბიჯები</span>
+          <ol class="text-brand-cream/80 space-y-1 font-light list-decimal list-inside leading-relaxed">
+            <li>Google Sheets-ში გახსენით Apps Script, ჩასვით კოდი და გააკეთეთ Web App Deploy;</li>
+            <li>დააკოპირეთ Webhook URL და მიაწოდეთ Lovable-ს Form Sync პრომპტით;</li>
+            <li>შეავსეთ ფორმა საიტზე და გადაამოწმეთ, რომ ჩანაწერი მომენტალურად გაჩნდა Google Sheets-ში!</li>
+          </ol>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">3. Deliverable (შედეგი)</span>
+          <div class="sub-surface p-3 rounded-xl border border-emerald-500/30 text-emerald-300 text-xs font-light">
+            ✓ 1 სრულად მომუშავე Live ვებ პორტალი, სადაც სტუმრის მიერ შევსებული მონაცემები 1 წამში ისახება ორგანიზატორის Google Sheets ცხრილში!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== THEME 05: 1-CLICK DEPLOY & QA GUIDE ==================== -->
+    <section id="block-prompt-bank" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">რესურსები &amp; QA</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          1-Click Deploy, დომენის მიბმა &amp; 10 Anti-Patterns (QA გზამკვლევი)
+        </h2>
+      </div>
+
+      <!-- Guide 07: 1-Click Publishing Playbook -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border-l-4 border-brand-gold">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">პრაქტიკული გაიდი 07</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              1-Click Deploy &amp; დომენის მიბმის ეტაპობრივი გზამკვლევი
+            </h3>
+          </div>
+          <span class="text-xs text-brand-gold font-semibold uppercase hidden sm:inline">Publishing</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <span class="font-bold text-brand-gold block text-xs">1. Lovable 1-Click Publish</span>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              დააჭირეთ ზედა მარჯვენა ღილაკს <strong>Publish</strong>. საიტი მომენტალურად ხელმისაწვდომია გლობალურ CDN-ზე HTTPS სერტიფიკატით.
+            </p>
+          </div>
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <span class="font-bold text-brand-gold block text-xs">2. Custom Domain (საკუთარი დომენი)</span>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              Settings &rarr; Domains &rarr; მიაბით ქვედომენი (მაგ. <code>gala.vanillaevents.ge</code>) CNAME ჩანაწერით 2 წუთში.
+            </p>
+          </div>
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <span class="font-bold text-brand-gold block text-xs">3. Open Graph Social Preview</span>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              დაამატეთ OG მეტა-თეგები: როდესაც ბმულს გააგზავნით WhatsApp-ში ან iMessage-ში, გამოჩნდება Vanilla Events-ის ლოგო და გალა-სათაური.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 ANTI-PATTERNS & QA FOR VIBE CODING -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div class="flex items-center gap-2">
+            <span class="text-brand-gold text-lg">⚠️</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              10 Anti-Patterns: ხშირი შეცდომები Vibe Coding-ში &amp; მათი გადაჭრა
+            </h3>
+          </div>
+          <span class="text-[10px] text-brand-gold font-bold uppercase tracking-wider">Quality Assurance</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">01.</span>
+              <span>CORS შეცდომა (Network Error on Form Submit)</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> Apps Script-ზე მოთხოვნის გაგზავნისას Fetch-ში გამოიყენეთ <code>mode: 'no-cors'</code> ან გადაამოწმეთ, რომ Web App დეპლოიზე მონიშნულია <em>Who has access: Anyone</em>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">02.</span>
+              <span>გვერდის გადატვირთვა ფორმის გაგზავნისას (Page Reload)</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> ყოველთვის ჩაამატეთ <code>e.preventDefault()</code> form submit ივენთზე, რათა მომხმარებლის მიერ შეყვანილი მონაცემები არ წაიშალოს.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">03.</span>
+              <span>ჰორიზონტალური გადახვევა მობილურზე (Horizontal Overflow)</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> არ გამოიყენოთ ფიქსირებული პიქსელური სიგანეები (მაგ. <code>w-[1200px]</code>). გამოიყენეთ <code>max-w-7xl w-full mx-auto px-4</code> და <code>overflow-x-hidden</code>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">04.</span>
+              <span>დაუცველი საიდუმლო გასაღებები (Hardcoded API Keys)</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> არასდროს ჩაწეროთ OpenAI ან Resend პირადი API გასაღებები კლიენტის React კოდში. გამოიყენეთ Apps Script ან Lovable backend secrets.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">05.</span>
+              <span>ჩატვირთვის ინდიკატორის (Loading Spinner) არარსებობა</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> თუ ფორმას არ აქვს სპინერი, მომხმარებელი ღილაკს რამდენჯერმე დააჭერს და Sheets-ში გაჩნდება დუბლიკატი ჩანაწერები.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">06.</span>
+              <span>მძიმე სურათები და ვიდეოები (ნელი ჩატვირთვა)</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> Day 1-ის ვიდეო დააკომპრესირეთ WebM/MP4 ფორმატში (მაქს. 3-5 MB) და გამოიყენეთ CDN ჰოსტინგი.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">07.</span>
+              <span>ტელეფონის ნომრის ვალიდაციის ნაკლებობა</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> დაამატეთ მარტივი Regex ან შეამოწმეთ, რომ ნომერი შეიცავს მინიმუმ 9 ციფრს, რათა სტუმართან კომუნიკაცია არ ჩავარდეს.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">08.</span>
+              <span>უყურადღებო Error Paste ტექნიკა</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> როდესაც Lovable შეცდომას გიჩვენებთ, არ გადააკეთოთ მთელი კოდი ხელით. უბრალოდ დააკოპირეთ შეცდომის სრული ტექსტი და მიეცით AI-ს: <em>"Fix this error:"</em>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">09.</span>
+              <span>ბრენდის ფერების დაკარგვა (Generic Tailwind Look)</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> AI-ს ყოველთვის შეახსენეთ: <em>"Maintain Vanilla Events luxury aesthetic: Obsidian #1D1918, Gold #AC845D, Cream #F8F5F1"</em>.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-red-500/30 space-y-1">
+            <div class="flex items-center gap-2 font-bold text-white">
+              <span class="text-red-400">10.</span>
+              <span>სატესტო რეგისტრაციის არგატარება დეპლოიმდე</span>
+            </div>
+            <p class="text-brand-cream/80 font-light leading-relaxed">
+              <strong>გამოსავალი:</strong> სანამ საიტს კლიენტს გაუგზავნით, ყოველთვის გააკეთეთ 1 სატესტო რეგისტრაცია საკუთარი მობილური ტელეფონიდან.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 6 GOLDEN RULES -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border-t-2 border-brand-gold">
+        <h3 class="serif-font text-base sm:text-lg font-bold text-white flex items-center gap-2">
+          <span class="text-brand-gold">✦</span>
+          <span>დიზაინერის 6 ოქროს წესი Vibe Coding-ში (სლაიდი 26-ის დასკვნები)</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 text-xs">
+          <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/40">
+            <span class="font-bold text-brand-gold block mb-1">1. პრომპტი არის ახალი კოდი</span>
+            <p class="text-brand-cream/80 font-light">კოდის წერა აღარ არის ბარიერი; თქვენი მთავარი უპირატესობა ესთეტიკური გემოვნება და ლოგიკაა.</p>
+          </div>
+          <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/40">
+            <span class="font-bold text-brand-gold block mb-1">2. Mobile-First ყოველთვის</span>
+            <p class="text-brand-cream/80 font-light">სტუმრების 95% მოსაწვევს მობილურიდან ხსნის; მობილური ვერსია პრიორიტეტია.</p>
+          </div>
+          <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/40">
+            <span class="font-bold text-brand-gold block mb-1">3. Zero-Cost არქიტექტურა</span>
+            <p class="text-brand-cream/80 font-light">Google Sheets + Apps Script გაძლევთ საიმედო, უფასო ბექენდს ყოველგვარი სერვერის გარეშე.</p>
+          </div>
+          <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/40">
+            <span class="font-bold text-brand-gold block mb-1">4. მულტიმოდალური სინთეზი</span>
+            <p class="text-brand-cream/80 font-light">ჩაშენებული Day 1-ის ვიდეო და აუდიო საიტს აქცევს ცოცხალ, ემოციურ გამოცდილებად.</p>
+          </div>
+          <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/40">
+            <span class="font-bold text-brand-gold block mb-1">5. Error Paste ტექნიკა</span>
+            <p class="text-brand-cream/80 font-light">ნუ დაიბნევით შეცდომებზე; უბრალოდ ჩაუსვით ტექსტი AI-ს და ის თავად გაასწორებს.</p>
+          </div>
+          <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/40">
+            <span class="font-bold text-brand-gold block mb-1">6. 15 წუთი იდეიდან საიტამდე</span>
+            <p class="text-brand-cream/80 font-light">გააოცეთ კლიენტი პრეზენტაციაზე ცოცხალი, მომუშავე საიტის ბმულის გაგზავნით.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SUMMARY & NAVIGATION ==================== -->
+    <div class="vanilla-card p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left border border-brand-gold">
+      <div class="space-y-1.5">
+        <span class="text-xs uppercase font-bold text-brand-gold tracking-wider">ლექცია 2 დასრულებულია</span>
+        <h3 class="serif-font text-xl sm:text-2xl font-bold text-white">მზად ხართ შემდეგი მოდულისთვის?</h3>
+        <p class="text-xs sm:text-sm text-brand-cream/80 font-light max-w-xl">
+          მესამე ლექციაზე დიზაინერები სივრცითი AI-ით (Luma Genie, Tripo3D, WebAR) და LED Motion Loops-ით შექმნიან 3D სცენოგრაფიასა და ვირტუალურ დეკორს.
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
+        <a href="day-2-slides.html" class="bronze-btn px-6 py-3 rounded-full text-xs uppercase tracking-wider w-full sm:w-auto text-center">
+          📊 სლაიდების ნახვა &rarr;
+        </a>
+        <a href="day-1-multimodal.html" class="day-btn-secondary px-5 py-3 rounded-full border border-brand-goldBorder text-brand-cream text-xs font-semibold uppercase tracking-wider w-full sm:w-auto text-center">
+          &larr; დღე 1 გაიდი
+        </a>
+        <a href="index.html" class="day-btn-secondary px-5 py-3 rounded-full border border-brand-goldBorder text-brand-cream text-xs font-semibold uppercase tracking-wider w-full sm:w-auto text-center">
+          მთავარი ჰაბი
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-brand-goldBorder py-8 sm:py-10 text-xs text-brand-textMutedDark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 text-center md:text-left">
+      <div class="flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3">
+        <img src="https://vanillaevents.ge/wp-content/uploads/2024/10/logo-inverse.png" alt="Vanilla Events" class="dark-logo h-6 sm:h-7 w-auto opacity-80" />
+        <img src="https://vanillaevents.ge/wp-content/uploads/2024/10/logo.png" alt="Vanilla Events" class="light-logo hidden h-6 sm:h-7 w-auto opacity-90" />
+        <span class="text-brand-gold/40">×</span>
+        <span class="font-bold text-white uppercase text-[10px] sm:text-[11px] partner-text">Smart Academy</span>
+        <span class="text-brand-goldBorder">|</span>
+        <span class="text-[11px] sm:text-xs">დიზაინერების AI მოდული • ლექცია 2 (პრაქტიკული გაიდი)</span>
+      </div>
+      <div class="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-5 text-brand-cream/80 text-[11px] sm:text-xs">
+        <span>ტრენერი: <strong class="text-white">გიორგი ბასილაია</strong></span>
+        <a href="https://smartacademy.ge" target="_blank" class="text-brand-gold hover:underline">smartacademy.ge</a>
+        <a href="https://vanillaevents.ge" target="_blank" class="text-brand-gold hover:underline">vanillaevents.ge</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Scripts: Theme, Copy & Timers -->
+  <script>
+    // Theme Management
+    function initTheme() {
+      const savedTheme = localStorage.getItem('vanilla_theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.remove('theme-day');
+        document.documentElement.classList.add('scheme_gold_dark');
+        document.documentElement.classList.remove('scheme_gold_light');
+        updateThemeUI(false);
+      } else {
+        document.documentElement.classList.add('theme-day');
+        document.documentElement.classList.remove('scheme_gold_dark');
+        document.documentElement.classList.add('scheme_gold_light');
+        updateThemeUI(true);
+      }
+    }
+
+    function toggleTheme() {
+      const isDay = document.documentElement.classList.toggle('theme-day');
+      if (isDay) {
+        document.documentElement.classList.remove('scheme_gold_dark');
+        document.documentElement.classList.add('scheme_gold_light');
+        localStorage.setItem('vanilla_theme', 'light');
+      } else {
+        document.documentElement.classList.add('scheme_gold_dark');
+        document.documentElement.classList.remove('scheme_gold_light');
+        localStorage.setItem('vanilla_theme', 'dark');
+      }
+      updateThemeUI(isDay);
+    }
+
+    function updateThemeUI(isDay) {
+      const icon = document.getElementById('theme-icon');
+      const text = document.getElementById('theme-text');
+      if (icon) icon.innerText = isDay ? '🌙' : '☀️';
+      if (text) text.innerText = isDay ? 'Night' : 'Day';
+    }
+
+    initTheme();
+
+    // Global Language State
+    let currentGlobalPromptLang = 'en';
+
+    function setPromptLang(boxId, lang) {
+      const enPane = document.getElementById(boxId + '-en');
+      const kaPane = document.getElementById(boxId + '-ka');
+      const enTab = document.getElementById('tab-' + boxId + '-en');
+      const kaTab = document.getElementById('tab-' + boxId + '-ka');
+
+      if (lang === 'ka') {
+        if (enPane) enPane.classList.remove('active-pane');
+        if (kaPane) kaPane.classList.add('active-pane');
+        if (enTab) enTab.classList.remove('active-tab');
+        if (kaTab) kaTab.classList.add('active-tab');
+      } else {
+        if (kaPane) kaPane.classList.remove('active-pane');
+        if (enPane) enPane.classList.add('active-pane');
+        if (kaTab) kaTab.classList.remove('active-tab');
+        if (enTab) enTab.classList.add('active-tab');
+      }
+    }
+
+    function switchGlobalLang(targetLang) {
+      currentGlobalPromptLang = targetLang;
+      const btnEn = document.getElementById('lang-btn-en');
+      const btnKa = document.getElementById('lang-btn-ka');
+      if (targetLang === 'en') {
+        if (btnEn) { btnEn.classList.add('bg-brand-gold', 'text-white', 'shadow-sm'); btnEn.classList.remove('text-brand-cream/70'); }
+        if (btnKa) { btnKa.classList.remove('bg-brand-gold', 'text-white', 'shadow-sm'); btnKa.classList.add('text-brand-cream/70'); }
+      } else {
+        if (btnKa) { btnKa.classList.add('bg-brand-gold', 'text-white', 'shadow-sm'); btnKa.classList.remove('text-brand-cream/70'); }
+        if (btnEn) { btnEn.classList.remove('bg-brand-gold', 'text-white', 'shadow-sm'); btnEn.classList.add('text-brand-cream/70'); }
+      }
+
+      const allPanes = document.querySelectorAll('.prompt-pane');
+      allPanes.forEach(pane => {
+        const id = pane.id;
+        const baseId = id.replace(/-en$|-ka$/, '');
+        setPromptLang(baseId, targetLang);
+      });
+    }
+
+    // Bilingual Copy Prompt Function
+    function copyBilingualPrompt(boxId) {
+      const enPane = document.getElementById(boxId + '-en');
+      const kaPane = document.getElementById(boxId + '-ka');
+      let activeEl = enPane;
+      if (kaPane && kaPane.classList.contains('active-pane')) {
+        activeEl = kaPane;
+      } else if (enPane && enPane.classList.contains('active-pane')) {
+        activeEl = enPane;
+      } else if (!enPane && !kaPane) {
+        activeEl = document.getElementById(boxId);
+      }
+
+      if (!activeEl) return;
+      const text = activeEl.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-' + boxId);
+        if (btn) {
+          const originalText = btn.innerText;
+          btn.innerText = '✓ დაკოპირდა!';
+          btn.classList.remove('bronze-btn');
+          btn.classList.add('bg-emerald-600', 'text-white');
+          setTimeout(() => {
+            btn.innerText = originalText;
+            btn.classList.remove('bg-emerald-600', 'text-white');
+            btn.classList.add('bronze-btn');
+          }, 2000);
+        }
+      });
+    }
+
+    // 10-Minute Timers
+    const timerState = {
+      1: { total: 600, current: 600, interval: null, running: false },
+      2: { total: 600, current: 600, interval: null, running: false }
+    };
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function toggleTimer(id) {
+      const st = timerState[id];
+      const btn = document.getElementById('timer-btn-' + id);
+      const display = document.getElementById('timer-display-' + id);
+
+      if (st.running) {
+        clearInterval(st.interval);
+        st.running = false;
+        if (btn) {
+          btn.innerText = 'Resume';
+          btn.classList.remove('bg-amber-500');
+          btn.classList.add('bg-emerald-500');
+        }
+      } else {
+        st.running = true;
+        if (btn) {
+          btn.innerText = 'Pause';
+          btn.classList.remove('bg-emerald-500');
+          btn.classList.add('bg-amber-500');
+        }
+        st.interval = setInterval(() => {
+          if (st.current > 0) {
+            st.current--;
+            if (display) display.innerText = formatTime(st.current);
+          } else {
+            clearInterval(st.interval);
+            st.running = false;
+            if (btn) btn.innerText = 'Done!';
+            if (display) display.innerText = '00:00';
+            alert('დავალება ' + id + ' (10 წუთი) დასრულდა!');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer(id) {
+      const st = timerState[id];
+      clearInterval(st.interval);
+      st.running = false;
+      st.current = st.total;
+      const btn = document.getElementById('timer-btn-' + id);
+      const display = document.getElementById('timer-display-' + id);
+      if (display) display.innerText = '10:00';
+      if (btn) {
+        btn.innerText = 'Start';
+        btn.classList.remove('bg-amber-500');
+        btn.classList.add('bg-emerald-500');
+      }
+    }
+  </script>
+</body>
+</html>

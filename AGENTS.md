@@ -23,6 +23,7 @@ Keep files self-contained: HTML with embedded CSS/JS is the project norm. Preser
 - Use 2-space indentation in HTML, CSS, and inline JavaScript.
 - Prefer descriptive file names already used by the repo, such as `lecture-4-summary.html` or `homework-7.html`.
 - Keep Georgian text UTF-8 safe; do not replace technical terms like `API`, `prompt`, or `ROI`.
+- STRICT PUNCTUATION RULE: Never use the em dash (`—`). Never output or write `—`. Use regular hyphens (`-`), colons (`:`), or commas instead.
 - Reuse existing patterns before inventing new components, especially in `lectures/` and `tempo/`.
 
 ## Testing Guidelines

@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>ARCHI (არქი) - AI შესაძლებლობების Showcase & საორიენტაციო დემო-ვორქშოფი (3 საათი / 180 წთ)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          archi: {
+            blue: '#218ccc',
+            blueHover: '#1a76ae',
+            blueDark: '#126496',
+            blueLight: '#eaf5fc',
+            blueSoft: 'rgba(33, 140, 204, 0.12)',
+            pink: '#d40f7d',
+            pinkHover: '#b50968',
+            pinkSoft: 'rgba(212, 15, 125, 0.1)',
+            dark: '#0f172a',
+            darker: '#0a1118',
+            surface: '#ffffff',
+            surfaceAlt: '#f0f7fb',
+            border: 'rgba(18, 100, 150, 0.18)',
+            textMain: '#0f172a',
+            textMuted: '#64748b'
+          }
+        },
+        fontFamily: {
+          sans: ['FiraGO', 'Plus Jakarta Sans', '-apple-system', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  * { font-family: 'FiraGO', 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body { background-color: #f0f7fb; color: #0f172a; overflow-x: hidden; width: 100%; position: relative; }
+
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(33, 140, 204, 0.35); border-radius: 2px; }
+  .nav-link.active { background: rgba(33, 140, 204, 0.15); border-left: 3px solid #218ccc; color: #218ccc; font-weight: 700; }
+  .nav-link:hover { background: rgba(33, 140, 204, 0.08); }
+  pre { white-space: pre-wrap; word-break: break-word; }
+
+  .topic-card {
+    border-left: 4px solid #218ccc;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 10px rgba(18, 100, 150, 0.05);
+    transition: all 0.2s ease;
+  }
+  .topic-card:hover {
+    box-shadow: 0 6px 20px rgba(18, 100, 150, 0.09);
+  }
+  .topic-card.accent {
+    border-left-color: #d40f7d;
+  }
+
+  .prompt-box {
+    background: #0a1118;
+    border: 1px solid rgba(33, 140, 204, 0.35);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    position: relative;
+  }
+  .prompt-box pre {
+    color: #e2e8f0;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    font-family: 'FiraGO', monospace;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    background: rgba(33, 140, 204, 0.3);
+    color: #93cbf2;
+    border: 1px solid rgba(33, 140, 204, 0.5);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 32px;
+  }
+  .copy-btn:hover {
+    background: #218ccc;
+    color: #ffffff;
+  }
+
+  .badge-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  #backToTop { opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; }
+  #backToTop.visible { opacity: 1; pointer-events: auto; }
+  #backToTop:hover { transform: translateY(-2px); }
+
+  @media print {
+    #sidebar, #menuBtn, #overlay, #backToTop { display: none !important; }
+    main, #mainContent { margin-left: 0 !important; }
+    body { background: white; }
+    .topic-card { break-inside: avoid; }
+    @page { margin: 1.5cm; }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay" class="hidden fixed inset-0 bg-black/60 z-30" onclick="toggleSidebar()" aria-hidden="true"></div>
+
+<!-- Mobile Menu Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-archi-dark text-white p-2.5 rounded-lg shadow-lg border border-archi-border hover:border-archi-blue transition-colors flex items-center justify-center min-w-[44px] min-h-[44px]" title="მენიუ" aria-label="მენიუს გახსნა">
+  <svg id="menuIcon" class="w-5 h-5 text-archi-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 text-archi-blue hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Sidebar Navigation -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-80 bg-archi-darker text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300 border-r border-archi-border/40">
+  <div class="px-5 py-6 border-b border-archi-border/30">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-7 h-7 rounded-md bg-archi-blue flex items-center justify-center text-white font-black text-xs">ARCHI</div>
+      <span class="text-archi-blue text-[11px] font-bold uppercase tracking-wider">AI შესაძლებლობების Showcase</span>
+    </div>
+    <h1 class="text-base font-bold leading-tight">დეტალური სესიის გზამკვლევი</h1>
+    <p class="text-archi-textMuted text-xs mt-1.5">I ეტაპი • 180 წუთი (3.0 სთ) • 2026</p>
+  </div>
+  
+  <div class="px-5 py-3 bg-archi-blue/10 border-b border-archi-border/30">
+    <p class="text-[10px] font-bold uppercase tracking-wider text-archi-blue mb-2">სამიზნე გუნდი (5-6 მონაწილე)</p>
+    <p class="text-xs text-gray-300 leading-relaxed mb-1"><span class="text-archi-blue font-bold">● CRM სპეციალისტები:</span> ლიდების ტრიაჟი, BANT, DEFUSE მიმოწერა, QA</p>
+    <p class="text-xs text-gray-300 leading-relaxed mb-1"><span class="text-archi-pink font-bold">● ბიზნეს პროცესები:</span> Mermaid Mapping, Swimlanes, SOP Wiki</p>
+    <p class="text-xs text-emerald-400 leading-relaxed"><span class="text-emerald-400 font-bold">● გუნდის ლიდი:</span> რეპორტინგი, NotebookLM, Make.com, AI Governance</p>
+  </div>
+
+  <nav class="py-3">
+    <a href="#seg-intro" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-intro">
+      <span class="leading-snug pr-2">1. 2026 AI ლანდშაფტი &amp; პრომპტის ანატომია</span>
+      <span class="shrink-0 text-[10px] bg-archi-blue/20 text-archi-blue px-1.5 py-0.5 rounded font-bold">18 წთ</span>
+    </a>
+    <a href="#seg-audit" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-audit">
+      <span class="leading-snug pr-2">2. Live Audit (📱 Slido #1) • ROI</span>
+      <span class="shrink-0 text-[10px] bg-archi-blue/20 text-archi-blue px-1.5 py-0.5 rounded font-bold">7 წთ</span>
+    </a>
+    <a href="#seg-demo1" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-archi-blue transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo1">
+      <span class="leading-snug pr-2">3. DEMO 1: CRM ლიდების ტრიაჟი &amp; BANT</span>
+      <span class="shrink-0 text-[10px] bg-archi-blue/20 text-archi-blue px-1.5 py-0.5 rounded font-bold">15 წთ</span>
+    </a>
+    <a href="#seg-demo2" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-archi-pink transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo2">
+      <span class="leading-snug pr-2">4. DEMO 2: DEFUSE კომუნიკაცია &amp; ობიექციები</span>
+      <span class="shrink-0 text-[10px] bg-archi-pink/20 text-archi-pink px-1.5 py-0.5 rounded font-bold">15 წთ</span>
+    </a>
+    <a href="#seg-demo3" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-emerald-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo3">
+      <span class="leading-snug pr-2">5. DEMO 3: NotebookLM ცოდნის ბაზა &amp; Audio</span>
+      <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-bold">15 წთ</span>
+    </a>
+    <a href="#seg-demo4" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-gray-200 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo4">
+      <span class="leading-snug pr-2">6. DEMO 4: Meeting Minutes &amp; Action Items</span>
+      <span class="shrink-0 text-[10px] bg-archi-blue/20 text-archi-blue px-1.5 py-0.5 rounded font-bold">15 წთ</span>
+    </a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-amber-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-break">
+      <span class="leading-snug pr-2">7. ☕ ყავის შესვენება</span>
+      <span class="shrink-0 text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold">15 წთ</span>
+    </a>
+    <a href="#seg-demo5" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-archi-pink transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo5">
+      <span class="leading-snug pr-2">8. DEMO 5: Process Mapping (Mermaid.js)</span>
+      <span class="shrink-0 text-[10px] bg-archi-pink/20 text-archi-pink px-1.5 py-0.5 rounded font-bold">15 წთ</span>
+    </a>
+    <a href="#seg-demo6" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-archi-pink transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo6">
+      <span class="leading-snug pr-2">9. DEMO 6: SOP Wiki-ს ავტო-გენერატორი</span>
+      <span class="shrink-0 text-[10px] bg-archi-pink/20 text-archi-pink px-1.5 py-0.5 rounded font-bold">13 წთ</span>
+    </a>
+    <a href="#seg-demo7" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-archi-blue transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo7">
+      <span class="leading-snug pr-2">10. DEMO 7: CRM მიმოწერისა და ზარების QA</span>
+      <span class="shrink-0 text-[10px] bg-archi-blue/20 text-archi-blue px-1.5 py-0.5 rounded font-bold">12 წთ</span>
+    </a>
+    <a href="#seg-demo8" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-purple-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo8">
+      <span class="leading-snug pr-2">11. DEMO 8: Gamma (📱 Slido #2)</span>
+      <span class="shrink-0 text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-bold">10 წთ</span>
+    </a>
+    <a href="#seg-demo9" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-emerald-400 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo9">
+      <span class="leading-snug pr-2">12. DEMO 9: Make.com No-Code ავტომატიზაცია</span>
+      <span class="shrink-0 text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-bold">13 წთ</span>
+    </a>
+    <a href="#seg-demo10" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-indigo-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-demo10">
+      <span class="leading-snug pr-2">13. DEMO 10: Claude Projects &amp; Lovable Apps</span>
+      <span class="shrink-0 text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded font-bold">12 წთ</span>
+    </a>
+    <a href="#seg-governance" class="nav-link flex items-center justify-between px-5 py-2 text-sm text-red-300 transition-all duration-200 border-l-[3px] border-transparent" data-topic="seg-governance">
+      <span class="leading-snug pr-2">14. უსაფრთხოება &amp; Q&A (📱 Slido #3)</span>
+      <span class="shrink-0 text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded font-bold">15 წთ</span>
+    </a>
+  </nav>
+
+  <div class="px-5 py-4 border-t border-archi-border/30 mt-2 space-y-1.5">
+    <p class="text-[10px] text-archi-textMuted uppercase tracking-wider mb-1">დაკავშირებული დოკუმენტები</p>
+    <a href="index.html" class="block text-xs text-gray-300 hover:text-archi-blue">📋 კორპორატიული შეთავაზების პორტალი</a>
+    <a href="proposal.md" class="block text-xs text-gray-300 hover:text-archi-blue">📄 სრული შეთავაზება (proposal.md)</a>
+  </div>
+  <div class="px-5 py-4 border-t border-archi-border/30">
+    <p class="text-[10px] text-archi-textMuted uppercase tracking-wider mb-1">ტრენერი</p>
+    <p class="text-sm font-bold text-white">გიორგი ბასილაია, PhD</p>
+    <p class="text-xs text-archi-textMuted">basilaia.com • 2026</p>
+  </div>
+</aside>
+
+<!-- Main Content Area -->
+<main id="mainContent" class="min-h-screen transition-[margin] duration-300">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-archi-darker via-archi-dark to-[#12314a] text-white pl-16 pr-6 md:pl-24 md:pr-10 py-10 border-b border-archi-border/40">
+    <div class="max-w-5xl">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-lg bg-archi-blue flex items-center justify-center text-white font-black text-xs shadow-md">ARCHI</div>
+        <span class="text-archi-blue text-sm font-semibold">კორპორატიული AI შესაძლებლობების Showcase</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-3">
+        ხელოვნური ინტელექტი CRM-ისა და ბიზნეს პროცესების ოპტიმიზაციაში<br>
+        <span class="text-archi-blue italic">3-საათიანი საორიენტაციო დემო-ვორქშოფის გზამკვლევი</span>
+      </h1>
+      <p class="text-gray-300 text-base max-w-3xl leading-relaxed mb-6">
+        ეს არის დეველოპერული კომპანია „არქის“ CRM-ისა და ბიზნეს პროცესების გუნდისთვის მომზადებული <strong>3-საათიანი საორიენტაციო დემო-სესია</strong> (180 წუთი შესვენებით). მიზანია ხელოვნური ინტელექტის თანამედროვე ხელსაწყოების რეალურ დროში დემონსტრირება „არქის“ სამუშაო პროცესებზე, გუნდის მიერ მათი ბიზნეს-ღირებულების შეფასება და პრაქტიკული გამოყენების გზების განსაზღვრა.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <span class="inline-flex items-center gap-1.5 text-sm text-gray-300 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+          ⏱️ 180 წუთი (3.0 საათი)
+        </span>
+        <span class="inline-flex items-center gap-1.5 text-sm text-gray-300 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+          🚀 10 Live დემო
+        </span>
+        <span class="inline-flex items-center gap-1.5 text-sm text-gray-300 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+          👥 5-6 მონაწილე
+        </span>
+        <span class="inline-flex items-center gap-1.5 text-sm text-archi-blue font-bold bg-archi-blue/10 px-3 py-1.5 rounded-lg border border-archi-blue/30">
+          🏢 On-site „არქის“ სათავო ოფისში
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-5xl pl-16 pr-6 md:pl-24 md:pr-10 py-8">
+
+    <!-- Mission & Voting Banner -->
+    <div class="bg-archi-surface border border-archi-border rounded-xl p-6 mb-8 shadow-sm">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl shrink-0">🧭</span>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-archi-blue mb-1">სესიის მიზანი • ნახვა, შეფასება, არჩევა</p>
+          <h2 class="text-xl font-bold text-archi-dark mb-2">დღეს ვქმნით „არქის“ CRM-ისა და ბიზნეს პროცესების მომავალი AI ტრანსფორმაციის რუკას</h2>
+          <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+            თითოეული დემო არის შესაძლებლობის ცოცხალი Preview „არქის“ რეალურ კონტექსტში (Trump Tower, Grand Avenue, Archi Card, Archi Fix, განვადება). სრული პროგრამის მოდულები შეირჩევა გუნდის რეალური საჭიროებებისა და ბიზნეს-ღირებულების მიხედვით.
+          </p>
+          <div class="grid sm:grid-cols-3 gap-3 text-xs">
+            <div class="bg-archi-surfaceAlt rounded-lg p-3 border border-archi-border/50">
+              <strong class="text-archi-dark block mb-1">1. ბიზნეს-ღირებულება (ROI)</strong>
+              <span class="text-archi-textMuted">რამდენ დროსა და საოპერაციო რუტინას ზოგავს?</span>
+            </div>
+            <div class="bg-archi-surfaceAlt rounded-lg p-3 border border-archi-border/50">
+              <strong class="text-archi-dark block mb-1">2. გამოყენების სიხშირე</strong>
+              <span class="text-archi-textMuted">რამდენად ხშირად სჭირდება გუნდს ეს Workflow?</span>
+            </div>
+            <div class="bg-archi-surfaceAlt rounded-lg p-3 border border-archi-border/50">
+              <strong class="text-archi-dark block mb-1">3. შერჩევის გადაწყვეტილება</strong>
+              <span class="text-archi-textMuted">აუცილებელი • სასურველი • არ გვჭირდება</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Route Table -->
+    <div class="bg-archi-darker text-white rounded-xl p-6 mb-10 border border-archi-border/40 shadow-lg">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-2xl">⏱</span>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-archi-blue mb-0.5">სესიის მარშრუტი</p>
+          <h2 class="text-lg font-bold">180 წუთი (3.0 სთ) • სრული სესიის ქრონომეტრაჟი</h2>
+        </div>
+      </div>
+
+      <p class="text-xs font-semibold uppercase tracking-wider text-archi-blue mb-2">ნაწილი I • AI ლანდშაფტი, ROI &amp; CRM საოპერაციო სტეკი (85 წთ)</p>
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-white/20">
+              <th class="text-left py-2 pr-3 text-archi-blue font-semibold w-6">#</th>
+              <th class="text-left py-2 pr-4 text-archi-blue font-semibold">სეგმენტი</th>
+              <th class="text-left py-2 pr-3 text-archi-blue font-semibold">დრო</th>
+              <th class="text-left py-2 text-archi-blue font-semibold">ტიპი</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-200">
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-blue font-bold">1</td>
+              <td class="py-2 pr-4">2026 AI ლანდშაფტი, კომპანიის სტრატეგია &amp; პრომპტის ანატომია</td>
+              <td class="py-2 pr-3 font-semibold text-white">18 წთ</td>
+              <td class="py-2"><span class="bg-archi-blue/20 text-archi-blue text-xs px-2 py-0.5 rounded">მიმოხილვა</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-blue font-bold">2</td>
+              <td class="py-2 pr-4">Live Audit: „არქის“ CRM პროცესების აუდიტი &amp; ROI <span class="text-xs text-amber-300 font-semibold ml-1">📱 Slido #1</span></td>
+              <td class="py-2 pr-3 font-semibold text-white">7 წთ</td>
+              <td class="py-2"><span class="bg-archi-blue/20 text-archi-blue text-xs px-2 py-0.5 rounded">აქტივობა</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-blue font-bold">3</td>
+              <td class="py-2 pr-4">DEMO 1: CRM ლიდების ტრიაჟი, BANT კვალიფიკაცია &amp; პრიორიტეტიზაცია</td>
+              <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+              <td class="py-2"><span class="bg-archi-blue/20 text-archi-blue text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-pink font-bold">4</td>
+              <td class="py-2 pr-4">DEMO 2: რთულ კლიენტებთან მიმოწერა, ობიექციები &amp; DEFUSE მეთოდოლოგია</td>
+              <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+              <td class="py-2"><span class="bg-archi-pink/20 text-archi-pink text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-emerald-400 font-bold">5</td>
+              <td class="py-2 pr-4">DEMO 3: Google NotebookLM: „არქის“ ცოდნის ბაზა, Ytong/Archi Card &amp; Audio Briefs</td>
+              <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+              <td class="py-2"><span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-blue font-bold">6</td>
+              <td class="py-2 pr-4">DEMO 4: შეხვედრების ოქმები (Meeting Minutes) &amp; CRM Action Items</td>
+              <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+              <td class="py-2"><span class="bg-archi-blue/20 text-archi-blue text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center gap-3 my-4 py-2 px-4 bg-white/10 rounded-lg">
+        <span class="text-amber-300 font-bold text-sm">☕</span>
+        <p class="text-sm text-amber-200 font-semibold">კომფორტის შესვენება &amp; კითხვების გაცვლა - 15 წუთი (180 წუთში შედის)</p>
+      </div>
+
+      <p class="text-xs font-semibold uppercase tracking-wider text-archi-blue mb-2">ნაწილი II • პროცესების მოდელირება, SOP Wiki, ავტომატიზაცია &amp; უსაფრთხოება (80 წთ)</p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-white/20">
+              <th class="text-left py-2 pr-3 text-archi-blue font-semibold w-6">#</th>
+              <th class="text-left py-2 pr-4 text-archi-blue font-semibold">სეგმენტი</th>
+              <th class="text-left py-2 pr-3 text-archi-blue font-semibold">დრო</th>
+              <th class="text-left py-2 text-archi-blue font-semibold">ტიპი</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-200">
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-pink font-bold">8</td>
+              <td class="py-2 pr-4">DEMO 5: Process Mapping ხელოვნური ინტელექტით (Mermaid.js Swimlanes)</td>
+              <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+              <td class="py-2"><span class="bg-archi-pink/20 text-archi-pink text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-pink font-bold">9</td>
+              <td class="py-2 pr-4">DEMO 6: სტანდარტული საოპერაციო პროცედურის (SOP) ავტო-გენერატორი</td>
+              <td class="py-2 pr-3 font-semibold text-white">13 წთ</td>
+              <td class="py-2"><span class="bg-archi-pink/20 text-archi-pink text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-archi-blue font-bold">10</td>
+              <td class="py-2 pr-4">DEMO 7: CRM მიმოწერისა და ზარების ხარისხის (QA) ანალიტიკა &amp; Sentiment</td>
+              <td class="py-2 pr-3 font-semibold text-white">12 წთ</td>
+              <td class="py-2"><span class="bg-archi-blue/20 text-archi-blue text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-purple-300 font-bold">11</td>
+              <td class="py-2 pr-4">DEMO 8: Gamma.app რეპორტი &amp; პრიორიტეტიზაცია <span class="text-xs text-amber-300 font-semibold ml-1">📱 Slido #2</span></td>
+              <td class="py-2 pr-3 font-semibold text-white">10 წთ</td>
+              <td class="py-2"><span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-emerald-400 font-bold">12</td>
+              <td class="py-2 pr-4">DEMO 9: Make.com No-Code ავტომატიზაცია CRM ნაკადებისთვის</td>
+              <td class="py-2 pr-3 font-semibold text-white">13 წთ</td>
+              <td class="py-2"><span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2 pr-3 text-indigo-300 font-bold">13</td>
+              <td class="py-2 pr-4">DEMO 10: Claude Projects &amp; Lovable.dev No-Code შიდა აპლიკაციები</td>
+              <td class="py-2 pr-3 font-semibold text-white">12 წთ</td>
+              <td class="py-2"><span class="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded">ლაივ დემო</span></td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-3 text-red-400 font-bold">14</td>
+              <td class="py-2 pr-4">მონაცემთა უსაფრთხოება, PII, AI წესდება &amp; Q&A <span class="text-xs text-amber-300 font-semibold ml-1">📱 Slido #3</span></td>
+              <td class="py-2 pr-3 font-semibold text-white">15 წთ</td>
+              <td class="py-2"><span class="bg-red-500/20 text-red-300 text-xs px-2 py-0.5 rounded">კრიტიკული</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTIONS & DEMOS -->
+
+    <!-- Section 1 -->
+    <div id="seg-intro" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-blueSoft text-archi-blue">ნაწილი 1 • 00:00 - 00:18</span>
+        <span class="text-xs font-bold text-archi-textMuted">18 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">2026 წლის Frontier AI ლანდშაფტი &amp; პრომპტის ანატომია</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        გადასვლა მარტივი ტექსტების ჩატ-გენერაციიდან მრავალეტაპიან, განმეორებად საინჟინრო სამუშაო ნაკადებზე (Workflows). ოთხი Frontier მოდელის როლური გამიჯვნა: ChatGPT Plus (GPT-5.6), Claude 5 Sonnet, Google Gemini 3.5 Pro და Perplexity.ai Pro.
+      </p>
+      <div class="bg-archi-surfaceAlt p-4 rounded-lg border border-archi-border/40 text-xs space-y-2">
+        <div><strong>სუსტი პრომპტი:</strong> „დამიწერე პასუხი კლიენტს, რომელიც უკმაყოფილოა ბინის ჩაბარების ვადით.“ (შედეგი: ზოგადი, უსიცოცხლო შაბლონი).</div>
+        <div><strong>საინჟინრო პრომპტი (CLEAR / CREATE):</strong> როლი + დეტალური კონტექსტი + ობიექტური ფაქტები + ემპათიის ტონი + მკაფიო SLA და შემდეგი ნაბიჯი CRM-ში.</div>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div id="seg-audit" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-blueSoft text-archi-blue">ნაწილი 2 • 00:18 - 00:25</span>
+        <span class="text-xs font-bold text-archi-textMuted">7 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">Live Audit: გუნდის ყოველდღიური ტკივილები &amp; დროის ხარჯვა</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-3">
+        მონაწილეებთან ერთად იმ საკვანძო საოპერაციო პროცესების იდენტიფიცირება, სადაც იკარგება ყველაზე მეტი ენერგია და დრო:
+      </p>
+      <!-- Slido Poll 1 Box -->
+      <div class="bg-gradient-to-r from-archi-blueSoft/80 to-white border border-archi-blue/40 rounded-xl p-5 mb-4 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📱</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-archi-blue">SLIDO გამოკითხვა #1 • LIVE AUDIT (2 წუთი)</span>
+          </div>
+          <span class="text-[10px] bg-archi-blue text-white font-bold px-2 py-0.5 rounded">Word Cloud</span>
+        </div>
+        <div class="bg-white rounded-lg p-4 border border-archi-border text-center shadow-xs">
+          <p class="text-base font-bold text-archi-dark mb-1">„„არქის“ CRM-სა და ბიზნეს პროცესებში ყველაზე მეტ დროს მართმევს: _______“</p>
+          <p class="text-xs text-archi-textMuted mb-3">დააფიქსირეთ 1-2 საკვანძო სიტყვა • შედეგები მყისიერად გამოჩნდება ეკრანზე Word Cloud-ის სახით</p>
+          <a href="https://sli.do" target="_blank" class="inline-flex items-center gap-2 bg-archi-blue hover:bg-archi-blueHover text-white font-bold text-xs px-5 py-2.5 rounded-lg transition-colors shadow">
+            <span>📱</span> <span>გახსენით Slido (კოდი: #ARCHI-AI) →</span>
+          </a>
+        </div>
+        <p class="text-[11px] text-archi-textMuted text-center mt-2.5">💡 პასუხები გამოჩნდება პროექტორზე — ტრენერი დააჯგუფებს გამოკვეთილ ტკივილებს და მოარგებს შემდგომ ლაივ დემოებს.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3 text-xs">
+        <div class="p-3 bg-archi-surfaceAlt rounded-lg border border-archi-border/30">
+          <strong>🔴 CRM ლიდების ტრიაჟი:</strong> ქაოსური შეტყობინებების ხელით წაკითხვა და კატეგორიზაცია (2-3 სთ/დღეში).
+        </div>
+        <div class="p-3 bg-archi-surfaceAlt rounded-lg border border-archi-border/30">
+          <strong>🔴 რთული მიმოწერა:</strong> უკმაყოფილო მომხმარებელთან ტონის შერჩევა და არგუმენტაცია (1.5 სთ/დღეში).
+        </div>
+        <div class="p-3 bg-archi-surfaceAlt rounded-lg border border-archi-border/30">
+          <strong>🔴 პროცესების აღწერა:</strong> SOP-ებისა და ინსტრუქციების ხელით წერა და განახლება (4-6 სთ/დოკუმენტი).
+        </div>
+        <div class="p-3 bg-archi-surfaceAlt rounded-lg border border-archi-border/30">
+          <strong>🔴 დოკუმენტებში ძებნა:</strong> პროექტების სპეციფიკაციებისა და განვადების პირობების მოძიება (1-2 სთ/დღეში).
+        </div>
+      </div>
+    </div>
+
+    <!-- DEMO 1 -->
+    <div id="seg-demo1" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-blueSoft text-archi-blue">LIVE DEMO 1 • 00:25 - 00:40</span>
+        <span class="text-xs font-bold text-archi-textMuted">15 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">CRM ლიდების ტრიაჟი, BANT კვალიფიკაცია &amp; პრიორიტეტიზაცია</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        ქოლ-ცენტრიდან, ვებსაიტიდან და სოციალური ქსელებიდან შემოსული 3 სხვადასხვა ტიპის ნედლი მოთხოვნის მომენტალური კლასიფიკაცია: BANT ანალიზი (Budget, Authority, Need, Timeline), ლიდის ტემპერატურა (Hot/Warm/Cold), შესაფერისი „არქის“ კომპლექსის შერჩევა და CRM დავალების გენერირება.
+      </p>
+      
+      <div class="prompt-box mb-4">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც დეველოპერული კომპანია „არქის“ (Archi) CRM ანალიტიკისა და გაყიდვების წამყვანი ექსპერტი.
+
+კონტექსტი: ქვემოთ მოცემულია შემოსული ახალი ლიდის პირველადი ნედლი შეტყობინება.
+
+შენი ამოცანაა:
+1. BANT შეფასება: ბიუჯეტი (Budget), გადაწყვეტილების მიმღები (Authority), საჭიროება (Need - საინვესტიციო/საცხოვრებელი), ვადები (Timeline);
+2. ლიდის ტემპერატურა: Hot / Warm / Cold მკაფიო არგუმენტაციით;
+3. რეკომენდებული საცხოვრებელი კომპლექსი „არქის“ პორტფელიდან (მაგ. Archi Grand Avenue, Archi Dadiani, Archi Saburtalo) და გადახდის მოდელი;
+4. შემდეგი საოპერაციო ნაბიჯი CRM-ში: კონკრეტული დავალება CRM მენეჯერისთვის (Call / WhatsApp / შეთავაზება);
+5. პერსონალიზებული პირველი საკომუნიკაციო მესიჯის დრაფტი „არქის“ მეგობრული და პროფესიული ტონით.
+
+ლიდის მონაცემები:
+[ჩასვით ლიდის შეტყობინება]</pre>
+      </div>
+      <div class="text-xs text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+        <strong>📈 ROI შედეგი:</strong> ლიდის დამუშავების დრო 10-15 წუთიდან მცირდება 20 წამამდე. 0 გამოტოვებული ცხელი ლიდი.
+      </div>
+    </div>
+
+    <!-- DEMO 2 -->
+    <div id="seg-demo2" class="topic-card accent p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-pinkSoft text-archi-pink">LIVE DEMO 2 • 00:40 - 00:55</span>
+        <span class="text-xs font-bold text-archi-textMuted">15 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">რთულ კლიენტებთან კომუნიკაცია &amp; DEFUSE მეთოდოლოგია</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        უკმაყოფილო ან გაღიზიანებული მომხმარებლის შეტყობინებაზე (მაგ. ბინის ჩაბარების ვადები, რემონტის სტანდარტი, განვადების გადახდა) ემოციურად გაწონასწორებული, თბილი და პროფესიული პასუხის შედგენა „არქელების“ დიდი ოჯახის ფილოსოფიის დაცვით.
+      </p>
+
+      <div class="prompt-box mb-4">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც „არქის“ მომხმარებელთა გამოცდილებისა (Customer Care) და CRM კომუნიკაციის უფროსი სპეციალისტი.
+
+კონტექსტი: კლიენტი გამოთქვამს უკმაყოფილებას ბინის ჩაბარების ვადებთან, რემონტის სტანდარტთან (Archi Fix) ან განვადების გრაფიკთან დაკავშირებით.
+
+გამოიყენე DEFUSE მეთოდოლოგია:
+- D (De-escalate): შეამცირე ემოციური დაძაბულობა, არ გამოიყენო თავისმართლების პოზიცია;
+- E (Empathize): გამოხატე გულწრფელი ემპათია და გაგება კლიენტის სიტუაციის მიმართ;
+- F (Focus on Facts): ჩამოაყალიბე ობიექტური ფაქტები და მიმდინარე სტატუსი მშვიდად;
+- U (Understand Needs): გამოკვეთე რა არის კლიენტის რეალური პრიორიტეტი;
+- S (Solve with Options): შესთავაზე 2 კონკრეტული, რეალისტური გადაწყვეტის გზა;
+- E (End with Clarity): დაასრულე მკაფიო შემდეგი ნაბიჯით და პასუხისმგებელი პირის მითითებით.
+
+ტონი: თბილი, მზრუნველი, საიმედო და 100%-ით პროფესიული.
+
+კლიენტის შეტყობინება:
+[ჩასვით კლიენტის წერილი/ზარის შინაარსი]</pre>
+      </div>
+      <div class="text-xs text-archi-pink bg-archi-pinkSoft p-3 rounded-lg border border-archi-pink/30">
+        <strong>📈 ROI შედეგი:</strong> სტრესული მიმოწერის მომზადების დრო მცირდება 80%-ით, იზრდება კლიენტის ლოიალობა და იხსნება კონფლიქტი.
+      </div>
+    </div>
+
+    <!-- DEMO 3 -->
+    <div id="seg-demo3" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-emerald-500/20 text-emerald-600">LIVE DEMO 3 • 00:55 - 01:10</span>
+        <span class="text-xs font-bold text-archi-textMuted">15 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">Google NotebookLM: „არქის“ დაცული ცოდნის ბაზა &amp; Audio Briefs</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        „არქის“ მრავალგვერდიანი PDF დოკუმენტების (საცხოვრებელი კომპლექსების კატალოგი, სამშენებლო მასალები - Ytong ბლოკი, Archi Card-ის პარტნიორული პირობები) ინდექსირება 100%-ით დაცულ Zero-Data Retention გარემოში. მყისიერი Q&A წყაროების ციტირებით და Synthetic Audio Briefs (პოდკასტი) მობილურზე მოსასმენად.
+      </p>
+      <div class="bg-archi-surfaceAlt p-4 rounded-lg border border-archi-border/50 text-xs space-y-2 mb-4">
+        <div><strong>ლაივ შეკითხვა 1:</strong> „რა თერმოიზოლაციური უპირატესობა აქვს Ytong-ის ბლოკს და რამდენად ამცირებს კომუნალურ გადასახადებს არქელებისთვის?“</div>
+        <div><strong>ლაივ შეკითხვა 2:</strong> „რა შეღავათი ვრცელდება Archi Card-ით პარტნიორ ავეჯის/სარემონტო ობიექტებში და რა პროცედურაა საჭირო გასააქტიურებლად?“</div>
+        <div><strong>Audio Overview:</strong> 1-კლიკით 10-წუთიანი ორმხრივი აუდიო-ბრიფინგის გენერირება.</div>
+      </div>
+      <div class="text-xs text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+        <strong>📈 ROI შედეგი:</strong> დოკუმენტებში ხელით ძებნის დრო (1-2 სთ) მცირდება 10 წამამდე. 0% ჰალუცინაცია.
+      </div>
+    </div>
+
+    <!-- DEMO 4 -->
+    <div id="seg-demo4" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-blueSoft text-archi-blue">LIVE DEMO 4 • 01:10 - 01:25</span>
+        <span class="text-xs font-bold text-archi-textMuted">15 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">Meeting Minutes &amp; Action Items: შეხვედრების ოქმები 60 წამში</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        CRM-ისა და ბიზნეს პროცესების გუნდის სამუშაო თათბირის ნედლი აუდიო/ტექსტური ტრანსკრიპტიდან საკვანძო გადაწყვეტილებების, დავალებების, შემსრულებლებისა და SLA ვადების ავტომატური გამოყოფა მზა CRM ცხრილად.
+      </p>
+      <div class="text-xs text-archi-blue bg-archi-blueSoft p-3 rounded-lg border border-archi-blue/30">
+        <strong>📈 ROI შედეგი:</strong> შეხვედრის ოქმის მომზადება 45 წუთიდან მცირდება 1 წუთამდე. მკაფიო კონტროლი დავალებებზე.
+      </div>
+    </div>
+
+    <!-- Coffee Break -->
+    <div id="seg-break" class="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">☕</span>
+        <div>
+          <h4 class="font-bold text-amber-900 text-base">კომფორტის შესვენება &amp; არაფორმალური დისკუსია</h4>
+          <p class="text-xs text-amber-700">01:25 - 01:40 (15 წუთი) • ყავა, ჩაი, პირველი შთაბეჭდილებებისა და კითხვების გაცვლა</p>
+        </div>
+      </div>
+      <span class="text-xs font-bold bg-amber-200 text-amber-900 px-3 py-1 rounded-full">15 წთ</span>
+    </div>
+
+    <!-- DEMO 5 -->
+    <div id="seg-demo5" class="topic-card accent p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-pinkSoft text-archi-pink">LIVE DEMO 5 • 01:40 - 01:55</span>
+        <span class="text-xs font-bold text-archi-textMuted">15 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">Process Mapping ხელოვნური ინტელექტით (Mermaid.js Flowcharts &amp; Swimlanes)</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        ბუნებრივი ენით აღწერილი პროცესიდან (მაგ. „ბინის დაჯავშნიდან ხელშეკრულების რეგისტრაციამდე“) ვიზუალური პროცესის რუკის, Swimlane დიაგრამისა და ბოთლის ყელის (Bottleneck Analysis) ავტომატური გენერირება Mermaid.js არქიტექტურით.
+      </p>
+
+      <div class="prompt-box mb-4">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც უფროსი ბიზნეს პროცესების არქიტექტორი (Senior Process Analyst) დეველოპერულ სექტორში.
+
+კონტექსტი: ქვემოთ აღწერილია „არქის“ საოპერაციო პროცესი (ბინის დაჯავშნიდან ხელშეკრულების გაფორმებამდე).
+
+ამოცანა:
+1. პროცესის დეკომპოზიცია როლების მიხედვით: კლიენტი, CRM მენეჯერი, გაყიდვების კონსულტანტი, იურიდიული სამსახური, ფინანსები;
+2. შექმენი სრულყოფილი Mermaid.js კოდი (swimlane/flowchart TD ფორმატში), სადაც ჩანს:
+   - ნაბიჯები და მოქმედებები;
+   - გადაწყვეტილების მიღების წერტილები (Decision Diamonds);
+   - შეტყობინებები და სტატუსის ცვლილება CRM-ში;
+   - ბოთლის ყელის (Bottleneck) პოტენციური რისკები.
+3. მოკლე ანალიტიკური რეკომენდაცია: როგორ შეიძლება ამ პროცესის 30%-ით დაჩქარება AI ავტომატიზაციით.
+
+პროცესის აღწერა:
+[ჩასვით პროცესის ტექსტი]</pre>
+      </div>
+      <div class="text-xs text-archi-pink bg-archi-pinkSoft p-3 rounded-lg border border-archi-pink/30">
+        <strong>📈 ROI შედეგი:</strong> Miro/Visio-ში 3-5 საათიანი ხელით ხაზვის ჩანაცვლება 2-წუთიანი გენერაციით.
+      </div>
+    </div>
+
+    <!-- DEMO 6 -->
+    <div id="seg-demo6" class="topic-card accent p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-pinkSoft text-archi-pink">LIVE DEMO 6 • 01:55 - 02:08</span>
+        <span class="text-xs font-bold text-archi-textMuted">13 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">სტანდარტული საოპერაციო პროცედურის (SOP) ავტო-გენერატორი Notion/Wiki-სთვის</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        PARTS ჩარჩოს გამოყენებით კომპანიის შიდა Notion Wiki-ს ფორმატის სრულყოფილი SOP-ის შექმნა: მიზანი, წინაპირობები, ნაბიჯ-ნაბიჯ პროცედურა, გამონაკლისების მართვა, SLA და ხარისხის მეტრიკები.
+      </p>
+
+      <div class="prompt-box mb-4">
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre>იმოქმედე როგორც კომპანია „არქის“ ხარისხის უზრუნველყოფისა და ბიზნეს პროცესების სტანდარტიზაციის დირექტორი.
+
+ამოცანა: ქვემოთ მოცემული სამუშაო აღწერილობის ბაზაზე შექმენი ოფიციალური სტანდარტული საოპერაციო პროცედურა (SOP) Notion Wiki ფორმატისთვის.
+
+სტრუქტურა:
+1. მეტამონაცემები: SOP კოდი, სათაური, პასუხისმგებელი დეპარტამენტი (CRM/Process), ვერსია;
+2. მიზანი და მასშტაბი (Purpose &amp; Scope);
+3. წინაპირობები (Prerequisites): სისტემური წვდომები, მონაცემთა ბაზები;
+4. ეტაპობრივი ინსტრუქცია (Step-by-Step Procedure) როლების მითითებით;
+5. გამონაკლისები და რისკების მართვა (Exceptions &amp; Fallbacks);
+6. ხარისხის კონტროლის მეტრიკები (KPIs &amp; SLA);
+7. დაკავშირებული დოკუმენტები და შაბლონები.
+
+სამუშაო პროცესის მოკლე აღწერა:
+[ჩასვით პროცესის მოკლე მონახაზი]</pre>
+      </div>
+      <div class="text-xs text-archi-pink bg-archi-pinkSoft p-3 rounded-lg border border-archi-pink/30">
+        <strong>📈 ROI შედეგი:</strong> SOP-ის შექმნა 5-6 საათიდან მცირდება 30 წუთამდე. ერთიანი სტანდარტი მთელ გუნდში.
+      </div>
+    </div>
+
+    <!-- DEMO 7 -->
+    <div id="seg-demo7" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-archi-blueSoft text-archi-blue">LIVE DEMO 7 • 02:08 - 02:20</span>
+        <span class="text-xs font-bold text-archi-textMuted">12 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">CRM მიმოწერისა და ზარების ხარისხის კონტროლი (QA &amp; Sentiment)</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        20-30 მომხმარებელთან დიალოგის სინთეზური ანალიზი: სკრიპტებთან შესაბამისობა, კლიენტის ემოციური ტონი (Sentiment Score), ტიპური ობიექციები და რეკომენდაციები გუნდისთვის.
+      </p>
+      <div class="text-xs text-archi-blue bg-archi-blueSoft p-3 rounded-lg border border-archi-blue/30">
+        <strong>📈 ROI შედეგი:</strong> ხარისხის მენეჯერის 15 საათიანი ხელით მოსმენის ჩანაცვლება სისტემური ანალიტიკური დაფით.
+      </div>
+    </div>
+
+    <!-- DEMO 8 -->
+    <div id="seg-demo8" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-purple-500/20 text-purple-600">LIVE DEMO 8 • 02:20 - 02:30</span>
+        <span class="text-xs font-bold text-archi-textMuted">10 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">Gamma.app - Executive CRM რეპორტი &amp; პრეზენტაცია 2 წუთში</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        ნედლი CRM ანგარიშიდან 10-სლაიდიანი ინტერაქტიული, მობილურზე ადაპტირებული Executive Pitch Deck-ის შექმნა „არქის“ ოფიციალური ფერებით (Blue &amp; Pink).
+      </p>
+      <div class="text-xs text-purple-700 bg-purple-50 p-3 rounded-lg border border-purple-200 mb-4">
+        <strong>📈 ROI შედეგი:</strong> პრეზენტაციის მომზადების დრო 4 საათიდან მცირდება 2-3 წუთამდე.
+      </div>
+
+      <!-- Slido Poll 2 Box -->
+      <div class="bg-gradient-to-r from-purple-50 to-white border border-purple-200 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📱</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-purple-700">SLIDO გამოკითხვა #2 • ინსტრუმენტების პრიორიტეტიზაცია (2 წუთი)</span>
+          </div>
+          <span class="text-[10px] bg-purple-600 text-white font-bold px-2 py-0.5 rounded">Multiple Choice</span>
+        </div>
+        <div class="bg-white rounded-lg p-4 border border-purple-200 text-center shadow-xs">
+          <p class="text-base font-bold text-archi-dark mb-1">„განხილული AI ინსტრუმენტებიდან რომელს ანიჭებთ ყველაზე მაღალ პრიორიტეტს?“</p>
+          <p class="text-xs text-archi-textMuted mb-3">მრავალვარიანტიანი გამოკითხვა • აირჩიეთ 1 ან 2 მთავარი ინსტრუმენტი „არქის“ სამუშაო პროცესებისთვის</p>
+          <div class="flex flex-wrap justify-center gap-2 mb-3.5 text-[11px]">
+            <span class="bg-archi-surfaceAlt border border-archi-border px-2.5 py-1 rounded text-archi-textSecondary">1. BANT ლიდების ტრიაჟი</span>
+            <span class="bg-archi-surfaceAlt border border-archi-border px-2.5 py-1 rounded text-archi-textSecondary">2. DEFUSE მიმოწერა</span>
+            <span class="bg-archi-surfaceAlt border border-archi-border px-2.5 py-1 rounded text-archi-textSecondary">3. NotebookLM ცოდნის ბაზა</span>
+            <span class="bg-archi-surfaceAlt border border-archi-border px-2.5 py-1 rounded text-archi-textSecondary">4. Mermaid &amp; SOP Wiki</span>
+            <span class="bg-archi-surfaceAlt border border-archi-border px-2.5 py-1 rounded text-archi-textSecondary">5. Gamma Executive რეპორტი</span>
+            <span class="bg-archi-surfaceAlt border border-archi-border px-2.5 py-1 rounded text-archi-textSecondary">6. Make No-Code ნაკადები</span>
+          </div>
+          <a href="https://sli.do" target="_blank" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-5 py-2.5 rounded-lg transition-colors shadow">
+            <span>📱</span> <span>ხმის მიცემა Slido-ში (კოდი: #ARCHI-AI) →</span>
+          </a>
+        </div>
+        <p class="text-[11px] text-archi-textMuted text-center mt-2.5">💡 რეიტინგი ეკრანზე გამოავლენს გუნდისთვის ყველაზე მაღალი მოთხოვნის მქონე გადაწყვეტილებას.</p>
+      </div>
+    </div>
+
+    <!-- DEMO 9 -->
+    <div id="seg-demo9" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-emerald-500/20 text-emerald-600">LIVE DEMO 9 • 02:30 - 02:43</span>
+        <span class="text-xs font-bold text-archi-textMuted">13 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">Make.com No-Code ავტომატიზაცია CRM სამუშაო ნაკადებისთვის</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        ცოცხალი No-Code სცენარი: ვებ-ფორმის შევსება ➔ AI მოდულის მიერ ლიდის ვალიდაცია და ტემპერატურის მინიჭება ➔ CRM-ში ბარათის ავტომატური შექმნა ➔ შეტყობინება პასუხისმგებელ მენეჯერთან.
+      </p>
+      <div class="text-xs text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+        <strong>📈 ROI შედეგი:</strong> რუტინული მექანიკური მონაცემთა შეყვანის 100%-ით ავტომატიზაცია.
+      </div>
+    </div>
+
+    <!-- DEMO 10 -->
+    <div id="seg-demo10" class="topic-card p-6 mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-indigo-500/20 text-indigo-600">LIVE DEMO 10 • 02:43 - 02:55</span>
+        <span class="text-xs font-bold text-archi-textMuted">12 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">Claude Projects &amp; Lovable.dev No-Code შიდა აპლიკაციები</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        Claude Projects: გუნდის საერთო მეხსიერება, პრომპტების ბიბლიოთეკა და Shared Artifacts. Lovable.dev: ბინის განვადებისა და გადახდის გრაფიკის ინტერაქტიული კალკულატორის პროტოტიპირება ბუნებრივი ენით წუთებში.
+      </p>
+      <div class="text-xs text-indigo-700 bg-indigo-50 p-3 rounded-lg border border-indigo-200">
+        <strong>📈 ROI შედეგი:</strong> შიდა სამუშაო ხელსაწყოების შექმნა IT დეპარტამენტის თვეობით ლოდინის გარეშე.
+      </div>
+    </div>
+
+    <!-- Governance & Q&A Section -->
+    <div id="seg-governance" class="topic-card p-6 mb-8" style="border-left-color: #ef4444;">
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge-tag bg-red-500/20 text-red-600">ნაწილი 5 • 02:55 - 03:10</span>
+        <span class="text-xs font-bold text-archi-textMuted">15 წუთი</span>
+      </div>
+      <h3 class="text-xl font-bold text-archi-dark mb-2">მონაცემთა უსაფრთხოება, AI წესდება &amp; კითხვა-პასუხი (Q&A)</h3>
+      <p class="text-sm text-archi-textSecondary leading-relaxed mb-4">
+        „არქის“ მონაცემთა დაცვის სტანდარტები: მომხმარებელთა პერსონალური ინფორმაცია (PII), კონტრაქტების პირობები, Shadow AI სისტემების პრევენცია და უსაფრთხოების რეკომენდაციები კორპორატიულ პლატფორმებზე.
+      </p>
+
+      <!-- Slido Poll 3 Box -->
+      <div class="bg-gradient-to-r from-amber-50 to-white border border-amber-200 rounded-xl p-5 mb-4 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📱</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-800">SLIDO გამოკითხვა #3 • KEY TAKEAWAY &amp; პირველი ნაბიჯი (2 წუთი)</span>
+          </div>
+          <span class="text-[10px] bg-amber-600 text-white font-bold px-2 py-0.5 rounded">Word Cloud / Text</span>
+        </div>
+        <div class="bg-white rounded-lg p-4 border border-amber-200 text-center shadow-xs">
+          <p class="text-base font-bold text-archi-dark mb-1">„დღევანდელი სესიის მთავარი აღმოჩენა და პირველი პროცესი, რომელსაც AI-თ გავაუმჯობესებთ: _______“</p>
+          <p class="text-xs text-archi-textMuted mb-3">1 მოკლე ფრაზა • მონაწილეთა იდეების გაზიარება და სესიის პრაქტიკული შედეგის დაფიქსირება</p>
+          <a href="https://sli.do" target="_blank" class="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-5 py-2.5 rounded-lg transition-colors shadow">
+            <span>📱</span> <span>გახსენით Slido (კოდი: #ARCHI-AI) →</span>
+          </a>
+        </div>
+        <p class="text-[11px] text-archi-textMuted text-center mt-2.5">💡 პასუხები გამოჩნდება ეკრანზე — ასე გავუზიარებთ იდეებს ერთმანეთს და განვსაზღვრავთ შემდეგ ნაბიჯებს.</p>
+      </div>
+
+      <div class="bg-archi-surfaceAlt p-4 rounded-lg border border-archi-border text-xs text-archi-textSecondary space-y-2">
+        <p><strong class="text-archi-dark">💬 ღია კითხვა-პასუხი (Q&A):</strong> მონაწილეთა შეკითხვებზე ამომწურავი პასუხი, განხილული ხელსაწყოების პრაქტიკული გამოყენების რეკომენდაციები და CRM/BPM გუნდისთვის პრიორიტეტული სამუშაო ნაკადების შეფასება.</p>
+        <p class="text-archi-textMuted">ინდივიდუალური კონსულტაციები და სამუშაო ქეისების განხილვა ტრენერთან ერთად.</p>
+      </div>
+    </div>
+
+    <!-- Trainer Card -->
+    <div class="bg-white border border-archi-border rounded-xl p-6 mb-12 shadow-sm">
+      <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-archi-blue to-archi-blueDark text-white font-black text-2xl flex items-center justify-center shrink-0 shadow-md">
+          GB
+        </div>
+        <div>
+          <h4 class="text-lg font-bold text-archi-dark">გიორგი ბასილაია, PhD</h4>
+          <p class="text-xs font-semibold text-archi-blue mb-2">AI Trainer | Digital Transformation &amp; Automation Expert</p>
+          <p class="text-xs text-archi-textMuted leading-relaxed mb-3">
+            25+ წლიანი პრაქტიკული გამოცდილება IT და ტექნოლოგიების ინდუსტრიაში, 13+ წელი სწავლებაში. 1,500+ გადამზადებული სტუდენტი, 30+ ჩატარებული კორპორატიული AI პროექტი. Google Certified Educator L2, Gemini Certified Faculty, Anthropic AI Fluency, ISC2 Certified in Cybersecurity.
+          </p>
+          <div class="flex flex-wrap gap-2 justify-center sm:justify-start text-xs font-semibold">
+            <a href="https://www.linkedin.com/in/gbasilaia/" target="_blank" class="text-archi-blue hover:underline">LinkedIn პროფილი →</a>
+            <span class="text-gray-300">•</span>
+            <a href="https://basilaia.com" target="_blank" class="text-archi-blue hover:underline">basilaia.com →</a>
+            <span class="text-gray-300">•</span>
+            <a href="mailto:basilaia@gmail.com" class="text-archi-blue hover:underline">basilaia@gmail.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-archi-border/40 py-8 text-center text-xs text-archi-textMuted bg-white">
+    <div class="max-w-5xl mx-auto px-6">
+      <p>© 2026 დეველოპერული კომპანია „არქი“ (Archi) &amp; გიორგი ბასილაია. ყველა უფლება დაცულია.</p>
+      <p class="mt-1">3-საათიანი საორიენტაციო დემო-ვორქშოფი &amp; AI Showcase.</p>
+    </div>
+  </footer>
+
+</main>
+
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-40 bg-archi-blue text-white w-11 h-11 rounded-full shadow-lg flex items-center justify-center hover:bg-archi-blueHover transition-all" title="ზემოთ დაბრუნება" aria-label="ზემოთ ასვლა">
+  ↑
+</button>
+
+<script>
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    const isOpen = !sb.classList.contains('-translate-x-full');
+
+    if (isOpen) {
+      sb.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    } else {
+      sb.classList.remove('-translate-x-full');
+      overlay.classList.remove('hidden');
+      menuIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+    }
+  }
+
+  // Copy prompt
+  function copyPrompt(btn) {
+    const box = btn.closest('.prompt-box');
+    const code = box ? box.querySelector('pre') : null;
+    if (!code) return;
+    navigator.clipboard.writeText(code.innerText.trim()).then(() => {
+      const orig = btn.innerText;
+      btn.innerText = '✓ კოპირებულია';
+      btn.style.background = '#218ccc';
+      btn.style.color = '#ffffff';
+      setTimeout(() => {
+        btn.innerText = orig;
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 2000);
+    });
+  }
+
+  // Back to top visibility
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop');
+    if (window.scrollY > 400) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  });
+
+  // Close sidebar on link click (mobile)
+  document.querySelectorAll('#sidebar .nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth < 1024) {
+        toggleSidebar();
+      }
+    });
+  });
+</script>
+</body>
+</html>

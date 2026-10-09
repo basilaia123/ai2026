@@ -11,8 +11,7 @@ files = [
     'eu4dialogue/peacebuilding/proposal.md',
     'eu4dialogue/pm/index.html',
     'eu4dialogue/pm/proposal.md',
-    'eu4dialogue-pm/index.html',
-    'eu4dialogue-pm/proposal.md'
+    'eu4dialogue/pm/day-1-slides.html'
 ]
 
 banned_words = ['make.com', 'ebrd', 'caritas', 'oppa', 'mcdonald', 'credo', '30 დღიანი', '12 თვიანი', 'rows.com']
