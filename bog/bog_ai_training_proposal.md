@@ -77,8 +77,8 @@
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │               1. ENTERPRISE FOUNDATION & REASONING                     │
-│  • Claude Sonnet 5.5 & Opus 5.5 (Adaptive Thinking, 1M Context)        │
-│  • OpenAI GPT-6 Series: Astra & Sol (Agentic Workflows, Personas, UI)  │
+│  • Claude Sonnet 5.5, Opus 5.5 & Haiku 5.5 (Adaptive Thinking, 1M)     │
+│  • OpenAI GPT-6: Sol, 6.1 Sol & Astra (Agentic, Personas, Intelligent) │
 │  • Gemini 3.8 Flash & Gemini 4 Argon (2,000,000 Token Context, CAD/PDF)│
 │  • საბანკო უსაფრთხოება: Strict Zero Data Retention (ZDR) & SOC2       │
 └────────────────────────────────────────────────────────────────────────┘
@@ -86,60 +86,60 @@
 ┌────────────────────────────────────────────────────────────────────────┐
 │               2. ARCHITECTURAL & GENERATIVE DESIGN                     │
 │  • FLUX.3 Image (Black Forest Labs 2026: 4K, Layout Bounding Boxes)   │
-│  • Rendair AI & Inpainting (არსებული ოფისის ფოტო-რედიზაინი)           │
-│  • Krea AI (Krea 2 Engine: Real-time Canvas, 8K Texture Enhancer)      │
+│  • Rendair AI & Inpainting (2026 Architectural Workspace)              │
+│  • Krea AI 4.0 (Magni-Krea 8K/22K, Real-time LCM Canvas)               │
 │  • Midjourney V8.2 (Edit Model & Retexture, Solo Lounge Moodboard)     │
 └────────────────────────────────────────────────────────────────────────┘
                                  ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │               3. GROUNDED KNOWLEDGE & REGULATORY AUDIT                 │
-│  • Gemini Notebook / NotebookLM (2026 Cloud Sandbox & Grounding):      │
+│  • Gemini Notebook / NotebookLM 2.0 (Secure Cloud Computer & Python):  │
 │    სამშენებლო კოდექსი, 41-ე დადგენილება, შშმპ, BOG რეგულაციები         │
-│  • 100% ციტირებადი წყაროები (Zero Hallucination) & Audio Overviews     │
+│  • 100% ციტირებადი წყაროები (Live Reasoning Chain) & Audio Overviews   │
 └────────────────────────────────────────────────────────────────────────┘
                                  ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │               4. DOCUMENT, PM & MEETING INTELLIGENCE                   │
 │  • OpenAI Whisper Large-v3 Turbo (ქართული/ინგლისური ტრანსკრიფცია)      │
 │  • Claude Projects & DEFUSE Framework (Smart Minutes, Action Items)    │
-│  • Gamma AI (60-წამიანი საპრეზენტაციო სლაიდები მენეჯმენტისთვის)       │
+│  • Gamma AI (Liquid Layout Engine, AI Image Generation & Multi-user)   │
 └────────────────────────────────────────────────────────────────────────┘
                                  ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │               5. FIELD INSPECTION & NO-CODE AUTOMATION                 │
 │  • Multimodal Computer Vision (Snag List, გეგმა vs ფაქტი შედარება)    │
 │  • Voice-to-Report (Daily Site Log მობილურიდან ობიექტზევე)             │
-│  • Make.com / n8n Pipeline (ხმა ➔ ოქმი ➔ Teams ➔ დავალების შექმნა)     │
+│  • Notion AI 2.0 (AI Skills & Agents) & Make.com Pipeline (ავტო-ბაზა)  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 #### ტექნოლოგიური შრეების დეტალური აღწერა:
 
 1. **შრე 1 · ბირთვული LLM-ები & საბანკო უსაფრთხოება (Enterprise Foundation):**
-   * **Claude Sonnet 5.5 & Opus 5.5:** Anthropic-ის 2026 წლის სექტემბერ-ოქტომბრის უახლესი ფლაგმანი მოდელები Adaptive Thinking ადაპტური მსჯელობითა და 1,000,000 ტოკენიანი კონტექსტური ფანჯრით. გამოიყენება რთული ტექნიკური დავალებების, სატენდერო დოკუმენტაციის რისკების (Red Flags) აუდიტისა და სამშენებლო ხელშეკრულებების დეტალური ანალიზისთვის.
-   * **OpenAI GPT-6 Series (Astra & Sol):** OpenAI-ის 2026 წლის ფლაგმანი GPT-6 თაობა (ოქტომბერი 2026) — ავტონომიური Agentic შესაძლებლობები, რთული საინჟინრო მათემატიკა, BOG-ის მორგებული სისტემური როლები (Custom Personas), Advanced Data Analysis (ADA) და Intelligent UI.
+   * **Claude Sonnet 5.5, Opus 5.5 & Haiku 5.5:** Anthropic-ის 2026 წლის სექტემბერ-ოქტომბრის უახლესი ფლაგმანი ოჯახი Adaptive Thinking ადაპტური მსჯელობითა და 1,000,000 ტოკენიანი კონტექსტური ფანჯრით. გამოიყენება რთული ტექნიკური დავალებების, სატენდერო დოკუმენტაციის რისკების (Red Flags) აუდიტისა და სამშენებლო ხელშეკრულებების დეტალური ანალიზისთვის.
+   * **OpenAI GPT-6 Series (Sol, 6.1 Sol & Astra):** OpenAI-ის 2026 წლის ფლაგმანი GPT-6 თაობა (ოქტომბერი 2026) — სამუშაო Workhorse მოდელი Sol საინჟინრო კოდინგისა და გამოთვლებისთვის, Astra ავტონომიური Agentic პროცესებისთვის, BOG-ის მორგებული სისტემური როლები (Custom Personas), Advanced Data Analysis (ADA) და ახალი Intelligent UI (ცოცხალი ინტერაქციული კომპონენტები).
    * **Gemini 3.8 Flash & Gemini 4 Argon:** Google DeepMind-ის უახლესი ფლაგმანები 2,000,000 ტოკენიანი მულტიმოდალური ფანჯრით, რაც შესაძლებელს ხდის მთლიანი სატენდერო ტომებისა და PDF/CAD ნახაზების ერთიან კონტექსტში ჩატვირთვას და მყისიერ დამუშავებას.
    * **Zero Data Retention (ZDR):** საბანკო უსაფრთხოების გარანტია — ბანკის არცერთი მონაცემი არ ინახება მოდელის შემქმნელი კომპანიების სერვერებზე და არ გამოიყენება AI-ის გადამზადებისთვის.
 
 2. **შრე 2 · არქიტექტურა, რენდერები & რედიზაინი (Generative Visual AI):**
    * **FLUX.3 Image (Black Forest Labs 2026):** 2026 წლის 1 ოქტომბრის უახლესი ფლაგმანი არქიტექტურასა და დიზაინში. ნატიური 4K რეზოლუცია, 10 რეფერენს-ფოტოს მხარდაჭერა და 0–1000 ბადის კოორდინატული Layout Control CAD/2D გეგმებიდან ფოტორეალისტური რენდერებისთვის ნულოვანი გეომეტრიული ცდომილებით (Zero Hallucination).
-   * **Rendair AI & Krea AI (Krea 2):** Real-time Latent Canvas-ით 2D ჩანახატებიდან 3D ვიზუალიზაცია 60 წამში; 8K Enhancer Upscaling და არსებული ფილიალის ფოტოზე ფაქტურების, განათებისა და ავეჯის შეცვლა (Inpainting & Retexturing).
-   * **Midjourney V8.2 (Edit Model):** Solo Lounge-ებისა და საცალო ფილიალების მაღალი ესთეტიკის კონცეპტუალური Moodboard-ები, ახალი Edit Model, Retexturing და განათების სცენარები.
+   * **Rendair AI (2026 Architectural Workspace):** არქიტექტურული სამუშაო სივრცე Smart Selection Inpainting-ით — არსებულ ოფისში ავეჯის, განათებისა და მასალების შეცვლა სივრცის გეომეტრიის დაუმახინჯებლად.
+   * **Midjourney V8.2 & Krea AI 4.0:** Solo Lounge-ებისა და საცალო ფილიალების მაღალი ესთეტიკის კონცეპტუალური Moodboard-ები, Magni-Krea 8K/22K Enhancer და Real-time Canvas sub-50ms ლატენტურობით.
 
 3. **შრე 3 · სამართლებრივი ცოდნის ბაზა & ნორმატივები (Grounded RAG):**
-   * **Google NotebookLM / Gemini Notebook:** დახურული, უსაფრთხო ბაზა. 2026 წლის განახლებული Cloud Sandbox და Code Execution შესაძლებლობებით. საქართველოს სამშენებლო კოდექსის, 41-ე დადგენილების (სივრცის დაგეგმარება, საევაკუაციო გზები, შშმპ სტანდარტები) და BOG-ის უსაფრთხოების რეგულაციების ინდექსირება.
+   * **Gemini Notebook / NotebookLM 2.0 (Google 2026):** დახურული, უსაფრთხო ბაზა. 2026 წლის განახლებული Secure Cloud Computer, Python Code Execution და Live Reasoning Chain შესაძლებლობებით. საქართველოს სამშენებლო კოდექსის, 41-ე დადგენილების (სივრცის დაგეგმარება, საევაკუაციო გზები, შშმპ სტანდარტები) და BOG-ის უსაფრთხოების რეგულაციების ინდექსირება.
    * **100% ციტირებადი პირველწყაროები:** პასუხები ეფუძნება მხოლოდ ატვირთულ ნორმატიულ დოკუმენტებს, კონკრეტული მუხლის, პუნქტისა და გვერდის ზუსტი მითითებით.
    * **Audio Overviews & Artifacts:** მრავალგვერდიანი საინჟინრო დოკუმენტებიდან 5-წუთიანი პოდკასტ-ბრიფინგებისა და სტრუქტურირებული ცხრილების გენერირება საველე ინჟინრებისთვის.
 
 4. **შრე 4 · დოკუმენტაცია, PM & Meeting Intelligence:**
    * **OpenAI Whisper Large-v3 Turbo (2026):** ქართული და ინგლისური სამშენებლო-საინჟინრო ტერმინოლოგიის მაღალი სიზუსტის ხმოვანი ტრანსკრიფცია (საველე თათბირები, Voice Memos; ოპტიმიზებული 4-დეკოდერიანი ულტრასწრაფი მოდელი).
    * **Claude Projects & DEFUSE Method:** შეხვედრის ოქმების (Minutes) ავტომატური სტრუქტურირება, Action Items + ვადების გამოყოფა 30 წამში; ქვეკონტრაქტორებთან ოფიციალური წერილების შედგენა.
-   * **Gamma AI:** მოკლე ბრიფიდან 60 წამში 6-8 სლაიდიანი საპრეზენტაციო მასალების მომზადება მენეჯმენტისთვის (პროგრესი, ფოტო-ფიქსაცია, ხარვეზები).
+   * **Gamma AI (2026):** Liquid Layout Engine-ით მოკლე ბრიფიდან 60 წამში 6-8 სლაიდიანი საპრეზენტაციო მასალების მომზადება მენეჯმენტისთვის (პროგრესი, ფოტო-ფიქსაცია, ხარვეზები).
 
 5. **შრე 5 · საველე ინსპექცია & No-Code ავტომატიზაცია:**
    * **Multimodal Computer Vision:** ობიექტის ფოტოებიდან Snagging დეფექტების ავტო-იდენტიფიკაცია, არქიტექტურული/MEP ნახაზების შედარება (გეგმა vs ფაქტი).
    * **Field Voice-to-Report:** მობილურიდან ჩაწერილი ხმოვანი კომენტარებით ყოველდღიური საიტ-ოქმების (Daily Site Log) გენერირება.
-   * **Make.com / n8n Pipeline:** სრული საოპერაციო ავტომატიზაცია (Enterprise პაკეტში): ხმოვანი ჩანაწერი ➔ Whisper ტრანსკრიფცია ➔ Claude ანალიზი ➔ Teams-ში გაგზავნა და დავალების ავტო-შექმნა.
+   * **Notion AI 2.0 & Make.com Pipeline:** სრული საოპერაციო ავტომატიზაცია (Enterprise პაკეტში): Notion AI Skills, ხმოვანი ჩანაწერი ➔ Whisper ტრანსკრიფცია ➔ Claude ანალიზი ➔ Teams-ში გაგზავნა და დავალების ავტო-შექმნა.
 
 ---
 
