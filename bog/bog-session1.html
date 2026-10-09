@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სესია 1 | საქართველოს ბანკი (BOG) · Enterprise AI, უსაფრთხოება და ნორმატივები</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bog: {
+              orange: '#f36f21',
+              dark: '#0a101d',
+              navy: '#0f172a',
+              slate: '#1e293b',
+              surface: '#162032',
+              card: '#1e293b',
+              accent: '#ff8533',
+              glow: 'rgba(243, 111, 33, 0.25)',
+              border: 'rgba(243, 111, 33, 0.35)'
+            },
+            smart: {
+              teal: '#0ea5e9',
+              cyan: '#06b6d4',
+              green: '#10b981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    html { scroll-behavior: smooth; font-size: 18px; }
+    body { background-color: #0a101d; color: #e2e8f0; }
+
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(243, 111, 33, 0.4); border-radius: 2px; }
+
+    .nav-link.active {
+      background: rgba(243, 111, 33, 0.15);
+      border-left: 3px solid #f36f21;
+      color: #ff8533;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.05); }
+
+    .prompt-box {
+      background: #0d1527;
+      border: 1px solid rgba(243, 111, 33, 0.3);
+      border-radius: 0.85rem;
+      padding: 1.25rem 1.4rem;
+      position: relative;
+      margin: 1.25rem 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+    .prompt-box pre {
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      background: rgba(243, 111, 33, 0.2);
+      color: #ff8533;
+      border: 1px solid rgba(243, 111, 33, 0.4);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: #f36f21;
+      color: #fff;
+    }
+
+    .warning-box {
+      background: rgba(249, 115, 22, 0.08);
+      border-left: 4px solid #f97316;
+      border-radius: 0 0.75rem 0.75rem 0;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .tip-box {
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 4px solid #10b981;
+      border-radius: 0 0.75rem 0.75rem 0;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .task-box {
+      background: linear-gradient(135deg, rgba(243, 111, 33, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 2px solid #f36f21;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      box-shadow: 0 0 25px rgba(243, 111, 33, 0.2);
+    }
+    .topic-card {
+      background: #111a2e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    #fontControls {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    #fontControls button {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; color: #fff;
+      border: none; border-radius: 6px;
+      cursor: pointer; font-size: 14px; font-weight: 700;
+      transition: background 0.2s;
+    }
+    #fontControls button:hover { background: rgba(243, 111, 33, 0.3); }
+
+    .role-badge-arch { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .role-badge-pm { background: rgba(243, 111, 33, 0.15); color: #ff8533; border: 1px solid rgba(243, 111, 33, 0.3); }
+    .role-badge-sup { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    .timer-display {
+      font-family: 'Courier New', monospace;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ff8533;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body class="bg-bog-dark">
+
+<!-- Overlay for mobile sidebar -->
+<div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity"></div>
+
+<!-- Mobile Toggle Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-bog-orange text-white p-2.5 rounded-lg shadow-lg hover:bg-bog-accent transition-colors" title="მენიუ">
+  <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Font Size Controls -->
+<div id="fontControls">
+  <button onclick="changeFontSize(1)" title="ტექსტის გაზრდა">A+</button>
+  <button onclick="resetFontSize()" title="საწყისი ზომა">A</button>
+  <button onclick="changeFontSize(-1)" title="ტექსტის დაპატარავება">A-</button>
+</div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-80 bg-bog-navy text-white overflow-y-auto z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 border-r border-white/10">
+  <div class="px-6 py-6 border-b border-white/10">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="bg-bog-orange text-white text-[11px] font-black px-2.5 py-0.5 rounded tracking-wider">საქართველოს ბანკი</span>
+      <span class="text-smart-cyan text-[11px] font-bold">Smart Academy</span>
+    </div>
+    <h1 class="text-base font-bold leading-snug">სესია 1 · საბანკო AI აზროვნება, უსაფრთხოება და ნორმატიული ბაზა</h1>
+    <p class="text-gray-400 text-xs mt-1">2.5 საათი (140 წთ + 10 წთ შესვენება)</p>
+  </div>
+
+  <div class="px-5 py-3 bg-bog-surface border-b border-white/5">
+    <p class="text-[10px] font-bold uppercase tracking-widest text-bog-orange mb-1">სამიზნე აუდიტორია (ყველა ერთად)</p>
+    <div class="flex flex-wrap gap-1.5 mt-1">
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-arch">📐 არქიტექტორები</span>
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-pm">💼 PM-ები</span>
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-sup">👷 ზედამხედველები</span>
+    </div>
+  </div>
+
+  <nav class="py-3">
+    <a href="#seg-1" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-1">
+      <span class="pr-2">1. მიზნები & სამშენებლო სინერგია</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">15 წთ</span>
+    </a>
+    <a href="#seg-2" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-2">
+      <span class="pr-2">2. Enterprise AI & Zero-Retention დაცვა</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">20 წთ</span>
+    </a>
+    <a href="#seg-3" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-3">
+      <span class="pr-2">3. საინჟინრო პრომპტინგი (PARTS & CREATE)</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">20 წთ</span>
+    </a>
+    <a href="#seg-4" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-4">
+      <span class="pr-2">4. Chain-of-Thought & სტრუქტურა</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">15 წთ</span>
+    </a>
+    <a href="#seg-task-1" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-bog-orange font-bold border-l-[3px] border-transparent bg-bog-orange/10" data-topic="seg-task-1">
+      <span class="pr-2">🎯 დავალება 1 (10-წთ პრაქტიკუმი)</span>
+      <span class="shrink-0 text-[10px] bg-bog-orange text-white px-2 py-0.5 rounded font-mono font-bold">10 წთ</span>
+    </a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2 text-xs text-gray-400 border-l-[3px] border-transparent" data-topic="seg-break">
+      <span class="pr-2">☕ ყავის შესვენება</span>
+      <span class="shrink-0 text-[10px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded font-mono">10 წთ</span>
+    </a>
+    <a href="#seg-5" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-5">
+      <span class="pr-2">5. Few-Shot & როლური Personas</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">20 წთ</span>
+    </a>
+    <a href="#seg-6" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-6">
+      <span class="pr-2">6. Google NotebookLM & ნორმატივები</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">20 წთ</span>
+    </a>
+    <a href="#seg-task-2" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-bog-orange font-bold border-l-[3px] border-transparent bg-bog-orange/10" data-topic="seg-task-2">
+      <span class="pr-2">🎯 დავალება 2 (10-წთ პრაქტიკუმი)</span>
+      <span class="shrink-0 text-[10px] bg-bog-orange text-white px-2 py-0.5 rounded font-mono font-bold">10 წთ</span>
+    </a>
+    <a href="#seg-7" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-7">
+      <span class="pr-2">7. შეჯამება, Q&A & სესია 2-ის ანონსი</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">10 წთ</span>
+    </a>
+  </nav>
+
+  <div class="px-5 py-4 border-t border-white/10 mt-4 space-y-2">
+    <a href="bog-day1-exercises.html" target="_blank" class="flex items-center gap-2 text-xs font-bold text-bog-orange hover:text-white transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      ✏️ სავარჯიშოების რვეული
+    </a>
+    <a href="bog-day1-summary.html" target="_blank" class="flex items-center gap-2 text-xs font-bold text-smart-teal hover:text-white transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      📋 Cheat Sheet & შეჯამება
+    </a>
+    <a href="index.html" class="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-white transition-colors pt-2">
+      ← მთავარ პრეზენტაციაზე დაბრუნება
+    </a>
+  </div>
+
+  <div class="px-5 py-4 border-t border-white/10 text-xs text-gray-400">
+    <p class="font-bold text-white">გიორგი ბასილაია</p>
+    <p>Smart Academy · 2026 წლის ოქტომბერი</p>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="mainContent" class="lg:ml-80 min-h-screen transition-[margin] duration-300">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-bog-navy via-bog-slate to-bog-dark text-white px-6 md:px-12 py-12 border-b border-bog-border">
+    <div class="max-w-4xl">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="bg-bog-orange text-white text-xs font-black px-2.5 py-1 rounded">საქართველოს ბანკი</span>
+        <span class="text-smart-cyan text-xs font-bold">Smart Academy ერთობლივი პროგრამა</span>
+        <span class="bg-white/10 text-gray-300 text-xs px-2.5 py-0.5 rounded font-mono">ოქტომბერი 2026</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-4">
+        სესია 1 · საბანკო AI აზროვნება, <br><span class="text-bog-orange">უსაფრთხოება და ნორმატივები</span>
+      </h1>
+      <p class="text-gray-300 text-base md:text-lg max-w-3xl leading-relaxed mb-6">
+        ინტუიციური „ჩატაობიდან“ გადასვლა უშეცდომო საინჟინრო შედეგებზე. საქართველოს ბანკის არქიტექტორების, პროექტის მენეჯერებისა და ზედამხედველების საერთო სასტარტო ვორქშოფი: 2026 წლის ფლაგმანი LLM-ები, მკაცრი Zero-Retention საბანკო კონფიდენციალურობა, საინჟინრო პრომპტინგის ჩარჩოები და ნორმატიული ცოდნის ბაზა (NotebookLM).
+      </p>
+
+      <div class="flex flex-wrap gap-4 text-xs">
+        <span class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-gray-200">
+          ⏱ 2.5 საათი (140 წთ + 10 წთ შესვენება)
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-gray-200">
+          👥 ერთიანი ნაკადი (ყველა ერთად)
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-bog-orange/20 text-bog-orange border border-bog-orange/40 px-3 py-1.5 rounded-full font-bold">
+          🎯 2 ცალი 10-წუთიანი პრაქტიკული დავალება
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-smart-teal/20 text-smart-teal border border-smart-teal/40 px-3 py-1.5 rounded-full font-bold">
+          🛡️ Strict Zero Data Retention
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-4xl px-6 md:px-12 py-10">
+
+    <!-- SEGMENT 1 -->
+    <section id="seg-1" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">01</span>
+          <h2 class="text-xl font-bold text-white">შესავალი, მიზნები & სამშენებლო გუნდის End-to-End სინერგია</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">15 წუთი</span>
+      </div>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        საქართველოს ბანკის სამშენებლო მიმართულება მართავს ათობით პარალელურ პროექტს: ახალი სერვისცენტრები, Solo Lounge-ები, 4B სივრცეები, სათაო ოფისის მოდერნიზაცია და გეგმიური რემონტები. ამ ჯაჭვში სამი მთავარი რგოლი მონაწილეობს:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-sky-500/20">
+          <span class="role-badge-arch text-[11px] font-bold px-2 py-0.5 rounded">📐 არქიტექტორები</span>
+          <p class="text-xs text-gray-300 mt-2">ქმნიან კონცეფციას, რედიზაინს, ამოწმებენ 41-ე დადგენილებას, ითვლიან კვადრატულობას და ადგენენ Brief-ს.</p>
+        </div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-orange-500/20">
+          <span class="role-badge-pm text-[11px] font-bold px-2 py-0.5 rounded">💼 პროექტის მენეჯერები (PM)</span>
+          <p class="text-xs text-gray-300 mt-2">ამუშავებენ ტენდერებს, ხარჯთაღრიცხვებს, აუდიტს უკეთებენ რისკებს (Red Flags), მართავენ ოქმებს (Minutes) და ვადებს.</p>
+        </div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-emerald-500/20">
+          <span class="role-badge-sup text-[11px] font-bold px-2 py-0.5 rounded">👷 ზედამხედველები</span>
+          <p class="text-xs text-gray-300 mt-2">ამოწმებენ ნახაზებს ადგილზე (გეგმა vs ფაქტი), აფიქსირებენ დეფექტებს (Snag List) და აწარმოებენ საიტ-ოქმებს.</p>
+        </div>
+      </div>
+
+      <div class="tip-box text-xs text-gray-300 leading-relaxed">
+        <strong>💡 რატომ ვსწავლობთ ერთად?</strong> როდესაც სამივე როლი იყენებს ერთიან AI ენასა და ერთიან ცოდნის ბაზას, არქიტექტორის მიერ დაგენერირებული Brief პირდაპირ ხდება PM-ის სატენდერო დავალება, ხოლო ზედამხედველის ხმოვანი საიტ-ოქმი — PM-ის სტატუს-რეპორტის წყარო. ნულოვანი გაუგებრობა ფორმატებში.
+      </div>
+    </section>
+
+    <!-- SEGMENT 2 -->
+    <section id="seg-2" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">02</span>
+          <h2 class="text-xl font-bold text-white">Enterprise AI ეკოსისტემა & საბანკო უსაფრთხოება (Zero Data Retention)</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">20 წუთი</span>
+      </div>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        საბანკო გარემოში AI-ის გამოყენება იწყება არა პრომპტით, არამედ <strong>მონაცემთა უსაფრთხოებით</strong>. ბანკის არცერთი სტრატეგიული ნახაზი, სატენდერო ხარჯთაღრიცხვა ან უსაფრთხოების რეგულაცია არ უნდა გახდეს საჯარო მოდელის სწავლების მასალა.
+      </p>
+
+      <div class="bg-bog-slate p-4 rounded-xl border border-white/10 mb-5">
+        <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+          🛡️ საბანკო AI უსაფრთხოების 3 ოქროს წესი (Enterprise Standard 2026):
+        </h3>
+        <ul class="text-xs space-y-2 text-gray-300 list-disc pl-5">
+          <li><strong>Zero Data Retention (ZDR) პარამეტრები:</strong> მოდელის შემქმნელ კომპანიას (OpenAI, Anthropic, Google) ეკრძალება შემავალი და გამომავალი მონაცემების შენახვა და მათი გამოყენება მომავალი AI ვერსიების გადამზადებისთვის.</li>
+          <li><strong>მგრძნობიარე მონაცემების მასკირება (Sanitization):</strong> ფილიალის ზუსტი მისამართის, საცავის ლოკაციის, სეიფების სქემებისა და შიდა თანამშრომელთა პირადი ნომრების ნაცვლად ვიყენებთ ცვლადებს (მაგ: <code class="text-bog-orange bg-black/40 px-1.5 py-0.5 rounded">[ფილიალი_X]</code>, <code class="text-bog-orange bg-black/40 px-1.5 py-0.5 rounded">[კონტრაქტორი_A]</code>).</li>
+          <li><strong>იზოლირებული ცოდნის ბაზა (Grounded RAG):</strong> მოდელს არ ვაძლევთ საშუალებას "გამოიგონოს" ფაქტები. პასუხი უნდა ეფუძნებოდეს მხოლოდ ჩვენს მიერ ატვირთულ ოფიციალურ დოკუმენტს (NotebookLM).</li>
+        </ul>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+        <div class="p-3 bg-bog-dark rounded-lg border border-white/5">
+          <p class="text-xs font-bold text-white">Claude Sonnet 5.5 & Opus 5.5</p>
+          <p class="text-[11px] text-gray-400 mt-1">Anthropic (ოქტომბერი 2026) · Adaptive Thinking, 1M კონტექსტი, საუკეთესოა საინჟინრო აუდიტისა და ხელშეკრულებებისთვის.</p>
+        </div>
+        <div class="p-3 bg-bog-dark rounded-lg border border-white/5">
+          <p class="text-xs font-bold text-white">GPT-6 Sol & Astra</p>
+          <p class="text-[11px] text-gray-400 mt-1">OpenAI (ოქტომბერი 2026) · Intelligent UI, ღრმა საინჟინრო მათემატიკა, BOG-ის მორგებული როლები (Custom Personas).</p>
+        </div>
+        <div class="p-3 bg-bog-dark rounded-lg border border-white/5">
+          <p class="text-xs font-bold text-white">Gemini 3.8 Flash & 4 Argon</p>
+          <p class="text-[11px] text-gray-400 mt-1">Google DeepMind · 2,000,000 ტოკენიანი მულტიმოდალური ფანჯარა, ასობით გვერდიანი CAD/PDF-ის მყისიერი წაკითხვა.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGMENT 3 -->
+    <section id="seg-3" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">03</span>
+          <h2 class="text-xl font-bold text-white">საინჟინრო პრომპტინგის ჩარჩოები (PARTS & C.R.E.A.T.E.)</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">20 წუთი</span>
+      </div>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        ჩვეულებრივი მომხმარებელი AI-ს უსვამს ზოგად კითხვას: <em>„როგორ მოვაწყო საევაკუაციო კარი?“</em>. საინჟინრო პროფესიონალი იყენებს <strong>სტრუქტურულ ჩარჩოს</strong>, რათა მიიღოს უშეცდომო, სამართლებრივად გამართული და სტანდარტიზებული პასუხი.
+      </p>
+
+      <div class="bg-bog-slate p-4 rounded-xl border border-bog-border/40 mb-4">
+        <h3 class="text-sm font-bold text-bog-orange mb-2">📐 C.R.E.A.T.E. ჩარჩო სამშენებლო პროექტებისთვის:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-300">
+          <div><strong class="text-white">C - Context (კონტექსტი):</strong> BOG-ის ახალი Solo Lounge ფილიალი 180 მ², თბილისი, ცენტრალური გამზირი.</div>
+          <div><strong class="text-white">R - Role (როლი):</strong> BOG-ის მთავარი არქიტექტორი და საინჟინრო უსაფრთხოების აუდიტორი.</div>
+          <div><strong class="text-white">E - Explicit Request (დავალება):</strong> შეამოწმე საევაკუაციო გასასვლელების სიგანე და კარების გაღების მიმართულება.</div>
+          <div><strong class="text-white">A - Action Constraints (შეზღუდვები):</strong> დაეყრდენი მკაცრად 41-ე დადგენილებას; არ გამოიყენო ზოგადი ფრაზები; მიუთითე მუხლები.</div>
+          <div><strong class="text-white">T - Tone & Style (ტონი):</strong> ოფიციალური საინჟინრო დასკვნა, ექსპერტული, ულტიმატური.</div>
+          <div><strong class="text-white">E - Example / Export Format (ფორმატი):</strong> შედარებითი ცხრილი (პუნქტი | ნორმატივი 41-ე | ფაქტი ნახაზზე | დასკვნა).</div>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-create-1')">კოპირება</button>
+        <span class="text-[10px] font-bold text-bog-orange uppercase tracking-wider block mb-1">სამუშაო პრომპტი · არქიტექტორის / PM-ის მოთხოვნა C.R.E.A.T.E. სტილში</span>
+        <pre id="prompt-create-1">იმოქმედე როგორც საქართველოს ბანკის (BOG) საინჟინრო და არქიტექტურული უსაფრთხოების მთავარმა ექსპერტმა.
+
+კონტექსტი:
+ვაპროექტებთ BOG-ის ახალ მომსახურების ცენტრს (საცალო სივრცე + Solo Lounge ზონა, ჯამური ფართობი 240 მ², ერთდროული ვიზიტორების მაქსიმალური რაოდენობა: 45 ადამიანი).
+
+დავალება:
+გააანალიზე შემოსასვლელი და საევაკუაციო კვანძები საქართველოს მთავრობის 41-ე დადგენილების (ტექნიკური რეგლამენტი) მოთხოვნებთან შესაბამისობაზე:
+1. საევაკუაციო გასასვლელის მინიმალური სიგანე 45 ადამიანზე;
+2. კარის გაღების მიმართულება (ევაკუაციის გზაზე);
+3. შშმპ პირთა მისაწვდომობის პარამეტრები (პანდუსის მაქსიმალური ქანობი და კარის ღიობის სიგანე);
+4. მინის ტიხრებისა და ვიტრაჟების უსაფრთხოების მონიშვნის სტანდარტი.
+
+შეზღუდვები:
+- პასუხი ჩამოაყალიბე მხოლოდ საქართველოს სამშენებლო კოდექსისა და 41-ე დადგენილების მიხედვით.
+- თითოეულ მოთხოვნას მიუწერე შესაბამისი მუხლი ან ტექნიკური პუნქტი.
+- ნუ გამოიყენებ ზოგად რჩევებს („სასურველია“, „კარგი იქნებოდა“); გამოიყენე იმპერატიული ენა („ვალდებულია“, „დაუშვებელია“).
+
+ფორმატი:
+წარმოადგინე მარკდაუნ ცხრილის სახით შემდეგი სვეტებით:
+[პარამეტრი] | [ნორმატიული მოთხოვნა (41-ე დადგენილება)] | [მუხლის მითითება] | [კრიტიკულობის დონე (მაღალი/საშუალო)] | [საველე შემოწმების ინსტრუქცია ზედამხედველისთვის]</pre>
+      </div>
+    </section>
+
+    <!-- SEGMENT 4 -->
+    <section id="seg-4" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">04</span>
+          <h2 class="text-xl font-bold text-white">Chain-of-Thought (CoT) & სტრუქტურირებული ცხრილები (Structured Output)</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">15 წუთი</span>
+      </div>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        როდესაც LLM-ს ვთხოვთ პირდაპირ საბოლოო პასუხს, რთულ საინჟინრო გამოთვლებში შეცდომის ალბათობა მაღალია. <strong>Chain-of-Thought (ნაბიჯ-ნაბიჯ აზროვნება)</strong> აიძულებს მოდელს ჯერ ეტაპობრივად გააანალიზოს მონაცემები და მხოლოდ ამის შემდეგ გამოიტანოს დასკვნა.
+      </p>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-cot-1')">კოპირება</button>
+        <span class="text-[10px] font-bold text-smart-teal uppercase tracking-wider block mb-1">სამუშაო პრომპტი · Chain-of-Thought საინჟინრო გამოთვლებისთვის</span>
+        <pre id="prompt-cot-1">იმოქმედე როგორც BOG-ის საინჟინრო ხარჯთაღრიცხვისა და ტექნიკური აუდიტის ექსპერტმა.
+
+ქვეკონტრაქტორმა მოგვაწოდა სარემონტო ხარჯთაღრიცხვა ფილიალის იატაკის მოსაწყობად:
+- ფართობი: 320 მ²
+- მასალა: მაღალი ცვეთამედეგობის კერამოგრანიტი 60x120 სმ
+- კონტრაქტორის გათვლა: მოითხოვს 385 მ² ფილას (20.3% დანაკარგი/ნაზარდი)
+- სამუშაოს შესრულების ვადა: 18 კალენდარული დღე
+
+დავალება — იფიქრე ეტაპობრივად (Chain-of-Thought):
+ნაბიჯი 1: შეაფასე 60x120 სმ ფილის სტანდარტული ტექნოლოგიური დანაკარგი (Straight vs Diagonal დაგება). რამდენია ინდუსტრიული ნორმა (7-10% თუ 20%)?
+ნაბიჯი 2: გამოთვალე რეალური საჭირო მასალა ნორმატიული 8%-იანი დანაკარგით და შეადარე კონტრაქტორის მოთხოვნას. რამდენია ზედმეტობა კვადრატულ მეტრებში?
+ნაბიჯი 3: შეაფასე ვადის რეალისტურობა: 320 მ² იატაკის დაგება (ფილის დაგება, შეწებება, ფუგირება) — რამდენი მ² უნდა დაიგოს დღეში 2-კაციანი ბრიგადის მიერ?
+ნაბიჯი 4: ჩამოაყალიბე საბოლოო ოფიციალური დასკვნა PM-ისთვის ქვეკონტრაქტორთან მოსალაპარაკებლად.
+
+გამოიტანე თითოეული ნაბიჯი სათაურით და ბოლოს შეაჯამე მოკლე Executive Summary-ში.</pre>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- INTERACTIVE TASK 1 (10-MINUTE HANDS-ON PARTICIPANT TASK) -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <section id="seg-task-1" class="task-box">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-bog-orange/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">🎯 დავალება 1</span>
+          <h3 class="text-xl font-black text-white">მონაწილეთა პრაქტიკუმი: საინჟინრო მოთხოვნის აწყობა C.R.E.A.T.E. ჩარჩოთი</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-300 font-bold">სამუშაო დრო:</span>
+          <span class="timer-display" id="timer1">10:00</span>
+          <button onclick="startTimer(1, 600)" class="bg-bog-orange hover:bg-bog-accent text-white px-3 py-1 rounded text-xs font-bold transition">სტარტი</button>
+          <button onclick="resetTimer(1, 600)" class="bg-white/10 hover:bg-white/20 text-gray-300 px-2 py-1 rounded text-xs transition">განულება</button>
+        </div>
+      </div>
+
+      <p class="text-gray-200 text-sm mb-4 leading-relaxed">
+        <strong>ამოცანა ყველა მონაწილისთვის:</strong> აირჩიეთ თქვენი რეალური როლი (ან ქვემოთ მოცემული სამი ქეისიდან ერთ-ერთი) და Claude-ში ან ChatGPT-ში ააწყვეთ <strong>C.R.E.A.T.E. სტრუქტურის პრომპტი</strong>. შედეგი უნდა იყოს მზა საინჟინრო ინსტრუქცია.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 text-xs">
+        <div class="bg-bog-dark/80 p-3 rounded-lg border border-sky-400/30">
+          <span class="role-badge-arch font-bold px-2 py-0.5 rounded">📐 არქიტექტორების ქეისი</span>
+          <p class="text-gray-300 mt-2">BOG-ის ფილიალის გარე ფასადის ახალი განათება და ბრენდირებული ვიტრაჟი. მოითხოვეთ 41-ე დადგენილებით და თბილისის მერიის რეგულაციებით შემოწმება.</p>
+        </div>
+        <div class="bg-bog-dark/80 p-3 rounded-lg border border-orange-400/30">
+          <span class="role-badge-pm font-bold px-2 py-0.5 rounded">💼 PM-ების ქეისი</span>
+          <p class="text-gray-300 mt-2">ქვეკონტრაქტორი აგვიანებს HVAC (გათბობა-ვენტილაციის) მონტაჟს 10 დღით. მოითხოვეთ მკაცრი, დასაბუთებული საპრეტენზიო წერილის შედგენა საჯარიმო სანქციების მითითებით.</p>
+        </div>
+        <div class="bg-bog-dark/80 p-3 rounded-lg border border-emerald-400/30">
+          <span class="role-badge-sup font-bold px-2 py-0.5 rounded">👷 ზედამხედველების ქეისი</span>
+          <p class="text-gray-300 mt-2">ჰიდროიზოლაციის დაგებისას ობიექტზე აღმოჩნდა ნაკერების არასწორი გადაბმა. მოითხოვეთ საველე დეფექტის აქტის (Snag Item) შედგენა უშუალოდ მუშებისთვის გასაგებ ენაზე.</p>
+        </div>
+      </div>
+
+      <div class="bg-bog-surface p-3.5 rounded-lg border border-white/10 text-xs text-gray-300">
+        <strong class="text-bog-orange">ჩეკლისტი წარმატებული შესრულებისთვის:</strong>
+        <span class="inline-block ml-2">✓ განსაზღვრულია კონტექსტი</span> ·
+        <span class="inline-block ml-2">✓ მინიჭებულია პროფესიული როლი</span> ·
+        <span class="inline-block ml-2">✓ მოთხოვნილია ცხრილური ფორმატი</span> ·
+        <span class="inline-block ml-2">✓ ჩასმულია შეზღუდვები (Negative constraints)</span>
+      </div>
+    </section>
+
+    <!-- BREAK -->
+    <section id="seg-break" class="topic-card bg-gradient-to-r from-bog-slate to-bog-dark border border-white/10 text-center py-6">
+      <div class="inline-flex items-center gap-2 text-bog-orange font-bold text-sm mb-1">
+        <span class="text-xl">☕</span> ყავის შესვენება & ენერგიის განახლება
+      </div>
+      <p class="text-xs text-gray-400">10 წუთი · არაფორმალური დისკუსია და კითხვები ტრენერთან</p>
+    </section>
+
+    <!-- SEGMENT 5 -->
+    <section id="seg-5" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">05</span>
+          <h2 class="text-xl font-bold text-white">Few-Shot Prompting & BOG-ის როლური ასისტენტები (System Personas)</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">20 წუთი</span>
+      </div>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        AI-ს საუკეთესოდ ესმის არა მხოლოდ წესები, არამედ <strong>კონკრეტული მაგალითები (Few-Shot)</strong>. თუ მოდელს ვაჩვენებთ BOG-ის წინა წარმატებული ტექნიკური დავალების 2 ნიმუშს, მესამეს ის დააგენერირებს ზუსტად იმავე ლექსიკით, აბრევიატურებითა და სტრუქტურით.
+      </p>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-persona-pm')">კოპირება</button>
+        <span class="text-[10px] font-bold text-bog-orange uppercase tracking-wider block mb-1">BOG სისტემური ინსტრუქცია (System Persona) · PM ასისტენტი</span>
+        <pre id="prompt-persona-pm">შენ ხარ საქართველოს ბანკის (BOG) უძრავი ქონებისა და მშენებლობის დეპარტამენტის წამყვანი პროექტის მენეჯერი (Lead Construction PM).
+
+შენი ექსპერტიზა:
+- სატენდერო დოკუმენტაციის რისკების (Red Flags) აუდიტი;
+- ქვეკონტრაქტორებთან მკაცრი, იურიდიულად დასაბუთებული მიმოწერა;
+- სამშენებლო ვადების კრიტიკული გზის (Critical Path) კონტროლი;
+- თათბირის ოქმებიდან (Minutes) დაუყოვნებლივი Action Items-ების ამოღება.
+
+შენი წესები:
+1. არასოდეს დაეთანხმო ხარჯთაღრიცხვის გაზრდას დეტალური საინჟინრო დასაბუთების გარეშე.
+2. ნებისმიერი ვადის გადაცდომისას (Delay Explanation) მოითხოვე ქვეკონტრაქტორისგან ფორსმაჟორის მტკიცებულება ან გრაფიკის კომპენსაციის გეგმა (Catch-up Plan).
+3. ტონი: პროფესიონალური, ლაკონიური, ფაქტებზე დაფუძნებული, საბანკო ეთიკის სტანდარტების სრული დაცვით.</pre>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-persona-arch')">კოპირება</button>
+        <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">BOG სისტემური ინსტრუქცია (System Persona) · არქიტექტორის ასისტენტი</span>
+        <pre id="prompt-persona-arch">შენ ხარ საქართველოს ბანკის (BOG) საპროექტო ჯგუფის მთავარი არქიტექტორი.
+
+შენი ამოცანები:
+- ფილიალების, Solo Lounge-ებისა და 4B სივრცეების გეგმარება BOG Brand Book-ისა და საქართველოს 41-ე დადგენილების მიხედვით;
+- სივრცითი ერგონომიკა, მომხმარებელთა ნაკადების (Customer Flow) ოპტიმიზაცია და უსაფრთხოების ზონირება;
+- საპროექტო Briefs-ების, მასალების სპეციფიკაციებისა და ავეჯის განლაგების სტანდარტიზაცია.
+
+შენი წესები:
+1. პრიორიტეტი 1: მომხმარებლის უსაფრთხოება და შშმპ მისაწვდომობა (უნივერსალური დიზაინი).
+2. პრიორიტეტი 2: BOG-ის პრემიუმ ესთეტიკა, ენერგოეფექტური განათება და ხმის იზოლაცია (აკუსტიკა მოლაპარაკებების ოთახებში).
+3. პასუხის გაცემისას ყოველთვის გამოყავი: აუცილებელი ნორმატივი vs რეკომენდებული დიზაინ-გადაწყვეტა.</pre>
+      </div>
+    </section>
+
+    <!-- SEGMENT 6 -->
+    <section id="seg-6" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">06</span>
+          <h2 class="text-xl font-bold text-white">Google NotebookLM & იზოლირებული ნორმატიული ბაზა (Zero Hallucination)</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">20 წუთი</span>
+      </div>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        ჩვეულებრივი ჩატბოტი ხშირად "ჰალუცინირებს" — იგონებს არარსებულ მუხლებს ან ურევს სხვა ქვეყნის რეგულაციებს. <strong>Google NotebookLM (Gemini Notebook 2.0)</strong> მუშაობს დახურულ წყაროებზე: ის პასუხობს <em>მხოლოდ და მხოლოდ</em> იმ PDF ფაილებიდან, რომლებიც ჩვენ თვითონ ავტვირთეთ.
+      </p>
+
+      <div class="bg-bog-slate p-4 rounded-xl border border-white/10 mb-4">
+        <h3 class="text-sm font-bold text-white mb-2">📚 რა ჩავტვირთეთ BOG-ის სამშენებლო ნოუთბუქში:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-300">
+          <div class="flex items-center gap-2">📄 საქართველოს სამშენებლო კოდექსი (უახლესი რედაქცია)</div>
+          <div class="flex items-center gap-2">📄 მთავრობის 41-ე დადგენილება (შენობა-ნაგებობის უსაფრთხოების წესები)</div>
+          <div class="flex items-center gap-2">📄 შშმპ პირთათვის სივრცის მოწყობის ეროვნული სტანდარტები</div>
+          <div class="flex items-center gap-2">📄 BOG Brand Book & ფილიალების უსაფრთხოების ტექნიკური რეგლამენტი</div>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-notebook-1')">კოპირება</button>
+        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">სამუშაო პრომპტი NotebookLM-ისთვის · ნორმატიული კაზუსის შემოწმება</span>
+        <pre id="prompt-notebook-1">მხოლოდ ატვირთულ 41-ე დადგენილებასა და BOG-ის რეგულაციებზე დაყრდნობით:
+
+კითხვა:
+ჩვენ ვაპროექტებთ ფილიალს სარდაფის სართულზე (-1 სართული, ფართობი 95 მ²), სადაც განთავსდება თანამშრომელთა სასადილო და არქივი.
+1. დასაშვებია თუ არა -1 სართულზე მხოლოდ 1 საევაკუაციო კიბის ქონა, თუ აუცილებელია მეორე დამოუკიდებელი გასასვლელი?
+2. რა მოთხოვნებია კვამლსაწინააღმდეგო ვენტილაციასა და ხანძარსაწინააღმდეგო კარების ცეცხლმედეგობაზე (EI 30, EI 60)?
+3. მიუთითე კონკრეტული მუხლები და გვერდები ატვირთული დოკუმენტიდან.
+
+თუ რომელიმე დეტალი დოკუმენტში ნახსენები არ არის, პირდაპირ დაწერე „წყაროში არ მოიძებნა“ და ნუ გამოიცნობ.</pre>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- INTERACTIVE TASK 2 (10-MINUTE HANDS-ON PARTICIPANT TASK) -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <section id="seg-task-2" class="task-box">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-bog-orange/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">🎯 დავალება 2</span>
+          <h3 class="text-xl font-black text-white">მონაწილეთა პრაქტიკუმი: NotebookLM-ში ნორმატიული კაზუსის აუდიტი</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-300 font-bold">სამუშაო დრო:</span>
+          <span class="timer-display" id="timer2">10:00</span>
+          <button onclick="startTimer(2, 600)" class="bg-bog-orange hover:bg-bog-accent text-white px-3 py-1 rounded text-xs font-bold transition">სტარტი</button>
+          <button onclick="resetTimer(2, 600)" class="bg-white/10 hover:bg-white/20 text-gray-300 px-2 py-1 rounded text-xs transition">განულება</button>
+        </div>
+      </div>
+
+      <p class="text-gray-200 text-sm mb-4 leading-relaxed">
+        <strong>ამოცანა ყველა მონაწილისთვის:</strong> გახსენით NotebookLM (ან გამოიყენეთ მოწოდებული 41-ე დადგენილების ტექსტი Claude Projects-ში) და გადაამოწმეთ ქვემოთ მოცემული რეალური საინჟინრო კაზუსი. მიზანია პასუხში მიიღოთ <strong>100%-ით ციტირებადი მუხლები</strong> და ნულოვანი ჰალუცინაცია.
+      </p>
+
+      <div class="bg-bog-dark/90 p-4 rounded-xl border border-white/10 mb-4 text-xs text-gray-300">
+        <strong class="text-white text-sm block mb-1">საველე კაზუსი:</strong>
+        BOG-ის ახალ Solo Lounge-ში არქიტექტორმა დააპროექტა მინის გამყოფი ტიხრები და კარი 90 სმ სიგანით. ზედამხედველი ამტკიცებს, რომ თუ ოთახი გათვლილია 15-ზე მეტ ადამიანზე, კარის ღიობი უნდა იყოს არანაკლებ 100 სმ, ხოლო კარი უნდა იღებოდეს გასასვლელის მიმართულებით.
+        <div class="mt-3 p-2.5 bg-bog-surface rounded border border-bog-border/40">
+          <strong>თქვენი ამოცანა:</strong> იპოვეთ ზუსტი ნორმა 41-ე დადგენილებაში, დაადგინეთ ვინ არის მართალი (არქიტექტორი თუ ზედამხედველი) და დააგენერირეთ მოკლე საინჟინრო დასკვნა პირველწყაროს მითითებით.
+        </div>
+      </div>
+
+      <div class="bg-bog-surface p-3.5 rounded-lg border border-white/10 text-xs text-gray-300">
+        <strong class="text-smart-cyan">ბონუს-დავალება (სწრაფად შემსრულებლებისთვის):</strong>
+        NotebookLM-ში დააჭირეთ <em>„Generate Audio Overview“</em> და მიიღეთ 5-წუთიანი ინგლისურენოვანი ან ქართული აუდიო-ბრიფინგი ამ საკითხზე მობილურისთვის.
+      </div>
+    </section>
+
+    <!-- SEGMENT 7 -->
+    <section id="seg-7" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">07</span>
+          <h2 class="text-xl font-bold text-white">სესიის შეჯამება, Q&A და მზადება სესია 2-სთვის</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">10 წუთი</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-300 mb-4">
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/5">
+          <strong class="text-white block mb-1.5 text-sm">✅ რა ვისწავლეთ დღეს:</strong>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>Zero-Retention საბანკო უსაფრთხოება და მონაცემთა მასკირება.</li>
+            <li>C.R.E.A.T.E. და Chain-of-Thought საინჟინრო პრომპტინგის ჩარჩოები.</li>
+            <li>როლური სისტემური ასისტენტების შექმნა BOG-ის სპეციფიკაზე.</li>
+            <li>NotebookLM-ის დახურული სამართლებრივი ბაზა (41-ე დადგენილება).</li>
+          </ul>
+        </div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-bog-border/40">
+          <strong class="text-bog-orange block mb-1.5 text-sm">🚀 რა გველის სესია 2-ში (Vision AI):</strong>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>ფილიალის ფოტოდან ახალი რედიზაინის მიღება (Inpainting / Rendair).</li>
+            <li>2D ნახაზებიდან ფოტორეალისტური 3D რენდერები (FLUX.3 Image).</li>
+            <li>ობიექტის ფოტოებიდან დეფექტების ამოცნობა (Snag List).</li>
+            <li>Voice-to-Report — ხმოვანი საიტ-ოქმების მიღება მობილურიდან (Whisper).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('overlay');
+    const mi = document.getElementById('menuIcon');
+    const ci = document.getElementById('closeIcon');
+    const isHidden = sb.classList.contains('-translate-x-full');
+    if (isHidden) {
+      sb.classList.remove('-translate-x-full');
+      ov.classList.remove('hidden');
+      mi.classList.add('hidden');
+      ci.classList.remove('hidden');
+    } else {
+      sb.classList.add('-translate-x-full');
+      ov.classList.add('hidden');
+      mi.classList.remove('hidden');
+      ci.classList.add('hidden');
+    }
+  }
+
+  let currentFontSize = 18;
+  function changeFontSize(delta) {
+    currentFontSize = Math.max(14, Math.min(24, currentFontSize + delta));
+    document.documentElement.style.fontSize = currentFontSize + 'px';
+  }
+  function resetFontSize() {
+    currentFontSize = 18;
+    document.documentElement.style.fontSize = '18px';
+  }
+
+  function copyPrompt(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const btn = el.parentElement.querySelector('.copy-btn');
+      if (btn) {
+        const orig = btn.innerText;
+        btn.innerText = '✓ კოპირებულია!';
+        btn.style.background = '#10b981';
+        btn.style.color = '#fff';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 2000);
+      }
+    });
+  }
+
+  // Timer logic for the 2 participant tasks
+  const timerIntervals = {};
+  function startTimer(taskNum, durationSec) {
+    clearInterval(timerIntervals[taskNum]);
+    let remaining = durationSec;
+    const display = document.getElementById('timer' + taskNum);
+    function update() {
+      const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+      const s = (remaining % 60).toString().padStart(2, '0');
+      display.innerText = `${m}:${s}`;
+      if (remaining <= 0) {
+        clearInterval(timerIntervals[taskNum]);
+        display.innerText = "00:00 (დრო ამოიწურა!)";
+        display.style.color = '#ef4444';
+      }
+      remaining--;
+    }
+    update();
+    timerIntervals[taskNum] = setInterval(update, 1000);
+  }
+
+  function resetTimer(taskNum, durationSec) {
+    clearInterval(timerIntervals[taskNum]);
+    const m = Math.floor(durationSec / 60).toString().padStart(2, '0');
+    const s = (durationSec % 60).toString().padStart(2, '0');
+    const display = document.getElementById('timer' + taskNum);
+    display.innerText = `${m}:${s}`;
+    display.style.color = '#ff8533';
+  }
+
+  // Active section scroll highlighting
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      const top = sec.offsetTop - 150;
+      if (pageYOffset >= top) current = sec.getAttribute('id');
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+</body>
+</html>
