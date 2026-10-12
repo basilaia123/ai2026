@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სესია 2 | საქართველოს ბანკი (BOG) · ვიზუალური AI, საველე ინსპექცია და საპროექტო სტანდარტიზაცია</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bog: {
+              orange: '#f36f21',
+              dark: '#0a101d',
+              navy: '#0f172a',
+              slate: '#1e293b',
+              surface: '#162032',
+              card: '#1e293b',
+              accent: '#ff8533',
+              glow: 'rgba(243, 111, 33, 0.25)',
+              border: 'rgba(243, 111, 33, 0.35)'
+            },
+            smart: {
+              teal: '#0ea5e9',
+              cyan: '#06b6d4',
+              green: '#10b981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    html { scroll-behavior: smooth; font-size: 20px; }
+    body { background-color: #0a101d; color: #e2e8f0; font-size: 1rem; line-height: 1.65; }
+
+    h1 { font-size: 2.25rem; font-weight: 900; line-height: 1.2; }
+    h2 { font-size: 1.75rem; font-weight: 800; line-height: 1.3; }
+    h3 { font-size: 1.25rem; font-weight: 700; line-height: 1.4; }
+
+    @media (min-width: 1024px) {
+      body.sb-collapsed #sidebar { transform: translateX(-100%) !important; }
+      body.sb-collapsed #mainContent { margin-left: 0 !important; }
+    }
+    .bog-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 1rem 0; }
+    .bog-table th { background: rgba(243, 111, 33, 0.15); color: #ff8533; text-align: left; padding: 0.55rem 0.7rem; font-weight: 800; border-bottom: 1px solid rgba(243, 111, 33, 0.35); }
+    .bog-table td { padding: 0.55rem 0.7rem; border-bottom: 1px solid rgba(255, 255, 255, 0.07); color: #cbd5e1; vertical-align: top; }
+    .table-wrap { overflow-x: auto; }
+    .cmp-bad { background: rgba(239, 68, 68, 0.07); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 0.75rem; padding: 0.9rem 1rem; }
+    .cmp-good { background: rgba(16, 185, 129, 0.07); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 0.75rem; padding: 0.9rem 1rem; }
+    .trainer-extra { background: #0d1527; border: 1px dashed rgba(255, 255, 255, 0.18); border-radius: 0.75rem; padding: 0.8rem 1rem; margin: 1.25rem 0; }
+    .trainer-extra summary { cursor: pointer; font-size: 0.8rem; font-weight: 700; color: #94a3b8; }
+    .trainer-extra[open] summary { color: #ff8533; }
+    .step-list { counter-reset: step; list-style: none; padding: 0; }
+    .step-list li { counter-increment: step; position: relative; padding: 0.45rem 0 0.45rem 2.4rem; font-size: 0.8rem; color: #cbd5e1; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+    .step-list li::before { content: counter(step); position: absolute; left: 0; top: 0.4rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #f36f21; color: #0a101d; font-weight: 900; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+    .lang-btn { position: absolute; top: 0.65rem; right: 6.6rem; background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 3px 10px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
+    .lang-btn:hover { border-color: #f36f21; color: #ff8533; }
+    .prompt-box > span:first-of-type { padding-right: 11rem; }
+    body[data-plang="ka"] pre[data-lang="en"], body[data-plang="en"] pre[data-lang="ka"] { display: none; }
+
+    /* ---------- Day theme (default) ---------- */
+    html.theme-light body { background: #f8fafc; color: #1e293b; }
+    html.theme-light #sidebar { background: #ffffff; color: #1e293b; border-right: 1px solid #e2e8f0; }
+    html.theme-light #sidebar .bg-bog-surface { background: #fff7ed; }
+    html.theme-light header { background: linear-gradient(135deg, #fff7ed 0%, #ffffff 60%, #f1f5f9 100%) !important; color: #0f172a !important; border-color: #fed7aa; }
+    html.theme-light .bg-bog-slate { background: #f1f5f9; }
+    html.theme-light .bg-bog-dark { background: #ffffff; }
+    html.theme-light #seg-break { background: #fff7ed !important; border-color: #fed7aa !important; }
+    html.theme-light .text-white { color: #0f172a; }
+    html.theme-light .bg-bog-orange.text-white, html.theme-light #menuBtn, html.theme-light .bg-bog-orange .text-white { color: #ffffff; }
+    html.theme-light .text-gray-200, html.theme-light .text-gray-300 { color: #334155; }
+    html.theme-light .text-gray-400 { color: #64748b; }
+    html.theme-light .text-bog-orange { color: #c2410c; }
+    html.theme-light .text-emerald-400 { color: #047857; }
+    html.theme-light .text-sky-400, html.theme-light .text-sky-300, html.theme-light .text-smart-teal { color: #0369a1; }
+    html.theme-light .text-smart-cyan { color: #0e7490; }
+    html.theme-light .text-orange-400, html.theme-light .text-orange-300 { color: #c2410c; }
+    html.theme-light .text-red-400 { color: #b91c1c; }
+    html.theme-light .border-white\/10, html.theme-light .border-white\/5 { border-color: #e2e8f0; }
+    html.theme-light .bg-white\/10, html.theme-light .bg-white\/5 { background: rgba(15, 23, 42, 0.06); }
+    html.theme-light .bg-black\/40 { background: rgba(243, 111, 33, 0.1); }
+    html.theme-light .topic-card { border-bottom-color: #e2e8f0; }
+    html.theme-light .prompt-box { background: #ffffff; border-color: #fdba74; box-shadow: 0 2px 10px -2px rgba(15, 23, 42, 0.08); }
+    html.theme-light .prompt-box pre { color: #1e293b; }
+    html.theme-light .lang-btn { background: #f1f5f9; color: #334155; border-color: #cbd5e1; }
+    html.theme-light .task-box { background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%); box-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.08); }
+    html.theme-light .trainer-extra { background: #ffffff; border-color: #cbd5e1; }
+    html.theme-light .trainer-extra summary { color: #475569; }
+    html.theme-light .bog-table td { color: #334155; border-bottom-color: #e2e8f0; }
+    html.theme-light .bog-table th { color: #c2410c; }
+    html.theme-light .step-list li { color: #334155; border-bottom-color: #e2e8f0; }
+    html.theme-light .role-badge-arch { color: #0369a1; }
+    html.theme-light .role-badge-pm { color: #c2410c; }
+    html.theme-light .role-badge-sup { color: #047857; }
+    html.theme-light .nav-link:hover { background: rgba(15, 23, 42, 0.05); }
+    html.theme-light .nav-link.active { color: #c2410c; }
+    html.theme-light .timer-display { color: #c2410c; }
+    html.theme-light #fontControls { background: rgba(255, 255, 255, 0.95); border-color: #e2e8f0; }
+    html.theme-light #fontControls button { color: #0f172a; }
+    html.theme-light .tip-box, html.theme-light .warning-box, html.theme-light .cmp-bad, html.theme-light .cmp-good { background-color: #ffffff; }
+    .max-w-content { max-width: 67.2rem; }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(243, 111, 33, 0.4); border-radius: 2px; }
+
+    .nav-link.active {
+      background: rgba(243, 111, 33, 0.15);
+      border-left: 3px solid #f36f21;
+      color: #ff8533;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.05); }
+
+    .prompt-box {
+      background: #0d1527;
+      border: 1px solid rgba(243, 111, 33, 0.25);
+      border-radius: 0.85rem;
+      padding: 1.25rem 1.4rem;
+      position: relative;
+      margin: 1.25rem 0;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    }
+    .prompt-box pre {
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      background: #f36f21;
+      color: #0a101d;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: #ff8533;
+      color: #0a101d;
+    }
+
+    .warning-box {
+      background: rgba(249, 115, 22, 0.08);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .tip-box {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .task-box {
+      background: linear-gradient(135deg, rgba(243, 111, 33, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(243, 111, 33, 0.4);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+    }
+    .topic-card {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 0;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      box-shadow: none;
+    }
+
+    #fontControls {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    #fontControls button {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; color: #fff;
+      border: none; border-radius: 6px;
+      cursor: pointer; font-size: 14px; font-weight: 700;
+      transition: background 0.2s;
+    }
+    #fontControls button:hover { background: rgba(243, 111, 33, 0.3); }
+
+    .role-badge-arch { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .role-badge-pm { background: rgba(243, 111, 33, 0.15); color: #ff8533; border: 1px solid rgba(243, 111, 33, 0.3); }
+    .role-badge-sup { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    .timer-display {
+      font-family: 'Courier New', monospace;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ff8533;
+      letter-spacing: 2px;
+    }
+  </style>
+<script>
+  (function () {
+    var t = 'light';
+    try { t = localStorage.getItem('bog-theme') || 'light'; } catch (e) {}
+    if (t === 'light') document.documentElement.classList.add('theme-light');
+  })();
+</script>
+</head>
+<body class="bg-bog-dark" data-plang="ka">
+
+<!-- Overlay for mobile sidebar -->
+<div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity"></div>
+
+<!-- Mobile Toggle Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-bog-orange text-white p-2.5 rounded-lg shadow-lg hover:bg-bog-accent transition-colors" title="მენიუ">
+  <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Font Size Controls -->
+<div id="fontControls">
+  <button id="themeBtn" onclick="toggleTheme()" title="დღის / ღამის თემა">🌙</button>
+  <button id="langBtn" onclick="togglePromptLang()" title="პრომპტების ენა / Prompt language" style="font-size:11px">EN</button>
+  <button onclick="changeFontSize(1)" title="ტექსტის გაზრდა">A+</button>
+  <button onclick="resetFontSize()" title="საწყისი ზომა">A</button>
+  <button onclick="changeFontSize(-1)" title="ტექსტის დაპატარავება">A-</button>
+</div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-80 bg-bog-navy text-white overflow-y-auto z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 border-r border-white/10">
+  <div class="px-6 py-6 border-b border-white/10">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="bg-bog-orange text-white text-[11px] font-black px-2.5 py-0.5 rounded tracking-wider">საქართველოს ბანკი</span>
+      <span class="text-smart-cyan text-[11px] font-bold">Smart Academy</span>
+    </div>
+    <h1 class="text-base font-bold leading-snug">სესია 2 · ვიზუალური AI, საველე ინსპექცია და საპროექტო სტანდარტიზაცია</h1>
+    <p class="text-gray-400 text-xs mt-1">2.5 საათი (140 წთ + 10 წთ შესვენება)</p>
+  </div>
+
+  <div class="px-5 py-3 bg-bog-surface border-b border-white/5">
+    <p class="text-[10px] font-bold uppercase tracking-widest text-bog-orange mb-1">სამიზნე აუდიტორია (ყველა ერთად)</p>
+    <div class="flex flex-wrap gap-1.5 mt-1">
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-arch">📐 არქიტექტორები</span>
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-pm">💼 PM-ები</span>
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-sup">👷 ზედამხედველები</span>
+    </div>
+  </div>
+
+  <nav class="py-3">
+    <p class="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">ბლოკი 1 · 30 წთ · რედიზაინი ფოტოდან</p>
+    <a href="#seg-1" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-1">
+      <span class="pr-2">1. საშინაო დავალება & მიზნები</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">5 წთ</span>
+    </a>
+    <a href="#seg-2" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-2">
+      <span class="pr-2">2. რედიზაინი & Virtual Staging (DEMO)</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">15 წთ</span>
+    </a>
+    <a href="#seg-mini" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-mini">
+      <span class="pr-2">✋ მინი-სავარჯიშო & გაზიარება</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">10 წთ</span>
+    </a>
+    <p class="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">ბლოკი 2 · 30 წთ · საველე ინსპექცია</p>
+    <a href="#seg-3" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-3">
+      <span class="pr-2">3. Snagging: დეფექტები ფოტოდან</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">8 წთ</span>
+    </a>
+    <a href="#seg-4" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-4">
+      <span class="pr-2">4. Voice-to-Report (Scribe v2)</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">7 წთ</span>
+    </a>
+    <a href="#seg-task-1" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-bog-orange font-bold border-l-[3px] border-transparent bg-bog-orange/10" data-topic="seg-task-1">
+      <span class="pr-2">🎯 დავალება 1 · Snag List + საიტ-ოქმი</span>
+      <span class="shrink-0 text-[10px] bg-bog-orange text-white px-2 py-0.5 rounded font-mono font-bold">15 წთ</span>
+    </a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2 text-xs text-gray-400 border-l-[3px] border-transparent" data-topic="seg-break">
+      <span class="pr-2">☕ ყავის შესვენება</span>
+      <span class="shrink-0 text-[10px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded font-mono">10 წთ</span>
+    </a>
+    <p class="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">ბლოკი 3 · 40 წთ · სტანდარტიზაცია & რეპორტინგი</p>
+    <a href="#seg-5" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-5">
+      <span class="pr-2">5. TOR / Brief შაბლონი & ნახაზის მონაცემები</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">20 წთ</span>
+    </a>
+    <a href="#seg-6" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-6">
+      <span class="pr-2">6. Gamma 5: სტატუს-პრეზენტაცია</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">20 წთ</span>
+    </a>
+    <p class="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">ბლოკი 4 · 40 წთ · ვიზუალური კონტენტი</p>
+    <a href="#seg-8" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-8">
+      <span class="pr-2">7. ვიზუალური კონტენტის გენერაცია</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">12 წთ</span>
+    </a>
+    <a href="#seg-task-2" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-bog-orange font-bold border-l-[3px] border-transparent bg-bog-orange/10" data-topic="seg-task-2">
+      <span class="pr-2">🎯 დავალება 2 · 4-სურათიანი კონცეფცია</span>
+      <span class="shrink-0 text-[10px] bg-bog-orange text-white px-2 py-0.5 rounded font-mono font-bold">20 წთ</span>
+    </a>
+    <a href="#seg-7" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-7">
+      <span class="pr-2">8. შეჯამება, Q&A & სესია 3-ის ანონსი</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">8 წთ</span>
+    </a>
+  </nav>
+
+  <div class="px-5 py-4 border-t border-white/10 mt-4 space-y-2">
+    <a href="bog-day2-exercises.html" target="_blank" class="flex items-center gap-2 text-xs font-bold text-bog-orange hover:text-white transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      ✏️ სავარჯიშოების რვეული
+    </a>
+    <a href="bog-day2-summary.html" target="_blank" class="flex items-center gap-2 text-xs font-bold text-smart-teal hover:text-white transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      📋 Cheat Sheet & შეჯამება
+    </a>
+    <a href="bog-session1.html" class="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-white transition-colors pt-2">
+      ← წინა სესია: სესია 1
+    </a>
+    <a href="index.html" class="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-white transition-colors">
+      ← მთავარ პრეზენტაციაზე დაბრუნება
+    </a>
+  </div>
+
+  <div class="px-5 py-4 border-t border-white/10 text-xs text-gray-400">
+    <p class="font-bold text-white">გიორგი ბასილაია</p>
+    <p>Smart Academy · 2026 წლის ოქტომბერი</p>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="mainContent" class="lg:ml-80 min-h-screen transition-[margin] duration-300">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-bog-navy via-bog-slate to-bog-dark text-white px-6 md:px-12 py-12 border-b border-bog-border">
+    <div class="max-w-content">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="bg-bog-orange text-white text-xs font-black px-2.5 py-1 rounded">საქართველოს ბანკი</span>
+        <span class="text-smart-cyan text-xs font-bold">Smart Academy ერთობლივი პროგრამა</span>
+        <span class="bg-white/10 text-gray-300 text-xs px-2.5 py-0.5 rounded font-mono">ოქტომბერი 2026</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-4">
+        სესია 2 · ვიზუალური AI, <br><span class="text-bog-orange">საველე ინსპექცია და საპროექტო სტანდარტიზაცია</span>
+      </h1>
+      <p class="text-gray-300 text-base md:text-lg max-w-[57.6rem] leading-relaxed mb-6">
+        სესია 1-ში ავაწყვეთ უსაფრთხო საფუძველი და როლური ასისტენტები. დღეს AI-ს ვაძლევთ „თვალებს“ და „ყურებს“: ფილიალის ფოტოდან რედიზაინის კონცეფცია და Virtual Staging, ობიექტის ფოტოებიდან Snag List, ზედამხედველის ხმოვანი ჩანაწერიდან საიტ-ოქმი, საერთო TOR / Brief შაბლონი, მონაცემები ნახაზიდან, Gamma 5-ით სტატუს-პრეზენტაცია მენეჯმენტისთვის და ვიზუალური კონტენტის გენერაცია: მუდბორდები, აბრები და ფასადის კონცეფციები.
+      </p>
+
+      <div class="flex flex-wrap gap-4 text-xs">
+        <span class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-gray-200">
+          ⏱ 2.5 საათი (140 წთ + 10 წთ შესვენება)
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-gray-200">
+          👥 ერთიანი ნაკადი (ყველა ერთად)
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-bog-orange/20 text-bog-orange border border-bog-orange/40 px-3 py-1.5 rounded-full font-bold">
+          🎯 2 პრაქტიკული დავალება (15 + 20 წთ)
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-smart-teal/20 text-smart-teal border border-smart-teal/40 px-3 py-1.5 rounded-full font-bold">
+          🚦 შუქნიშანი 🟢🟡🔴 ძალაშია
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-content px-6 md:px-12 py-10">
+
+    <!-- SEGMENT 1 -->
+    <section id="seg-1" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">01</span>
+          <h2 class="text-xl font-bold text-white">საშინაო დავალების მიმოხილვა, მიზნები & ხელსაწყოების შემოწმება</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">5 წუთი</span>
+      </div>
+
+      <div class="bg-bog-slate rounded-xl p-4 mb-5 border border-bog-orange/40">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <p class="text-sm font-bold text-bog-orange">📂 საშინაო დავალების მიმოხილვა</p>
+          <span class="text-xs text-bog-orange font-mono font-bold">3 წუთი · 2-3 მონაწილე</span>
+        </div>
+        <p class="text-xs text-gray-300 leading-relaxed mb-2">2-3 მონაწილე 1 წუთში აჩვენებს თავისი ასისტენტის (Gem / Project) საუკეთესო, მასკირებულ შედეგს: რა ამოცანა იყო და რა გასწორდა ხელით. დანარჩენი შედეგები ტრენერს ჩატში უგზავნეთ.</p>
+        <ul class="text-xs text-gray-300 list-disc pl-5 space-y-1">
+          <li><strong>📐 არქიტექტორები:</strong> ფილიალის ინტერიერის ფოტო ახლავე მზად გქონდეთ (DEMO და მინი-სავარჯიშო).</li>
+          <li><strong>👷 ზედამხედველები:</strong> 5-6 ფოტო ობიექტიდან (დეფექტები, ზონები) მზად გქონდეთ დავალება 1-ისთვის.</li>
+          <li><strong>💼 PM-ები:</strong> დღევანდელი შედეგები გახდება სტატუს-პრეზენტაციის წყარო (სეგმენტი 6).</li>
+        </ul>
+
+        <p class="text-sm font-bold text-white mt-4 mb-2">🔑 ანგარიშების სწრაფი შემოწმება (2 წუთი)</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-300">
+          <div class="bg-bog-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">🎨 ვიზუალური</strong>
+            Rendair AI და Krea 2 (ბლოკი 1), FLUX 3 Image ან Midjourney V8.2 (ბლოკი 4). ერთი ხელსაწყო წყვილზე საკმარისია.
+          </div>
+          <div class="bg-bog-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">👁️ ფოტო და ნახაზი</strong>
+            Gemini 3.8 Flash, Google Workspace-ის სამსახურებრივი ანგარიშით.
+          </div>
+          <div class="bg-bog-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">🎙️ ხმა</strong>
+            ElevenLabs Scribe v2, ქართული მეტყველების ტექსტად გადასაყვანად (ტელეფონიდანაც).
+          </div>
+          <div class="bg-bog-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">📊 ტექსტი და პრეზენტაცია</strong>
+            სესია 1-ის Gem / Project, Claude ან ChatGPT (Enterprise / Team) და Gamma 5.
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-2">ვინც ვერ შევიდა, ხელს აწევს და წყვილში მუშაობს მეზობელთან, სანამ IT ანგარიშს გაუხსნის.</p>
+      </div>
+
+      <div class="tip-box text-xs text-gray-300 leading-relaxed mt-0">
+        <strong class="text-white text-sm block mb-2">🎯 დღეს სესიის ბოლოს გექნებათ:</strong>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>ფილიალის ფოტოდან მიღებული რედიზაინის კონცეფცია ან Solo ზონის Virtual Staging.</li>
+          <li>ობიექტის ფოტოებიდან აწყობილი Snag List ცხრილი და ხმოვანი ჩანაწერიდან მიღებული ყოველდღიური საიტ-ოქმი.</li>
+          <li>არქიტექტორისა და PM-ის საერთო TOR / Brief შაბლონი, ნახაზიდან მონაცემების ამოღების პრომპტი და Gamma 5-ის სტატუს-პრეზენტაცია.</li>
+          <li>ერთი ფილიალის ზონის 4-სურათიანი ვიზუალური კონცეფცია დამკვეთის დასამტკიცებლად.</li>
+        </ul>
+      </div>
+
+      <div class="warning-box text-xs text-gray-300 leading-relaxed">
+        <strong class="text-orange-400 text-sm block mb-2">🚦 სესია 1-ის წესები დღესაც ძალაშია, ვიზუალისთვის კი უფრო მკაცრია</strong>
+        <ul class="list-disc pl-5 space-y-1.5">
+          <li><strong>ვიზუალურ ხელსაწყოებში (Rendair, FLUX, Midjourney, Krea) მხოლოდ 🟢 სურათი:</strong> სახეების, დაცვის ზონების, საცავის, სეიფების, კამერებისა და უსაფრთხო ზონების გეგმის გარეშე.</li>
+          <li><strong>ფოტოს ანალიზი (Gemini) მხოლოდ სამსახურებრივი ანგარიშით:</strong> 🟡 ფოტოზე ჯერ ამოჭერით ან დაფარეთ სახეები, აბრა, მისამართი და ნომრები.</li>
+          <li><strong>მასკირება:</strong> ტექსტში და ხმოვან ჩანაწერში ობიექტს ასახელებთ როგორც <code class="text-bog-orange bg-black/40 px-1.5 py-0.5 rounded">[ფილიალი_X]</code>, კომპანიას როგორც <code class="text-bog-orange bg-black/40 px-1.5 py-0.5 rounded">[კონტრაქტორი_A]</code>.</li>
+          <li><strong>Owner-ის წესი:</strong> AI-ით შექმნილ რენდერს, Snag List-ს, ოქმს და სლაიდს ამოწმებს და ხელს აწერს პასუხისმგებელი თანამშრომელი.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SEGMENT 2 -->
+    <section id="seg-2" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">02</span>
+          <h2 class="text-xl font-bold text-white">Visual AI & Virtual Staging: არსებული ფოტოდან ახალი ინტერიერი</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">15 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-4">📌 ტრენერისთვის: 8 წუთი DEMO (ცოცხლად მხოლოდ Rendair AI: ფოტო → რედიზაინი), 7 წუთი მართული ცდა: მონაწილეები იმავე პრომპტს საკუთარ ფოტოზე უშვებენ. Krea 2-ის Inpainting ცნობარია ქვემოთ. FLUX 3 Image და Midjourney V8.2 ბლოკ 4-ში გამოჩნდება.</p>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        ადრე ფილიალის რედიზაინის პირველი ვარიანტის ვიზუალიზაციას დღეები სჭირდებოდა. დღეს არსებული ფოტოდან რამდენიმე წუთში იღებთ <strong>2-3 კონცეფციას</strong>: სხვა მასალებით, განათებით, ავეჯით ან ბრენდინგით. ეს არის <strong>სამუშაო შეხვედრის მასალა</strong>, არა სამშენებლო დოკუმენტი.
+      </p>
+
+      <div class="table-wrap">
+        <table class="bog-table">
+          <thead><tr><th>ხელსაწყო</th><th>რისთვის BOG-ში</th><th>ვის</th></tr></thead>
+          <tbody>
+            <tr><td>Rendair AI</td><td>ფილიალის ფოტოდან ან ესკიზიდან რედიზაინის კონცეფცია, ინტერიერის ვარიანტები</td><td>📐 არქიტექტორი</td></tr>
+            <tr><td>FLUX 3 Image</td><td>ტექსტიდან ან ფოტოდან ფოტორეალისტური ვარიანტი, მასალების და განათების შეცვლა</td><td>📐 არქიტექტორი, 💼 PM</td></tr>
+            <tr><td>Midjourney V8.2 (Edit Model)</td><td>არსებული სურათის ნაწილის შეცვლა (Inpainting): ავეჯი, ფერი, ტექსტურა</td><td>📐 არქიტექტორი</td></tr>
+            <tr><td>Krea 2</td><td>სწრაფი ესკიზი და ვარიანტების შედარება მუდბორდისთვის</td><td>📐 არქიტექტორი</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-bog-slate rounded-xl p-4 my-5 border border-bog-orange/40">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <p class="text-sm font-bold text-bog-orange">🎬 DEMO: მომსახურების ცენტრის ფოტო → Solo ზონის რედიზაინი (Rendair AI)</p>
+          <span class="text-xs text-bog-orange font-mono font-bold">8 წუთი DEMO + 7 წუთი მართული ცდა</span>
+        </div>
+        <ol class="step-list mb-2">
+          <li>ატვირთეთ 🟢 ფოტო: ცარიელი მომლოდინე ზონა, ადამიანების, აბრისა და კამერების გარეშე.</li>
+          <li>ჩაწერეთ ქვემოთ მოცემული პრომპტი (ინგლისური ვერსია ვიზუალურ ხელსაწყოებში ხშირად უკეთ მუშაობს).</li>
+          <li>დააგენერირეთ 2-3 ვარიანტი და შეადარეთ: რა შენარჩუნდა (კედლები, ფანჯრები) და რა შეიცვალა.</li>
+          <li>შეარჩიეთ საუკეთესო და აღწერეთ, რა უნდა შეამოწმოს არქიტექტორმა რეალურად (ზომები, ნორმები, მასალების ხელმისაწვდომობა).</li>
+        </ol>
+
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt('prompt-stage')">კოპირება</button>
+          <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">📐 Virtual Staging · Solo ზონა (🟢 მხოლოდ სუფთა ფოტო)</span>
+          <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+          <pre id="prompt-stage" data-lang="ka">შეინარჩუნე ოთახის გეომეტრია: კედლები, ფანჯრები, სვეტები, ჭერის სიმაღლე და კამერის რაკურსი უცვლელია.
+გადააკეთე სივრცე პრემიუმ საბანკო Solo Lounge-ად:
+- ავეჯი: 2 რბილი სავარძელი და დაბალი მაგიდა მომლოდინე ზონაში, ერთი კონსულტაციის მაგიდა 2 სკამით;
+- მასალები: ღია მუხის ხის პანელები, მქრქალი შავი ლითონი, ნაცრისფერი ტექსტილი, ღია ნაცრისფერი კერამოგრანიტის იატაკი;
+- განათება: თბილი 3000K, ხაზოვანი LED ჭერში, მაგიდასთან ერთი დეკორატიული საკიდი სანათი;
+- ბრენდინგი: ნარინჯისფერი აქცენტი მხოლოდ ერთ კედელზე, ლოგოს და ტექსტის გარეშე.
+სტილი: ფოტორეალისტური ინტერიერის ფოტო, დღის ბუნებრივი შუქი, ადამიანების გარეშე.
+არ დაამატო: ფანჯრები ან კარები, რომლებიც ორიგინალში არ არის; ტექსტი, წარწერები, ბრენდის ლოგოები.</pre>
+          <pre id="prompt-stage-en" data-lang="en" lang="en">Keep the room geometry: walls, windows, columns, ceiling height and camera angle unchanged.
+Redesign the space as a premium banking Solo Lounge:
+- Furniture: 2 upholstered armchairs and a low table in the waiting area, one consultation desk with 2 chairs;
+- Materials: light oak wood panels, matte black metal, grey textile, light grey porcelain tile floor;
+- Lighting: warm 3000K, linear LED in the ceiling, one decorative pendant above the desk;
+- Branding: orange accent on one wall only, no logo and no text.
+Style: photorealistic interior photo, natural daylight, no people.
+Do not add: windows or doors that are not in the original; text, signage, brand logos.</pre>
+        </div>
+      </div>
+
+      <h3 class="text-sm font-bold text-white mt-6 mb-1">🧱 რა შეიძლება შეიცვალოს ერთი ფოტოდან</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 text-xs text-gray-300">
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/10"><strong class="text-white">🪵 ტექსტურები:</strong> იატაკი, კედლის პანელები, ტექსტილი. თითო გენერაციაზე ერთი ცვლილება, რათა შედარება მარტივი იყოს.</div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/10"><strong class="text-white">💡 განათება:</strong> ფერის ტემპერატურა (3000K / 4000K), ხაზოვანი ან წერტილოვანი სანათები, დღე / საღამო.</div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/10"><strong class="text-white">🟧 ბრენდინგი:</strong> ფერის აქცენტი Brand Book-ის მიხედვით. ლოგოს AI ხშირად ამახინჯებს, ამიტომ ლოგო ემატება ცალკე, დიზაინის პროგრამაში.</div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/10"><strong class="text-white">🛋️ ავეჯი:</strong> Solo ზონის, 4B სივრცის ან მომლოდინე ზონის განლაგების ვარიანტები.</div>
+      </div>
+
+      <div class="cmp-bad text-xs text-gray-300 leading-relaxed mb-4">
+        <strong class="text-red-400 block mb-1">🔴 AI ვიზუალი არის კონცეფცია და არა სამშენებლო დოკუმენტი</strong>
+        რენდერზე ზომები, ნორმები (საევაკუაციო გზა, შშმპ მისაწვდომობა) და მასალების რეალური ხელმისაწვდომობა არ მოწმდება. კონცეფცია გადადის ნახაზში მხოლოდ არქიტექტორის მიერ. კომერციული გამოყენება (ბროშურა, დამკვეთის პრეზენტაცია) მხოლოდ ფასიანი, კომერციული ლიცენზიის პლანით.
+      </div>
+
+      <details class="trainer-extra">
+        <summary>📎 ცნობარი: Inpainting Krea 2-ში (ან Midjourney V8.2 Edit Model)</summary>
+        <div class="pt-3">
+          <p class="text-xs text-gray-300 mb-2"><strong>Inpainting:</strong> მონიშნეთ სურათის მხოლოდ ის ნაწილი, რომელიც უნდა შეიცვალოს (მაგ. მოლარის დახლი), და აღწერეთ ახალი ელემენტი. დანარჩენი სურათი უცვლელი რჩება.</p>
+          <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt('prompt-inpaint')">კოპირება</button>
+            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">📐 Inpainting · მონიშნული ზონის შეცვლა</span>
+            <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+            <pre id="prompt-inpaint" data-lang="ka">მონიშნულ ზონაში ძველი დახლის ნაცვლად მოათავსე დაბალი, ღია კონსულტაციის მაგიდა ღია მუხის ზედაპირით და მქრქალი შავი ლითონის ფეხებით, 2 სკამით.
+დანარჩენი სურათი (კედლები, იატაკი, განათება, რაკურსი) არ შეცვალო. ტექსტი და ლოგო არ დაამატო.</pre>
+            <pre id="prompt-inpaint-en" data-lang="en" lang="en">In the masked area, replace the old counter with a low, open consultation desk with a light oak top and matte black metal legs, with 2 chairs.
+Do not change the rest of the image (walls, floor, lighting, angle). Do not add text or logos.</pre>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- GUIDED MINI-EXERCISE (10 MIN: 6 WORK / 4 SHARE) -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <section id="seg-mini" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">✋</span>
+          <h2 class="text-xl font-bold text-white">მართული მინი-სავარჯიშო & სწრაფი გაზიარება: რედიზაინი ფოტოდან</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">10 წუთი</span>
+      </div>
+
+      <p class="text-gray-200 text-sm mb-4 leading-relaxed">
+        <strong>6 წუთი მუშაობა, 4 წუთი გაზიარება:</strong> არქიტექტორის მიერ მოტანილი ფილიალის ფოტოდან (ან ტრენერის 🟢 სანიმუშო ფოტოდან) DEMO-ს პრომპტით მიიღეთ ერთი რედიზაინის ვარიანტი Rendair AI-ში და ჩაწერეთ, რა უნდა გადაამოწმოს არქიტექტორმა. მუშაობა წყვილებში: არქიტექტორი + PM ან ზედამხედველი. ეს არ არის შეფასებადი დავალება: შეფასებადი დავალებები 1 და 2 ბლოკ 2-სა და 4-შია.
+      </p>
+
+      <ul class="space-y-2 mb-4 text-xs">
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-arch font-bold px-2 py-0.5 rounded shrink-0">📐 არქიტექტორები</span>
+          <span>ფოტო → რედიზაინის ვარიანტი (მასალები, განათება, ბრენდის აქცენტი). შეინარჩუნეთ გეომეტრია და ჩამოწერეთ 3 საკითხი ნახაზში გადასატანად.</span>
+        </li>
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-pm font-bold px-2 py-0.5 rounded shrink-0">💼 PM-ები</span>
+          <span>არჩეული ვარიანტისთვის Claude-ში ან ChatGPT-ში მიიღეთ მასალებისა და სამუშაოების წინასწარი სია (ფასების გარეშე) და ვადის რისკები მოქმედ ფილიალში.</span>
+        </li>
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-sup font-bold px-2 py-0.5 rounded shrink-0">👷 ზედამხედველები</span>
+          <span>შეამოწმეთ ვიზუალი „საველე თვალით“: რა არის ფიზიკურად შეუძლებელი ან არანორმატიული (გადაკეტილი გასასვლელი, სვეტის „გაქრობა“, ჭერის სიმაღლე).</span>
+        </li>
+      </ul>
+
+      <div class="border-t border-bog-orange/20 pt-3 text-xs text-gray-300">
+        <strong class="text-bog-orange">ჩეკლისტი:</strong>
+        <span class="inline-block ml-2">✓ ფოტო 🟢 (სახეები, აბრა, კამერები არ ჩანს)</span> ·
+        <span class="inline-block ml-2">✓ პრომპტში „შეინარჩუნე გეომეტრია“</span> ·
+        <span class="inline-block ml-2">✓ თითო ვარიანტზე ერთი მთავარი ცვლილება</span> ·
+        <span class="inline-block ml-2">✓ ჩამოწერილია გადასამოწმებელი საკითხები</span>
+      </div>
+      <p class="text-gray-300 text-sm leading-relaxed mt-4 mb-3"><strong class="text-bog-orange">💬 გაზიარება (4 წთ):</strong> 2 წყვილი ეკრანზე აჩვენებს „ფოტო ადრე / ვარიანტი შემდეგ“. ჯგუფი სამ კითხვას სვამს:</p>
+      <ul class="text-xs text-gray-300 list-disc pl-5 space-y-1">
+        <li>რა შეცვალა AI-მ ისეთი, რაც არ გვითხოვია (ფანჯარა, სვეტი, ჭერი)?</li>
+        <li>რომელი ვარიანტი წავა მენეჯმენტთან კონცეფციად და რატომ?</li>
+        <li>რა გადაამოწმა ზედამხედველმა „საველე თვალით“ და რა უნდა გადავიდეს ნახაზში?</li>
+      </ul>
+    </section>
+
+    <!-- SEGMENT 3 -->
+    <section id="seg-3" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">03</span>
+          <h2 class="text-xl font-bold text-white">Snagging: დეფექტების აღწერა ობიექტის ფოტოებიდან</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">8 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-4">📌 ტრენერისთვის: ცოცხლად აჩვენეთ მხოლოდ Gemini 3.8 Flash (3 ფოტო → Snag List). ზედამხედველის Gem სესია 1-დან ალტერნატივაა.</p>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        ზედამხედველი დღეში ათობით ფოტოს იღებს, შემდეგ კი საათებს ხარჯავს თითოეულის აღწერაზე. <strong>Gemini 3.8 Flash</strong> ფოტოს ხედავს და აბრუნებს დეფექტის <strong>სავარაუდო</strong> აღწერას Snag List-ის ფორმატში. ზედამხედველი ამოწმებს, ასწორებს და ადასტურებს: AI-ის როლი პირველი მონახაზია.
+      </p>
+
+      <div class="bg-bog-slate rounded-xl p-4 my-5 border border-bog-orange/40">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <p class="text-sm font-bold text-bog-orange">🎬 DEMO: 3 ფოტო → Snag List ცხრილი</p>
+          <span class="text-xs text-bog-orange font-mono font-bold">5 წუთი · ტრენერი ეკრანზე</span>
+        </div>
+        <ol class="step-list mb-2">
+          <li>გახსენით Gemini სამსახურებრივი ანგარიშით, ატვირთეთ 3 ფოტო (ბზარი, ჭერის პანელი, სილიკონის ნაკერი).</li>
+          <li>ჩასვით ქვემოთ მოცემული პრომპტი. ლოკაცია მიუთითეთ თქვენ, AI ფოტოდან ვერ გაიგებს.</li>
+          <li>შეამოწმეთ სვეტი „დარწმუნებულობა“: სადაც „დაბალია“, ზედამხედველი ადგილზე ამოწმებს.</li>
+          <li>ცხრილი გადაიტანეთ Google Sheets-ში ან Snag List-ის ფაილში.</li>
+        </ol>
+
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt('prompt-snag')">კოპირება</button>
+          <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">👷 C.R.E.A.T.E. · ფოტოებიდან Snag List (Gemini 3.8 Flash)</span>
+          <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+          <pre id="prompt-snag" data-lang="ka">C - კონტექსტი: BOG-ის [ფილიალი_X], შიდა მოპირკეთების ეტაპი, ჩაბარებამდე 10 დღე. თანდართულია 3 ფოტო. ლოკაციები: ფოტო 1: მოლარეების ზონა; ფოტო 2: Solo ზონის ჭერი; ფოტო 3: სველი წერტილი 2.
+R - როლი: შენ ხარ BOG-ის ტექნიკური ზედამხედველი, Snag List-ების შედგენის გამოცდილებით.
+E - დავალება: თითოეულ ფოტოზე აღწერე ხილული დეფექტი(ები).
+A - შეზღუდვები:
+- აღწერე მხოლოდ ის, რაც ფოტოზე ნამდვილად ჩანს. ზომები არ გამოიგონო: თუ ზომა საჭიროა, დაწერე „[გასაზომია]“.
+- მიზეზზე საბოლოო დასკვნა ნუ გამოიტანე, დაწერე „სავარაუდო მიზეზი“.
+- თითოეულ ჩანაწერს მიუთითე დარწმუნებულობა: მაღალი / საშუალო / დაბალი.
+- თუ ფოტო ბუნდოვანია, დაწერე, რა კადრი უნდა გადაიღოს ზედამხედველმა ხელახლა.
+T - ტონი: მოკლე, ტექნიკური, მუშისთვის გასაგები.
+E - ფორმატი: ცხრილი: № | ფოტო | ლოკაცია | დეფექტი | სავარაუდო მიზეზი | რისკი | გასწორების გზა | პრიორიტეტი (მაღალი/საშუალო/დაბალი) | დარწმუნებულობა. ცხრილის ქვეშ: 3 კითხვა, რომელიც ზედამხედველმა ადგილზე უნდა გადაამოწმოს.</pre>
+          <pre id="prompt-snag-en" data-lang="en" lang="en">C - Context: BOG [Branch_X], interior finishing stage, 10 days before handover. 3 photos attached. Locations: photo 1: teller zone; photo 2: Solo zone ceiling; photo 3: WC 2.
+R - Role: You are BOG's technical site supervisor, experienced in compiling Snag Lists.
+E - Request: For each photo, describe the visible defect(s).
+A - Constraints:
+- Describe only what is actually visible in the photo. Do not invent dimensions: if a dimension is needed, write "[to be measured]".
+- Do not give a final verdict on the cause; write "probable cause".
+- Give each entry a confidence level: high / medium / low.
+- If a photo is unclear, state which shot the supervisor should retake.
+T - Tone: short, technical, understandable for workers.
+E - Format: table: No. | Photo | Location | Defect | Probable cause | Risk | Fix | Priority (high/medium/low) | Confidence. Below the table: 3 questions the supervisor must verify on site.</pre>
+        </div>
+      </div>
+
+      <h3 class="text-sm font-bold text-white mt-6 mb-1">📋 მოსალოდნელი შედეგის ნიმუში</h3>
+      <div class="table-wrap">
+        <table class="bog-table">
+          <thead><tr><th>№</th><th>ლოკაცია</th><th>დეფექტი</th><th>რისკი</th><th>გასწორება</th><th>პრიორიტეტი</th><th>დარწმ.</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>მოლარეების ზონა</td><td>კედელზე დიაგონალური ბზარი ფანჯრის კუთხიდან, სიგრძე [გასაზომია]</td><td>ბზარის გაზრდა, მოპირკეთების დაზიანება</td><td>ბზარის გახსნა, არმირება ბადით, შპაკლი, შეღებვა</td><td>საშუალო</td><td>მაღალი</td></tr>
+            <tr><td>2</td><td>Solo ზონის ჭერი</td><td>ჭერის ერთი პანელი ჩაზნექილია, ნაკერი არათანაბარია</td><td>პანელის ჩამოვარდნა</td><td>საკიდის შემოწმება, პანელის ხელახალი მონტაჟი</td><td>მაღალი</td><td>საშუალო</td></tr>
+            <tr><td>3</td><td>სველი წერტილი 2</td><td>სილიკონის ნაკერი წყვეტილია ნიჟარის ქვეშ</td><td>წყლის ჟონვა კარადაში</td><td>ძველი ნაკერის მოხსნა, ახალი სანიტარული სილიკონი</td><td>საშუალო</td><td>დაბალი: ხელახალი კადრი ახლოდან</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warning-box text-xs text-gray-300 leading-relaxed">
+        <strong class="text-orange-400 text-sm block mb-2">⚠️ სად ცდება AI ფოტოზე</strong>
+        <ul class="list-disc pl-5 space-y-1.5">
+          <li><strong>ზომა და მასშტაბი:</strong> ფოტოდან სიგრძეს, სიღრმესა და ქანობს ზუსტად ვერ განსაზღვრავს. კადრში ჩადეთ რულეტი ან ცნობილი ზომის ნივთი, ზომა კი თავად ჩაწერეთ.</li>
+          <li><strong>დამალული მიზეზი:</strong> ბზარის მიზეზი (ჯდენა, თერმული, მოპირკეთება) ფოტოდან არ ჩანს. ეს საინჟინრო დასკვნაა.</li>
+          <li><strong>ჩრდილი და ანარეკლი:</strong> ზოგჯერ ჩრდილს „ბზარად“ აღწერს. დაბალი დარწმუნებულობის ჩანაწერი ადგილზე მოწმდება.</li>
+        </ul>
+      </div>
+
+      <details class="trainer-extra">
+        <summary>📎 იგივე ფოტოები PM-ისა და არქიტექტორისთვის</summary>
+        <div class="pt-3">
+          <ul class="text-xs text-gray-300 list-disc pl-5 space-y-1.5">
+            <li><strong>💼 PM:</strong> დადასტურებული Snag List-იდან სთხოვეთ Claude-ს, დაალაგოს დეფექტები პასუხისმგებლის ([კონტრაქტორი_A], [კონტრაქტორი_B]) და ვადის მიხედვით და მოამზადოს მოკლე წერილი თითო კონტრაქტორისთვის.</li>
+            <li><strong>📐 არქიტექტორი:</strong> სთხოვეთ Gemini-ს შეადაროს ფოტო მასალების სპეციფიკაციას (ფერი, ფაქტურა, ფილის განლაგება) და ჩამოწეროს შეუსაბამობები „გადასამოწმებელია“ სტატუსით.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- SEGMENT 4 -->
+    <section id="seg-4" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">04</span>
+          <h2 class="text-xl font-bold text-white">Voice-to-Report: ხმოვანი ჩანაწერიდან ყოველდღიური საიტ-ოქმი</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">7 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-4">📌 ტრენერისთვის: ცოცხლად აჩვენეთ მხოლოდ ElevenLabs Scribe v2 (ტელეფონით ჩაწერილი 1-წუთიანი ჩანაწერი → ტექსტი). ტექსტის ოქმად გადაქცევა ზედამხედველის Gem-ში ხდება.</p>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        ობიექტზე წერა მოუხერხებელია, ლაპარაკი კი მარტივი. ზედამხედველი ტელეფონზე 1-2 წუთს ლაპარაკობს, <strong>ElevenLabs Scribe v2</strong> ქართულ მეტყველებას ტექსტად აქცევს, ხოლო სესია 1-ში შექმნილი <strong>ზედამხედველის Gem / Project</strong> ამ ტექსტიდან აწყობს Daily Site Log-ს.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5 text-xs text-gray-300">
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/10"><strong class="text-white block mb-1">1. 🎙️ ჩაწერა</strong>ტელეფონის ხმის ჩამწერით, ობიექტის დათვალიერებისას. ობიექტს ასახელებთ როგორც „ფილიალი X“, ხალხს როლით (ელექტრიკოსი, ბრიგადირი).</div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/10"><strong class="text-white block mb-1">2. 📝 ტექსტი</strong>ფაილი იტვირთება ElevenLabs Scribe v2-ში, ენა: ქართული. ტექსტი სწრაფად გადაიკითხეთ: ტერმინები და ციფრები.</div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/10"><strong class="text-white block mb-1">3. 📋 ოქმი</strong>ტექსტი ჩასვით ზედამხედველის Gem-ში ქვემოთ მოცემული პრომპტით და მიიღეთ სტრუქტურირებული საიტ-ოქმი.</div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-voice')">კოპირება</button>
+        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">👷 Voice-to-Report · ტრანსკრიპტი → Daily Site Log</span>
+        <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+        <pre id="prompt-voice" data-lang="ka">ქვემოთ არის ჩემი ხმოვანი ჩანაწერის ტრანსკრიპტი ობიექტიდან (ElevenLabs Scribe v2). ტექსტი სალაპარაკოა და შეიძლება შეიცავდეს ამოცნობის შეცდომებს.
+
+დავალება: მოამზადე ყოველდღიური საიტ-ოქმი (Daily Site Log).
+წესები:
+- გამოიყენე მხოლოდ ტრანსკრიპტში ნათქვამი ფაქტები. არაფერი დაამატო.
+- სადაც სიტყვა ან ციფრი საეჭვოა, ჩასვი „[გადასამოწმებელია: ...]“.
+- სახელები და მისამართი არ ჩაწერო: [ფილიალი_X], [კონტრაქტორი_A].
+
+სტრუქტურა:
+1. თარიღი, ობიექტი, ამინდი (თუ ნათქვამია)
+2. სამუშაო ძალა ობიექტზე (ბრიგადა | რაოდენობა)
+3. შესრულებული სამუშაოები (ცხრილი: სამუშაო | ზონა | პროგრესი)
+4. დეფექტები და შენიშვნები (ცხრილი: № | ლოკაცია | აღწერა | პრიორიტეტი)
+5. შეფერხებები და მათი მიზეზი
+6. ხვალინდელი გეგმა
+7. საკითხები PM-ისთვის
+
+ტრანსკრიპტი:
+„დღეს ფილიალი X-ზე ვიყავით, ამინდი მშრალია. ობიექტზე იყო ექვსი კაცი, ორი ელექტრიკოსი და ოთხი მოპირკეთების ბრიგადიდან. მოლარეების ზონაში თაბაშირმუყაოს ტიხრები დასრულდა, დაახლოებით ოთხმოცდაათი პროცენტი. Solo ზონაში ჭერის ერთი პანელი ისევ ჩაზნექილია, ხვალამდე უნდა გასწორდეს. ელექტრიკოსებმა ორი საათით დააგვიანეს, კაბელი არ მოიტანეს. პანდუსის მოაჯირი ჯერ არ არის დამონტაჟებული. ხვალ იწყება შეღებვა მოლარეების ზონაში. PM-მა უნდა დაურეკოს კონტრაქტორ A-ს კაბელის მიწოდებაზე.“</pre>
+        <pre id="prompt-voice-en" data-lang="en" lang="en">Below is the transcript of my voice note from the site (ElevenLabs Scribe v2). The text is spoken language and may contain recognition errors.
+
+Task: prepare the Daily Site Log.
+Rules:
+- Use only facts stated in the transcript. Add nothing.
+- Where a word or number is doubtful, insert "[to be verified: ...]".
+- Do not write names or the address: [Branch_X], [Contractor_A].
+
+Structure:
+1. Date, site, weather (if stated)
+2. Workforce on site (crew | headcount)
+3. Works completed (table: Work | Zone | Progress)
+4. Defects and notes (table: No. | Location | Description | Priority)
+5. Delays and their causes
+6. Plan for tomorrow
+7. Issues for the PM
+
+Transcript:
+"Today we were at Branch X, the weather is dry. Six people on site, two electricians and four from the finishing crew. In the teller zone the drywall partitions are done, about ninety percent. In the Solo zone one ceiling panel is still sagging, it must be fixed by tomorrow. The electricians were two hours late, they did not bring the cable. The ramp handrail is not installed yet. Tomorrow painting starts in the teller zone. The PM should call Contractor A about the cable delivery."</pre>
+      </div>
+
+      <div class="warning-box text-xs text-gray-300 leading-relaxed">
+        <strong class="text-orange-400 text-sm block mb-2">⚠️ ხმოვანი ჩანაწერის წესები</strong>
+        <ul class="list-disc pl-5 space-y-1.5">
+          <li>ქართული მეტყველებისთვის გამოიყენეთ ElevenLabs Scribe v2. ტრანსკრიპტი მაინც გადაიკითხეთ: ტერმინები, ციფრები და ერთეულები ყველაზე ხშირად ირევა.</li>
+          <li>ჩანაწერში არ ახსენოთ ზუსტი მისამართი, დაცვის სისტემები, საცავი ან კოლეგების გვარები (🔴).</li>
+          <li>ოქმი PM-თან იგზავნება მხოლოდ ზედამხედველის (Owner) გადაკითხვის შემდეგ.</li>
+        </ul>
+      </div>
+
+      <details class="trainer-extra">
+        <summary>📎 იგივე მეთოდი PM-ისა და არქიტექტორისთვის</summary>
+        <div class="pt-3">
+          <ul class="text-xs text-gray-300 list-disc pl-5 space-y-1.5">
+            <li><strong>💼 PM:</strong> სამუშაო თათბირის შემდეგ 2-წუთიანი ხმოვანი შეჯამება → Scribe v2 → Lead PM ასისტენტი: ოქმი (Minutes) და Action Items ცხრილი (ამოცანა | პასუხისმგებელი | ვადა).</li>
+            <li><strong>📐 არქიტექტორი:</strong> საავტორო ზედამხედველობის ვიზიტის ხმოვანი შენიშვნები → შენიშვნების ფურცელი, დაჯგუფებული ზონებისა და ნახაზის ფურცლების მიხედვით.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- INTERACTIVE TASK 1 (15 MIN: 10 WORK / 5 SHOW) -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <section id="seg-task-1" class="task-box">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-bog-orange/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">🎯 დავალება 1 · 15 წთ</span>
+          <h3 class="text-xl font-black text-white">გუნდური პრაქტიკუმი: ფოტოები → Snag List + ხმოვანი ჩანაწერი → საიტ-ოქმი</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-300 font-bold">სამუშაო დრო:</span>
+          <span class="timer-display" id="timer1">10:00</span>
+          <button onclick="startTimer(1, 600)" class="bg-bog-orange hover:bg-bog-accent text-slate-950 px-3.5 py-1.5 rounded-lg text-xs font-black transition">სტარტი</button>
+          <button onclick="resetTimer(1, 600)" class="bg-white/10 hover:bg-white/20 text-gray-300 px-2.5 py-1.5 rounded-lg text-xs transition">განულება</button>
+        </div>
+      </div>
+
+      <p class="text-gray-200 text-sm mb-4 leading-relaxed">
+        <strong>გუნდური ამოცანა (3-კაციანი ჯგუფი, თითო როლი):</strong> ზედამხედველის მიერ მოტანილი და წინასწარ მასკირებული 5-6 ფოტოდან Gemini 3.8 Flash-ით ააწყეთ Snag List, ხოლო 1-წუთიანი ხმოვანი ჩანაწერიდან (Scribe v2) მიიღეთ ყოველდღიური საიტ-ოქმი. ორივე შედეგი სეგმენტ 6-ში Gamma-ს პრეზენტაციის წყარო იქნება.
+      </p>
+
+      <ul class="space-y-2 mb-4 text-xs">
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-sup font-bold px-2 py-0.5 rounded shrink-0">👷 ზედამხედველები</span>
+          <span>ფოტოების ატვირთვა (სახეები და აბრა არ ჩანს), Snag List პრომპტის გაშვება და ყოველი ჩანაწერის გადამოწმება: ასწორებს ლოკაციასა და პრიორიტეტს.</span>
+        </li>
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-pm font-bold px-2 py-0.5 rounded shrink-0">💼 PM-ები</span>
+          <span>ტელეფონზე ჩაწერს 1-წუთიან „საველე რეპორტს“ ჯგუფის ფოტოებზე დაყრდნობით, გაუშვებს Scribe v2-ში და ასისტენტში იღებს საიტ-ოქმს „საკითხები PM-ისთვის“ ნაწილით.</span>
+        </li>
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-arch font-bold px-2 py-0.5 rounded shrink-0">📐 არქიტექტორები</span>
+          <span>Snag List-ში მონიშნავს დეფექტებს, რომლებიც პროექტის ან სპეციფიკაციის საკითხია (არა შესრულების), და ამოწმებს ტერმინოლოგიას.</span>
+        </li>
+      </ul>
+
+      <div class="border-t border-bog-orange/20 pt-3 mb-3 text-xs text-gray-300">
+        <strong class="text-bog-orange">დროის განაწილება:</strong>
+        <span class="inline-block ml-2">10 წთ · Snag List + საიტ-ოქმი (ტაიმერი)</span> ·
+        <span class="inline-block ml-2">5 წთ · 2 ჯგუფი აჩვენებს შედეგს</span>
+      </div>
+
+      <a href="bog-day2-exercises.html#task-1" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 mb-3 bg-bog-orange hover:bg-bog-accent text-slate-950 text-xs font-black px-3.5 py-1.5 rounded-lg transition">✏️ გახსენით დავალება 1 სავარჯიშოების რვეულში</a>
+
+      <div class="border-t border-bog-orange/20 pt-3 text-xs text-gray-300">
+        <strong class="text-smart-cyan">ბონუს-დავალება (სწრაფად შემსრულებლებისთვის):</strong>
+        Snag List-იდან სთხოვეთ Lead PM ასისტენტს, დააჯგუფოს დეფექტები პასუხისმგებელი კონტრაქტორის მიხედვით და მოამზადოს ერთი მოკლე წერილი [კონტრაქტორი_A]-სთვის.
+      </div>
+    </section>
+
+    <!-- BREAK -->
+    <section id="seg-break" class="topic-card bg-gradient-to-r from-bog-slate to-bog-dark border border-white/10 text-center py-6">
+      <div class="inline-flex items-center gap-2 text-bog-orange font-bold text-sm mb-1">
+        <span class="text-xl">☕</span> ყავის შესვენება & ენერგიის განახლება
+      </div>
+      <p class="text-xs text-gray-400">10 წუთი · შეინახეთ Snag List და საიტ-ოქმი: ბლოკი 3-ში დაგჭირდებათ</p>
+    </section>
+
+    <!-- SEGMENT 5 -->
+    <section id="seg-5" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">05</span>
+          <h2 class="text-xl font-bold text-white">Briefs & Multimodal AI: საერთო TOR / Brief შაბლონი და მონაცემები ნახაზიდან</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">20 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-4">📌 ტრენერისთვის: ცოცხლად აჩვენეთ მხოლოდ ნახაზიდან მონაცემების ამოღება Gemini 3.8 Flash-ით (ბ). Brief შაბლონი (ა) მზაა კოპირებისთვის და ეფუძნება სესია 1-ის CoT TOR-ს.</p>
+
+      <h3 class="text-base font-black text-bog-orange mt-2 mb-3 pb-1 border-b border-bog-orange/30">ა) საერთო Brief / TOR შაბლონი არქიტექტორისა და PM-ისთვის · 10 წუთი</h3>
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        სესია 1-ში TOR დავწერეთ Chain-of-Thought-ით ერთი კონკრეტული ფილიალისთვის. დღეს ვქმნით <strong>შაბლონს</strong>: არქიტექტორი ავსებს საპროექტო ნაწილს (ზონები, მასალები, ნორმები), PM კი სახელშეკრულებო ნაწილს (ვადები, მიღება-ჩაბარება). ერთი დოკუმენტი, ორი ავტორი, ერთიანი ფორმატი ყველა ობიექტზე.
+      </p>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-brief')">კოპირება</button>
+        <span class="text-[10px] font-bold text-bog-orange uppercase tracking-wider block mb-1">📐 + 💼 C.R.E.A.T.E. · BOG-ის საერთო Brief / TOR შაბლონი</span>
+        <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+        <pre id="prompt-brief" data-lang="ka">C - კონტექსტი: BOG-ის სამშენებლო დეპარტამენტს სჭირდება ერთიანი Brief / TOR შაბლონი ყველა ტიპის ობიექტისთვის: მომსახურების ცენტრი, Solo Lounge, 4B სივრცე, სათაო ოფისის მოდერნიზაცია.
+R - როლი: შენ ხარ BOG-ის მთავარი არქიტექტორი და Lead PM ერთად.
+E - დავალება: შექმენი შაბლონი, რომელსაც ავსებს ორი ავტორი. თითოეულ ველს მიაწერე, ვინ ავსებს: [არქიტექტორი] ან [PM].
+A - შეზღუდვები:
+- ველები დატოვე ცვლადებად: [ობიექტის_ტიპი], [ფართობი_მ²], [ვიზიტორები], [ბიუჯეტის_ზღვარი], [ვადა].
+- ნორმატივის მუხლები არ მოიგონო: დაწერე „[დასაზუსტებელია ნორმატივით]“.
+- თითოეულ ნაწილს დაურთე 1 სტრიქონიანი მინიშნება „როგორ შევავსოთ“.
+T - ტონი: ოფიციალური, მოკლე, ცალსახა.
+E - ფორმატი:
+1. ობიექტის აღწერა და მიზანი [არქიტექტორი]
+2. ზონირება და ფართობები (ცხრილი: ზონა | ფართობი | ფუნქცია) [არქიტექტორი]
+3. მასალები და Brand Book-ის მოთხოვნები [არქიტექტორი]
+4. ნორმატიული მოთხოვნები: ევაკუაცია, შშმპ მისაწვდომობა [არქიტექტორი]
+5. სამუშაოების ჩამონათვალი მოცულობებით [არქიტექტორი + PM]
+6. ვადები, ეტაპები და სამუშაო რეჟიმი მოქმედ ფილიალში [PM]
+7. მიღება-ჩაბარების კრიტერიუმები (ცხრილი: სამუშაო | კრიტერიუმი | როგორ მოწმდება) [PM]
+8. მოთხოვნილი დოკუმენტაცია და ფოტოფიქსაცია [PM]
+9. ღია საკითხები და დამტკიცება (Owner-ის ხელმოწერა) [ორივე]</pre>
+        <pre id="prompt-brief-en" data-lang="en" lang="en">C - Context: BOG's construction department needs a single Brief / TOR template for all site types: service center, Solo Lounge, 4B space, HQ modernization.
+R - Role: You are BOG's chief architect and Lead PM together.
+E - Request: Create a template filled in by two authors. Mark each field with who fills it in: [Architect] or [PM].
+A - Constraints:
+- Keep fields as variables: [Site_type], [Area_m2], [Visitors], [Budget_cap], [Duration].
+- Do not invent regulation articles: write "[to be confirmed against regulation]".
+- Add a one-line hint "how to fill in" to each section.
+T - Tone: formal, concise, unambiguous.
+E - Format:
+1. Site description and purpose [Architect]
+2. Zoning and areas (table: Zone | Area | Function) [Architect]
+3. Materials and Brand Book requirements [Architect]
+4. Regulatory requirements: evacuation, accessibility [Architect]
+5. Scope of works with quantities [Architect + PM]
+6. Deadlines, milestones and working regime in an operating branch [PM]
+7. Acceptance criteria (table: Work | Criterion | How it is checked) [PM]
+8. Required documentation and photo records [PM]
+9. Open issues and approval (Owner signature) [Both]</pre>
+      </div>
+      <p class="text-xs text-gray-400 mb-4">💡 შაბლონი შეინახეთ არქიტექტორისა და PM-ის Project Knowledge-ში (სესია 1): ასისტენტი ყოველ ახალ Brief-ს ამ სტრუქტურით დაწერს.</p>
+
+      <h3 class="text-base font-black text-bog-orange mt-6 mb-3 pb-1 border-b border-bog-orange/30">ბ) Multimodal AI: მონაცემები ნახაზიდან · 10 წუთი</h3>
+      <div class="bg-bog-slate rounded-xl p-4 my-5 border border-bog-orange/40">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <p class="text-sm font-bold text-bog-orange">🎬 DEMO: ინტერიერის გეგმა (PDF) → ექსპლიკაცია და ღიობების ცხრილი</p>
+          <span class="text-xs text-bog-orange font-mono font-bold">6 წუთი · ტრენერი ეკრანზე</span>
+        </div>
+        <p class="text-gray-300 text-sm leading-relaxed mb-2">
+          Gemini 3.8 Flash კითხულობს ნახაზს როგორც სურათს: ოთახების დასახელებებს, ფართობებს, კარების ნიშნულებს. შედეგი არის <strong>პირველი მონახაზი</strong>, რომელსაც არქიტექტორი ნახაზთან ადარებს.
+        </p>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt('prompt-drawing')">კოპირება</button>
+          <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">📐 C.R.E.A.T.E. · მონაცემები ნახაზიდან (Gemini 3.8 Flash, 🟡 მასკირებული PDF)</span>
+          <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+          <pre id="prompt-drawing" data-lang="ka">C - კონტექსტი: თანდართულია BOG-ის [ფილიალი_X]-ის ინტერიერის გეგმა (PDF, 1 ფურცელი). შტამპი, მისამართი და უსაფრთხოების ზონები ამოჭრილია.
+R - როლი: შენ ხარ BOG-ის არქიტექტორის ასისტენტი, ნახაზების კითხვის გამოცდილებით.
+E - დავალება: ამოიღე ნახაზიდან მონაცემები ორ ცხრილში.
+A - შეზღუდვები:
+- ჩაწერე მხოლოდ ის, რაც ნახაზზე წერია. არაფერი გამოთვალო და არ ივარაუდო.
+- თუ ციფრი ან წარწერა არ იკითხება, დაწერე „[არ იკითხება]“.
+- ფართობების ჯამი ცალკე აჩვენე და შეადარე ნახაზზე მითითებულ ჯამს (თუ არის).
+T - ტონი: ტექნიკური, მოკლე.
+E - ფორმატი:
+ცხრილი 1 (ექსპლიკაცია): № | ოთახი / ზონა | ფართობი მ² | შენიშვნა
+ცხრილი 2 (ღიობები): კარის ნიშნული | ზონა | სიგანე | გაღების მიმართულება (თუ ჩანს)
+ბოლოს: 3 საკითხი, რომელიც არქიტექტორმა ნახაზთან უნდა გადაამოწმოს.</pre>
+          <pre id="prompt-drawing-en" data-lang="en" lang="en">C - Context: Attached is the interior plan of BOG [Branch_X] (PDF, 1 sheet). Title block, address and security zones have been cropped out.
+R - Role: You are BOG's architect assistant, experienced in reading drawings.
+E - Request: Extract data from the drawing into two tables.
+A - Constraints:
+- Record only what is written on the drawing. Do not calculate or assume anything.
+- If a number or label is unreadable, write "[unreadable]".
+- Show the sum of areas separately and compare it with the total stated on the drawing (if any).
+T - Tone: technical, concise.
+E - Format:
+Table 1 (room schedule): No. | Room / zone | Area m² | Note
+Table 2 (openings): Door tag | Zone | Width | Opening direction (if visible)
+Finally: 3 items the architect must verify against the drawing.</pre>
+        </div>
+      </div>
+
+      <div class="cmp-bad text-xs text-gray-300 leading-relaxed mb-4">
+        <strong class="text-red-400 block mb-1">🔴 ნახაზიდან ამოღებულ მონაცემებს ამოწმებს არქიტექტორი</strong>
+        AI შეიძლება ციფრი არასწორად წაიკითხოს (მაგ. 18.6 როგორც 16.8) ან ორი ოთახი გააერთიანოს. ყველა ფართობი და ღიობი შეადარეთ ნახაზს, სანამ ცხრილი TOR-ში ან ხარჯთაღრიცხვაში გადავა. საცავის, დაცვისა და სეიფების ზონების ნახაზები არასოდეს იტვირთება (🔴).
+      </div>
+
+      <details class="trainer-extra">
+        <summary>📎 იგივე ნახაზი PM-ისა და ზედამხედველისთვის</summary>
+        <div class="pt-3">
+          <ul class="text-xs text-gray-300 list-disc pl-5 space-y-1.5">
+            <li><strong>💼 PM:</strong> ექსპლიკაციის ცხრილი ჩასვით Brief-ის მე-2 ნაწილში და სთხოვეთ ასისტენტს, მოცულობების წინასწარი სია ზონების მიხედვით (ფასების გარეშე).</li>
+            <li><strong>👷 ზედამხედველი:</strong> ღიობების ცხრილს დაუმატეთ სვეტი „ფაქტი ობიექტზე“ და გამოიყენეთ სესია 1-ის „გეგმა vs ფაქტი“ CoT პრომპტი.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- SEGMENT 6 -->
+    <section id="seg-6" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">06</span>
+          <h2 class="text-xl font-bold text-white">Gamma 5: სტატუს-პრეზენტაცია მენეჯმენტისთვის</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">20 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-4">📌 ტრენერისთვის: ცოცხლად აჩვენეთ მხოლოდ Gamma 5 (12 წუთი). წყაროდ გამოიყენეთ ბლოკი 1-ის რედიზაინის ვარიანტი და დავალება 1-ის Snag List და საიტ-ოქმი (ერთი ჯგუფისა). დარჩენილი 8 წუთი: PM-ები საკუთარ მონახაზს აწყობენ, 2 PM აჩვენებს შედეგს.</p>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        PM-ის ყოველკვირეული ტკივილი: ზედამხედველების ოქმებიდან და Snag List-ებიდან მენეჯმენტისთვის მოკლე, ვიზუალური სტატუსის აწყობა. ჯერ Claude-ში ან ChatGPT-ში ვამზადებთ <strong>სლაიდების მონახაზს</strong>, შემდეგ <strong>Gamma 5</strong> მას დიზაინიან პრეზენტაციად აქცევს.
+      </p>
+
+      <div class="bg-bog-slate rounded-xl p-4 my-5 border border-bog-orange/40">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <p class="text-sm font-bold text-bog-orange">🎬 DEMO: რედიზაინი + Snag List + საიტ-ოქმი → 6-სლაიდიანი სტატუსი</p>
+          <span class="text-xs text-bog-orange font-mono font-bold">12 წუთი · ტრენერი ეკრანზე</span>
+        </div>
+        <ol class="step-list mb-2">
+          <li>Claude-ში ჩასვით დადასტურებული Snag List, საიტ-ოქმი, რედიზაინის ვარიანტის მოკლე აღწერა და ქვემოთ მოცემული პრომპტი.</li>
+          <li>მიღებული მონახაზი გადაიკითხეთ: ციფრები, ვადები, პასუხისმგებლები.</li>
+          <li>Gamma 5-ში შექმენით ახალი პრეზენტაცია ტექსტიდან და ჩასვით მონახაზი.</li>
+          <li>შეამოწმეთ სლაიდები: AI-ის დამატებული სურათები ამოიღეთ, ჩასვით ობიექტის 🟢 ფოტოები და რედიზაინის ვარიანტი წარწერით „კონცეფცია“.</li>
+        </ol>
+
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt('prompt-gamma')">კოპირება</button>
+          <span class="text-[10px] font-bold text-bog-orange uppercase tracking-wider block mb-1">💼 C.R.E.A.T.E. · სტატუს-პრეზენტაციის მონახაზი Gamma 5-ისთვის</span>
+          <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+          <pre id="prompt-gamma" data-lang="ka">C - კონტექსტი: ქვემოთ არის [ფილიალი_X]-ის დადასტურებული Snag List, ბოლო საიტ-ოქმი და მომლოდინე ზონის რედიზაინის კონცეფციის მოკლე აღწერა. ობიექტის ჩაბარება დაგეგმილია [თარიღი]-ს.
+R - როლი: შენ ხარ BOG-ის Lead PM, რომელიც მენეჯმენტს ყოველკვირეულ სტატუსს წარუდგენს.
+E - დავალება: მოამზადე 6-სლაიდიანი პრეზენტაციის მონახაზი Gamma-სთვის.
+A - შეზღუდვები:
+- გამოიყენე მხოლოდ თანდართული ფაქტები. ციფრები არ მოიგონო.
+- თითო სლაიდზე მაქსიმუმ 4 პუნქტი, თითო პუნქტი 12 სიტყვამდე.
+- არ ჩაწერო მისამართი, გვარები, თანხები და კონტრაქტორების რეალური სახელები.
+T - ტონი: მენეჯერული, მოკლე, ფაქტებზე დაფუძნებული.
+E - ფორმატი (სლაიდებს შორის ხაზი ---):
+1. სათაური: ობიექტი, კვირა, საერთო სტატუსი (🟢 გეგმით / 🟡 რისკი / 🔴 დაგვიანება)
+2. პროგრესი ზონების მიხედვით
+3. მთავარი დეფექტები (Top 3 მაღალი პრიორიტეტით)
+4. შეფერხებები და მიზეზები
+5. საჭირო გადაწყვეტილებები მენეჯმენტისგან, მათ შორის რედიზაინის კონცეფციის დამტკიცება (წარწერით „კონცეფცია, არა სამშენებლო დოკუმენტი“)
+6. შემდეგი კვირის გეგმა
+
+[ჩასვით Snag List, საიტ-ოქმი და რედიზაინის აღწერა]</pre>
+          <pre id="prompt-gamma-en" data-lang="en" lang="en">C - Context: Below are the verified Snag List, the latest Daily Site Log and a short description of the waiting-area redesign concept for [Branch_X]. Handover is planned for [Date].
+R - Role: You are BOG's Lead PM presenting the weekly status to management.
+E - Request: Prepare a 6-slide presentation outline for Gamma.
+A - Constraints:
+- Use only the attached facts. Do not invent numbers.
+- Max 4 bullets per slide, each bullet up to 12 words.
+- Do not include the address, surnames, amounts or real contractor names.
+T - Tone: managerial, concise, fact-based.
+E - Format (separate slides with ---):
+1. Title: site, week, overall status (🟢 on track / 🟡 at risk / 🔴 delayed)
+2. Progress by zone
+3. Key defects (Top 3 high priority)
+4. Delays and causes
+5. Decisions needed from management, including approval of the redesign concept (labelled "concept, not a construction document")
+6. Next week's plan
+
+[Paste the Snag List, Daily Site Log and redesign description]</pre>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <div class="cmp-bad">
+          <p class="text-xs font-black text-red-400 mb-2">❌ ასე არ ვიქცევით</p>
+          <p class="text-xs text-gray-300 leading-relaxed">ნედლი ოქმის პირდაპირ ჩასმა Gamma-ში და პრეზენტაციის გაგზავნა გადაკითხვის გარეშე. ციფრებს AI „ალამაზებს“, სურათები კი შეიძლება სხვა ობიექტს ჰგავდეს.</p>
+        </div>
+        <div class="cmp-good">
+          <p class="text-xs font-black text-emerald-400 mb-2">✅ BOG-ის წესი</p>
+          <p class="text-xs text-gray-300 leading-relaxed">დადასტურებული წყარო → მონახაზი Claude-ში → Owner ამოწმებს ციფრებს → Gamma 5 → საბოლოო გადაკითხვა. Gamma-ში მხოლოდ მასკირებული, 🟡 დონის ტექსტი.</p>
+        </div>
+      </div>
+
+      <details class="trainer-extra">
+        <summary>📎 Gamma 5 სხვა როლებისთვის</summary>
+        <div class="pt-3">
+          <ul class="text-xs text-gray-300 list-disc pl-5 space-y-1.5">
+            <li><strong>📐 არქიტექტორი:</strong> დავალება 2-ის 4-სურათიანი კონცეფციის სერია → „რედიზაინის ვარიანტები“ პრეზენტაცია (ვარიანტი | მასალები | უპირატესობა | გადასამოწმებელი), წარწერით „კონცეფცია, არა სამშენებლო დოკუმენტი“.</li>
+            <li><strong>👷 ზედამხედველი:</strong> კვირის Snag List → 3-სლაიდიანი შეჯამება ბრიგადირებისთვის (დახურული / ღია / ახალი დეფექტები).</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- SEGMENT 8: VISUAL CONTENT GENERATION -->
+    <section id="seg-8" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">07</span>
+          <h2 class="text-xl font-bold text-white">ვიზუალური კონტენტის გენერაცია: მუდბორდები, აბრები, ფასადი და კონცეფციის სერია</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">12 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-4">📌 ტრენერისთვის: ცოცხლად აჩვენეთ მხოლოდ FLUX 3 Image (ერთი პრომპტი → 2 ვარიანტი, 5 წუთი). Midjourney V8.2 და Krea 2 ცნობარია.</p>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        ბლოკ 1-ში არსებულ ფოტოს ვცვლიდით. აქ ვიზუალს <strong>ნულიდან ვქმნით</strong>: მუდბორდს დამკვეთის დასამტკიცებლად, 2D გეგმის კონცეფციურ ხედს, ბრენდირებულ აბრას, ორიენტაციის ნიშნებს (wayfinding) და ფასადის მაკეტს. ყველა ეს სურათი <strong>კონცეფციაა</strong>: ზომებს, ნორმებსა და Brand Book-თან შესაბამისობას არქიტექტორი ამოწმებს.
+      </p>
+
+      <div class="table-wrap">
+        <table class="bog-table">
+          <thead><tr><th>ამოცანა</th><th>ხელსაწყო</th><th>BOG-ის მაგალითი</th></tr></thead>
+          <tbody>
+            <tr><td>კონცეფციის მუდბორდი დამკვეთისთვის</td><td>Krea 2</td><td>Solo Lounge-ის 3 სტილი: „თბილი ხე“, „მინიმალისტური ქვა“, „ქალაქური ლოფტი“</td></tr>
+            <tr><td>2D გეგმა → კონცეფციური ხედი</td><td>FLUX 3 Image</td><td>4B სივრცის მომლოდინე ზონა თვალის სიმაღლიდან</td></tr>
+            <tr><td>აბრა, wayfinding, ფასადის მაკეტი</td><td>FLUX 3 Image / Midjourney V8.2</td><td>მომსახურების ცენტრის შესასვლელი საღამოს განათებით, ნიშნები სართულზე</td></tr>
+            <tr><td>მასალისა და განათების ვარიაციები</td><td>Midjourney V8.2 (Edit Model)</td><td>ერთი და იგივე ხედი: მუხა / კაკალი, 3000K / 4000K</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="text-sm font-bold text-white mt-6 mb-2">🧱 ვიზუალური პრომპტის 7 ელემენტი</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-300 mb-4">
+        <div class="bg-bog-slate p-3 rounded-lg border border-white/10"><strong class="text-white">1. Subject (ობიექტი):</strong> რა არის კადრში: Solo ზონის კონსულტაციის მაგიდა.</div>
+        <div class="bg-bog-slate p-3 rounded-lg border border-white/10"><strong class="text-white">2. Space (სივრცე):</strong> ზონა, ზომის შეგრძნება, ფანჯრები: 60 მ² ზონა, დიდი ვიტრაჟით.</div>
+        <div class="bg-bog-slate p-3 rounded-lg border border-white/10"><strong class="text-white">3. Materials (მასალები):</strong> ღია მუხა, მქრქალი შავი ლითონი, ნაცრისფერი ტექსტილი.</div>
+        <div class="bg-bog-slate p-3 rounded-lg border border-white/10"><strong class="text-white">4. Light (განათება):</strong> თბილი 3000K, დღის შუქი ფანჯრიდან, ხაზოვანი LED.</div>
+        <div class="bg-bog-slate p-3 rounded-lg border border-white/10"><strong class="text-white">5. Camera (კამერა):</strong> თვალის სიმაღლე 1.6 მ, ფართოკუთხიანი, შესასვლელიდან.</div>
+        <div class="bg-bog-slate p-3 rounded-lg border border-white/10"><strong class="text-white">6. Style (სტილი):</strong> ფოტორეალისტური ინტერიერის ფოტო ან ესკიზი მუდბორდისთვის.</div>
+        <div class="bg-bog-slate p-3 rounded-lg border border-white/10 md:col-span-2"><strong class="text-white">7. Negative (რა არ უნდა იყოს):</strong> ადამიანები, ტექსტი, ლოგოები, კამერები, დაცვის ზონები, საცავის კარი.</div>
+      </div>
+
+      <div class="prompt-box">
+        <button class="copy-btn" onclick="copyPrompt('prompt-visual')">კოპირება</button>
+        <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">📐 7 ელემენტი · ფასადის აბრის კონცეფცია (FLUX 3 Image, 🟢)</span>
+        <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+        <pre id="prompt-visual" data-lang="ka">ობიექტი: საბანკო მომსახურების ცენტრის შესასვლელი, ბრენდირებული აბრით ვიტრაჟის თავზე (აბრა ცარიელი, ტექსტის გარეშე).
+სივრცე: ქალაქის ქუჩის პირველი სართული, 8 მ სიგანის მინის ფასადი, ავტომატური შესასვლელი კარი.
+მასალები: მქრქალი ნაცრისფერი ალუმინის კომპოზიტური პანელები, მინა, ნარინჯისფერი შუქზოლი აბრის ქვეშ.
+განათება: საღამოს ბინდი, თბილი შიდა შუქი, აბრის რბილი ნათება.
+კამერა: ქუჩის მოპირდაპირე ტროტუარიდან, თვალის სიმაღლე, ოდნავ ქვემოდან.
+სტილი: ფოტორეალისტური არქიტექტურული ვიზუალიზაცია.
+არ დაამატო: ადამიანები, წარწერები და ლოგოები, მანქანების ნომრები, ვიდეოკამერები, ბანკომატები.</pre>
+        <pre id="prompt-visual-en" data-lang="en" lang="en">Subject: the entrance of a banking service center with a branded sign above the glazing (sign left blank, no text).
+Space: ground floor on a city street, 8 m wide glass facade, automatic entrance door.
+Materials: matte grey aluminium composite panels, glass, an orange light strip under the sign.
+Light: evening dusk, warm interior light, soft glow from the sign.
+Camera: from the opposite sidewalk, eye level, slightly low angle.
+Style: photorealistic architectural visualization.
+Do not add: people, lettering or logos, car number plates, CCTV cameras, ATMs.</pre>
+      </div>
+
+      <div class="tip-box text-xs text-gray-300 leading-relaxed">
+        <strong class="text-emerald-400 text-sm block mb-2">🔁 სერიის თანმიმდევრულობა (4 სურათი, ერთი ენა)</strong>
+        <ul class="list-disc pl-5 space-y-1.5">
+          <li><strong>ერთი „ბაზისური ბლოკი“:</strong> მასალები, განათება და სტილი ყველა პრომპტში სიტყვასიტყვით ერთნაირია, იცვლება მხოლოდ ობიექტი და კამერა.</li>
+          <li><strong>რეფერენს-სურათი:</strong> პირველი წარმატებული სურათი შემდეგი გენერაციების რეფერენსად ატვირთეთ (სტილის შესანარჩუნებლად).</li>
+          <li><strong>ლოგო და ტექსტი:</strong> AI-ს არ ვანდობთ. აბრაზე ლოგო ემატება დიზაინის პროგრამაში, Brand Book-ის ოფიციალური ფაილიდან.</li>
+        </ul>
+      </div>
+
+      <div class="cmp-bad text-xs text-gray-300 leading-relaxed mb-4">
+        <strong class="text-red-400 block mb-1">🔴 ვიზუალური კონტენტის 5 წესი BOG-ში</strong>
+        <ul class="list-disc pl-5 space-y-1 mt-1">
+          <li>მხოლოდ 🟢 რეფერენს-სურათები: ცარიელი ზონები, საჯარო ფასადი.</li>
+          <li>რეალური ადამიანების სახეები არ გამოიყენება, არც რეფერენსად.</li>
+          <li>დაცვის ზონები, საცავი, სეიფები, კამერები და უსაფრთხო ზონების გეგმები არასოდეს.</li>
+          <li>Brand Book-ის ფერები და წესები დაცულია; სხვა ბრენდის ან ავტორის ნამუშევრის კოპირება დაუშვებელია.</li>
+          <li>AI ვიზუალი არის კონცეფცია: სამშენებლო დოკუმენტად ის არ გამოიყენება, არქიტექტორი ამოწმებს.</li>
+        </ul>
+      </div>
+
+      <details class="trainer-extra">
+        <summary>📎 ცნობარი: 2D გეგმა → კონცეფციური ხედი</summary>
+        <div class="pt-3">
+          <p class="text-xs text-gray-300 mb-2">მხოლოდ 🟢 ზონის (მომლოდინე სივრცე, Solo ზონა) გამარტივებული გეგმა, ზომების, მისამართისა და უსაფრთხოების ზონების გარეშე.</p>
+          <div class="prompt-box">
+            <button class="copy-btn" onclick="copyPrompt('prompt-plan2d')">კოპირება</button>
+            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">📐 2D გეგმა → კონცეფციური ხედი (FLUX 3 Image)</span>
+            <button class="lang-btn" onclick="togglePromptLang()" title="ენის გადართვა / Switch language">KA ⇄ EN</button>
+            <pre id="prompt-plan2d" data-lang="ka">თანდართული არის მომლოდინე ზონის გამარტივებული 2D გეგმა.
+შექმენი თვალის სიმაღლიდან (1.6 მ) გადაღებული ინტერიერის ხედი შესასვლელიდან.
+დაიცავი გეგმის განლაგება: სავარძლები ფანჯრის გასწვრივ, კონსულტაციის მაგიდა მარჯვენა კუთხეში.
+მასალები: ღია მუხა, ნაცრისფერი ტექსტილი, თბილი 3000K განათება. ადამიანები, ტექსტი და ლოგო არ დაამატო.</pre>
+            <pre id="prompt-plan2d-en" data-lang="en" lang="en">Attached is a simplified 2D plan of a waiting area.
+Create an interior view from eye level (1.6 m), looking in from the entrance.
+Follow the plan layout: armchairs along the window, consultation desk in the right corner.
+Materials: light oak, grey textile, warm 3000K lighting. Do not add people, text or logos.</pre>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- INTERACTIVE TASK 2 (20 MIN: 5 SETUP / 10 WORK / 5 SHOW) -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <section id="seg-task-2" class="task-box">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-bog-orange/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">🎯 დავალება 2 · 20 წთ</span>
+          <h3 class="text-xl font-black text-white">გუნდური პრაქტიკუმი: ფილიალის ერთი ზონის 4-სურათიანი კონცეფციის სერია</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-300 font-bold">სამუშაო დრო:</span>
+          <span class="timer-display" id="timer2">10:00</span>
+          <button onclick="startTimer(2, 600)" class="bg-bog-orange hover:bg-bog-accent text-slate-950 px-3.5 py-1.5 rounded-lg text-xs font-black transition">სტარტი</button>
+          <button onclick="resetTimer(2, 600)" class="bg-white/10 hover:bg-white/20 text-gray-300 px-2.5 py-1.5 rounded-lg text-xs transition">განულება</button>
+        </div>
+      </div>
+
+      <p class="text-gray-200 text-sm mb-4 leading-relaxed">
+        <strong>გუნდური ამოცანა (3-კაციანი ჯგუფი, თითო როლი):</strong> აირჩიეთ ერთი ზონა (Solo Lounge, 4B სივრცე, მომსახურების ცენტრის შესასვლელი ან სათაო ოფისის ლობი) და FLUX 3 Image-ში, Midjourney V8.2-ში ან Krea 2-ში შექმენით <strong>4 თანმიმდევრული სურათი</strong>: საერთო ხედი, დეტალი (მასალა), აბრა ან wayfinding ნიშანი, განათების ვარიაცია. ყველა პრომპტი 7 ელემენტით და ერთი „ბაზისური ბლოკით“.
+      </p>
+
+      <ul class="space-y-2 mb-4 text-xs">
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-arch font-bold px-2 py-0.5 rounded shrink-0">📐 არქიტექტორები</span>
+          <span>წერს „ბაზისურ ბლოკს“ (მასალები, განათება, სტილი) და 4 პრომპტს; ამოწმებს Brand Book-თან შესაბამისობას და ჩამოწერს 3 საკითხს ნახაზში გადასატანად.</span>
+        </li>
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-pm font-bold px-2 py-0.5 rounded shrink-0">💼 PM-ები</span>
+          <span>ამზადებს 4 სურათის წარწერებს დამკვეთის დასამტკიცებლად (რა ჩანს, რა არის გადასაწყვეტი) და კითხვას „რომელ ვარიანტს ამტკიცებთ?“.</span>
+        </li>
+        <li class="flex items-start gap-2 text-gray-300">
+          <span class="role-badge-sup font-bold px-2 py-0.5 rounded shrink-0">👷 ზედამხედველები</span>
+          <span>ამოწმებს უსაფრთხოებას და რეალისტურობას: არ ჩანს სახეები, კამერები და დაცვის ზონები; საევაკუაციო გასასვლელი გადაკეტილი არ არის; დეტალი აშენებადია.</span>
+        </li>
+      </ul>
+
+      <div class="border-t border-bog-orange/20 pt-3 mb-3 text-xs text-gray-300">
+        <strong class="text-bog-orange">დროის განაწილება:</strong>
+        <span class="inline-block ml-2">5 წთ · ზონის არჩევა და „ბაზისური ბლოკი“</span> ·
+        <span class="inline-block ml-2">10 წთ · 4 სურათის გენერაცია (ტაიმერი)</span> ·
+        <span class="inline-block ml-2">5 წთ · 2 ჯგუფი აჩვენებს სერიას</span>
+      </div>
+
+      <a href="bog-day2-exercises.html#task-2" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 mb-3 bg-bog-orange hover:bg-bog-accent text-slate-950 text-xs font-black px-3.5 py-1.5 rounded-lg transition">✏️ გახსენით დავალება 2 სავარჯიშოების რვეულში</a>
+
+      <div class="border-t border-bog-orange/20 pt-3 text-xs text-gray-300">
+        <strong class="text-smart-cyan">ბონუს-დავალება (სწრაფად შემსრულებლებისთვის):</strong>
+        4 სურათი და წარწერები ჩასვით Gamma 5-ში და ააწყვეთ 5-სლაიდიანი „კონცეფცია დამკვეთისთვის“ პრეზენტაცია.
+      </div>
+    </section>
+
+    <!-- SEGMENT 7 -->
+    <section id="seg-7" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-bog-orange text-white text-xs font-black px-2 py-0.5 rounded">08</span>
+          <h2 class="text-xl font-bold text-white">სესიის შეჯამება, Q&A და მზადება სესია 3-სთვის</h2>
+        </div>
+        <span class="text-xs text-bog-orange font-mono font-bold">8 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-400 mb-4">⏱ 5 წუთი შეჯამებისა და Q&A-სთვის, 3 წუთი სარეზერვო. თუ განრიგი ჩამორჩება, დრო ამ მარაგიდან აინაზღაურება.</p>
+
+      <div class="tip-box text-xs text-gray-300 leading-relaxed mt-0">
+        <strong class="text-emerald-400 text-sm block mb-2">🔁 დავუბრუნდეთ სესია 1-ის აუდიტს (2 წუთი)</strong>
+        გახსენით სესია 1-ის Slido-ს პასუხები (Word Cloud) და მონიშნეთ, რა მოგვარდა დღეს:
+        <ul class="list-disc pl-5 space-y-1 mt-1.5">
+          <li><strong>✅ დღეს მოგვარდა:</strong> რედიზაინის ვარიანტების ვიზუალიზაცია, დეფექტების ფოტოების აღწერა, ყოველდღიური საიტ-ოქმი, სტატუს-რეპორტები მენეჯმენტისთვის, Brief-ის სტანდარტი.</li>
+          <li><strong>🔜 სესია 3:</strong> ფართობები და ექსპლიკაცია ნახაზიდან, ტენდერების აუდიტი, ნორმატივების დახურული ბაზა (Gemini Notebook).</li>
+        </ul>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-300 mb-4">
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/5">
+          <strong class="text-white block mb-1.5 text-sm">✅ რა ვისწავლეთ დღეს:</strong>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>Virtual Staging და რედიზაინი ფოტოდან (Rendair AI, Krea 2 Inpainting), მხოლოდ 🟢 სურათებით.</li>
+            <li>Snag List ფოტოებიდან Gemini 3.8 Flash-ით, დარწმუნებულობის სვეტით.</li>
+            <li>Voice-to-Report: Scribe v2 → ზედამხედველის Gem → საიტ-ოქმი.</li>
+            <li>საერთო Brief / TOR შაბლონი, მონაცემები ნახაზიდან და Gamma 5-ის სტატუსი.</li>
+            <li>ვიზუალური კონტენტი: 7-ელემენტიანი პრომპტი, მუდბორდი, აბრა და 4-სურათიანი სერია (FLUX 3 Image, Midjourney V8.2, Krea 2).</li>
+          </ul>
+        </div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-bog-border/40">
+          <strong class="text-bog-orange block mb-1.5 text-sm">🚀 რა გველის სესია 3-ში:</strong>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>ფართობებისა და ექსპლიკაციის ავტომატური შემოწმება ნახაზიდან.</li>
+            <li>სატენდერო დოკუმენტების აუდიტი და Red Flags.</li>
+            <li>41-ე დადგენილების დახურული ნორმატიული ბაზა (Gemini Notebook).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-300">
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-bog-orange/40">
+          <strong class="text-bog-orange block mb-1.5 text-sm">📌 ვალდებულება სესია 3-მდე:</strong>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>👷 ზედამხედველები: ერთი კვირა საიტ-ოქმი აწარმოეთ ხმოვანი ჩანაწერით (Scribe v2 + Gem).</li>
+            <li>💼 PM-ები: ერთი რეალური ყოველკვირეული სტატუსი მოამზადეთ Gamma 5-ით (მასკირებული).</li>
+            <li>📐 არქიტექტორები: საერთო Brief შაბლონით შეავსეთ ერთი რეალური ობიექტის Brief.</li>
+            <li>ყველა: მოიტანეთ ერთი მასკირებული ნახაზი (PDF) ან სატენდერო დოკუმენტი სესია 3-ისთვის.</li>
+          </ul>
+        </div>
+        <div class="bg-bog-slate p-3.5 rounded-lg border border-white/5">
+          <strong class="text-white block mb-1.5 text-sm">💬 კითხვა-პასუხი (სტრუქტურირებული):</strong>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>თითო როლიდან ერთი კითხვა: რა ვერ გამოვიდა დღეს?</li>
+            <li>რომელ ხელსაწყოს გამოიყენებთ ობიექტზე უკვე ხვალ?</li>
+            <li>რომელი ფოტო ან ნახაზი არ შეიძლება ატვირთოთ და რატომ?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-bog-slate rounded-xl p-4 mt-4 border border-bog-orange/40">
+        <p class="text-sm font-bold text-bog-orange mb-2">📱 Slido: ბოლო კითხვა, Word Cloud (1 წუთი)</p>
+        <p class="text-base font-bold text-white mb-3">„დღევანდელი ხელსაწყოებიდან ჩემს სამუშაოში ყველაზე მეტ დროს დამიზოგავს: _______“</p>
+        <div class="slido-slot"></div>
+        <p class="text-xs text-gray-400 mt-2">პასუხები ეკრანზე გამოჩნდება. ტრენერი შეაჯამებს 2-3 ყველაზე ხშირ პასუხს და დაუკავშირებს სესია 3-ს.</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('overlay');
+    const mi = document.getElementById('menuIcon');
+    const ci = document.getElementById('closeIcon');
+    if (window.innerWidth >= 1024) {
+      const collapsed = document.body.classList.toggle('sb-collapsed');
+      mi.classList.toggle('hidden', !collapsed);
+      ci.classList.toggle('hidden', collapsed);
+      return;
+    }
+    const isHidden = sb.classList.contains('-translate-x-full');
+    if (isHidden) {
+      sb.classList.remove('-translate-x-full');
+      ov.classList.remove('hidden');
+      mi.classList.add('hidden');
+      ci.classList.remove('hidden');
+    } else {
+      sb.classList.add('-translate-x-full');
+      ov.classList.add('hidden');
+      mi.classList.remove('hidden');
+      ci.classList.add('hidden');
+    }
+  }
+
+  let currentFontSize = 20;
+  function changeFontSize(delta) {
+    currentFontSize = Math.max(16, Math.min(26, currentFontSize + delta));
+    document.documentElement.style.fontSize = currentFontSize + 'px';
+  }
+  function resetFontSize() {
+    currentFontSize = 20;
+    document.documentElement.style.fontSize = '20px';
+  }
+
+  /* Slido-ს ღონისძიების ბმული: ჩასვით აქ (მაგ. https://app.sli.do/event/XXXX) */
+  const SLIDO_URL = '';
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.slido-slot').forEach(el => {
+      el.innerHTML = SLIDO_URL
+        ? '<a href="' + SLIDO_URL + '" target="_blank" rel="noopener" class="inline-block bg-bog-orange text-white text-sm font-bold px-4 py-2 rounded-lg">🔗 გახსენით Slido</a>'
+        : '<span class="text-xs text-gray-400">Slido-ს ბმული ჯერ არ არის ჩასმული. სარეზერვო ვარიანტი: პასუხები ხმამაღლა ან ჩატში.</span>';
+    });
+  });
+
+  function toggleTheme() {
+    const light = document.documentElement.classList.toggle('theme-light');
+    try { localStorage.setItem('bog-theme', light ? 'light' : 'dark'); } catch (e) {}
+    document.getElementById('themeBtn').innerText = light ? '🌙' : '☀️';
+  }
+  function setPromptLang(lang) {
+    document.body.dataset.plang = lang;
+    document.getElementById('langBtn').innerText = lang === 'ka' ? 'EN' : 'KA';
+    try { localStorage.setItem('bog-plang', lang); } catch (e) {}
+  }
+  function togglePromptLang() {
+    setPromptLang(document.body.dataset.plang === 'ka' ? 'en' : 'ka');
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('themeBtn').innerText = document.documentElement.classList.contains('theme-light') ? '🌙' : '☀️';
+    let lang = 'ka';
+    try { lang = localStorage.getItem('bog-plang') || 'ka'; } catch (e) {}
+    setPromptLang(lang);
+  });
+
+  function copyPrompt(id) {
+    if (document.body.dataset.plang === 'en') id += '-en';
+    const el = document.getElementById(id);
+    if (!el) return;
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const btn = el.parentElement.querySelector('.copy-btn');
+      if (btn) {
+        const orig = btn.innerText;
+        btn.innerText = '✓ კოპირებულია!';
+        btn.style.background = '#10b981';
+        btn.style.color = '#fff';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 2000);
+      }
+    });
+  }
+
+  // Timer logic for the 2 participant tasks
+  const timerIntervals = {};
+  function startTimer(taskNum, durationSec) {
+    clearInterval(timerIntervals[taskNum]);
+    let remaining = durationSec;
+    const display = document.getElementById('timer' + taskNum);
+    function update() {
+      const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+      const s = (remaining % 60).toString().padStart(2, '0');
+      display.innerText = `${m}:${s}`;
+      if (remaining <= 0) {
+        clearInterval(timerIntervals[taskNum]);
+        display.innerText = "00:00 (დრო ამოიწურა!)";
+        display.style.color = '#ef4444';
+      }
+      remaining--;
+    }
+    update();
+    timerIntervals[taskNum] = setInterval(update, 1000);
+  }
+
+  function resetTimer(taskNum, durationSec) {
+    clearInterval(timerIntervals[taskNum]);
+    const m = Math.floor(durationSec / 60).toString().padStart(2, '0');
+    const s = (durationSec % 60).toString().padStart(2, '0');
+    const display = document.getElementById('timer' + taskNum);
+    display.innerText = `${m}:${s}`;
+    display.style.color = '';
+  }
+
+  // Active section scroll highlighting
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      const top = sec.offsetTop - 150;
+      if (pageYOffset >= top) current = sec.getAttribute('id');
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+</body>
+</html>
