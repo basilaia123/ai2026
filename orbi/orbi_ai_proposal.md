@@ -159,22 +159,26 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 
 ---
 
-### 🎓 Trainer & Certification
+### 🎓 Trainer & Credentials (Princeton GEO-Bench Standard)
 
-#### Trainer: Giorgi Basilaia
-* [LinkedIn Profile](https://www.linkedin.com/in/basilaia/)
-* 10+ years of practical experience in marketing, business development, and generative AI integration.
-* Associate Professor at the Free University of Tbilisi.
-* Instructor at Smart Academy and other leading corporate training platforms.
-* Generative AI integration consultant for top Georgian and international enterprises.
-
-##### International AI Certifications:
-* 🎓 **Google Certified Educator Level 2** (Google for Education - May 2026 - 2029)
-* 💎 **Gemini Certified Faculty** (Google for Education - March 2026 - 2029)
-* ✨ **Gemini Certified Educator** (Google - February 2026 - 2029)
-* ⚡ **Claude Code in Action** (Anthropic - March 2026)
-* 🧠 **Teaching the AI Fluency Framework** (Anthropic - March 2026)
-* 📚 **AI Fluency for Educators** (Anthropic - March 2026)
+#### Giorgi Basilaia, PhD
+* **Role:** AI / Digital Transformation Expert · Associate Professor · PhD Engineer
+* **LinkedIn:** [linkedin.com/in/basilaia/](https://www.linkedin.com/in/basilaia/) | **Website:** [chatgpt.ge](https://chatgpt.ge)
+* **Professional & Academic Leadership:**
+  * **IT Director (Dual Campus):** Free University of Tbilisi & Agricultural University of Georgia (2020 - Present) - Overseeing 10,000+ active users, 29+ IT engineering staff, and 99.9% system uptime.
+  * **Associate Professor:** Free University of Tbilisi - Teaching Information Security Management and Secure AI Architecture.
+  * **Lead AI Faculty:** Smart Academy ("AI in Practice", "AI Agents & Automation" - 150+ corporate graduates).
+* **International Professional Certifications:**
+  * **(ISC)² Certified in Cybersecurity (CC):** Information security governance and enterprise data privacy compliance.
+  * **Google AI Professional Certificate:** AI for Data Analysis, App Building, Research, and Executive Writing.
+  * **Gemini Certified Faculty & Educator** (Google for Education).
+  * **Anthropic Certified Claude Expert:** Claude Code in Action, Extended Thinking, Agent Skills & Subagents.
+  * **AWS Academy Educator:** Cloud Architecture and automated workflows.
+* **Engineering & Scientific Authority:**
+  * **25+ years** of hands-on experience in software systems, data acquisition, and enterprise IT.
+  * **14 peer-reviewed scientific publications** with **3,533+ citations on Google Scholar**.
+  * **Chief Technical Architect:** Georgia's real-time National Seismic Monitoring Network (26 stations) and low-power IoT field data transmission.
+  * **Speaker & Lead Technical Expert:** 10 international conferences and donor programs (NATO Science for Peace, USAID, EU Erasmus+).
 
 #### Certification
 Upon successful completion, participants will receive bilingual corporate certificates validating their practical competence in applying Generative AI and No-Code Automation to construction, project management, and engineering workflows. Homework submission is required to receive the certificate.
