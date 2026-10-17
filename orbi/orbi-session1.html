@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>სესია 1 · Enterprise AI ფუნდამენტი, უსაფრთხოება & საობიექტო ასისტენტები | ORBI Group</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            orbi: {
+              green: '#274931',
+              forest: '#173f26',
+              dark: '#061c35',
+              navy: '#0b233a',
+              slate: '#122c44',
+              surface: '#0f293e',
+              card: '#16334d',
+              accent: '#10b981',
+              glow: 'rgba(16, 185, 129, 0.25)',
+              border: 'rgba(39, 73, 49, 0.4)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    html { scroll-behavior: smooth; font-size: 18px; }
+    body { background-color: #061c35; color: #e2e8f0; font-size: 1rem; line-height: 1.65; }
+
+    h1 { font-size: 2.1rem; font-weight: 900; line-height: 1.25; }
+    h2 { font-size: 1.6rem; font-weight: 800; line-height: 1.3; }
+    h3 { font-size: 1.2rem; font-weight: 700; line-height: 1.4; }
+
+    @media (min-width: 1024px) {
+      body.sb-collapsed #sidebar { transform: translateX(-100%) !important; }
+      body.sb-collapsed #mainContent { margin-left: 0 !important; }
+    }
+
+    .orbi-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 1rem 0; }
+    .orbi-table th { background: rgba(39, 73, 49, 0.35); color: #34d399; text-align: left; padding: 0.6rem 0.75rem; font-weight: 800; border-bottom: 2px solid rgba(16, 185, 129, 0.35); }
+    .orbi-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: #cbd5e1; vertical-align: top; }
+    .table-wrap { overflow-x: auto; }
+
+    .cmp-bad { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 0.75rem; padding: 1rem 1.1rem; }
+    .cmp-good { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 0.75rem; padding: 1rem 1.1rem; }
+
+    .step-list { counter-reset: step; list-style: none; padding: 0; }
+    .step-list li { counter-increment: step; position: relative; padding: 0.5rem 0 0.5rem 2.4rem; font-size: 0.82rem; color: #cbd5e1; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+    .step-list li::before { content: counter(step); position: absolute; left: 0; top: 0.45rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #274931; border: 1px solid #10b981; color: #fff; font-weight: 900; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+
+    .lang-btn { position: absolute; top: 0.65rem; right: 6.6rem; background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 3px 10px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
+    .lang-btn:hover { border-color: #10b981; color: #34d399; }
+    .prompt-box > span:first-of-type { padding-right: 11rem; }
+    body[data-plang="ka"] pre[data-lang="en"], body[data-plang="en"] pre[data-lang="ka"] { display: none; }
+
+    /* ---------- Day theme (default) ---------- */
+    html.theme-light body { background: #f8faf9; color: #1e293b; }
+    html.theme-light #sidebar { background: #ffffff; color: #1e293b; border-right: 1px solid #e2e8f0; }
+    html.theme-light #sidebar .bg-orbi-surface { background: #f0f7f3; }
+    html.theme-light header { background: linear-gradient(135deg, #f0f7f3 0%, #ffffff 60%, #e6f0ea 100%) !important; color: #061c35 !important; border-color: #274931/30; }
+    html.theme-light .bg-orbi-slate { background: #f1f5f9; }
+    html.theme-light .bg-orbi-dark { background: #ffffff; }
+    html.theme-light .text-white { color: #061c35; }
+    html.theme-light .text-gray-200, html.theme-light .text-gray-300 { color: #334155; }
+    html.theme-light .text-gray-400 { color: #64748b; }
+    html.theme-light .text-orbi-green { color: #274931; }
+    html.theme-light .text-emerald-400 { color: #047857; }
+    html.theme-light .border-white\/10, html.theme-light .border-white\/5 { border-color: #e2e8f0; }
+    html.theme-light .bg-white\/10, html.theme-light .bg-white\/5 { background: rgba(15, 23, 42, 0.05); }
+    html.theme-light .prompt-box { background: #ffffff; border-color: rgba(39, 73, 49, 0.4); box-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.08); }
+    html.theme-light .prompt-box pre { color: #1e293b; }
+    html.theme-light .task-box { background: linear-gradient(135deg, #f0f7f3 0%, #ffffff 100%); box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08); border-color: rgba(39, 73, 49, 0.3); }
+    html.theme-light .orbi-table td { color: #334155; border-bottom-color: #e2e8f0; }
+    html.theme-light .orbi-table th { background: #e8f3ec; color: #274931; }
+    html.theme-light .step-list li { color: #334155; border-bottom-color: #e2e8f0; }
+    html.theme-light .tip-box, html.theme-light .warning-box, html.theme-light .cmp-bad, html.theme-light .cmp-good { background-color: #ffffff; }
+
+    .max-w-content { max-width: 67rem; }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(39, 73, 49, 0.5); border-radius: 2px; }
+
+    .nav-link.active {
+      background: rgba(39, 73, 49, 0.2);
+      border-left: 3px solid #274931;
+      color: #10b981;
+      font-weight: 700;
+    }
+    .nav-link:hover { background: rgba(255, 255, 255, 0.05); }
+
+    .prompt-box {
+      background: #092037;
+      border: 1px solid rgba(39, 73, 49, 0.5);
+      border-radius: 0.85rem;
+      padding: 1.25rem 1.4rem;
+      position: relative;
+      margin: 1.25rem 0;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    }
+    .prompt-box pre {
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      background: #274931;
+      color: #ffffff;
+      border: 1px solid #10b981;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: #10b981;
+      color: #061c35;
+    }
+
+    .warning-box {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .tip-box {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .task-box {
+      background: linear-gradient(135deg, rgba(39, 73, 49, 0.15) 0%, rgba(6, 28, 53, 0.95) 100%);
+      border: 1px solid rgba(39, 73, 49, 0.5);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+    }
+    .topic-card {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+    }
+
+    #fontControls {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(6, 28, 53, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    #fontControls button {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; color: #fff;
+      border: none; border-radius: 6px;
+      cursor: pointer; font-size: 14px; font-weight: 700;
+      transition: background 0.2s;
+    }
+    #fontControls button:hover { background: rgba(39, 73, 49, 0.5); }
+
+    .role-badge-arch { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .role-badge-pm { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .role-badge-sup { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    .timer-display {
+      font-family: 'Courier New', monospace;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #34d399;
+      letter-spacing: 2px;
+    }
+  </style>
+  <script>
+    (function () {
+      var t = 'light';
+      try { t = localStorage.getItem('orbi-theme') || 'light'; } catch (e) {}
+      if (t === 'light') document.documentElement.classList.add('theme-light');
+    })();
+  </script>
+</head>
+<body class="bg-orbi-dark" data-plang="ka">
+
+<!-- Overlay for mobile sidebar -->
+<div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden transition-opacity"></div>
+
+<!-- Mobile Toggle Button -->
+<button id="menuBtn" onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 bg-[#274931] text-white p-2.5 rounded-lg shadow-lg hover:bg-[#173f26] transition-colors" title="მენიუ">
+  <svg id="menuIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+
+<!-- Font Size Controls -->
+<div id="fontControls">
+  <button id="themeBtn" onclick="toggleTheme()" title="დღის / ღამის თემა">🌙</button>
+  <button id="langBtn" onclick="togglePromptLang()" title="პრომპტების ენა / Prompt language" style="font-size:11px">EN</button>
+  <button onclick="changeFontSize(1)" title="ტექსტის გაზრდა">A+</button>
+  <button onclick="resetFontSize()" title="საწყისი ზომა">A</button>
+  <button onclick="changeFontSize(-1)" title="ტექსტის დაპატარავება">A-</button>
+</div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-80 bg-orbi-navy text-white overflow-y-auto z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 border-r border-white/10">
+  <div class="px-6 py-6 border-b border-white/10">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="bg-[#274931] text-white text-[11px] font-black px-2.5 py-0.5 rounded tracking-wider">ORBI GROUP</span>
+      <span class="text-emerald-400 text-[11px] font-bold">Smart Academy</span>
+    </div>
+    <h1 class="text-base font-bold leading-snug">სესია 1 · Enterprise AI ფუნდამენტი, უსაფრთხოება & საობიექტო ასისტენტები</h1>
+    <p class="text-gray-400 text-xs mt-1">2.5 საათი (140 წთ + 10 წთ შესვენება)</p>
+  </div>
+
+  <div class="px-5 py-3 bg-orbi-surface border-b border-white/5">
+    <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">სამიზნე აუდიტორია (ყველა ერთად)</p>
+    <div class="flex flex-wrap gap-1.5 mt-1">
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-arch">📐 არქიტექტორები</span>
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-pm">💼 PM-ები & ინჟინრები</span>
+      <span class="text-[10px] px-2 py-0.5 rounded role-badge-sup">👷 საიტ-ზედამხედველები</span>
+    </div>
+  </div>
+
+  <nav class="py-3">
+    <p class="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">ბლოკი 1 · 40 წთ · უსაფრთხოება & მოდელები</p>
+    <a href="#seg-1" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-1">
+      <span class="pr-2">1. მიზნები & ანგარიშების შემოწმება</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">10 წთ</span>
+    </a>
+    <a href="#seg-audit" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-emerald-400 font-bold border-l-[3px] border-transparent bg-[#274931]/20" data-topic="seg-audit">
+      <span class="pr-2">📊 პროცესების აუდიტი (Live Audit)</span>
+      <span class="shrink-0 text-[10px] bg-[#274931] text-white px-2 py-0.5 rounded font-mono font-bold">5 წთ</span>
+    </a>
+    <a href="#seg-2" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-2">
+      <span class="pr-2">2. მოდელები & მონაცემთა უსაფრთხოება</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">25 წთ</span>
+    </a>
+    <p class="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">ბლოკი 2 · 50 წთ · საინჟინრო პრომპტინგის სვეტები</p>
+    <a href="#seg-3" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-3">
+      <span class="pr-2">3. C.R.E.A.T.E. & PARTS ჩარჩოები</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">15 წთ</span>
+    </a>
+    <a href="#seg-4" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-4">
+      <span class="pr-2">4. CoT & Self-Refine (თვით-აუდიტი)</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">15 წთ</span>
+    </a>
+    <a href="#seg-task-1" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-emerald-400 font-bold border-l-[3px] border-transparent bg-[#274931]/20" data-topic="seg-task-1">
+      <span class="pr-2">🎯 დავალება 1 (15 წთ + 5 წთ განხილვა)</span>
+      <span class="shrink-0 text-[10px] bg-[#274931] text-white px-2 py-0.5 rounded font-mono font-bold">20 წთ</span>
+    </a>
+    <a href="#seg-break" class="nav-link flex items-center justify-between px-5 py-2 text-xs text-gray-400 border-l-[3px] border-transparent" data-topic="seg-break">
+      <span class="pr-2">☕ ყავის შესვენება</span>
+      <span class="shrink-0 text-[10px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded font-mono">10 წთ</span>
+    </a>
+    <p class="px-5 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">ბლოკი 3 · 50 წთ · საობიექტო ჰაბი & ასისტენტები</p>
+    <a href="#seg-5" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-5">
+      <span class="pr-2">5. Claude Projects & NotebookLM ჰაბი</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">15 წთ</span>
+    </a>
+    <a href="#seg-task-2" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-emerald-400 font-bold border-l-[3px] border-transparent bg-[#274931]/20" data-topic="seg-task-2">
+      <span class="pr-2">🎯 დავალება 2 (გუნდური, 20 წთ)</span>
+      <span class="shrink-0 text-[10px] bg-[#274931] text-white px-2 py-0.5 rounded font-mono font-bold">20 წთ</span>
+    </a>
+    <a href="#seg-7" class="nav-link flex items-center justify-between px-5 py-2.5 text-xs text-gray-300 border-l-[3px] border-transparent" data-topic="seg-7">
+      <span class="pr-2">6. შეჯამება, Q&A & სესია 2-ის ანონსი</span>
+      <span class="shrink-0 text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-mono">15 წთ</span>
+    </a>
+  </nav>
+
+  <div class="px-5 py-4 border-t border-white/10 mt-4 space-y-2">
+    <a href="orbi-day1-exercises.html" class="flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-white transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      ✏️ სავარჯიშოების რვეული
+    </a>
+    <a href="orbi-day1-summary.html" class="flex items-center gap-2 text-xs font-bold text-sky-400 hover:text-white transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      📋 Cheat Sheet & შეჯამება
+    </a>
+    <a href="index.html" class="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-white transition-colors pt-2">
+      ← მთავარ შეთავაზებაზე დაბრუნება
+    </a>
+  </div>
+
+  <div class="px-5 py-4 border-t border-white/10 text-xs text-gray-400">
+    <p class="font-bold text-white">გიორგი ბასილაია, PhD</p>
+    <p>Anthropic Certified Claude Expert · Smart Academy</p>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="mainContent" class="lg:ml-80 min-h-screen transition-[margin] duration-300">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-orbi-navy via-orbi-slate to-orbi-dark text-white px-6 md:px-12 py-12 border-b border-orbi-border">
+    <div class="max-w-content">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="bg-[#274931] text-white text-xs font-black px-2.5 py-1 rounded">ORBI GROUP</span>
+        <span class="text-emerald-400 text-xs font-bold">სამშენებლო & დეველოპერული AI პროგრამა</span>
+        <span class="bg-white/10 text-gray-300 text-xs px-2.5 py-0.5 rounded font-mono">ოქტომბერი 2026</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-4">
+        სესია 1 · Enterprise AI ფუნდამენტი, <br><span class="text-emerald-400">უსაფრთხოება & საობიექტო ასისტენტები</span>
+      </h1>
+      <p class="text-gray-300 text-base md:text-lg max-w-[58rem] leading-relaxed mb-6">
+        ინტუიციური „ჩატაობიდან“ გადასვლა უშეცდომო საინჟინრო შედეგებზე. ORBI Group-ის არქიტექტორების, პროექტის მენეჯერებისა და ზედამხედველების საერთო სასტარტო ვორქშოფი: 2026 წლის ფლაგმანი LLM-ები (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon), მკაცრი Zero Data Retention კომერციული კონფიდენციალურობა, საინჟინრო პრომპტინგის ჩარჩოები (C.R.E.A.T.E., P.A.R.T.S., Few-Shot) და ORBI-ს მუდმივი როლური ასისტენტები (Claude Projects & Google NotebookLM).
+      </p>
+
+      <div class="flex flex-wrap gap-4 text-xs">
+        <span class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-gray-200">
+          ⏱ 2.5 საათი (140 წთ + 10 წთ შესვენება)
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-gray-200">
+          👥 ერთიანი სამშენებლო ნაკადი
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-[#274931]/40 text-emerald-300 border border-emerald-500/40 px-3 py-1.5 rounded-full font-bold">
+          🎯 2 პრაქტიკული დავალება (15 + 20 წთ)
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-sky-900/40 text-sky-300 border border-sky-500/40 px-3 py-1.5 rounded-full font-bold">
+          🛡️ Strict Zero Data Retention
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-content px-6 md:px-12 py-10">
+
+    <!-- SEGMENT 1 -->
+    <section id="seg-1" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2 py-0.5 rounded">01</span>
+          <h2 class="text-xl font-bold text-white">შესავალი, მიზნები & სამშენებლო გუნდის End-to-End სინერგია</h2>
+        </div>
+        <span class="text-xs text-emerald-400 font-mono font-bold">10 წუთი</span>
+      </div>
+
+      <div class="bg-orbi-slate rounded-xl p-4 mb-5 border border-emerald-500/30">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <p class="text-sm font-bold text-emerald-400">🔑 ანგარიშების შემოწმება და ხელსაწყოს ზღვრები</p>
+          <span class="text-xs text-emerald-400 font-mono font-bold">5 წუთი · ყველა ერთად</span>
+        </div>
+        <p class="text-xs text-gray-300 leading-relaxed mb-2">პირველი პრაქტიკული დავალება 70-ე წუთზე იწყება. ახლავე გადაამოწმეთ, რომ ყველაფერი გახსნილია, რათა დავალების დრო შესვლას არ დაეხარჯოს:</p>
+        <ul class="text-xs text-gray-300 list-disc pl-5 space-y-1">
+          <li><strong>Claude (claude.ai)</strong>: Anthropic Enterprise / Pro ანგარიში (Projects და Artifacts რეჟიმებისთვის).</li>
+          <li><strong>Google NotebookLM (notebooklm.google.com)</strong>: 2M+ კონტექსტითა და Gemini 4 Argon ძრავით.</li>
+          <li><strong>ChatGPT (chatgpt.com)</strong>: Team / Enterprise ანგარიში Deep Research-ისთვის.</li>
+        </ul>
+        <p class="text-xs text-gray-400 mt-2">ვინც ვერ შევიდა, ხელს აწევს: ტრენერი ეხმარება, დანარჩენები კი მიზნებს ეცნობიან.</p>
+
+        <p class="text-sm font-bold text-white mt-4 mb-2">⚠️ ხელსაწყოს პრაქტიკული საინჟინრო ზღვრები:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-300">
+          <div class="bg-orbi-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">🎚️ მოდელის არჩევა</strong>
+            Claude Opus 5.5 და Extended Thinking გამოიყენება რთული ხელშეკრულებების, 41-ე დადგენილების შეუსაბამობებისა და დავებისთვის; Claude Sonnet 5.5 / GPT-6.1 Sol სწრაფი წერილებისთვის, ოქმებისა და ჩეკლისტებისთვის.
+          </div>
+          <div class="bg-orbi-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">🧩 ტოკენები და მოცულობა</strong>
+            AI ტექსტს ზომავს ტოკენებით. 500-გვერდიანი სპეციფიკაცია ან მრავალშრიანი BOQ ფაილი მოითხოვს დიდ კონტექსტს (Claude 1M ტოკენი ან NotebookLM 2M ტოკენი).
+          </div>
+          <div class="bg-orbi-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">🪟 კონტექსტის ფანჯარა</strong>
+            გრძელ ჩატში მოდელი იწყებს საუბრის დასაწყისის „დავიწყებას“. ოქროს წესი: ახალი საობიექტო ამოცანა = ახალი ჩატი. მუდმივი საობიექტო ცოდნა ინახება <strong>Claude Project</strong>-ში ან <strong>NotebookLM</strong>-ში.
+          </div>
+          <div class="bg-orbi-dark p-3 rounded-lg border border-white/10">
+            <strong class="text-white block mb-1">⛔ ლიმიტი და უსაფრთხოება</strong>
+            პირადი უფასო ანგარიში ORBI-ს სამუშაოდ არ გამოიყენება. სამსახურებრივი ანგარიშები გარანტირებულად იცავს მონაცემებს და მოდელი მათზე არ იტრენინგება (ZDR).
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box text-xs text-gray-300 leading-relaxed mt-0">
+        <strong class="text-white text-sm block mb-2">🎯 დღეს სესიის ბოლოს გექნებათ:</strong>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>მკაფიო წესი, რომელი მონაცემი შეიძლება ჩაიწეროს AI-ში და რომელი არა (🔴 წითელი / 🟡 ყვითელი / 🟢 მწვანე).</li>
+          <li>საინჟინრო პრომპტინგის ჩარჩოები (C.R.E.A.T.E., P.A.R.T.S., Few-Shot) ORBI-ს როლებისთვის მზა კოპირებით.</li>
+          <li>საკუთარი, მუდმივი საობიექტო ასისტენტი (Claude Project) ORBI-ს სისტემური ინსტრუქციებითა და ექსპლიკაციებით.</li>
+          <li>პირველი ოფიციალური დოკუმენტი (ქვეკონტრაქტორის საჯარიმო გაფრთხილების წერილი და აუდიო-ბრიფინგი), შექმნილი ამ ასისტენტით.</li>
+        </ul>
+      </div>
+
+      <p class="text-gray-300 text-sm leading-relaxed mb-4">
+        ORBI Group მართავს მასშტაბურ მეგაპროექტებს (Central Park Towers, ORBI City, Batumi Twin Towers). ამ ჯაჭვში სამი მთავარი რგოლი მონაწილეობს:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div class="bg-orbi-slate p-3.5 rounded-lg border border-sky-500/20">
+          <span class="role-badge-arch text-[11px] font-bold px-2 py-0.5 rounded">📐 არქიტექტორები / კონსტრუქტორები</span>
+          <p class="text-xs text-gray-300 mt-2">ქმნიან კონცეფციას, ამოწმებენ 41-ე დადგენილებას, ამუშავებენ ოთახების ექსპლიკაციებს (კვადრატულობა, პერიმეტრი, სიმაღლე) და ადგენენ Brief-ს.</p>
+        </div>
+        <div class="bg-orbi-slate p-3.5 rounded-lg border border-emerald-500/20">
+          <span class="role-badge-pm text-[11px] font-bold px-2 py-0.5 rounded">💼 პროექტის მენეჯერები (PM)</span>
+          <p class="text-xs text-gray-300 mt-2">მართავენ ქვეკონტრაქტორებს, გრაფიკის დაგვიანებებს (Catch-up Plan), რისკების აუდიტს (Red Flags), სატენდერო პირობებსა და ოფიციალურ მიმოწერას.</p>
+        </div>
+        <div class="bg-orbi-slate p-3.5 rounded-lg border border-amber-500/20">
+          <span class="role-badge-sup text-[11px] font-bold px-2 py-0.5 rounded">👷 საიტ-ზედამხედველები</span>
+          <p class="text-xs text-gray-300 mt-2">ამოწმებენ ნახაზებს ადგილზე (გეგმა vs ფაქტი), აფიქსირებენ დეფექტებს (Snag List) და აწარმოებენ საველე ხმოვან ოქმებს.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS AUDIT -->
+    <section id="seg-audit" class="task-box">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2 py-0.5 rounded">📊</span>
+          <h2 class="text-xl font-bold text-white">პროცესების საწყისი აუდიტი (Live Audit)</h2>
+        </div>
+        <span class="text-xs text-emerald-400 font-mono font-bold">5 წუთი</span>
+      </div>
+      <p class="text-xs text-gray-300 leading-relaxed mb-4">
+        სანამ ტექნიკურ ნაწილზე გადავალთ, დავაფიქსიროთ თქვენი ყოველდღიური დროის დანახარჯები:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="bg-orbi-dark p-4 rounded-xl border border-white/10">
+          <h4 class="font-bold text-emerald-400 mb-2">1. სად იკარგება ყველაზე მეტი დრო კვირაში?</h4>
+          <ul class="space-y-1.5 text-gray-300">
+            <li>• ქვეკონტრაქტორების არასრულ დოკუმენტაციასა და დაგვიანებებზე ოფიციალური წერილების წერა (3-5 სთ)</li>
+            <li>• საობიექტო თათბირების ოქმების ხელით გაწერა და Action Items-ების ამოკრება (2-4 სთ)</li>
+            <li>• ნახაზების ექსპლიკაციისა და 41-ე დადგენილების პარამეტრების შედარება (4-6 სთ)</li>
+            <li>• საველე დეფექტების ფოტოების დახარისხება და Snag List-ის შედგენა (3-5 სთ)</li>
+          </ul>
+        </div>
+        <div class="bg-orbi-dark p-4 rounded-xl border border-white/10">
+          <h4 class="font-bold text-sky-400 mb-2">2. რა იქნება ამ კურსის მთავარი წარმატება?</h4>
+          <p class="text-gray-300 leading-relaxed">
+            ყოველკვირეული რუტინული დროის მინიმუმ <strong>40-50%-ით შემცირება</strong>, დოკუმენტების უშეცდომო იურიდიული და ტექნიკური სიზუსტე და ყველა ობიექტისთვის ცოცხალი AI ჰაბის გამართვა.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGMENT 2 -->
+    <section id="seg-2" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2 py-0.5 rounded">02</span>
+          <h2 class="text-xl font-bold text-white">2026 წლის AI მოდელები & მონაცემთა უსაფრთხოება (Strict Zero Data Retention)</h2>
+        </div>
+        <span class="text-xs text-emerald-400 font-mono font-bold">25 წუთი</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="orbi-table">
+          <thead>
+            <tr>
+              <th>მოდელი / ეკოსისტემა</th>
+              <th>კონტექსტის ფანჯარა</th>
+              <th>მთავარი საინჟინრო ძალა</th>
+              <th>როდის ვიყენებთ ORBI-ში</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Claude Opus 5.5 / Sonnet 5.5</strong></td>
+              <td>1,000,000 ტოკენი</td>
+              <td>Extended Thinking, Artifacts, კოდის & ხელშეკრულებების ლოგიკური ანალიზი</td>
+              <td>დავები, სატენდერო პრეტენზიები, ინტერაქციული კალკულატორები, Claude Projects</td>
+            </tr>
+            <tr>
+              <td><strong>Google Gemini 4 Argon</strong></td>
+              <td>2,000,000+ ტოკენი</td>
+              <td>უზარმაზარი საარქივო RAG, მრავალდოკუმენტიანი სინთეზი, Audio Overviews</td>
+              <td>Google NotebookLM: მთელი ობიექტის ნახაზების, ნორმატივებისა და აქტების ჰაბი</td>
+            </tr>
+            <tr>
+              <td><strong>OpenAI GPT-6 Astra / Sol</strong></td>
+              <td>128k - 200k ტოკენი</td>
+              <td>Deep Research (50+ წყაროს ავტონომიური სინთეზი), Advanced Voice Mode</td>
+              <td>საველე ხმოვანი ჩანაწერების გარჩევა (Whisper), ინტერნეტ-რეგულაციების კვლევა</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Traffic Light Table -->
+      <div class="mt-6 mb-4">
+        <h3 class="text-base font-bold text-white mb-2">🚦 მონაცემთა მასკირების „შუქნიშნის“ პრინციპი (Traffic-Light Data Sanitization)</h3>
+        <p class="text-xs text-gray-300 leading-relaxed mb-3">
+          ORBI-ს საინჟინრო და კომერციული მონაცემების უსაფრთხოების ოფიციალური წესი:
+        </p>
+        <div class="table-wrap">
+          <table class="orbi-table">
+            <thead>
+              <tr>
+                <th style="color:#ef4444;">🔴 წითელი (მკაცრად აკრძალულია)</th>
+                <th style="color:#f59e0b;">🟡 ყვითელი (მასკირება / Enterprise ZDR)</th>
+                <th style="color:#10b981;">🟢 მწვანე (სრულიად ღიაა)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  • კომპანიის საბანკო ანგარიშები & IBAN<br>
+                  • თანამშრომელთა პირადი ნომრები & ხელფასები<br>
+                  • გაუფორმებელი კონტრაქტების საიდუმლო ტარიფები<br>
+                  • სერვერების პაროლები და API გასაღებები
+                </td>
+                <td>
+                  • ქვეკონტრაქტორთა სახელები (იცვლება „კონტრაქტორი A“-ით)<br>
+                  • ოთახების ფართობები & ნახაზის ექსპლიკაცია<br>
+                  • ობიექტის დეფექტების ფოტოები (პირების გარეშე)<br>
+                  • საიტ-ხარჯების ანალიტიკური ბაზა
+                </td>
+                <td>
+                  • საქართველოს 41-ე დადგენილების ტექსტი<br>
+                  • სამშენებლო ნორმები და ISO სტანდარტები<br>
+                  • ზოგადი საინჟინრო პრომპტები & ფორმულები<br>
+                  • საჯარო არქიტექტურული ტერმინოლოგია
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VERIFY Checklist -->
+      <div class="tip-box text-xs text-gray-300 leading-relaxed">
+        <strong class="text-white text-sm block mb-1">🛡️ V.E.R.I.F.Y. ჩეკლისტი ჰალუცინაციების წინააღმდეგ:</strong>
+        <p class="mb-2">საინჟინრო და იურიდიულ დოკუმენტებში AI-ს პასუხის მიღების შემდეგ გადაამოწმეთ:</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 font-mono text-[11px]">
+          <div class="bg-black/20 p-2 rounded"><strong>V</strong> - Validate facts (ფაქტების შემოწმება პირველწყაროსთან)</div>
+          <div class="bg-black/20 p-2 rounded"><strong>E</strong> - Evaluate sources (წყაროს სანდოობის შეფასება)</div>
+          <div class="bg-black/20 p-2 rounded"><strong>R</strong> - Read details actively (კრიტიკული დეტალების წაკითხვა)</div>
+          <div class="bg-black/20 p-2 rounded"><strong>I</strong> - Inspect variables (რიცხვებისა და ერთეულების აუდიტი)</div>
+          <div class="bg-black/20 p-2 rounded"><strong>F</strong> - Fact-check math (მათემატიკური ჯამების გადამოწმება)</div>
+          <div class="bg-black/20 p-2 rounded"><strong>Y</strong> - Yield with human sign-off (ადამიანური ხელმოწერა)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGMENT 3 -->
+    <section id="seg-3" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2 py-0.5 rounded">03</span>
+          <h2 class="text-xl font-bold text-white">საინჟინრო პრომპტინგი: C.R.E.A.T.E. & P.A.R.T.S. ჩარჩოები</h2>
+        </div>
+        <span class="text-xs text-emerald-400 font-mono font-bold">15 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-300 leading-relaxed mb-4">
+        ზოგადი პრომპტი („მომიმზადე წერილი კონტრაქტორთან“) იძლევა უსარგებლო, ზოგად ტექსტს. საინჟინრო პრომპტი ეფუძნება მკაცრ სტრუქტურას:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div class="bg-orbi-slate p-4 rounded-xl border border-white/10">
+          <h3 class="text-sm font-bold text-emerald-400 mb-2">C.R.E.A.T.E. ჩარჩო:</h3>
+          <ul class="text-xs space-y-1.5 text-gray-300">
+            <li><strong>C - Context:</strong> ORBI-ს ობიექტი, არსებული სიტუაცია და დაგვიანების ფაქტი.</li>
+            <li><strong>R - Role:</strong> მთავარი PM, საიტ-ზედამხედველი ან წამყვანი არქიტექტორი.</li>
+            <li><strong>E - Examples (Few-Shot):</strong> წინა წარმატებული ოფიციალური წერილის ნიმუში.</li>
+            <li><strong>A - Ask:</strong> კონკრეტული დავალება (მაგ. 3-პუნქტიანი გაფრთხილება).</li>
+            <li><strong>T - Tone:</strong> ოფიციალური, იურიდიულად გამართული, მკაცრი, მშვიდი.</li>
+            <li><strong>E - Execution:</strong> ზუსტი ფორმატი (ცხრილი, Markdown, პუნქტები).</li>
+          </ul>
+        </div>
+        <div class="bg-orbi-slate p-4 rounded-xl border border-white/10">
+          <h3 class="text-sm font-bold text-sky-400 mb-2">P.A.R.T.S. ჩარჩო:</h3>
+          <ul class="text-xs space-y-1.5 text-gray-300">
+            <li><strong>P - Purpose:</strong> მიზანი: ქვეკონტრაქტორმა 72 საათში წარმოადგინოს Catch-up გეგმა.</li>
+            <li><strong>A - Action:</strong> მოქმედება: გააანალიზე მიზეზები და შეაფასე პირგასამტეხლო.</li>
+            <li><strong>R - Role:</strong> როლი: ORBI Group-ის საინჟინრო დეპარტამენტის დირექტორი.</li>
+            <li><strong>T - Topic:</strong> თემა: HVAC სამუშაოების 14-დღიანი ჩამორჩენა.</li>
+            <li><strong>S - Style & Scope:</strong> სტილი: 1 გვერდი, კონკრეტული მუხლების ციტირებით.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Comparison Bad vs Good -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="cmp-bad text-xs">
+          <strong class="text-red-400 text-sm block mb-1">❌ სუსტი, ინტუიციური პრომპტი:</strong>
+          <pre class="whitespace-pre-wrap text-gray-300 font-mono mt-1">დამიწერე გაფრთხილების წერილი ქვეკონტრაქტორთან, რომ სამუშაოებს აგვიანებს და თუ არ გამოსწორდა დავაჯარიმებთ.</pre>
+          <p class="text-[11px] text-red-400 mt-2"><strong>შედეგი:</strong> ემოციური, არაკონკრეტული ტექსტი, რომელსაც არ აქვს იურიდიული ძალა და არ უთითებს კონკრეტულ ვადას.</p>
+        </div>
+        <div class="cmp-good text-xs">
+          <strong class="text-emerald-400 text-sm block mb-1">✅ საინჟინრო C.R.E.A.T.E. პრომპტი:</strong>
+          <pre class="whitespace-pre-wrap text-gray-300 font-mono mt-1">[Role]: ORBI Group-ის წამყვანი PM
+[Context]: ობიექტი Central Park Towers, HVAC ქვეკონტრაქტორი აგვიანებს 14 დღით.
+[Ask]: შეადგინე ოფიციალური პრეტენზია DEFUSE მეთოდით.
+[Constraint]: მოითხოვე Catch-up გეგმა 72 სთ-ში. პირგასამტეხლო: 0.1% დღეში.
+[Format]: ოფიციალური წერილი სარეგისტრაციო რეკვიზიტებით.</pre>
+          <p class="text-[11px] text-emerald-400 mt-2"><strong>შედეგი:</strong> იურიდიულად უნაკლო, პუნქტობრივი დოკუმენტი მზა ხელმოსაწერად.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGMENT 4 -->
+    <section id="seg-4" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2 py-0.5 rounded">04</span>
+          <h2 class="text-xl font-bold text-white">Chain-of-Thought (CoT) & Self-Refine (თვით-აუდიტი)</h2>
+        </div>
+        <span class="text-xs text-emerald-400 font-mono font-bold">15 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-300 leading-relaxed mb-3">
+        რთულ საინჟინრო ამოცანებში (ნახაზის ექსპლიკაცია, 41-ე დადგენილების საევაკუაციო პარამეტრები, ჯარიმების დათვლა) მოდელს პირდაპირ პასუხი არ უნდა მოვთხოვოთ. ვიყენებთ <strong>„იფიქრე ეტაპობრივად“ (Think Step-by-Step)</strong> და თვით-აუდიტის (Self-Refine) მექანიზმს:
+      </p>
+
+      <div class="prompt-box">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-2">📋 მზა პრომპტ-შაბლონი: საინჟინრო Self-Refine ციკლი</span>
+        <button class="lang-btn" onclick="togglePromptLang()">EN / KA</button>
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre data-lang="ka">შენ ხარ ORBI Group-ის მთავარი საინჟინრო აუდიტორი.
+გააანალიზე ქვემოთ მოცემული სამშენებლო სიტუაცია 3 ეტაპად:
+
+ეტაპი 1 (ფაქტების დეკომპოზიცია):
+- გამოყავი ზუსტი თარიღები, გეგმიური vs ფაქტობრივი შესრულება და კრიტიკული გზის (Critical Path) გადახრა.
+
+ეტაპი 2 (რეგულაციები & ხელშეკრულება):
+- შეადარე მონაცემები საქართველოს 41-ე დადგენილების უსაფრთხოების ნორმებსა და კონტრაქტის საჯარიმო მუხლებს.
+
+ეტაპი 3 (თვით-აუდიტი და დასკვნა):
+- კრიტიკულად გადაამოწმე შენივე გამოთვლები. ხომ არ არის დაშვებული მათემატიკური შეცდომა?
+- მოამზადე შემაჯამებელი გადაწყვეტილების პროექტი PM-ისთვის.</pre>
+        <pre data-lang="en">You are the Chief Engineering Auditor at ORBI Group.
+Analyze the following construction scenario in 3 sequential steps:
+
+Step 1 (Fact Decomposition):
+- Isolate exact milestone dates, planned vs actual progress, and critical path slippage.
+
+Step 2 (Regulations & Contract):
+- Cross-reference data against Georgian Decree 41 safety code and contract penalty clauses.
+
+Step 3 (Self-Refine & Verdict):
+- Audit your own reasoning. Are there mathematical or unit conversion errors?
+- Formulate an executive action verdict for the Project Manager.</pre>
+      </div>
+    </section>
+
+    <!-- MANDATORY TASK 1 -->
+    <section id="seg-task-1" class="task-box">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-emerald-500/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-3 py-1 rounded-full uppercase">🎯 დავალება 1 · 15 წუთი + 5 წთ განხილვა</span>
+          <h2 class="text-xl font-bold text-white">საინჟინრო პრომპტი & გაფრთხილების წერილი (რეალური ORBI ქეისი)</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="timer-display text-emerald-400" id="timer1">15:00</span>
+          <button onclick="startTimer(1, 900)" class="bg-[#274931] text-white text-xs font-bold px-3.5 py-1.5 rounded-lg hover:bg-emerald-600 transition">სტარტი</button>
+          <button onclick="resetTimer(1, 900)" class="bg-white/10 text-gray-300 text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/20 transition">განულება</button>
+        </div>
+      </div>
+
+      <p class="text-xs text-gray-300 mb-4 leading-relaxed">
+        <strong>ამოცანის პირობა:</strong> აირჩიეთ თქვენი როლი (არქიტექტორი, PM ან ზედამხედველი) და <strong>Claude-ში</strong> ან <strong>ChatGPT-ში</strong> გაუშვით C.R.E.A.T.E. სტრუქტურის პრომპტი. შედეგად უნდა მიიღოთ მზა საინჟინრო დოკუმენტი.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5 text-xs">
+        <div class="bg-orbi-dark p-3.5 rounded-xl border border-sky-500/30">
+          <span class="role-badge-arch font-bold px-2 py-0.5 rounded text-[10px]">Case A · არქიტექტორები</span>
+          <p class="text-gray-300 mt-2">Central Park Towers-ის ოთახების ექსპლიკაციის CSV ფაილიდან შეამოწმეთ საევაკუაციო დერეფნის სიგანე (მინ. 90 სმ) და EI 60 ხანძარმედეგობის მოთხოვნები 41-ე დადგენილებით.</p>
+        </div>
+        <div class="bg-orbi-dark p-3.5 rounded-xl border border-emerald-500/30">
+          <span class="role-badge-pm font-bold px-2 py-0.5 rounded text-[10px]">Case B · PM-ები (რეკომენდებული)</span>
+          <p class="text-gray-300 mt-2">HVAC ქვეკონტრაქტორმა დააგვიანა 14 დღით. მოამზადეთ ოფიციალური საჯარიმო გაფრთხილების წერილი (DEFUSE მეთოდი, Catch-up გეგმა 72 სთ-ში, პირგასამტეხლო 0.1%/დღეში).</p>
+        </div>
+        <div class="bg-orbi-dark p-3.5 rounded-xl border border-amber-500/30">
+          <span class="role-badge-sup font-bold px-2 py-0.5 rounded text-[10px]">Case C · საიტ-ზედამხედველები</span>
+          <p class="text-gray-300 mt-2">ინჟინრის ნედლი ხმოვანი ჩანაწერიდან (ხმაურში ჩაწერილი ტექსტი) დააგენერირეთ ოფიციალური Daily Site Log და დეფექტების ჩამონათვალი (Snag List).</p>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-2">📋 მზა საინჟინრო პრომპტი (Case B - PM გაფრთხილების წერილი):</span>
+        <button class="lang-btn" onclick="togglePromptLang()">EN / KA</button>
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre data-lang="ka">კონტექსტი: შენ ხარ ORBI Group-ის წამყვანი პროექტის მენეჯერი (PM) ობიექტზე Central Park Towers.
+ქვეკონტრაქტორმა „კომფორტ-კლიმატმა“ (HVAC) დაარღვია კალენდარული გრაფიკი 14 კალენდარული დღით.
+მათი არაოფიციალური მიზეზია „მასალების იმპორტის შეფერხება“, თუმცა ფორს-მაჟორის ოფიციალური შეტყობინება არ წარმოუდგენიათ.
+
+დავალება:
+შეადგინე ოფიციალური პრეტენზია-გაფრთხილების წერილი DEFUSE მეთოდოლოგიით:
+1. ფაქტების მკაცრი დაფიქსირება (გრაფიკის მუხლი 4.2 და 14-დღიანი ჩამორჩენა).
+2. ფორს-მაჟორის არარსებობის ხაზგასმა.
+3. მკაცრი ულტიმატუმი: 72 საათში წარადგინონ სამუშაოების დაწევის (Catch-up) გეგმა დამატებითი ბრიგადების მობილიზებით.
+4. საჯარიმო სანქციების გააქტიურების გაფრთხილება (0.1% დღეში, კონტრაქტის 8.1 მუხლი).
+
+სტილი: მშვიდი, კატეგორიული, იურიდიულად უნაკლო, ORBI Group-ის საინჟინრო რეპუტაციის დამცველი.</pre>
+        <pre data-lang="en">Context: You are the Lead Project Manager at ORBI Group for the Central Park Towers project.
+Subcontractor "Comfort-Climate" (HVAC) is delayed by 14 calendar days against the approved critical path.
+Their informal excuse is "customs delays on chillers", but no formal force majeure claim was submitted.
+
+Task:
+Draft a formal contractual warning letter using the DEFUSE methodology:
+1. Strict factual record (citing Schedule Clause 4.2 and the 14-day delay).
+2. Explicit refutation of unsupported force majeure excuses.
+3. Firm ultimatum: submit an aggressive Catch-up schedule within 72 hours with dual-shift crew mobilization.
+4. Formal notice of liquidated damages activation (0.1% per day under Clause 8.1).
+
+Tone: Firm, calm, legally impeccable, protecting ORBI Group's commercial and delivery interests.</pre>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
+        <span>თანდართული ფაილი: <code>orbi/assets/orbi_pm_system_persona.txt</code></span>
+        <a href="orbi-day1-exercises.html#task-1" class="text-emerald-400 font-bold hover:underline">სავარჯიშოების რვეულში გახსნა →</a>
+      </div>
+    </section>
+
+    <!-- COFFEE BREAK -->
+    <section id="seg-break" class="topic-card text-center py-8 bg-white/5 rounded-2xl border border-white/10 my-8">
+      <span class="text-4xl block mb-2">☕</span>
+      <h2 class="text-2xl font-black text-white mb-1">ყავის შესვენება & არაფორმალური Q&A</h2>
+      <p class="text-xs text-gray-300 mb-4">10 წუთი ენერგიის აღსადგენად. ტაიმერის დასრულებისთანავე გადავდივართ Claude Projects-ზე.</p>
+      <div class="timer-display text-emerald-400 mb-3" id="timerBreak">10:00</div>
+      <div class="flex justify-center gap-2">
+        <button onclick="startTimer('Break', 600)" class="bg-[#274931] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-emerald-600 transition">სტარტი</button>
+        <button onclick="resetTimer('Break', 600)" class="bg-white/10 text-gray-300 text-xs px-3 py-2 rounded-lg hover:bg-white/20 transition">განულება</button>
+      </div>
+    </section>
+
+    <!-- SEGMENT 5 -->
+    <section id="seg-5" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2 py-0.5 rounded">05</span>
+          <h2 class="text-xl font-bold text-white">Claude Projects & Google NotebookLM: საობიექტო ჰაბი & სისტემური როლები</h2>
+        </div>
+        <span class="text-xs text-emerald-400 font-mono font-bold">15 წუთი</span>
+      </div>
+
+      <p class="text-xs text-gray-300 leading-relaxed mb-4">
+        ყველაზე დიდი შეცდომაა ყოველ ახალ ჩატში ერთი და იმავე კონტექსტის ხელით ჩაწერა. ORBI-ს სტანდარტით, თითოეულ ობიექტზე იქმნება <strong>მუდმივი ციფრული ჰაბი</strong>:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div class="bg-orbi-slate p-4 rounded-xl border border-emerald-500/30">
+          <h3 class="text-sm font-bold text-emerald-400 mb-2">⚡ Claude Projects (პერსისტენტული სამუშაო გარემო):</h3>
+          <ul class="text-xs space-y-1.5 text-gray-300">
+            <li>• <strong>Project Knowledge:</strong> ობიექტის ნახაზების ექსპლიკაცია, 41-ე დადგენილება, კონტრაქტების შაბლონები.</li>
+            <li>• <strong>Custom System Instructions:</strong> წინასწარ განსაზღვრული PM ან საიტ-ზედამხედველის როლი.</li>
+            <li>• <strong>Artifacts:</strong> ინტერაქციული ვებ-დაშბორდები, კალკულატორები და ცხრილები ჩატში.</li>
+            <li>• <strong>Claude Cowork Desktop:</strong> ლოკალური ფაილების საქაღალდეების ავტონომიური სკანირება.</li>
+          </ul>
+        </div>
+        <div class="bg-orbi-slate p-4 rounded-xl border border-sky-500/30">
+          <h3 class="text-sm font-bold text-sky-400 mb-2">📚 Google NotebookLM (2M+ საარქივო RAG):</h3>
+          <ul class="text-xs space-y-1.5 text-gray-300">
+            <li>• <strong>ნულოვანი გაჟონვა:</strong> მონაცემები არასოდეს გამოიყენება მოდელის დასატრენინგებლად.</li>
+            <li>• <strong>50+ დოკუმენტის სინთეზი:</strong> მთელი პროექტის სატენდერო და საინჟინრო დოკუმენტაცია ერთად.</li>
+            <li>• <strong>ციტირებული წყაროები:</strong> ყოველი პასუხი ეყრდნობა კონკრეტულ გვერდს და პუნქტს.</li>
+            <li>• <strong>Audio Overviews:</strong> საობიექტო ბრიფინგების ავტომატური აუდიო-გენერაცია ინჟინრებისთვის.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Persona Box -->
+      <div class="prompt-box">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-2">🏛️ ORBI PM System Persona (სისტემური ინსტრუქცია Claude Project-ისთვის):</span>
+        <button class="lang-btn" onclick="togglePromptLang()">EN / KA</button>
+        <button class="copy-btn" onclick="copyPrompt(this)">კოპირება</button>
+        <pre data-lang="ka">შენ ხარ ORBI Group-ის საინჟინრო პროექტების მთავარი მენეჯერი (Lead Construction PM).
+შენი მისიაა დაიცვა ORBI-ს ხარისხი, ვადები და ბიუჯეტი.
+
+შენი ოპერაციული წესები:
+1. ყოველთვის გამოიყენე DEFUSE მეთოდოლოგია კონტრაქტორებთან მიმოწერისას.
+2. ნებისმიერ ტექნიკურ საკითხზე დაეყრდენი საქართველოს 41-ე დადგენილების ნორმებს.
+3. ფინანსური გადახრების შეფასებისას შეადარე ფაქტობრივი ხარჯი დამტკიცებულ BOQ-ს.
+4. პასუხები უნდა იყოს სტრუქტურირებული: [სტატუსი] ➔ [რისკი] ➔ [კონტრაქტის მუხლი] ➔ [სამოქმედო გეგმა].
+5. დაიცავი ORBI-ს მონაცემთა მასკირების „შუქნიშნის“ სტანდარტი (ZDR).</pre>
+        <pre data-lang="en">You are the Lead Construction Project Manager at ORBI Group.
+Your mission is to rigorously safeguard project delivery timelines, construction quality, and contractual budgets.
+
+Operating Guidelines:
+1. Always apply the DEFUSE communication framework when addressing contractor disputes.
+2. Ground all technical compliance decisions on Georgian Decree 41 regulations.
+3. On financial variances, benchmark actual costs strictly against approved BOQ rates.
+4. Output structure: [Executive Status] ➔ [Risk Level] ➔ [Contractual Clause] ➔ [Mandatory Action].
+5. Strictly adhere to ORBI's Zero Data Retention (ZDR) confidentiality standard.</pre>
+      </div>
+    </section>
+
+    <!-- MANDATORY TASK 2 -->
+    <section id="seg-task-2" class="task-box">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-emerald-500/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-3 py-1 rounded-full uppercase">🎯 დავალება 2 · 20 წუთი (გუნდური პრაქტიკუმი)</span>
+          <h2 class="text-xl font-bold text-white">ORBI-ს საობიექტო AI ჰაბის გაშვება (Claude Project & NotebookLM)</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="timer-display text-emerald-400" id="timer2">20:00</span>
+          <button onclick="startTimer(2, 1200)" class="bg-[#274931] text-white text-xs font-bold px-3.5 py-1.5 rounded-lg hover:bg-emerald-600 transition">სტარტი</button>
+          <button onclick="resetTimer(2, 1200)" class="bg-white/10 text-gray-300 text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/20 transition">განულება</button>
+        </div>
+      </div>
+
+      <p class="text-xs text-gray-300 mb-4 leading-relaxed">
+        <strong>დავალების მიზანი:</strong> მონაწილეები 2-3 კაციან ჯგუფებში ქმნიან რეალურ საობიექტო ჰაბს:
+      </p>
+
+      <ol class="step-list mb-5">
+        <li><strong>ნაბიჯი 1:</strong> გახსენით <strong>Claude.ai</strong> და შექმენით ახალი Project: <code>ORBI - Central Park Towers Hub</code>.</li>
+        <li><strong>ნაბიჯი 2:</strong> Project Knowledge-ში ატვირთეთ 2 საკვანძო ფაილი: <code>orbi/assets/decree_41_technical_regulations.txt</code> და <code>orbi/assets/drawing_explication_cpt.csv</code>.</li>
+        <li><strong>ნაბიჯი 3:</strong> ჩასვით PM-ის სისტემური ინსტრუქცია (System Persona) Custom Instructions ველში.</li>
+        <li><strong>ნაბიჯი 4 (ტესტირება):</strong> მიეცით პროექტს საკონტროლო შეკითხვა: <em>„გადაამოწმე CPT-ის ექსპლიკაციაში მე-4 სართულის საევაკუაციო დერეფნის სიგანე და გვითხარი, შეესაბამება თუ არა 41-ე დადგენილების 90 სმ-იან ნორმას?“</em>.</li>
+        <li><strong>ნაბიჯი 5 (პარალელური ტესტი):</strong> იგივე ფაილები ჩატვირთეთ Google NotebookLM-ში და დააგენერირეთ 2-წუთიანი Audio Overview საიტ-ზედამხედველისთვის.</li>
+      </ol>
+
+      <div class="tip-box text-xs text-gray-300 leading-relaxed">
+        <strong>🏆 შედეგი:</strong> თითოეულ გუნდს ექნება მუშა, გამართული საობიექტო AI ჰაბი, რომელიც მზადაა ყოველდღიური საინჟინრო რუტინისთვის!
+      </div>
+    </section>
+
+    <!-- SEGMENT 7 -->
+    <section id="seg-7" class="topic-card">
+      <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2 py-0.5 rounded">06</span>
+          <h2 class="text-xl font-bold text-white">შეჯამება, Q&A & სესია 2-ის ანონსი</h2>
+        </div>
+        <span class="text-xs text-emerald-400 font-mono font-bold">15 წუთი</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-5">
+        <div class="bg-orbi-slate p-4 rounded-xl border border-white/10">
+          <h3 class="text-sm font-bold text-emerald-400 mb-2">✅ რა ვისწავლეთ დღეს:</h3>
+          <ul class="space-y-1.5 text-gray-300">
+            <li>• 2026 წლის ფლაგმანი მოდელების საინჟინრო დანიშნულება (Claude Opus 5.5, GPT-6, Gemini 4).</li>
+            <li>• მონაცემთა მასკირების „შუქნიშნის“ პრინციპი (ZDR) და ჰალუცინაციების V.E.R.I.F.Y. კონტროლი.</li>
+            <li>• C.R.E.A.T.E. და P.A.R.T.S. პრომპტინგის ჩარჩოები საინჟინრო პრეტენზიებისთვის.</li>
+            <li>• Claude Projects-ისა და NotebookLM-ის გამართვა Central Park Towers-ის დოკუმენტებზე.</li>
+          </ul>
+        </div>
+        <div class="bg-orbi-slate p-4 rounded-xl border border-white/10">
+          <h3 class="text-sm font-bold text-sky-400 mb-2">🚀 რა გველის სესია 2-ში:</h3>
+          <p class="text-gray-300 leading-relaxed mb-2">
+            <strong>მონაცემთა ანალიტიკა & ინტერაქციული AI დაშბორდები:</strong>
+          </p>
+          <ul class="space-y-1 text-gray-300">
+            <li>• 1,000-სტრიქონიანი ნედლი საიტ-ხარჯების ბიუჯეტის დამუშავება Excel Python ძრავით.</li>
+            <li>• ფარული ფინანსური ანომალიებისა და ბიუჯეტის გაჟონვების ავტო-დეტექცია.</li>
+            <li>• <strong>Claude Artifacts</strong>-ით ცოცხალი ინტერაქციული ვებ-დაშბორდებისა და BOQ კალკულატორების აგება კოდის წერის გარეშე!</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <a href="orbi-day1-exercises.html" class="bg-[#274931] text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-600 transition shadow-lg">
+          ✏️ გახსენით სავარჯიშოების რვეული
+        </a>
+        <a href="orbi-day1-summary.html" class="bg-white/10 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-white/20 transition">
+          📋 სესია 1-ის Cheat Sheet & შეჯამება
+        </a>
+        <a href="index.html" class="bg-white/5 text-gray-400 px-5 py-2.5 rounded-xl font-medium text-xs hover:text-white transition">
+          ← მთავარ შეთავაზებაზე დაბრუნება
+        </a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  // Sidebar Toggle
+  function toggleSidebar() {
+    var sb = document.getElementById('sidebar');
+    var ov = document.getElementById('overlay');
+    var mIcon = document.getElementById('menuIcon');
+    var cIcon = document.getElementById('closeIcon');
+    if (sb.classList.contains('-translate-x-full')) {
+      sb.classList.remove('-translate-x-full');
+      ov.classList.remove('hidden');
+      mIcon.classList.add('hidden');
+      cIcon.classList.remove('hidden');
+    } else {
+      sb.classList.add('-translate-x-full');
+      ov.classList.add('hidden');
+      mIcon.classList.remove('hidden');
+      cIcon.classList.add('hidden');
+    }
+  }
+
+  // Theme Toggle
+  function toggleTheme() {
+    var isLight = document.documentElement.classList.toggle('theme-light');
+    try { localStorage.setItem('orbi-theme', isLight ? 'light' : 'dark'); } catch(e) {}
+    document.getElementById('themeBtn').innerText = isLight ? '🌙' : '☀️';
+  }
+
+  // Prompt Language Toggle
+  function togglePromptLang() {
+    var cur = document.body.getAttribute('data-plang') || 'ka';
+    var next = cur === 'ka' ? 'en' : 'ka';
+    document.body.setAttribute('data-plang', next);
+    try { localStorage.setItem('orbi-plang', next); } catch(e) {}
+    var btn = document.getElementById('langBtn');
+    if (btn) btn.innerText = next.toUpperCase();
+    var allBtns = document.querySelectorAll('.lang-btn');
+    allBtns.forEach(function(b) { b.innerText = next === 'ka' ? 'EN / KA' : 'KA / EN'; });
+  }
+
+  // Font Size
+  var currentFontSize = 18;
+  function changeFontSize(d) {
+    currentFontSize = Math.max(14, Math.min(26, currentFontSize + d * 2));
+    document.documentElement.style.fontSize = currentFontSize + 'px';
+  }
+  function resetFontSize() {
+    currentFontSize = 18;
+    document.documentElement.style.fontSize = '18px';
+  }
+
+  // Copy Prompt
+  function copyPrompt(btn) {
+    var box = btn.closest('.prompt-box');
+    var lang = document.body.getAttribute('data-plang') || 'ka';
+    var pre = box.querySelector('pre[data-lang="' + lang + '"]') || box.querySelector('pre');
+    if (pre) {
+      navigator.clipboard.writeText(pre.innerText).then(function() {
+        var old = btn.innerText;
+        btn.innerText = '✓ კოპირებულია';
+        btn.style.background = '#10b981';
+        btn.style.color = '#061c35';
+        setTimeout(function() {
+          btn.innerText = old;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 2000);
+      });
+    }
+  }
+
+  // Timers
+  var activeTimers = {};
+  function startTimer(id, dur) {
+    if (activeTimers[id]) clearInterval(activeTimers[id]);
+    var rem = dur;
+    var el = document.getElementById('timer' + id);
+    activeTimers[id] = setInterval(function() {
+      rem--;
+      if (rem <= 0) {
+        clearInterval(activeTimers[id]);
+        rem = 0;
+        if (el) {
+          el.innerText = '00:00';
+          el.classList.add('animate-pulse', 'text-red-500');
+        }
+        alert('დრო ამოიწურა!');
+        return;
+      }
+      var m = Math.floor(rem / 60);
+      var s = rem % 60;
+      if (el) el.innerText = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }, 1000);
+  }
+  function resetTimer(id, dur) {
+    if (activeTimers[id]) clearInterval(activeTimers[id]);
+    var m = Math.floor(dur / 60);
+    var s = dur % 60;
+    var el = document.getElementById('timer' + id);
+    if (el) {
+      el.innerText = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      el.classList.remove('animate-pulse', 'text-red-500');
+    }
+  }
+</script>
+</body>
+</html>
