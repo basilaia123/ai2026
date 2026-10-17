@@ -99,7 +99,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 * **Block 1 (1 hour 25 minutes): AI History, Evolution & the 2026 Landscape**
   * **AI Evolution Timeline:** From rule-based systems (ELIZA, 1966) and neural network breakthroughs to Transformer architecture, GPT-3, ChatGPT, and the 2026 agent-first ecosystem.
   * **LLM Mechanics Under the Hood:** Understanding next-word prediction probability vectors, temperature settings, and why tokenization and training corpus context directly impact output reliability.
-  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-6 Astra / Sol** (speed/multimodal analysis), **Claude Opus 5.5** (complex coding/logic/reasoning), and **Gemini 4 Argon** (1,048,576 tokens unified context budget for huge project archives).
+  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-6 Astra / Sol** (speed/multimodal analysis), **Claude Opus 5.5** (complex coding/logic/reasoning), **Gemini 4 Argon**, and mastering the **4 Pillars of Engineering Prompting** (Few-Shot, CoT & Self-Refine, XML tags, Strict Fallback) (1,048,576 tokens unified context budget for huge project archives).
   * **Arena.ai (lmarena.ai) Benchmarking:** Running blind model comparison tests. Participants learn how to submit live prompts, evaluate blind outputs side-by-side, vote, and interpret ELO rating leaderboards.
   * **Perplexity.ai for Real-Time Project Research:** Master focus filters (All vs. Writing vs. Search), search operators, file uploads for web analysis, and how to verify Perplexity inline source citations against official regulatory or vendor websites.
 * **☕ Coffee Break (10 minutes)**
