@@ -93,7 +93,10 @@
 
 <!-- Sidebar -->
 <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-orbi-900 text-white overflow-y-auto z-40 transform -translate-x-full transition-transform duration-300">
-    <div class="px-5 py-6 border-b border-white/10">
+    <div class="px-5 py-5 border-b border-white/10 flex items-start justify-between gap-2">
+        <button onclick="toggleSidebar()" class="order-last shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition text-xs font-bold flex items-center gap-1" title="მენიუს შეკეცვა / Collapse menu">
+            ✕ <span class="lang-en text-[11px]">Collapse</span><span class="lang-ka text-[11px]">შეკეცვა</span>
+        </button>
         <h1 class="text-lg font-bold text-white">🏙️ <span class="text-emerald-400 font-black">ORBI Group</span> AI Training</h1>
         <p class="text-gray-300 text-sm mt-1 font-semibold">
             <span class="lang-en">Session 2: Data Analytics, Interactive AI Dashboards &amp; Excel Python Engine</span>
@@ -567,18 +570,36 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved === 'ka') setLanguage('ka');
 });
 
-// Sidebar toggle
+// Sidebar toggle & collapse
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
     const menuIcon = document.getElementById('menuIcon');
     const closeIcon = document.getElementById('closeIcon');
-    const isOpen = !sidebar.classList.contains('-translate-x-full');
-    sidebar.classList.toggle('-translate-x-full', isOpen);
-    overlay.classList.toggle('hidden', isOpen);
-    menuIcon.classList.toggle('hidden', !isOpen);
-    closeIcon.classList.toggle('hidden', isOpen);
-    document.getElementById('mainContent').style.marginLeft = isOpen ? '0' : '';
+    const mainContent = document.getElementById('mainContent');
+    
+    // Check if sidebar is currently closed
+    const isClosed = sidebar.classList.contains('-translate-x-full');
+    
+    if (isClosed) {
+        // OPEN sidebar
+        sidebar.classList.remove('-translate-x-full');
+        if (overlay) overlay.classList.remove('hidden');
+        if (menuIcon) menuIcon.classList.add('hidden');
+        if (closeIcon) closeIcon.classList.remove('hidden');
+        if (mainContent && window.innerWidth >= 1200) {
+            mainContent.style.marginLeft = '18rem';
+        }
+    } else {
+        // CLOSE / COLLAPSE sidebar (შეკეცვა)
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) overlay.classList.add('hidden');
+        if (menuIcon) menuIcon.classList.remove('hidden');
+        if (closeIcon) closeIcon.classList.add('hidden');
+        if (mainContent) {
+            mainContent.style.marginLeft = '0';
+        }
+    }
 }
 
 // Navigation and Scroll logic
@@ -588,7 +609,8 @@ const backToTopBtn = document.getElementById('backToTop');
 
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        if (window.innerWidth < 768 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+        // Automatically collapse sidebar on nav click so the user sees the target slide
+        if (!document.getElementById('sidebar').classList.contains('-translate-x-full')) {
             toggleSidebar();
         }
     });
