@@ -70,7 +70,7 @@ To foster collaboration and prevent communication silos, the program is structur
 
 The training will focus on five industry-leading tools, demonstrating their direct application to Central Park Towers' operations:
 
-1. **Claude Opus 5.5, GPT-6 Astra & Gemini 4 Argon (with Claude Cowork & Claude Code):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 2M context window for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
+1. **Claude Opus 5.5, GPT-6 Astra & Gemini 4 Argon (with Claude Cowork & Claude Code):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 1,048,576 tokens unified context budget for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
 2. **Google NotebookLM:** Localized knowledge hubs. Leverages Gemini 4 Argon to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
 3. **Notion & Notion AI:** Central operations backend. Relational databases with advanced formulas, semantic Notion AI search, and team dashboards acting as our unified project database.
 4. **Lovable.app (Supabase):** AI-powered full-stack app builder. Develops, deploys, and updates React/Vite web applications with natural language, connecting to Supabase tables, role-based access control (RBAC), user auth, and API webhooks.
@@ -99,7 +99,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 * **Block 1 (1 hour 25 minutes): AI History, Evolution & the 2026 Landscape**
   * **AI Evolution Timeline:** From rule-based systems (ELIZA, 1966) and neural network breakthroughs to Transformer architecture, GPT-3, ChatGPT, and the 2026 agent-first ecosystem.
   * **LLM Mechanics Under the Hood:** Understanding next-word prediction probability vectors, temperature settings, and why tokenization and training corpus context directly impact output reliability.
-  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-6 Astra / Sol** (speed/multimodal analysis), **Claude Opus 5.5** (complex coding/logic/reasoning), and **Gemini 4 Argon** (2M+ token context window for huge project archives).
+  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-6 Astra / Sol** (speed/multimodal analysis), **Claude Opus 5.5** (complex coding/logic/reasoning), and **Gemini 4 Argon** (1,048,576 tokens unified context budget for huge project archives).
   * **Arena.ai (lmarena.ai) Benchmarking:** Running blind model comparison tests. Participants learn how to submit live prompts, evaluate blind outputs side-by-side, vote, and interpret ELO rating leaderboards.
   * **Perplexity.ai for Real-Time Project Research:** Master focus filters (All vs. Writing vs. Search), search operators, file uploads for web analysis, and how to verify Perplexity inline source citations against official regulatory or vendor websites.
 * **☕ Coffee Break (10 minutes)**
