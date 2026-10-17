@@ -83,7 +83,7 @@ The training will focus on five industry-leading tools, demonstrating their dire
 * **Duration:** 12 Hours (4 sessions - 3 hours per session).
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
-  * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), Perplexity.ai & Arena.ai research, and Gamma.app presentations from briefs.
+  * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), Perplexity.ai & Arena.ai research, and Gamma 5 presentations from briefs.
   * **Day 2:** Custom Assistants (Claude Projects, Custom GPTs & Claude Cowork agent), SOP auto-generation, and NotebookLM enterprise knowledge bases.
   * **Day 3:** Notion & Lovable.app (structured relational databases, Notion AI, and rapid prototyping of web portals with Supabase data-bindings).
   * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack), corporate AI Policy, Data Governance, and Shadow AI prevention.
@@ -99,7 +99,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 * **Block 1 (1 hour 25 minutes): AI History, Evolution & the 2026 Landscape**
   * **AI Evolution Timeline:** From rule-based systems (ELIZA, 1966) and neural network breakthroughs to Transformer architecture, GPT-3, ChatGPT, and the 2026 agent-first ecosystem.
   * **LLM Mechanics Under the Hood:** Understanding next-word prediction probability vectors, temperature settings, and why tokenization and training corpus context directly impact output reliability.
-  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-5.5** (speed/multimodal analysis), **Claude Opus 4.8** (complex coding/logic/reasoning), and **Gemini 3.5 Pro** (2M+ token context window for huge project archives).
+  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-6 Astra / Sol** (speed/multimodal analysis), **Claude Opus 5.5** (complex coding/logic/reasoning), and **Gemini 4 Argon** (2M+ token context window for huge project archives).
   * **Arena.ai (lmarena.ai) Benchmarking:** Running blind model comparison tests. Participants learn how to submit live prompts, evaluate blind outputs side-by-side, vote, and interpret ELO rating leaderboards.
   * **Perplexity.ai for Real-Time Project Research:** Master focus filters (All vs. Writing vs. Search), search operators, file uploads for web analysis, and how to verify Perplexity inline source citations against official regulatory or vendor websites.
 * **☕ Coffee Break (10 minutes)**
@@ -119,6 +119,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
     * **Y**ield decision-making power only after manual human audit.
   * **Enterprise Data Privacy & Security:** Practical rules for handling proprietary ORBI architectural drawings, supplier agreements, unreleased budgets, and GDPR-compliant client data.
 * **📋 Practical Assignment:** Run a work-relevant project planning prompt across ChatGPT, Claude, and Gemini. Write a comparative report scoring them on accuracy, tone, and format, and identify at least one hallucination or logic error using the VERIFY checklist.
+* **⚡ Claude Alternative Track (Claude Projects & Desktop Cowork):** Dedicated ORBI Site Brain. Building a persistent workspace in Claude Projects for an ORBI property with preloaded explication sheets, Decree 41 safety codes, and subcontractor contracts + deploying Claude Cowork as an autonomous local desktop agent under strict Anthropic Zero Data Retention (ZDR) enterprise privacy.
 
 #### Day 2: Prompt Engineering, Custom Assistants, and NotebookLM (3 Hours)
 * **Block 1 (1 hour 25 minutes): Advanced Prompting, Custom Assistants & CAD Automation**
@@ -132,6 +133,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
   * **Retrieval & Analysis:** Running cross-source semantic Q&A, generating automatic study guides, briefing notes, and extracting action items from hundreds of pages of documentation.
   * **AI Audio Overviews (Podcasts):** Configuring and generating natural-sounding AI audio dialogues summarizing technical specifications, and downloading them for site managers' mobile briefings.
 * **📋 Practical Assignment:** Create a NotebookLM workspace with at least 3 project specification documents, generate a Q&A summary note, and build a prototype Custom Assistant in Claude Projects loaded with your department's standard operating procedures (SOPs).
+* **⚡ Claude Alternative Track (Claude Extended Thinking for CAD/BIM & Specs):** Prompting Claude Opus 5.5 / Sonnet 5.5 with Extended Thinking to analyze complex AutoCAD/Dynamo/Revit scripts, auto-resolve syntax conflicts, and cross-reference architectural room explications with Georgian building regulations.
 
 #### Day 3: Notion & Lovable.app Prototyping (3 Hours)
 * **Block 1 (1 hour 25 minutes): Notion Databases as a Backend**
@@ -143,6 +145,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
   * **Database Bindings & Supabase:** Linking the Lovable UI to Supabase databases. Creating fields, data tables, and setting up real-time sync.
   * **Practical Real Estate Portals:** Designing an interface for a "Site Defect Reporter" or a "Project KPI Dashboard". Configuring Role-Based Access Control (RBAC) to restrict viewing rights between contractors and Orbi management.
 * **📋 Practical Assignment:** Build a structured, two-table relational database in Notion and generate a functional web portal prototype in Lovable.app that displays mock construction task statuses.
+* **⚡ Claude Alternative Track (Claude Artifacts Zero-Code Construction Dashboards):** Generating live, interactive React/HTML widgets directly inside chat: dynamic room explication filters, interactive budget deviation sliders, and defect snagging forms instantly embeddable into ORBI's internal project portal without developers.
 
 #### Day 4: Make.com - Workflow Automation (3 Hours)
 * **Block 1 (1 hour 25 minutes): Make.com Core Concepts**
@@ -156,6 +159,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
     * Utilizing Make's AI Assistant for writing complex mapping formulas and troubleshooting runtime errors.
   * **Corporate AI Governance & Policy:** Structuring allowed corporate tool lists, secure API key management, intellectual property boundaries, and establishing "Shadow AI" prevention protocols.
 * **📋 Practical Assignment:** Build a live Make.com scenario that connects an email inbox to your Notion database, automatically generating tasks from incoming emails, and draft a 5-point corporate AI compliance checklist.
+* **⚡ Claude Alternative Track (Claude Multi-Agent Approval Engine & Claude Code):** Integrating Claude via API into Make.com & Notion as the intelligent decision-making brain for incoming subcontractor invoices, and leveraging Claude Code for command-line batch processing of project drawings and photo logs.
 
 ---
 
