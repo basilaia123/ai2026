@@ -14,7 +14,7 @@
 <details>
 <summary><b>1. Plumbing Manager & Team</b></summary>
 
-* **Description:** Responsible for water supply, sewage, and spa systems. Uses NotebookLM to query equipment datasheets, instructions, and MEP guidelines, Claude to write installation procedures, and Notion/Make.com to manage warehouse log inventories.
+* **Description:** Responsible for water supply, sewage, and spa systems. Uses Gemini Notebook (NotebookLM) to query equipment datasheets, instructions, and MEP guidelines, Claude to write installation procedures, and Notion/Make.com to manage warehouse log inventories.
 * **Focus:** Datasheets & Warehouse Inventories
 </details>
 
@@ -35,7 +35,7 @@
 <details>
 <summary><b>4. Design Team</b></summary>
 
-* **Description:** Manages room concepts and finishes for hotel brands. Uses NotebookLM to query international hotel brand standards, interior guidelines, and datasheets, Notion for material/furniture inventory catalogs, and Lovable for design approval procedures and moodboard reviews.
+* **Description:** Manages room concepts and finishes for hotel brands. Uses Gemini Notebook (NotebookLM) to query international hotel brand standards, interior guidelines, and datasheets, Notion for material/furniture inventory catalogs, and Lovable for design approval procedures and moodboard reviews.
 * **Focus:** International Hotel Standards & Material Catalogues
 </details>
 
@@ -71,7 +71,7 @@ To foster collaboration and prevent communication silos, the program is structur
 The training will focus on five industry-leading tools, demonstrating their direct application to Central Park Towers' operations:
 
 1. **Claude Opus 5.5, GPT-6 Astra & Gemini 4 Argon (with Claude Cowork & Claude Code):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 1,048,576 tokens unified context budget for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
-2. **Google NotebookLM:** Localized knowledge hubs. Leverages Gemini 4 Argon to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
+2. **Google Gemini Notebook (NotebookLM):** Localized knowledge hubs. Leverages Gemini 4 Argon to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
 3. **Notion & Notion AI:** Central operations backend. Relational databases with advanced formulas, semantic Notion AI search, and team dashboards acting as our unified project database.
 4. **Lovable.app (Supabase):** AI-powered full-stack app builder. Develops, deploys, and updates React/Vite web applications with natural language, connecting to Supabase tables, role-based access control (RBAC), user auth, and API webhooks.
 5. **Make.com (AI Scenario Builder):** Workflow automation engine. Integrates Lovable frontends and Notion backends with Outlook and Slack, leveraging Make's AI Assistant for script generation and error handling.
@@ -84,7 +84,7 @@ The training will focus on five industry-leading tools, demonstrating their dire
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
   * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), Perplexity.ai & Arena.ai research, and Gamma 5 presentations from briefs.
-  * **Day 2:** Custom Assistants (Claude Projects, Custom GPTs & Claude Cowork agent), SOP auto-generation, and NotebookLM enterprise knowledge bases.
+  * **Day 2:** Custom Assistants (Claude Projects, Custom GPTs & Claude Cowork agent), SOP auto-generation, and Gemini Notebook enterprise knowledge bases.
   * **Day 3:** Notion & Lovable.app (structured relational databases, Notion AI, and rapid prototyping of web portals with Supabase data-bindings).
   * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack), corporate AI Policy, Data Governance, and Shadow AI prevention.
 * **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate their real project documents, build Custom Assistants, design a database backend in Notion, create a front-end portal in Lovable.app, and automate it via Make.com.
@@ -121,18 +121,18 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 * **📋 Practical Assignment:** Run a work-relevant project planning prompt across ChatGPT, Claude, and Gemini. Write a comparative report scoring them on accuracy, tone, and format, and identify at least one hallucination or logic error using the VERIFY checklist.
 * **⚡ Claude Alternative Track (Claude Projects & Desktop Cowork):** Dedicated ORBI Site Brain. Building a persistent workspace in Claude Projects for an ORBI property with preloaded explication sheets, Decree 41 safety codes, and subcontractor contracts + deploying Claude Cowork as an autonomous local desktop agent under strict Anthropic Zero Data Retention (ZDR) enterprise privacy.
 
-#### Day 2: Prompt Engineering, Custom Assistants, and NotebookLM (3 Hours)
+#### Day 2: Prompt Engineering, Custom Assistants, and Gemini Notebook (3 Hours)
 * **Block 1 (1 hour 25 minutes): Advanced Prompting, Custom Assistants & CAD Automation**
   * **Prompt Engineering Frameworks:** Deep-dive into **PARTS** (Purpose, Action, Role, Topic, Style) and **CREATE** (Context, Role, Examples, Ask, Tone, Execution).
   * **Advanced In-Context Learning:** Implementing zero-shot, one-shot, and multi-shot prompting with raw Orbi specification examples.
   * **Custom AI Assistants:** Setting up Custom GPTs and Claude Projects. Structuring system instructions, configuring knowledge bases (MEP guidelines, Orbi design standards), and using markdown system prompts to enforce specific formatting.
   * **CAD, BIM, and Scripting Automation:** Prompting Claude to generate, debug, and optimize AutoCAD LISP routines, Revit Python scripts, and Dynamo script blocks. Step-by-step methods for explaining execution errors to the AI to auto-correct code.
 * **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes): Google NotebookLM in Practice**
-  * **NotebookLM Workspace Setup:** Creating dedicated notebooks for large-scale projects (e.g., Central Park Towers). Uploading multiple sources: PDF manuals, MEP standards, Excel schedules, and international hotel brand checklists.
+* **Block 2 (1 hour 25 minutes): Google Gemini Notebook in Practice**
+  * **Gemini Notebook Workspace Setup:** Creating dedicated notebooks for large-scale projects (e.g., Central Park Towers). Uploading multiple sources: PDF manuals, MEP standards, Excel schedules, and international hotel brand checklists.
   * **Retrieval & Analysis:** Running cross-source semantic Q&A, generating automatic study guides, briefing notes, and extracting action items from hundreds of pages of documentation.
   * **AI Audio Overviews (Podcasts):** Configuring and generating natural-sounding AI audio dialogues summarizing technical specifications, and downloading them for site managers' mobile briefings.
-* **📋 Practical Assignment:** Create a NotebookLM workspace with at least 3 project specification documents, generate a Q&A summary note, and build a prototype Custom Assistant in Claude Projects loaded with your department's standard operating procedures (SOPs).
+* **📋 Practical Assignment:** Create a Gemini Notebook workspace with at least 3 project specification documents, generate a Q&A summary note, and build a prototype Custom Assistant in Claude Projects loaded with your department's standard operating procedures (SOPs).
 * **⚡ Claude Alternative Track (Claude Extended Thinking for CAD/BIM & Specs):** Prompting Claude Opus 5.5 / Sonnet 5.5 with Extended Thinking to analyze complex AutoCAD/Dynamo/Revit scripts, auto-resolve syntax conflicts, and cross-reference architectural room explications with Georgian building regulations.
 
 #### Day 3: Notion & Lovable.app Prototyping (3 Hours)
