@@ -68,14 +68,15 @@ To foster collaboration and prevent communication silos, the program is structur
 
 ### 🛠️ Core AI & No-Code Toolkit (Software Focus)
 
-The training will focus on five industry-leading tools, demonstrating their direct application to Central Park Towers' operations:
-
-1. **Claude Opus 5.5, GPT-6 Astra & Gemini 4 Argon (with Claude Cowork & Claude Code):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 1,048,576 tokens unified context budget for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
-2. **Google Gemini Notebook (NotebookLM):** Localized knowledge hubs. Leverages Gemini 4 Argon to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
-3. **Notion & Notion AI:** Central operations backend. Relational databases with advanced formulas, semantic Notion AI search, and team dashboards acting as our unified project database.
-4. **Lovable.app (Supabase):** AI-powered full-stack app builder. Develops, deploys, and updates React/Vite web applications with natural language, connecting to Supabase tables, role-based access control (RBAC), user auth, and API webhooks.
-5. **Make.com (AI Scenario Builder):** Workflow automation engine. Integrates Lovable frontends and Notion backends with Outlook and Slack, leveraging Make's AI Assistant for script generation and error handling.
-6. **Perplexity.ai & Arena.ai (lmarena.ai):** Advanced search & model benchmarking. Uses Perplexity for real-time project research, manufacturer datasheet retrieval, and code compliance queries, and Chatbot Arena for objective, blind-test model evaluation.
+1. **Claude Opus 5.5, GPT-6 Astra & 4 Pillars of Engineering Prompting:** Advanced reasoning engines with Claude Cowork desktop agent, Claude Code, and the 4 Pillars of Engineering Prompting (Few-Shot gold standard, CoT/Self-Refine, XML tag structuring, Strict Fallback anti-hallucination, and Lost in the Middle prevention for 500+ page archives).
+2. **Google Gemini Notebook (NotebookLM - Gemini 4 Argon):** Zero-leak enterprise RAG leveraging Gemini 4 Argon's 1,048,576 tokens unified context budget to index project archives, Decree 41 guidelines, and generate Studio Audio Overviews for mobile site briefings.
+3. **MS Copilot in Excel (Python Engine) & Interactive Claude Artifacts:** Native Python execution in Excel for dynamic formula engineering, automated error repair, data normalization ETL, and live web dashboards for budget anomaly detection.
+4. **Document Crunch & Red Flags Contract Audit:** Project-level risk intelligence for 100+ page contracts: automated detection of liquidated damages, hidden liability shifts, and auto-drafting formal warning notices.
+5. **Togal.AI & Subcontractor Weighted Decision Matrix:** Automated BOQ extraction and 3-5 subcontractor weighted decision matrices (scoring price, catch-up timeline, Decree 41 compliance, warranty, and composite risk).
+6. **FLUX.3 Image (2026) 4K Layout Control & Rendair AI:** 0-1000 coordinate grid CAD alignment for photorealistic virtual staging and lobby concept variations without geometric drift.
+7. **OpenAI Whisper Large-v3 Turbo & Multimodal Snag Lists:** 4-decoder turbo transcription for technical site voice memos, Field Voice-to-Report pipelines (2-min voice memo to Daily Site Log), and defect extraction from photos into Snag List tables.
+8. **Make.com & Notion 3.0 Operations Hub:** Multi-step workflow automation connecting incoming invoice emails to Notion databases, executive Slack/Teams approval buttons, and vendor dispatchers.
+9. **Lovable.dev & Gamma 5:** Rapid prototyping of vendor submission web portals and 60-second executive slide decks generated from briefs.
 
 ---
 
@@ -83,10 +84,10 @@ The training will focus on five industry-leading tools, demonstrating their dire
 * **Duration:** 12 Hours (4 sessions - 3 hours per session).
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
-  * **Day 1:** AI Foundations, Prompting Frameworks (PARTS & CREATE), Perplexity.ai & Arena.ai research, and Gamma 5 presentations from briefs.
-  * **Day 2:** Custom Assistants (Claude Projects, Custom GPTs & Claude Cowork agent), SOP auto-generation, and Gemini Notebook enterprise knowledge bases.
-  * **Day 3:** Notion & Lovable.app (structured relational databases, Notion AI, and rapid prototyping of web portals with Supabase data-bindings).
-  * **Day 4:** Make.com (workflow automation, connecting Notion/Lovable.app to Outlook/Slack), corporate AI Policy, Data Governance, and Shadow AI prevention.
+  * **Day 1:** Reasoning Architectures (Claude Opus 5.5, GPT-6 Astra/Sol, Gemini 4 Argon), 4 Pillars of Engineering Prompting (Few-Shot, CoT/Self-Refine, XML tags, Strict Fallback), Claude Cowork desktop agent, Lost in the Middle prevention, Gemini Notebook knowledge hubs (NotebookLM), and Deep Research.
+  * **Day 2:** Copilot with Python in Excel (dynamic formulas, data normalization ETL), interactive web dashboards via Claude Artifacts, and Visual AI Virtual Staging (FLUX.3 4K Layout Control & Rendair AI).
+  * **Day 3:** 100+ page contract Red Flags auditing (Document Crunch & Provision AI), 3-5 subcontractor weighted decision matrices, Whisper Large-v3 Turbo Field Voice-to-Report, and Multimodal Computer Vision defect extraction (Snag List tables).
+  * **Day 4:** Rapid web portals with Lovable.dev, multi-stage Make.com approval workflows (invoice email to Notion and manager alerts), Gamma 5 status decks, and enterprise AI security policies (Zero Data Retention & Red/Amber/Green data masking).
 * **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate their real project documents, build Custom Assistants, design a database backend in Notion, create a front-end portal in Lovable.app, and automate it via Make.com.
 
 ---
