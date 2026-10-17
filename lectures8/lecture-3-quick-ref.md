@@ -1,4 +1,4 @@
-# ლექცია 3: AI Research, RAG & Content Creation — სწრაფი ცნობარი (Quick Reference)
+# ლექცია 3: AI Research, RAG & Content Creation - სწრაფი ცნობარი (Quick Reference)
 
 ---
 
@@ -6,10 +6,10 @@
 
 | ინსტრუმენტი | ძირითადი მოდელი | საუკეთესო გამოყენება | Focus რეჟიმები / პარამეტრები |
 |---|---|---|---|
-| **Perplexity Pro Search** | Sonar / Claude 3.7 / GPT-4o | სწრაფი ფაქტჩექინგი, ინდუსტრიული სიახლეები | `Academic` (ArXiv, Semantic Scholar), `Writing`, `Reddit`, `YouTube` |
-| **OpenAI Deep Research** | o3-powered Reasoning | 10-30 წუთიანი ავტონომიური მრავალგვერდიანი კვლევა | ასობით პირველწყაროს სკანირება, M&A და საინვესტიციო ანალიზი |
-| **ChatGPT Search** | GPT-4o with Search | ყოველდღიური საძიებო შეკითხვები, ცოცხალი ამინდი/ფინანსები | Interactive citations, inline maps & widgets |
-| **Google Gemini Live Search** | Gemini 2.0 Flash / Pro | Google-ის ეკოსისტემასთან ინტეგრირებული რეალურ დროში ძიება | Google Workspace, YouTube, Flights/Hotels extensions |
+| **Perplexity Pro Search** | Sonar Deep Research / Claude Sonnet 5.5 / GPT-6 Astra | სწრაფი ფაქტჩექინგი, ინდუსტრიული სიახლეები | `Academic` (ArXiv, Semantic Scholar), `Writing`, `Reddit`, `YouTube` |
+| **OpenAI Deep Research** | GPT-6 Astra & o3-max Reasoning | 10-30 წუთიანი ავტონომიური მრავალგვერდიანი კვლევა | ასობით პირველწყაროს სკანირება, M&A და საინვესტიციო ანალიზი |
+| **ChatGPT Search** | GPT-5.6 Search | ყოველდღიური საძიებო შეკითხვები, ცოცხალი ამინდი/ფინანსები | Interactive citations, inline maps & widgets |
+| **Google Gemini Live Search** | Gemini 3.8 Flash / Deep Think | Google-ის ეკოსისტემასთან ინტეგრირებული რეალურ დროში ძიება | Google Workspace, YouTube, Flights/Hotels extensions |
 
 ### 🔍 ფაქტჩექინგის 4-საფეხურიანი ჩარჩო
 1. **Footnote Verification:** ყოველთვის გახსენით Perplexity-ის ან NotebookLM-ის მიერ მითითებული წყაროს ბმული.
@@ -38,16 +38,16 @@
 
 ## ⚡ 3. Long Context Synthesis vs Traditional Vector RAG
 
-| პარამეტრი | Long Context Ingestion (Gemini 2.0 / Claude 3.7) | Traditional Vector RAG (Chunking) |
+| პარამეტრი | Long Context Ingestion (Gemini 3.8 / Claude Sonnet 5.5) | Traditional Vector RAG (Chunking) |
 |---|---|---|
 | **კონტექსტის ფანჯარა** | 1,000,000 – 2,000,000 ტოკენი (~1500 გვერდი) | 500 – 1,000 ტოკენიანი ნაჭრები (Chunks) |
-| **გლობალური ხედვა** | სრული — ხედავს კავშირს თავ 1-სა და თავ 20-ს შორის | ფრაგმენტული — ხშირად კარგავს კონტექსტს |
+| **გლობალური ხედვა** | სრული - ხედავს კავშირს თავ 1-სა და თავ 20-ს შორის | ფრაგმენტული - ხშირად კარგავს კონტექსტს |
 | **Prompt Caching** | დიახ (ხარჯების 90%-იანი შემცირება განმეორებით კითხვებზე) | არა (ვექტორული ბაზის შენახვის ხარჯი) |
 | **საუკეთესო გამოყენება** | წიგნები, კონტრაქტები, 10-20 კვლევითი რეპორტი | კომპანიის მილიონობით დოკუმენტი (10M+ ტოკენი) |
 
 ---
 
-## 🎨 4. OpenAI Canvas — ინლაინ რედაქტირების სამუშაო მაგიდა
+## 🎨 4. OpenAI Canvas - ინლაინ რედაქტირების სამუშაო მაგიდა
 
 - **Targeted Inline Editing:** მონიშნეთ ტექსტის კონკრეტული აბზაცი მაუსით → დააჭირეთ `Ask ChatGPT` → შეიტანეთ ლოკალური ცვლილება მთელი ტექსტის გადაუწერლად.
 - **Reading Level Slider:** ტექსტის სირთულის დინამიური რეგულირება (დაწყებითი სკოლიდან დოქტორანტურამდე).

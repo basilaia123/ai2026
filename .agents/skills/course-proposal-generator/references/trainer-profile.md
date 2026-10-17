@@ -108,4 +108,4 @@
 * **LinkedIn პროფილი:** [linkedin.com/in/basilaia/](https://www.linkedin.com/in/basilaia/)
 * **ვებსაიტები:** [basilaia.com](https://basilaia.com) | [chatgpt.ge](https://chatgpt.ge)
 * **ელფოსტა (თუ აუცილებელია):** `basilaia@gmail.com` (Smart Academy-სთან ერთად: `corporate@smartacademy.ge`)
-* ⛔ **მკაცრი აკრძალვა:** არასდროს გამოიყენოთ `giorgi@basilaia.com` (ეს მეილი არ არსებობს).
+* ⛔ **მკაცრი წესი:** არ გამოიყენოთ არარსებული ან არაოფიციალური ელფოსტის მისამართები; გამოიყენეთ მხოლოდ ზემოთ მითითებული ოფიციალური არხები.

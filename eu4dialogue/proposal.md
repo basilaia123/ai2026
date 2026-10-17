@@ -47,7 +47,7 @@
 
 * **ძირითადი ფოკუსი:**
   - **AI Fundamentals (Frontier Models):** Claude 5.x / 3.7 Sonnet, GPT-6 Astra / GPT-5.6, Gemini 3.8 / 3.1 Pro, Extended Thinking და LMSYS Arena.ai.
-  - **საგრანტო ციკლი & ბიუროკრატიის შემცირება:** Logframes, Theory of Change (ToC), SMART ინდიკატორები, რისკების მატრიცა და Gamma პრეზენტაციები.
+  - **საგრანტო ციკლი & ბიუროკრატიის შემცირება:** Logframes, Theory of Change (ToC), SMART ინდიკატორები, რისკების მატრიცა და Gamma 5 პრეზენტაციები.
   - **პროექტების მართვა Notion AI-ში:** Grant Tracker, დავალებების Kanban და Timeline / Gantt ხედები.
   - **M&E, კითხვარები & რეპორტინგი:** Julius AI No-Code ანალიტიკა, Pre/Post კითხვარების დიზაინი და ნარატიული რეპორტები NotebookLM-ით.
   - **Slido Live Polling:** დღეში 2 ცოცხალი ინტერაქტიული გამოკითხვა (Baseline და Post-Assessment დიაგნოსტიკა).
@@ -82,7 +82,7 @@
 | :--- | :--- | :--- |
 | **მთავარი სტრატეგიული მიზანი** | საოპერაციო პროდუქტიულობა, საგრანტო განაცხადები, ბიუჯეტის მართვა და M&E სისტემები. | მშვიდობის მშენებლობა, ნდობის აღდგენა, დიალოგი და სათემო ერთიანობა. |
 | **ორგანიზაციული სარგებელი** | 60-80%-ით დაზოგილი დრო პროექტების მართვაში, ანგარიშგებასა და საგრანტო წერაში. | უსაფრთხო, ეთიკური, Do No Harm-ზე დაფუძნებული სათემო კომუნიკაცია და რეზილიენტობა. |
-| **საკვანძო AI ინსტრუმენტები** | Frontier LLMs (Claude 5.x/3.7, GPT-6, Gemini 3.8/3.1), Notion AI, Miro AI, Julius AI, Slido, Granola AI, LMSYS Arena (arena.ai), Google NotebookLM, Whisper. | Frontier LLMs (Claude 5.x/3.7, GPT-6, Gemini 3.8/3.1), Google NotebookLM, Perplexity Deep Research, Whisper, ElevenLabs, Gamma. |
+| **საკვანძო AI ინსტრუმენტები** | Frontier LLMs (Claude 5.x/3.7, GPT-6, Gemini 3.8/3.1), Notion AI, Miro AI, Julius AI, Slido, Granola AI, LMSYS Arena (arena.ai), Google NotebookLM, Whisper. | Frontier LLMs (Claude 5.x/3.7, GPT-6, Gemini 3.8/3.1), Google NotebookLM, Perplexity Deep Research, Whisper, ElevenLabs, Gamma 5. |
 | **სამუშაო პროდუქტები (Deliverables)** | საგრანტო Logframe & ToC, Notion Project Tracker, Julius M&E ცხრილები, შეხვედრების ოქმები. | დიალოგის გზამკვლევები, სათემო კვლევები, Do No Harm აუდიტი, მულტილინგვური მასალები. |
 | **სამიზნე როლები გუნდში** | პროექტის მენეჯერები, საგრანტო მწერლები, M&E სპეციალისტები, ოპერაციული გუნდი. | დიალოგის ფასილიტატორები, მშვიდობის ექსპერტები, სათემო მედიატორები, აქტივისტები. |
 | **ფორმატი და ხანგრძლივობა** | 2-დღიანი Onsite ინტენსივი (11:00 - 17:30, 10.0 სთ). | 2-დღიანი Onsite ინტენსივი (11:00 - 17:30, 10.0 სთ). |

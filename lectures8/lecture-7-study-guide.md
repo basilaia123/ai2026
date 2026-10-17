@@ -1,4 +1,4 @@
-# ლექცია 7: No-Code ვებ-დეველოპმენტი და Android აპლიკაციები Google AI Studio-ში — სასწავლო გზამკვლევი
+# ლექცია 7: No-Code ვებ-დეველოპმენტი და Android აპლიკაციები Google AI Studio-ში - სასწავლო გზამკვლევი
 
 ## 🎯 სწავლების მიზნები და შედეგები
 
@@ -8,7 +8,7 @@
 - **დააკავშიროთ რელაციური მონაცემთა ბაზა Supabase-ის საშუალებით:** გაიგოთ PostgreSQL ტაბულების, მომხმარებელთა ავთენტიფიკაციისა და Row Level Security (RLS) წესების მუშაობა.
 - **განახორციელოთ Android აპლიკაციის პროტოტიპირება Google AI Studio-ში:** Gemini 2.0/2.5 Flash მოდელის მორგება, System Instructions და Structured Output (JSON Schema).
 - **გაეცნოთ AI-Native IDE-ების სამუშაო გარემოს:** Cursor AI (Composer, Smart Tab, `@Codebase`) და Google Antigravity-ის აგენტური სამუშაო სივრცე.
-- **შეასრულოთ საშინაო დავალება #7 (8.0 ქულა):** აირჩიოთ Lovable ვებ-აპლიკაციის ან Google AI Studio Android პროტოტიპის რეალიზაცია.
+- **შეასრულოთ საშინაო დავალება #7 (6.0 ქულა):** აირჩიოთ Lovable ვებ-აპლიკაციის ან Google AI Studio Android პროტოტიპის რეალიზაცია.
 
 ---
 

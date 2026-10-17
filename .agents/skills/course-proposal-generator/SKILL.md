@@ -140,32 +140,34 @@ Skill ავტომატურად აგენერირებს **ო�
 
 ---
 
-### ნაბიჯი 3: კურიკულუმის მოდულების შერჩევა & AI მოდელების ვერსიების ვერიფიკაცია
+### ნაბიჯი 3: კურიკულუმის მოდულების შერჩევა & 2026 წლის IV კვარტლის (Q4 2026) უახლესი ხელსაწყოები
 
 > [!IMPORTANT]
-> **🌐 AI მოდელების უახლესი ვერსიების სავალდებულო გადამოწმება ინტერნეტში (Live Web Search Verification):**
-> როდესაც შეთავაზებაში, სილაბუსში, ინსტრუმენტების ცხრილში ან პრაქტიკულ მაგალითებში უთითებთ Frontier AI მოდელებს, **კატეგორიულად აკრძალულია ძველი, მოძველებული ან გამოგონილი ვერსიების ბრმად გამოყენება!**
+> **🌐 2026 წლის IV კვარტლის (Q4 2026) უახლესი Frontier ხელსაწყოების სავალდებულო გამოყენება & გადამოწმება (Live Web Search Verification):**
+> როდესაც შეთავაზებაში, სილაბუსში, ინსტრუმენტების ცხრილში ან პრაქტიკულ მაგალითებში უთითებთ Frontier AI მოდელებსა და ხელსაწყოებს, **კატეგორიულად მოითხოვება 2026 წლის ბოლო კვარტლის (Q4 2026) უახლესი ვერსიების გამოყენება!**
 > 
-> **სავალდებულო მოქმედება შეთავაზების მომზადებისას:**
-> შეთავაზების დაწერამდე აუცილებლად გამოიყენეთ ინტერნეტ-ძიება (`search_web` ან Perplexity) და გადაამოწმეთ მიმდინარე მომენტისთვის უახლესი, ოფიციალურად გამოშვებული მოდელების ზუსტი სახელები და ვერსიები:
-> 1. **OpenAI:** მიმდინარე ფლაგმანი მოდელები (მაგ. GPT-4o, GPT-5, o3, o1, o1-mini, SearchGPT და სხვ.);
-> 2. **Anthropic:** მიმდინარე Claude მოდელები (მაგ. Claude 3.7 Sonnet, Claude 4, Opus / Sonnet / Haiku უახლესი ვერსიები და Claude Code / Cowork);
-> 3. **Google:** მიმდინარე Gemini მოდელები (მაგ. Gemini 2.0 Flash/Pro, Gemini 2.5, Gemini 3 და სხვ.) და Google Flow / NotebookLM;
-> 4. **DeepSeek / სხვები:** უახლესი Open-Weight და Reasoning მოდელები (მაგ. DeepSeek V3, DeepSeek R1 და სხვ.);
-> 5. **საძიებო & კვლევითი AI:** Perplexity Pro / Perplexity Deep Research, Chatbot Arena (LMSYS), Grok-ის უახლესი ვერსია.
+> **სავალდებულო Frontier სტეკი (Q4 2026):**
+> 1. **OpenAI:** **GPT-6 Astra** (ფლაგმანი მულტიმოდალური მოდელი რთული მსჯელობისთვის), **GPT-6.1 Sol**, მსჯელობის მოდელები: **o3** და **o4-mini**, **GPT-Live Voice** (რეალურ დროში ხმოვანი დიალოგი), **SearchGPT**;
+> 2. **Anthropic:** Claude 5.5 თაობა: **Claude Fable 5.1** (ფლაგმანი კომპლექსური აგენტური მსჯელობისთვის), **Claude Sonnet 5.5** (სამუშაო პროცესების, ქართული ტექსტებისა და კოდირების მთავარი ძრავი), **Claude Opus 5.5** (სიღრმისეული ლოგიკა);
+> 3. **Desktop & Computer Use აგენტები:** **Claude Cowork / Claude Code** (დესკტოპის, ფაილებისა და აპლიკაციების ავტონომიური მართვა Computer Use ტექნოლოგიით);
+> 4. **Google:** **Gemini 4 Argon** (ფლაგმანი უსაფრთხოებისა და კომპლექსური ამოცანებისთვის), **Gemini 3.8 Flash**, **Gemini 3.1 Pro** (2M+ კონტექსტური ფანჯარა), **Google NotebookLM (Gemini 4 არქიტექტურაზე)** და **Gemini Gems**;
+> 5. **DeepSeek:** **DeepSeek-V4-Pro**, **DeepSeek-V4-Flash** (1M კონტექსტი, RLVR აგენტური კოდირება), **DeepSeek R1**;
+> 6. **ავტონომიური კვლევა & აგენტები:** **Perplexity Computer** (ავტონომიური აგენტი აპლიკაციებს შორის), **Perplexity Deep Research**, **Chatbot Arena (LMSYS)**;
+> 7. **Vibe-Coding & აპლიკაციები:** **Lovable.dev** (Full-Stack ვებ-აპლიკაციების შექმნა ბუნებრივი ენით: React, Supabase), **n8n & Make.com** (AI Agent Nodes);
+> 8. **ანალიტიკა & პრეზენტაციები:** **Julius.ai**, **Gamma.app (2026 Engine)**, **Canva AI**.
 > 
-> **შედეგი:** შეთავაზების დოკუმენტში (`proposal.md`) და ვებ-გვერდზე (`index.html`) აუცილებლად გამოიყენეთ **მხოლოდ ინტერნეტში გადამოწმებული, მიმდინარე თარიღისთვის უახლესი ვერსიების ოფიციალური სახელები!**
+> **შედეგი:** შეთავაზების დოკუმენტში (`proposal.md`) და ვებ-გვერდზე (`index.html`) აუცილებლად გამოიყენეთ **2026 წლის IV კვარტლის უახლესი გადამოწმებული ხელსაწყოები და ოფიციალური სახელები!**
 
-ააწყეთ სილაბუსი [references/curriculum-modules-2026.md](./references/curriculum-modules-2026.md)-ის ბაზაზე (გადამოწმებული უახლესი მოდელებით):
+ააწყეთ სილაბუსი [references/curriculum-modules-2026.md](./references/curriculum-modules-2026.md)-ის ბაზაზე (Q4 2026 უახლესი ხელსაწყოებით):
 - თითოეული შეხვედრა გაყავით მკაფიო ბლოკებად (მაგ. ბლოკი 1 (1 სთ 10 წთ) + ყავის შესვენება 15 წთ + ბლოკი 2 (1 სთ 20 წთ) + პრაქტიკული დავალება + საშინაო დავალება).
 - ყოველთვის ჩართეთ:
-  1. უახლესი გადამოწმებული Frontier LLMs (ChatGPT / Claude / Gemini / DeepSeek / Perplexity).
-  2. პრომპტინგის ჩარჩოები (CLEAR, CREATE, PARTS).
-  3. Google NotebookLM (2M კონტექსტი, ცოდნის ბაზა, Audio Briefs).
-  4. საპრეზენტაციო ძრავი (Gamma.app / Canva AI).
-  5. როლური AI სიმულაციები (AI Roleplay & Objection Handling).
-  6. ავტომატიზაცია (Make.com / Claude Cowork / Notion CRM / Lovable).
-  7. მონაცემთა უსაფრთხოება & GDPR (კომერციული საიდუმლოება).
+  1. Q4 2026 Frontier LLMs (GPT-6 Astra, Claude Sonnet 5.5, Claude Fable 5.1, Gemini 4 Argon, Perplexity Computer).
+  2. პრომპტინგის ჩარჩოები (CLEAR, CREATE, PARTS, Few-Shot, CoT o3-ით).
+  3. Google NotebookLM (Gemini 4-ის ბაზაზე, 2M კონტექსტი, ცოდნის ბაზა, Audio Briefs).
+  4. საპრეზენტაციო ძრავი (Gamma.app 2026 / Canva AI).
+  5. როლური AI სიმულაციები (AI Roleplay & Objection Handling GPT-6-ით და Claude 5.5-ით).
+  6. ავტომატიზაცია & Vibe-Coding (Make.com / n8n AI Agents, Claude Cowork, Notion AI CRM, Lovable.dev).
+  7. მონაცემთა უსაფრთხოება & GDPR 2026 (კომერციული საიდუმლოება, Zero-Data Retention).
 
 ---
 
@@ -196,7 +198,7 @@ Skill ავტომატურად აგენერირებს **ო�
   - *დამოუკიდებლად (არავისთან):* AI პრაქტიკოსი, კორპორატიული AI ტრანსფორმაციის კონსულტანტი (`basilaia.com`);
   - *სხვა ორგანიზაციასთან:* მოწვეული წამყვანი ექსპერტი / ტრენერი (მაგ. Walnut-ის ან GIPA-ს პარტნიორობით).
 
-- **საკონტაქტო რეკვიზიტები:** LinkedIn ([linkedin.com/in/basilaia/](https://www.linkedin.com/in/basilaia/)), ვებსაიტი ([basilaia.com](https://basilaia.com)). **კატეგორიულად აკრძალულია `giorgi@basilaia.com`-ის გამოყენება!** (ეს ელფოსტა არ არსებობს). თუ მეილის მითითება აუცილებელია: გამოიყენეთ `basilaia@gmail.com` (ან Smart Academy-ს შემთხვევაში `corporate@smartacademy.ge`).
+- **საკონტაქტო რეკვიზიტები:** LinkedIn ([linkedin.com/in/basilaia/](https://www.linkedin.com/in/basilaia/)), ვებსაიტი ([basilaia.com](https://basilaia.com)). თუ მეილის მითითება აუცილებელია: გამოიყენეთ მხოლოდ `basilaia@gmail.com` (ან Smart Academy-ს შემთხვევაში `corporate@smartacademy.ge`). არ გამოიგონოთ სხვა ელფოსტის მისამართები.
 - **კლიენტების ხსენების წესი:** ნუ ჩამოთვლით კონკრეტულ კლიენტ კომპანიებს (EBRD, Caritas, OPPA, McDonald's...), თუ მომხმარებელი პირდაპირ არ მოგთხოვთ. გამოიყენეთ განზოგადებული ინსტიტუციური ფორმულირება: *„30-ზე მეტი კორპორატიული და ინსტიტუციური AI პროექტი წამყვან ორგანიზაციებთან, მათ შორის საერთაშორისო დონორულ, საგანმანათლებლო და განვითარების პროგრამებში.“*
 
 ---

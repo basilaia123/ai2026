@@ -5,7 +5,9 @@ test_files = [
     'eu4dialogue/index.html',
     'eu4dialogue/peacebuilding/index.html',
     'eu4dialogue/pm/index.html',
-    'eu4dialogue/pm/day-1-slides.html'
+    'eu4dialogue/pm/day-1-slides.html',
+    'eu4dialogue/pm/mock-data/index.html',
+    'eu4dialogue/pm/post-training-evaluation.html'
 ]
 
 viewports = [

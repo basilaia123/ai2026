@@ -70,8 +70,8 @@ To foster collaboration and prevent communication silos, the program is structur
 
 The training will focus on five industry-leading tools, demonstrating their direct application to Central Park Towers' operations:
 
-1. **Claude Opus 4.8, GPT-5.5 & Gemini 3.5 Pro (with Claude Cowork):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 2M context window for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
-2. **Google NotebookLM:** Localized knowledge hubs. Leverages Gemini 3.5 Pro to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
+1. **Claude Opus 5.5, GPT-6 Astra & Gemini 4 Argon (with Claude Cowork & Claude Code):** Advanced reasoning engines & desktop agents. Uses Claude Projects & Artifacts for codebase control, Revit/AutoCAD/Dynamo script editing, ChatGPT for custom GPT actions, Gemini's 2M context window for clash analysis, and **Claude Cowork** as a desktop agent for autonomous multi-step local folder/file tasks.
+2. **Google NotebookLM:** Localized knowledge hubs. Leverages Gemini 4 Argon to index equipment datasheets, zoning regulations, and brand guidelines, with advanced Audio Overviews for mobile briefings.
 3. **Notion & Notion AI:** Central operations backend. Relational databases with advanced formulas, semantic Notion AI search, and team dashboards acting as our unified project database.
 4. **Lovable.app (Supabase):** AI-powered full-stack app builder. Develops, deploys, and updates React/Vite web applications with natural language, connecting to Supabase tables, role-based access control (RBAC), user auth, and API webhooks.
 5. **Make.com (AI Scenario Builder):** Workflow automation engine. Integrates Lovable frontends and Notion backends with Outlook and Slack, leveraging Make's AI Assistant for script generation and error handling.
@@ -151,7 +151,7 @@ Every session is delivered in person. The 3-hour daily meetings are divided into
 * **☕ Coffee Break (10 minutes)**
 * **Block 2 (1 hour 25 minutes): Practical Scenarios & AI Governance**
   * **Real-World Automation Recipes:**
-    * Automatically capturing incoming contractor emails, using AI modules (GPT-5.5 / Claude API) inside Make to extract defect details, and logging them in Notion.
+    * Automatically capturing incoming contractor emails, using AI modules (GPT-6 / Claude Opus 5.5 API) inside Make to extract defect details, and logging them in Notion.
     * Sending automated Slack notifications and Outlook emails when task statuses change.
     * Utilizing Make's AI Assistant for writing complex mapping formulas and troubleshooting runtime errors.
   * **Corporate AI Governance & Policy:** Structuring allowed corporate tool lists, secure API key management, intellectual property boundaries, and establishing "Shadow AI" prevention protocols.

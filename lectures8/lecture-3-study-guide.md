@@ -1,10 +1,10 @@
-# ლექცია 3: AI კვლევა, RAG და კონტენტის შექმნა — სასწავლო გზამკვლევი (Study Guide)
+# ლექცია 3: AI კვლევა, RAG და კონტენტის შექმნა - სასწავლო გზამკვლევი (Study Guide)
 
 ---
 
 ## 🎯 1. ამ ლექციის მიზანი
 
-ლექცია 3 ეძღვნება თანამედროვე AI-ით კვლევის, დოკუმენტებთან მუშაობისა და კონტენტის მრავალარხიანი გენერაციის სრულ ციკლს. კურსის მონაწილეები შეისწავლიან, თუ როგორ გადავიდნენ ზედაპირული ჩატ-დიალოგებიდან ღრმა, წყაროებზე დაფუძნებულ (grounded) კვლევაზე, როგორ გამოიყენონ დიდი კონტექსტის მოდელები (Gemini 2.0 / NotebookLM) და როგორ შექმნან ინტელექტუალური სამუშაო სივრცეები OpenAI Canvas-ისა და Claude Projects-ის მეშვეობით.
+ლექცია 3 ეძღვნება თანამედროვე AI-ით კვლევის, დოკუმენტებთან მუშაობისა და კონტენტის მრავალარხიანი გენერაციის სრულ ციკლს. კურსის მონაწილეები შეისწავლიან, თუ როგორ გადავიდნენ ზედაპირული ჩატ-დიალოგებიდან ღრმა, წყაროებზე დაფუძნებულ (grounded) კვლევაზე, როგორ გამოიყენონ დიდი კონტექსტის მოდელები (Gemini 3.8 / NotebookLM) და როგორ შექმნან ინტელექტუალური სამუშაო სივრცეები OpenAI Canvas-ისა და Claude Projects-ის მეშვეობით.
 
 ### 📚 ძირითადი კომპეტენციები (Learning Outcomes):
 - **Deep Research & AI ძიება:** Perplexity Pro-სა და OpenAI Deep Research-ის გამოყენება მრავალსაფეხურიანი, წყაროებზე დამოწმებული ანალიზისთვის;
@@ -19,10 +19,10 @@
 ## 📋 2. როგორ მოემზადოთ ლექციისთვის
 
 ### 🛠️ საჭირო ინსტრუმენტები & ანგარიშები:
-1. **Perplexity AI** ([perplexity.ai](https://perplexity.ai)) — უფასო ან Pro ანგარიში;
-2. **Google NotebookLM** ([notebooklm.google.com](https://notebooklm.google.com)) — Google ანგარიში;
-3. **OpenAI ChatGPT** ([chatgpt.com](https://chatgpt.com)) — Canvas ფუნქციონალით;
-4. **Claude AI** ([claude.ai](https://claude.ai)) — Projects & Artifacts ფუნქციონალით.
+1. **Perplexity AI** ([perplexity.ai](https://perplexity.ai)) - უფასო ან Pro ანგარიში;
+2. **Google NotebookLM** ([notebooklm.google.com](https://notebooklm.google.com)) - Google ანგარიში;
+3. **OpenAI ChatGPT** ([chatgpt.com](https://chatgpt.com)) - Canvas ფუნქციონალით;
+4. **Claude AI** ([claude.ai](https://claude.ai)) - Projects & Artifacts ფუნქციონალით.
 
 ### 📁 წინასწარ მოსამზადებელი მასალები:
 - 2-3 PDF ანალიტიკური დოკუმენტი, ბაზრის კვლევა ან კომპანიის წესდება (NotebookLM-ში ასატვირთად);
@@ -33,14 +33,14 @@
 
 ## 🧭 3. სასწავლო მოდულების რუკა
 
-| მოდული | სლაიდები | ძირითადი თემები & ფოკუსი |
+| ბლოკი (3 საათი) | სლაიდები | ძირითადი თემები & ფოკუსი |
 |---|---|---|
-| **მოდული 1: AI Search & Deep Research** | სლაიდები 1–7 | Perplexity Pro, OpenAI Deep Research, ტრადიციული Google ძიების ჩანაცვლება, წყაროების აკადემიური გადამოწმება |
-| **მოდული 2: NotebookLM & Grounded RAG** | სლაიდები 8–13 | დოკუმენტების ატვირთვა, ციტირებული პასუხები, ჰალუცინაციების ელიმინაცია, Audio Overview (Deep Dive პოდკასტი) |
-| **მოდული 3: Long Context vs Vector RAG** | სლაიდები 14–17 | Gemini 2.0 2M კონტექსტ-ფანჯარა, მთლიანი წიგნებისა და კოდბაზების ანალიზი, Needle in a Haystack ტესტები |
-| **მოდული 4: Canvas & Claude Projects** | სლაიდები 18–21 | OpenAI Canvas-ის ინლაინ რედაქტირება, Claude Projects & Artifacts, Custom Instructions და პროექტის მეხსიერება |
-| **მოდული 5: SMM Content Repurposing** | სლაიდები 22–24 | Pillar Content მეთოდოლოგია, 1 კვლევა -> 10 სოციალური პოსტი, აუდიტორიის მიხედვით ტონის ადაპტაცია |
-| **მოდული 6: შეჯამება და დავალება** | სლაიდები 25–26 | საშინაო დავალება #3 (7 ქულა: Deep Research 3.0 ქ, Canvas/Artifacts 2.5 ქ, SMM Engine 1.5 ქ) |
+| **ბლოკი 1: AI Search & Deep Research (45 წთ)** | სლაიდები 1-4, 9 | Google ძიების ჩანაცვლება, Perplexity Pro, OpenAI Deep Research (GPT-6 Astra / o3-max), ფაქტჩექინგი & ჰალუცინაციების გაფილტვრა |
+| **ბლოკი 2: Grounded RAG & Workspaces (45 წთ)** | სლაიდები 5-8 | OpenAI Canvas, Claude Projects/Artifacts, Google NotebookLM & Gemini 3.8 (50 წყარო, Studio, Audio Overview), Long Context vs Vector RAG |
+| **☕ შესვენება (Coffee Break) (15 წთ)** | სლაიდი 10 | 15-წუთიანი შესვენება 90-ე წუთზე პირველი და მეორე ნახევრის გასამიჯნად |
+| **ბლოკი 3: SMM Content Engine (35 წთ)** | სლაიდები 11-18 | 1 კვლევა -> 5 ფორმატი, ვირუსული ჰუკები, LinkedIn Thought Leadership, IG კარუსელები, TikTok/Reels, 1-კვირიანი კალენდრის მეგა-პრომპტი |
+| **ბლოკი 4: Live Workshops (30 წთ)** | სლაიდები 19-21 | 3 პრაქტიკული ვორქშოფი: 1) Perplexity Deep Research, 2) NotebookLM Audio Deep Dive, 3) Canvas/Artifacts SMM Repurposing |
+| **ბლოკი 5: შეჯამება & დავალება (10 წთ)** | სლაიდები 22-29 | 15 ოქროს წესი, 2026 წლის სტეკი, საშინაო დავალება #3 (7 ქულა: Deep Research 3.0 ქ, Canvas/Artifacts 2.5 ქ, SMM 1.5 ქ) და Q&A |
 
 ---
 
@@ -60,4 +60,4 @@
 
 - **ნაწილი 1 (3.0 ქულა):** Deep Research & NotebookLM Grounded RAG ანალიზი (მინიმუმ 2 წყარო, ციტატები, Audio Overview ან სტრუქტურირებული FAQ);
 - **ნაწილი 2 (2.5 ქულა):** OpenAI Canvas ან Claude Projects & Artifacts ინტერაქტიული დოკუმენტის შექმნა და დახვეწა;
-- **ნაწილი 3 (1.5 ქულა):** SMM Content Repurposing — 1 კვლევის გარდაქმნა 3 განსხვავებულ ფორმატად (LinkedIn Carousel, Facebook/Instagram პოსტი, Newsletter/Threads).
+- **ნაწილი 3 (1.5 ქულა):** SMM Content Repurposing - 1 კვლევის გარდაქმნა 3 განსხვავებულ ფორმატად (LinkedIn Carousel, Facebook/Instagram პოსტი, Newsletter/Threads).

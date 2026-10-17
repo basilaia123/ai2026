@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="ka" class="scheme_gold_light theme-day">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanilla Events - დიზაინერების AI მოდული | დღე 3: სივრცითი 3D დიზაინი, LED Motion ვიზუალები & WebAR გამოცდილება (სრული პრაქტიკული გაიდი)</title>
+  
+  <!-- Favicon from vanillaevents.ge -->
+  <link rel="icon" href="https://vanillaevents.ge/wp-content/uploads/2020/04/cropped-favicon-120x120.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="https://vanillaevents.ge/wp-content/uploads/2020/04/cropped-favicon-300x300.png" />
+
+  <!-- Fonts: Marcellus, GFS Didot, DM Sans & FiraGO -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=GFS+Didot&family=Marcellus&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#AC845D',
+              goldHover: '#916942',
+              goldLight: '#DC9B42',
+              goldSoft: 'rgba(172, 132, 93, 0.15)',
+              goldBorder: 'rgba(172, 132, 93, 0.28)',
+              dark: '#262120',
+              darker: '#1D1918',
+              black: '#141110',
+              cream: '#FCF7F4',
+              textMutedDark: '#8A827E'
+            }
+          },
+          fontFamily: {
+            serif: ['Marcellus', 'GFS Didot', 'FiraGO', 'Georgia', 'serif'],
+            sans: ['DM Sans', 'FiraGO', '-apple-system', 'sans-serif'],
+            didot: ['GFS Didot', 'Marcellus', 'serif'],
+            mono: ['Consolas', 'Courier New', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('vanilla_theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.remove('theme-day');
+        document.documentElement.classList.remove('scheme_gold_light');
+        document.documentElement.classList.add('scheme_gold_dark');
+      } else {
+        document.documentElement.classList.add('theme-day');
+        document.documentElement.classList.remove('scheme_gold_dark');
+        document.documentElement.classList.add('scheme_gold_light');
+      }
+    })();
+  </script>
+
+  <style>
+    * { font-family: 'DM Sans', 'FiraGO', sans-serif; box-sizing: border-box; }
+    h1, h2, h3, .serif-font { font-family: 'Marcellus', 'GFS Didot', 'FiraGO', serif; }
+    .didot-font { font-family: 'GFS Didot', 'Marcellus', serif; }
+
+    :root {
+      --brand-gold: #AC845D;
+      --brand-dark: #262120;
+      --brand-darker: #1D1918;
+      --brand-border: rgba(172, 132, 93, 0.28);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      background-color: #1D1918;
+      color: #E5DDD6;
+      transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    ::selection {
+      background-color: #AC845D;
+      color: #FFFFFF;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1D1918;
+    }
+    html.theme-day ::-webkit-scrollbar-track {
+      background: #F4EFEA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #AC845D;
+      border-radius: 4px;
+    }
+
+    .vanilla-card {
+      background-color: #262120;
+      border: 1px solid rgba(172, 132, 93, 0.28);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .sub-surface {
+      background-color: #1D1918;
+      border: 1px solid rgba(172, 132, 93, 0.2);
+      border-radius: 12px;
+    }
+
+    .code-box {
+      background-color: #141110 !important;
+      color: #E6DFD5 !important;
+      border: 1px solid rgba(172, 132, 93, 0.3);
+      border-radius: 10px;
+      font-family: 'Consolas', monospace;
+    }
+
+    .prompt-box {
+      background-color: #141110;
+      border: 1px solid rgba(172, 132, 93, 0.35);
+      border-radius: 12px;
+      color: #E5DDD6;
+      font-family: 'Consolas', monospace;
+    }
+
+    .bronze-btn {
+      background-color: #AC845D;
+      color: #FFFFFF !important;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .bronze-btn:hover {
+      background-color: #916942;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(172, 132, 93, 0.35);
+    }
+
+    .bronze-outline-btn {
+      border: 1px solid #AC845D;
+      color: #AC845D;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .bronze-outline-btn:hover {
+      background-color: rgba(172, 132, 93, 0.15);
+      color: #FFFFFF;
+    }
+
+    /* Bilingual Prompt Tabs */
+    .prompt-lang-tab {
+      padding: 2px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 9999px;
+      transition: all 0.15s ease;
+      color: #8A827E;
+    }
+    .prompt-lang-tab.active-tab {
+      background-color: #AC845D;
+      color: #FFFFFF !important;
+    }
+    .prompt-pane {
+      display: none;
+    }
+    .prompt-pane.active-pane {
+      display: block;
+    }
+
+    /* DAY THEME OVERRIDES (DEFAULT LUXURY LIGHT) */
+    html.theme-day body {
+      background-color: #F8F5F1 !important;
+      color: #2D2520 !important;
+    }
+    html.theme-day header {
+      background-color: rgba(248, 245, 241, 0.96) !important;
+      border-bottom-color: rgba(172, 132, 93, 0.22) !important;
+    }
+    html.theme-day nav.desktop-nav {
+      background-color: #ECE5DE !important;
+      border-color: rgba(172, 132, 93, 0.25) !important;
+    }
+    html.theme-day .nav-btn:not(.active) {
+      color: #5C524C !important;
+    }
+    html.theme-day .nav-btn:not(.active):hover {
+      color: #1D1918 !important;
+      background-color: rgba(172, 132, 93, 0.12) !important;
+    }
+    html.theme-day .vanilla-card {
+      background-color: #FFFFFF !important;
+      border-color: rgba(172, 132, 93, 0.22) !important;
+      box-shadow: 0 4px 18px rgba(172, 132, 93, 0.07) !important;
+    }
+    html.theme-day .sub-surface {
+      background-color: #F5EFEB !important;
+      border-color: rgba(172, 132, 93, 0.22) !important;
+    }
+    html.theme-day .prompt-box {
+      background-color: #F4EFEA !important;
+      color: #2D2520 !important;
+      border-color: rgba(172, 132, 93, 0.35) !important;
+    }
+    html.theme-day .code-box {
+      background-color: #F4EFEA !important;
+      color: #1A1615 !important;
+      border-color: rgba(172, 132, 93, 0.35) !important;
+    }
+    html.theme-day footer {
+      background-color: #EFE9E2 !important;
+      border-top-color: rgba(172, 132, 93, 0.22) !important;
+      color: #6E625B !important;
+    }
+
+    /* Day Mode Task Section Contrast Fix */
+    html.theme-day #block-task-1,
+    html.theme-day #block-task-2 {
+      background-color: #F2F9F5 !important;
+      border-color: rgba(16, 185, 129, 0.45) !important;
+    }
+    html.theme-day #block-task-1 .sub-surface,
+    html.theme-day #block-task-2 .sub-surface {
+      background-color: #E6F4EC !important;
+      color: #065F46 !important;
+      border-color: rgba(16, 185, 129, 0.35) !important;
+    }
+    html.theme-day .timer-box,
+    html.theme-day [class*="bg-[#141110]"] {
+      background-color: #E4ECE7 !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+    html.theme-day [id^="timer-display-"] {
+      color: #064E3B !important;
+    }
+    html.theme-day .text-emerald-300,
+    html.theme-day .text-emerald-400 {
+      color: #047857 !important;
+    }
+
+    /* Red / Bad Prompt Cards in Day Mode */
+    html.theme-day .border-red-500\/40,
+    html.theme-day .border-red-500\/30,
+    html.theme-day .bg-red-950\/10 {
+      background-color: #FDF2F2 !important;
+      border-color: rgba(239, 68, 68, 0.4) !important;
+    }
+    html.theme-day .text-red-200,
+    html.theme-day .text-red-300 {
+      color: #991B1B !important;
+    }
+    html.theme-day .text-red-400 {
+      color: #B91C1C !important;
+    }
+
+    /* Text Colors in Day Mode */
+    html.theme-day h1,
+    html.theme-day h2,
+    html.theme-day h3,
+    html.theme-day h4 {
+      color: #141110 !important;
+    }
+    html.theme-day p,
+    html.theme-day li,
+    html.theme-day .text-brand-cream,
+    html.theme-day [class*="text-brand-cream"] {
+      color: #141110 !important;
+    }
+    html.theme-day strong {
+      color: #000000 !important;
+      font-weight: 700;
+    }
+
+    /* Essential Exception: Elements with gold or emerald buttons MUST KEEP WHITE TEXT */
+    .bg-brand-gold,
+    .bg-brand-gold *,
+    .bronze-btn,
+    .bronze-btn *,
+    .bg-emerald-500,
+    .bg-emerald-500 *,
+    .bg-emerald-600,
+    .bg-emerald-600 * {
+      color: #FFFFFF !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-50 bg-[#1D1918]/95 backdrop-blur-md border-b border-brand-goldBorder transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-3 group">
+            <img src="https://vanillaevents.ge/wp-content/uploads/2020/04/vanilla-logo-light.svg" alt="Vanilla Events Logo" class="h-9 w-auto dark-logo filter drop-shadow">
+            <img src="https://vanillaevents.ge/wp-content/uploads/2020/04/vanilla-logo.svg" alt="Vanilla Events Logo Light" class="h-9 w-auto light-logo hidden filter drop-shadow">
+          </a>
+          <span class="hidden md:inline text-xs text-brand-gold font-mono tracking-widest pl-3 border-l border-brand-goldBorder uppercase">AI Masterclass • Day 03</span>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="desktop-nav hidden xl:flex items-center gap-1.5 bg-[#262120]/90 p-1.5 rounded-full border border-brand-goldBorder">
+          <a href="#block-floorplan-3d" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">1. Floor Plan &amp; 3D</a>
+          <a href="#block-gaussian-splats" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">2. Gaussian Splats</a>
+          <a href="#block-task-1" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-400 hover:text-white transition-all font-bold">დავალება 1</a>
+          <a href="#block-led-anamorphic" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-gold hover:text-white transition-all font-bold">3. LED &amp; Anamorphic</a>
+          <a href="#block-task-2" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-400 hover:text-white transition-all font-bold">დავალება 2</a>
+          <a href="#block-webar" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">4. App-less WebAR</a>
+          <a href="#block-prompt-bank" class="nav-btn px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-cream hover:text-white transition-all">პრომპტები</a>
+        </nav>
+
+        <!-- Right Controls -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Global Language Switcher -->
+          <div class="flex items-center sub-surface rounded-full border border-brand-goldBorder p-0.5 text-xs font-semibold">
+            <button onclick="switchGlobalLang('en')" id="lang-btn-en" class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase transition-all bg-brand-gold text-white shadow-sm">
+              ENG
+            </button>
+            <button onclick="switchGlobalLang('ka')" id="lang-btn-ka" class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase transition-all text-brand-cream/70 hover:text-white">
+              GEO
+            </button>
+          </div>
+
+          <!-- Day / Night Theme Toggle -->
+          <button onclick="toggleTheme()" id="theme-toggle-btn" class="day-btn-secondary px-3 py-1.5 rounded-full text-xs border border-brand-goldBorder flex items-center gap-1.5 transition-all" title="თემის გადართვა">
+            <span id="theme-icon">☀️</span>
+            <span id="theme-text" class="hidden sm:inline font-semibold uppercase text-[10px]">Day</span>
+          </button>
+
+          <!-- Back to Hub -->
+          <a href="index.html" class="bronze-outline-btn px-4 py-1.5 rounded-full text-xs uppercase flex items-center gap-1">
+            <span>&larr; ჰაბი</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-12">
+    
+    <div class="space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">დიზაინერების AI მოდული • ლექცია 03</span>
+        <span class="px-3 py-1 rounded-full sub-surface border border-brand-goldBorder text-xs font-semibold">ხანგრძლივობა: 2.0 საათი (120 წთ)</span>
+        <span class="px-3 py-1 rounded-full sub-surface border border-brand-goldBorder text-xs text-brand-gold font-semibold">2 ცალი 10-წუთიანი პრაქტიკული დავალება</span>
+        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold border border-emerald-500/30">2026 წლის ოქტომბრის ეკოსისტემა</span>
+      </div>
+
+      <h1 class="serif-font text-3xl sm:text-5xl font-normal text-white leading-tight">
+        სივრცითი 3D დიზაინი, LED Motion ვიზუალები &amp; <br>
+        <span class="text-brand-gold italic font-serif">WebAR გამოცდილება (App-less Augmented Reality)</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-brand-cream/85 font-light max-w-3xl leading-relaxed">
+        მესამე, დასკვნითი 2-საათიანი პრაქტიკული ლაბორატორია Vanilla Events-ის დიზაინერებისთვის. <strong>პირველ ეტაპზე 2D ნახაზი და Floor Plan გარდაიქმნება ინტერაქტიულ Web 3D სცენად</strong> (Vizcraft, Meshy-4 &amp; Spline AI) დღისა და ღამის განათების სიმულაციით. შემდგომ, დიზაინერები ქმნიან დარბაზის ფოტორეალისტურ ციფრულ ტყუპს (3D Gaussian Splatting), სცენის უწყვეტ Seamless Loops-სა და 3D Anamorphic ილუზიებს მოხრილ LED ეკრანებზე, და ამთავრებენ მომუშავე App-less WebAR მოსაწვევით (MindAR &amp; Model-Viewer).
+      </p>
+
+      <!-- Lecture Meta Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-brand-gold">
+          <span class="text-[10px] uppercase font-bold text-brand-gold block mb-1">თემა 01 (30 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">2D Plan-იდან Web 3D-მდე</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">Vizcraft, Meshy-4 &amp; Spline AI</p>
+        </div>
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-brand-gold">
+          <span class="text-[10px] uppercase font-bold text-brand-gold block mb-1">თემა 02 (25 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">3D Gaussian Splatting</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">Scaniverse, SuperSplat &amp; SPZ</p>
+        </div>
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-brand-gold">
+          <span class="text-[10px] uppercase font-bold text-brand-gold block mb-1">თემა 03 (30 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">LED Loops &amp; Anamorphic 3D</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">Runway Gen-4.5 &amp; Blender Mapping</p>
+        </div>
+        <div class="vanilla-card p-3 sm:p-4 border-l-2 border-emerald-500 bg-emerald-950/10">
+          <span class="text-[10px] uppercase font-bold text-emerald-400 block mb-1">თემა 04 (15 წთ)</span>
+          <h4 class="text-xs sm:text-sm font-bold text-white">App-less WebAR მოსაწვევი</h4>
+          <p class="text-[11px] text-brand-cream/70 font-light mt-0.5">MindAR, Model-Viewer &amp; WebXR</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== DETAILED 120-MINUTE TIMELINE & SYLLABUS ==================== -->
+    <section id="agenda-timeline" class="space-y-4 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">ქრონომეტრაჟი</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          2-საათიანი ლექციის სრული წუთობრივი გეგმა (120 წთ)
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Part 1: Floor Plan & 3D -->
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-brand-gold">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-brand-gold uppercase">00:00 - 00:30 (30 წთ)</span>
+            <span class="text-brand-textMutedDark">თემა 01</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">2D Plan-იდან Web 3D-მდე &amp; განათების სიმულაცია</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            2D CAD/PDF ნახაზის გარდაქმნა 3D Blockout-ად Vizcraft-ით, 3D ავეჯისა და დეკორის გენერაცია Meshy-4-ით (Smart Remesh), Spline AI სცენის აწყობა და Day-to-Night (3000K, 2700K, Party) განათების სიმულაცია.
+          </p>
+          <div class="text-[10px] text-brand-gold font-semibold pt-1">Deliverable: ინტერაქტიული 3D ვებ-ბმული</div>
+        </div>
+
+        <!-- Part 2: Gaussian Splatting & Task 1 -->
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-emerald-500 bg-emerald-950/10">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-emerald-400 uppercase">00:30 - 01:05 (35 წთ)</span>
+            <span class="text-brand-textMutedDark">თემა 02 &amp; პრაქტიკა 1</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">3D Gaussian Splats + დავალება 1 (10 წთ)</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            ცარიელი დარბაზის 90-წამიანი ვიდეოდან ფოტორეალისტური 3D სივრცის მიღება (Scaniverse/Luma), SuperSplat ბრაუზერული გასუფთავება, SPZ 90% მობილური კომპრესია. დავალება 1: 3D დეკორის ელემენტის გენერაცია და ვებ-ლინკი.
+          </p>
+          <div class="text-[10px] text-emerald-400 font-semibold pt-1">Deliverable: დარბაზის Digital Twin &amp; 3D დეკორი</div>
+        </div>
+
+        <!-- Part 3: LED Loops & Anamorphic 3D -->
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-brand-gold">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-brand-gold uppercase">01:05 - 01:45 (40 წთ)</span>
+            <span class="text-brand-textMutedDark">თემა 03 &amp; პრაქტიკა 2</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">LED Loops, Anamorphic 3D + დავალება 2 (10 წთ)</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            Runway Gen-4.5 Loop Mode-ით 4K უწყვეტი ფონები სცენისთვის (Liquid Gold, Silk Waves). 3D Anamorphic ილუზიები მოხრილ LED ეკრანებზე (Sweet Spot &amp; Blender Camera Projection). დავალება 2: 8-წამიანი Seamless Loop-ის შექმნა.
+          </p>
+          <div class="text-[10px] text-brand-gold font-semibold pt-1">Deliverable: 4K უწყვეტი სასცენო ვიდეო</div>
+        </div>
+
+        <!-- Part 4: WebAR -->
+        <div class="vanilla-card p-4 sm:p-5 space-y-2 border-t-2 border-emerald-500 bg-emerald-950/10">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-emerald-400 uppercase">01:45 - 02:00 (15 წთ)</span>
+            <span class="text-brand-textMutedDark">თემა 04</span>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">App-less WebAR: "ცოცხალი" მოსაწვევები</h4>
+          <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+            MindAR (ღია კოდის Image-Tracking) და Google Model-Viewer. დაბეჭდილ მოსაწვევზე კამერის მიშვერით 3D ანიმაციისა და დღე 1-ის ვიდეო-თიზერის გაშვება აპლიკაციის გარეშე, ღილაკით "მაგიდის ნახვა".
+          </p>
+          <div class="text-[10px] text-emerald-400 font-semibold pt-1">Deliverable: მომუშავე WebAR მოსაწვევი</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== THEME 01: 2D FLOOR PLAN TO WEB 3D ==================== -->
+    <section id="block-floorplan-3d" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 01</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          2D Floor Plan-იდან ინტერაქტიულ Web 3D სცენამდე &amp; განათების სიმულაცია
+        </h2>
+      </div>
+
+      <!-- Overview Card -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="serif-font text-lg font-bold text-white flex items-center gap-2">
+            <span class="text-brand-gold">✦</span>
+            <span>ნახაზიდან ცოცხალ 3D სივრცემდე: ტრადიციული CAD-ის დასასრული</span>
+          </h3>
+          <span class="px-2.5 py-0.5 rounded-full bg-brand-gold/20 text-brand-gold text-[10px] font-bold uppercase">Vizcraft • Meshy-4 • Spline AI</span>
+        </div>
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          ტრადიციულ ივენთ-ინდუსტრიაში დიზაინერი იღებს დარბაზის 2D ნახაზს (Floor Plan) და დღეებს ხარჯავს 3ds Max-ში ან SketchUp-ში კედლებისა და მაგიდების ხელით აწყობაზე. <strong>2026 წლის ოქტომბრის მიდგომით, ეს პროცესი წუთებში სრულდება:</strong> AI აანალიზებს 2D გეგმას, გარდაქმნის მას 3D სივრცედ, Meshy-4 აგენერირებს ელიტარულ დეკორს PBR მასალებით, ხოლო Spline AI-ში კლიენტი იღებს ბრაუზერულ ბმულს, სადაც შეუძლია პირადად "დადგეს" ნებისმიერ მაგიდასთან და ნახოს ხედი.
+        </p>
+
+        <!-- 3 Core Pillars Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">საფეხური 01 • გეგმა</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">2D to 3D Blockout (Vizcraft / Ritn3D)</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ატვირთეთ დარბაზის 2D PDF ან JPEG ნახაზი. AI ამოიცნობს კედლებს, სვეტებს, ჭერის სიმაღლეს და რამდენიმე წამში აგენერირებს სივრცის 3D იზომეტრიულ გეომეტრიას.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">საფეხური 02 • დეკორი</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">3D დეკორის გენერაცია (Meshy-4 &amp; Tripo 3.0)</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ტექსტური პრომპტით ან რენდერით გენერირდება შავი მარმარილოს საბანკეტო მაგიდა, თეთრი ორქიდეების თაღი და ოქროს ჭაღი. Meshy-4-ის Smart Remesh უზრუნველყოფს სუფთა GLB ექსპორტს (&lt;50k პოლიგონი).
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">საფეხური 03 • Web 3D</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">ინტერაქტიული სცენა (Spline AI)</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              მოდელები თავსდება Spline-ის 3D სამუშაო გარემოში. ემატება კამერის ორბიტა, მაგიდების დაწკაპუნებადი Hotspot-ები და გენერირდება 1 პირდაპირი ბმული კლიენტისთვის.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Day-to-Night Lighting Simulation Deep Dive -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border-l-4 border-brand-gold">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-brand-gold tracking-widest block">ატმოსფეროს მართვა</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              განათების 3-რეჟიმიანი სიმულაცია (Day-to-Night Lighting Physics)
+            </h3>
+          </div>
+          <span class="text-xs text-brand-cream/70 font-mono">Kelvin Scale Simulation</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          ელიტარულ დამკვეთს ყოველთვის აინტერესებს, როგორ შეიცვლება დარბაზის აურა დროის გასვლასთან ერთად. Spline AI-სა და 3D რენდერში ვაყენებთ 3 რეალურ სინათლის მდგომარეობას:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>რეჟიმი 01</span>
+              <span>18:00 • Sunset</span>
+            </div>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Golden Hour Sun (3000K)</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ბუნებრივი მზის ჩასვლის თბილი ოქროსფერი სხივები ფანჯრებიდან. რბილი გრძელი ჩრდილები, ბუნებრივი სინათლე ყვავილოვან თაღებზე და სტუმრების მიღების მყუდრო განწყობა.
+            </p>
+            <div class="text-[10px] font-mono text-emerald-400">Light: Directional Sun, 3000K, Soft Shadow</div>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>რეჟიმი 02</span>
+              <span>21:00 • Gala Dinner</span>
+            </div>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Candlelight &amp; Amber (2700K)</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ჩამქრალი ზოგადი განათება. ასობით სპილოსძვლისფერი სანთლის ქარვისფერი ციმციმი მაგიდებზე, ბროლის ჭაღების პრიზმული ბზინვარება და ვიწრო Pin-Spot აქცენტები ყვავილებზე.
+            </p>
+            <div class="text-[10px] font-mono text-emerald-400">Light: 2700K Point Lights, Dimmed Ambient, Spot</div>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>რეჟიმი 03</span>
+              <span>23:00 • After-Party</span>
+            </div>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Midnight Party &amp; Beams</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              კლუბური დინამიკა: მოძრავი სანათი თავები (Moving Heads), ზურმუხტისფერი და ოქროსფერი კონტრასტული სხივები, მსუბუქი სასცენო ბოლი და LED ეკრანების რიტმული პულსაცია.
+            </p>
+            <div class="text-[10px] font-mono text-emerald-400">Light: Dynamic RGB Beams, Volumetric Haze</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PRACTICAL GUIDE 01: STEP-BY-STEP SPLINE AI & MESHY WORKFLOW -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4 border-l-4 border-brand-gold">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider">პრაქტიკული გაიდი 01</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              ნაბიჯ-ნაბიჯ ინსტრუქცია: 2D გეგმიდან ინტერაქტიულ Web 3D ბმულამდე (Playbook)
+            </h3>
+          </div>
+          <span class="text-xs text-brand-gold font-semibold uppercase hidden sm:inline">Web 3D Pipeline</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">საფეხური 01</span>
+            <h4 class="font-bold text-white text-xs">ნახაზის იმპორტი Vizcraft-ში</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ატვირთეთ დარბაზის სუფთა PDF ნახაზი. მიუთითეთ ჭერის სიმაღლე (მაგ. 6.5მ). გადმოწერეთ გენერირებული 3D კედლების GLB ფაილი.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">საფეხური 02</span>
+            <h4 class="font-bold text-white text-xs">დეკორის შექმნა Meshy-4-ში</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ჩაწერეთ ზუსტი პრომპტი (მაგ. <em>Luxury imperial black marble dining table with ivory candles</em>). აირჩიეთ Smart Remesh (High/Medium) და გადმოწერეთ GLB.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">საფეხური 03</span>
+            <h4 class="font-bold text-white text-xs">Spline AI-ში აწყობა &amp; შუქი</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              შეიტანეთ კედლები და მაგიდები Spline-ში. დააყენეთ 2700K Point Lights სანთლებისთვის. დაამატეთ Orbit Controls და კამერის ლიმიტები.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">საფეხური 04</span>
+            <h4 class="font-bold text-white text-xs">ექსპორტი &amp; ლინკი კლიენტს</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              დააჭირეთ <strong>Export &rarr; Public URL</strong>. დააკოპირეთ ბმული. გახსენით მობილურ ტელეფონში და დარწმუნდით, რომ 60 FPS-ით სრიალებს.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== THEME 02: 3D GAUSSIAN SPLATTING ==================== -->
+    <section id="block-gaussian-splats" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 02</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          3D Gaussian Splatting: ცარიელი დარბაზის 2-წუთიანი Digital Twin
+        </h2>
+      </div>
+
+      <!-- Explanation Card -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-brand-goldBorder">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-brand-gold tracking-widest block">2026 წლის ოქტომბრის რევოლუცია</span>
+            <h3 class="serif-font text-lg sm:text-xl font-bold text-white">
+              რატომ ჩაანაცვლა 3D Gaussian Splatting-მა ტრადიციული 3D სკანირება?
+            </h3>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold border border-emerald-500/30">
+            Niantic SPZ Standard • 90% Compression
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          ტრადიციული 3D სკანირება (LiDAR და ფოტოგრამეტრია) იძლევა "დაკბილულ", მძიმე პოლიგონალურ ბადეს, სადაც სარკეები, ბროლის ჭაღები და პრიალა მარმარილო დეფორმირდება და შავდება. <strong>3D Gaussian Splatting (3DGS)</strong> მუშაობს მილიონობით მიკროსკოპული გამჭვირვალე ელიფსოიდის (Splat) პრინციპით, რომლებიც ინარჩუნებენ სინათლის ნამდვილ რეფრაქციას. შედეგად, ტელეფონით გადაღებული 90-წამიანი ვიდეოდან ვიღებთ ისტორიული დარბაზის (მაგ. შატო მუხრანი, წინანდალი) ფოტორეალისტურ 3D ციფრულ ტყუპს!
+        </p>
+
+        <!-- 3DGS Pipeline 4 Steps -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-2">
+          
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">01. Capture (გადაღება)</span>
+            <h4 class="font-bold text-white text-xs">Scaniverse / Luma AI</h4>
+            <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+              ტელეფონით ნელი, შეუფერხებელი მოძრაობა დარბაზის პერიმეტრზე (90-120 წმ). 4K 60fps გადაღება სტაბილური სიჩქარით.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">02. Train (დამუშავება)</span>
+            <h4 class="font-bold text-white text-xs">Splat Cloud / Postshot</h4>
+            <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+              AI აგენერირებს 3-5 მილიონ გაუსის წერტილს. გამოთვლა გრძელდება 8-15 წუთი და იძლევა სრულყოფილ PLY ფაილს.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">03. Clean (გასუფთავება)</span>
+            <h4 class="font-bold text-white text-xs">SuperSplat (Browser Tool)</h4>
+            <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+              ბრაუზერშივე იჭრება ზედმეტი წერტილები (ქუჩა, ფანჯრის მიღმა ხედი), სწორდება ჰორიზონტი და ცენტრირდება სცენა.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">04. Deliver (გაშვება)</span>
+            <h4 class="font-bold text-white text-xs">SPZ 90% კომპრესია &amp; Web</h4>
+            <p class="text-[11px] text-brand-cream/80 font-light leading-relaxed">
+              ფაილი კომპრესირდება SPZ ფორმატში (12-15MB). იხსნება მობილურ ბრაუზერში WebGPU-ით წამებში, აპლიკაციის გარეშე.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Comparison: Photogrammetry vs Gaussian Splatting Table -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4">
+        <h4 class="serif-font text-base font-bold text-white">ფოტოგრამეტრია vs. 3D Gaussian Splatting (2026 შედარება)</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-brand-goldBorder text-brand-gold uppercase text-[10px] tracking-wider">
+                <th class="py-2.5 px-3">პარამეტრი</th>
+                <th class="py-2.5 px-3">ტრადიციული ფოტოგრამეტრია</th>
+                <th class="py-2.5 px-3">3D Gaussian Splatting (2026)</th>
+                <th class="py-2.5 px-3">მოგება Vanilla Events-ისთვის</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-brand-goldBorder/20 text-brand-cream/85 font-light">
+              <tr class="hover:bg-brand-gold/5">
+                <td class="py-2.5 px-3 font-bold text-white">გადაღებისა და დამუშავების დრო</td>
+                <td class="py-2.5 px-3 text-red-300">24-48 საათი</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-semibold">10-15 წუთი</td>
+                <td class="py-2.5 px-3">დამკვეთს იმავე დღეს ეგზავნება 3D დარბაზი</td>
+              </tr>
+              <tr class="hover:bg-brand-gold/5">
+                <td class="py-2.5 px-3 font-bold text-white">ბროლის ჭაღები და სარკეები</td>
+                <td class="py-2.5 px-3 text-red-300">დეფორმირდება და შავდება</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-semibold">100% სარკისებური რეფრაქცია</td>
+                <td class="py-2.5 px-3">ლუქს-ივენთის ესთეტიკის სრული შენარჩუნება</td>
+              </tr>
+              <tr class="hover:bg-brand-gold/5">
+                <td class="py-2.5 px-3 font-bold text-white">მობილურზე გახსნის სისწრაფე</td>
+                <td class="py-2.5 px-3">მძიმე (ხშირად ჭედავს)</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-semibold">მყისიერი (SPZ &amp; WebGPU)</td>
+                <td class="py-2.5 px-3">კლიენტი ტელეფონით პირდაპირ "დადის" სივრცეში</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== LIVE PRACTICAL TASK 01: 10 MINUTES ==================== -->
+    <section id="block-task-1" class="vanilla-card p-6 sm:p-8 space-y-6 border-2 border-emerald-500/50 bg-emerald-950/10 rounded-2xl scroll-mt-24">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-emerald-500/30">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider">Live დავალება 01</span>
+            <span class="text-xs font-semibold text-emerald-400">10-წუთიანი პრაქტიკული ვორქშოპი</span>
+          </div>
+          <h3 class="serif-font text-xl sm:text-2xl font-bold text-white mt-1">
+            3D დეკორის ელემენტის გენერაცია &amp; Web 3D სცენაში განთავსება
+          </h3>
+        </div>
+
+        <!-- 10-Minute Interactive Timer -->
+        <div class="timer-box p-3 rounded-2xl bg-[#141110] border border-emerald-500/40 flex items-center gap-3">
+          <div class="text-center">
+            <span class="text-[9px] uppercase font-bold text-emerald-400 block tracking-wider">დარჩენილი დრო</span>
+            <span id="timer-display-1" class="font-mono text-2xl font-bold text-white tracking-widest">10:00</span>
+          </div>
+          <button onclick="toggleTimer(1)" id="timer-btn-1" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md">
+            Start
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs sm:text-sm">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">1. ამოცანა</span>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            გამოიყენეთ Meshy-4 ან Tripo 3.0 და დააგენერირეთ Vanilla Events-ის 1 საფირმო 3D დეკორის ელემენტი (მაგ. <em>Monumental imperial floral arch with cascading white orchids and gold frame</em>).
+          </p>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">2. შესასრულებელი ნაბიჯები</span>
+          <ol class="text-brand-cream/80 space-y-1 font-light list-decimal list-inside leading-relaxed">
+            <li>ჩაწერეთ დეტალური ტექსტური პრომპტი Meshy-ში და გადმოწერეთ GLB მოდელი;</li>
+            <li>შეიტანეთ GLB მოდელი Spline AI-ში (ან Model-Viewer-ში);</li>
+            <li>დააყენეთ 2700K თბილი სანთლის განათება და შექმენით საჯარო ვებ-ბმული.</li>
+          </ol>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">3. Deliverable (შედეგი)</span>
+          <div class="sub-surface p-3 rounded-xl border border-emerald-500/30 text-emerald-300 text-xs font-light">
+            ✓ 1 ინტერაქტიული Web 3D ბმული, სადაც ნებისმიერი მოწყობილობიდან ჩანს მბრუნავი 3D დეკორი ოქროსა და მარმარილოს ტექსტურით!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== THEME 03: SEAMLESS LED LOOPS & 3D ANAMORPHIC ILLUSIONS ==================== -->
+    <section id="block-led-anamorphic" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 03</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          Seamless LED Video Loops &amp; 3D Anamorphic ილუზიები მოხრილ ეკრანებზე
+        </h2>
+      </div>
+
+      <!-- The Science of Seamless Loops -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="serif-font text-lg font-bold text-white flex items-center gap-2">
+            <span class="text-brand-gold">✦</span>
+            <span>უწყვეტი ვიდეო ფონების (Seamless Loops) ინჟინერია სასცენო ეკრანებისთვის</span>
+          </h3>
+          <span class="px-2.5 py-0.5 rounded-full bg-brand-gold/20 text-brand-gold text-[10px] font-bold uppercase">Runway Gen-4.5 • Kling 3.0</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          სასცენო გიგანტურ LED კედლებსა და DJ პულტის უკანა ეკრანებზე სტატიკური გამოსახულება გამოიყურება მოძველებულად. თუმცა, ჩვეულებრივი ვიდეო ყოველ 10 წამში წყდება და თავიდან იწყება, რაც იწვევს თვალშისაცემ გადახტომას (Jitter). <strong>Seamless Loop-ის ხელოვნებაა: ბოლო კადრის პიქსელები 100%-ით ემთხვეოდეს პირველ კადრს</strong>, რათა ვიდეო უწყვეტად ტრიალებდეს 4 საათის განმავლობაში შეუმჩნევლად.
+        </p>
+
+        <!-- 3 Seamless Loop Techniques -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1 text-xs">
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>მეთოდი 01</span>
+              <span>AI Native Loop</span>
+            </div>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Runway Gen-4.5 Loop Mode</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              Runway-ის პარამეტრებში ირთვება <code>Loop: ON</code>. მოდელი თავად ითვლის დროით ვექტორს ისე, რომ ბოლო ფრეიმი შეუფერხებლად უერთდება საწყის ფრეიმს.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>მეთოდი 02</span>
+              <span>First/Last Frame</span>
+            </div>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Alibaba Wan &amp; Kling Interpolation</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ვიყენებთ ერთსა და იმავე სურათს როგორც Start Frame-ად, ისე End Frame-ად. AI აგენერირებს შუალედურ 8-წამიან მოძრაობას, რაც იძლევა მათემატიკურ 100% Loop-ს.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-1.5">
+            <div class="flex items-center justify-between text-brand-gold font-bold">
+              <span>მეთოდი 03</span>
+              <span>Post-Production</span>
+            </div>
+            <h4 class="font-bold text-white text-xs sm:text-sm">1-Second Split-Crossfade Trick</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              ვიდეო იჭრება შუაზე; მეორე ნახევარი გადმოდის დასაწყისში, ხოლო შეერთების ადგილას კეთდება 1-წამიანი რბილი გადასვლა (Cross-Dissolve). ნებისმიერი კლიპი ხდება Loop!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D ANAMORPHIC ILLUSION ON CURVED LED SCREENS -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-5 border-l-4 border-brand-gold">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-brand-goldBorder">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-brand-gold tracking-widest block">ჰოლივუდური ეფექტი ივენთზე</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              3D ანამორფული ილუზიები მოხრილ (Curved / Corner L-Shape) LED ეკრანებზე
+            </h3>
+          </div>
+          <span class="text-xs text-brand-gold font-semibold uppercase">Naked-Eye 3D Effect</span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          როდესაც სცენაზე დგას 90-გრადუსიანი კუთხით მოხრილი LED კედელი, მაყურებელს ექმნება განცდა, რომ ობიექტი "გადმოდის" ეკრანიდან და დარბაზში დაფრინავს. ეს ეფექტი არ მოითხოვს 3D სათვალეს, მაგრამ მოითხოვს <strong>კამერის პერსპექტივის (Sweet Spot) ზუსტ გეომეტრიულ კალიბრაციას</strong>.
+        </p>
+
+        <!-- Anamorphic Production Pipeline 4 Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+          
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ეტაპი 01</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">ეკრანის პროპორციები</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              იღებთ ტექნიკური გუნდისგან LED ეკრანის ზუსტ ზომებს (მაგ. 3840x1080 პიქსელი, სადაც 1920x1080 არის მარცხენა მხარე, 1920x1080 - მარჯვენა).
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ეტაპი 02</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Sweet Spot კამერა</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              Blender-ში იქმნება ვირტუალური კუთხოვანი ეკრანი და მაყურებლის კამერა თავსდება 45-გრადუსიანი კუთხით დარბაზის ცენტრში (საიდანაც ილუზია იდეალურად მუშაობს).
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ეტაპი 03</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">AI ვიზუალის გენერაცია</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              Runway Gen-4.5-ით ან Kling-ით აგენერირებთ ოქროს მცურავ მონოგრამას, შამპანურის ჩანჩქერს ან ყვავილების კასკადს, რომლებიც "გამოდიან" ეკრანის ჩარჩოდან.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">ეტაპი 04</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Camera Projection &amp; Render</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              კეთდება Camera Projection Mapping ეკრანის გეომეტრიაზე, იშლება ბრტყელ ვიდეო ფაილად (Flattened MP4) და ეშვება სასცენო პროცესორზე (NovaStar / Disguise).
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 4 MASTER LED LOOP PROMPT RECIPES (BILINGUAL) -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="serif-font text-lg font-bold text-white flex items-center gap-2">
+            <span class="text-brand-gold">✦</span>
+            <span>Vanilla Events: 4 მზა სარეჟისორო LED Motion Loop რეცეპტი</span>
+          </h3>
+          <span class="text-xs text-brand-cream/60">Ready to copy (EN / GEO)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Loop 1: Liquid Gold -->
+          <div class="vanilla-card p-5 space-y-2.5 border border-brand-gold/40">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[10px] uppercase font-bold text-brand-gold tracking-wider">ქეისი 01: Liquid Gold Luxury Particles (Summit &amp; Awards)</span>
+              <div class="flex items-center gap-1.5">
+                <div class="inline-flex items-center gap-1 bg-[#141110] p-0.5 rounded-full border border-brand-goldBorder/40">
+                  <button onclick="setPromptLang('prompt-loop-1', 'en')" id="tab-prompt-loop-1-en" class="prompt-lang-tab active-tab">EN</button>
+                  <button onclick="setPromptLang('prompt-loop-1', 'ka')" id="tab-prompt-loop-1-ka" class="prompt-lang-tab">GEO</button>
+                </div>
+                <button onclick="copyBilingualPrompt('prompt-loop-1')" id="btn-prompt-loop-1" class="bronze-btn px-3 py-1 rounded-full text-[10px] font-semibold uppercase">კოპირება</button>
+              </div>
+            </div>
+            <h4 class="text-xs sm:text-sm font-bold text-white">თხევადი ოქროს ნაწილაკები &amp; შავი პრიალა ფონი (32:9 Ultra-Wide)</h4>
+            <pre id="prompt-loop-1-en" class="prompt-box prompt-pane active-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">Seamless looping video background for luxury stage ultra-wide LED screen. Abstract undulating liquid gold ribbons and micro-particles floating gracefully against deep piano black background. Velvet smooth laminar fluid dynamics at 0.3 m/s. Subtle specular champagne reflections, warm 3000K golden luminescence, zero camera motion, locked camera perspective, perfectly seamless loop, identical start and end frames, photorealistic 8k, 60fps fluid motion.</pre>
+            <pre id="prompt-loop-1-ka" class="prompt-box prompt-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">უწყვეტი (Seamless Looping) ვიდეო ფონი სცენის ულტრა-ფართო LED ეკრანისთვის. აბსტრაქტული ტალღოვანი თხევადი ოქროს ლენტები და მიკრო-ნაწილაკები, რომლებიც ელეგანტურად ლივლივებენ როიალისებრ შავ ფონზე. ხავერდოვანი სითხის დინამიკა (0.3 მ/წმ). შამპანურისფერი ნაზი ანარეკლები, 3000K თბილი ოქროსფერი ნათება, კამერის ნული მოძრაობა, იდეალურად უწყვეტი ციკლი (იდენტური საწყისი და ბოლო ფრეიმი), 8k რეზოლუცია, 60fps.</pre>
+          </div>
+
+          <!-- Loop 2: Velvet Silk Waves -->
+          <div class="vanilla-card p-5 space-y-2.5 border border-brand-gold/40">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[10px] uppercase font-bold text-brand-gold tracking-wider">ქეისი 02: Emerald &amp; Black Silk Waves (Gala Dinner Background)</span>
+              <div class="flex items-center gap-1.5">
+                <div class="inline-flex items-center gap-1 bg-[#141110] p-0.5 rounded-full border border-brand-goldBorder/40">
+                  <button onclick="setPromptLang('prompt-loop-2', 'en')" id="tab-prompt-loop-2-en" class="prompt-lang-tab active-tab">EN</button>
+                  <button onclick="setPromptLang('prompt-loop-2', 'ka')" id="tab-prompt-loop-2-ka" class="prompt-lang-tab">GEO</button>
+                </div>
+                <button onclick="copyBilingualPrompt('prompt-loop-2')" id="btn-prompt-loop-2" class="bronze-btn px-3 py-1 rounded-full text-[10px] font-semibold uppercase">კოპირება</button>
+              </div>
+            </div>
+            <h4 class="text-xs sm:text-sm font-bold text-white">ზურმუხტისფერი აბრეშუმის ნელი ტალღები &amp; ოქროს კანტები</h4>
+            <pre id="prompt-loop-2-en" class="prompt-box prompt-pane active-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">Ultra-luxurious seamless video loop for gala dinner LED backdrop. Deep emerald green and obsidian silk fabric undulating slowly in rhythmic hypnotic wind waves. Edge seams highlighted with delicate metallic gold embroidery thread shimmering softly. Atmospheric volumetric amber glow from below. Perfectly continuous looped animation, zero jitter, zero frame jump, cinema grade fabric simulation, 4k 24fps.</pre>
+            <pre id="prompt-loop-2-ka" class="prompt-box prompt-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">ულტრა-ლუქს უწყვეტი ვიდეო ფონი გალა-ვახშმის LED ეკრანისთვის. ღრმა ზურმუხტისფერი და ობსიდიანის აბრეშუმის ქსოვილი, რომელიც ნელა, რიტმულად ირხევა ჰიპნოზურ ნიავში. კიდეები მოქარგულია დახვეწილი ოქროს ძაფებით. ქვემოდან ამომავალი ქარვისფერი ატმოსფერული ნათება. სრულიად უწყვეტი ანიმაცია, ნული გადახტომა, კინემატოგრაფიული ქსოვილის ფიზიკა, 4k 24fps.</pre>
+          </div>
+
+          <!-- Loop 3: Cosmic Starlight -->
+          <div class="vanilla-card p-5 space-y-2.5 border border-brand-gold/40">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[10px] uppercase font-bold text-brand-gold tracking-wider">ქეისი 03: Cosmic Starlight Nebula (Wedding Climax &amp; Dance)</span>
+              <div class="flex items-center gap-1.5">
+                <div class="inline-flex items-center gap-1 bg-[#141110] p-0.5 rounded-full border border-brand-goldBorder/40">
+                  <button onclick="setPromptLang('prompt-loop-3', 'en')" id="tab-prompt-loop-3-en" class="prompt-lang-tab active-tab">EN</button>
+                  <button onclick="setPromptLang('prompt-loop-3', 'ka')" id="tab-prompt-loop-3-ka" class="prompt-lang-tab">GEO</button>
+                </div>
+                <button onclick="copyBilingualPrompt('prompt-loop-3')" id="btn-prompt-loop-3" class="bronze-btn px-3 py-1 rounded-full text-[10px] font-semibold uppercase">კოპირება</button>
+              </div>
+            </div>
+            <h4 class="text-xs sm:text-sm font-bold text-white">ვარსკვლავური ნისლეული &amp; ბროლის პრიზმები საქორწინო ცეკვისთვის</h4>
+            <pre id="prompt-loop-3-en" class="prompt-box prompt-pane active-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">Ethereal cosmic starlight seamless loop for first dance ballroom LED wall. Millions of tiny champagne and rose-gold starlight particles rotating slowly in a celestial spiral. Translucent crystal shards floating and refracting soft lavender and ivory light rays. Deep midnight navy background, slow ambient breathing pulse, hypnotic rhythm, perfect loop cycle, 8k resolution, 60fps.</pre>
+            <pre id="prompt-loop-3-ka" class="prompt-box prompt-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">ჰაეროვანი ვარსკვლავური უწყვეტი ფონი საქორწინო პირველი ცეკვის LED კედლისთვის. მილიონობით წვრილი შამპანურისფერი და ვარდისფერი ოქროს ნაწილაკი, რომლებიც ნელა ბრუნავენ სპირალში. მოტივტივე ბროლის ნამსხვრევები ირეკლავს ლავანდისა და სპილოსძვლისფერ სხივებს. ღრმა მუქი ლურჯი ფონი, ნელი სუნთქვისებრი პულსაცია, იდეალური უწყვეტობა, 8k რეზოლუცია, 60fps.</pre>
+          </div>
+
+          <!-- Loop 4: Anamorphic 3D Ring Reveal -->
+          <div class="vanilla-card p-5 space-y-2.5 border border-brand-gold/40">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[10px] uppercase font-bold text-brand-gold tracking-wider">ქეისი 04: 3D Anamorphic Corner Ring Reveal (L-Shape Curved LED)</span>
+              <div class="flex items-center gap-1.5">
+                <div class="inline-flex items-center gap-1 bg-[#141110] p-0.5 rounded-full border border-brand-goldBorder/40">
+                  <button onclick="setPromptLang('prompt-loop-4', 'en')" id="tab-prompt-loop-4-en" class="prompt-lang-tab active-tab">EN</button>
+                  <button onclick="setPromptLang('prompt-loop-4', 'ka')" id="tab-prompt-loop-4-ka" class="prompt-lang-tab">GEO</button>
+                </div>
+                <button onclick="copyBilingualPrompt('prompt-loop-4')" id="btn-prompt-loop-4" class="bronze-btn px-3 py-1 rounded-full text-[10px] font-semibold uppercase">კოპირება</button>
+              </div>
+            </div>
+            <h4 class="text-xs sm:text-sm font-bold text-white">მოხრილი ეკრანიდან დარბაზში "გამოფრენილი" 3D ოქროს თაღი &amp; ლოგო</h4>
+            <pre id="prompt-loop-4-en" class="prompt-box prompt-pane active-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">Anamorphic 3D forced perspective naked-eye illusion for curved corner 90-degree LED screen. A massive polished yellow-gold architectural arch with cascading white phalaenopsis orchids appears to physically protrude outward into the real physical venue space. Hyper-realistic cast shadows on simulated interior screen walls creating immense depth. Delicate floating petals drifting past the invisible screen boundary. Photorealistic 8k, camera perspective locked to 45-degree sweet-spot observer, ultra-sharp rendering.</pre>
+            <pre id="prompt-loop-4-ka" class="prompt-box prompt-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">ანამორფული 3D ილუზია 90-გრადუსიანი კუთხით მოხრილი LED ეკრანისთვის. მასიური გაპრიალებული ყვითელი ოქროს არქიტექტურული თაღი თეთრი ორქიდეებით თითქოს ფიზიკურად გამოდის ეკრანიდან დარბაზის სივრცეში. ჰიპერ-რეალისტური ჩრდილები ვირტუალურ კედლებზე ქმნის უზარმაზარ სიღრმეს. მოტივტივე ფურცლები კვეთენ ეკრანის უხილავ საზღვარს. 8k რეზოლუცია, კამერა ჩაკეტილია 45-გრადუსიან Sweet-Spot წერტილზე.</pre>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== LIVE PRACTICAL TASK 02: 10 MINUTES ==================== -->
+    <section id="block-task-2" class="vanilla-card p-6 sm:p-8 space-y-6 border-2 border-emerald-500/50 bg-emerald-950/10 rounded-2xl scroll-mt-24">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-emerald-500/30">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider">Live დავალება 02</span>
+            <span class="text-xs font-semibold text-emerald-400">10-წუთიანი პრაქტიკული ვორქშოპი</span>
+          </div>
+          <h3 class="serif-font text-xl sm:text-2xl font-bold text-white mt-1">
+            4K Seamless LED Video Loop-ის გენერაცია &amp; უწყვეტობის ტესტი
+          </h3>
+        </div>
+
+        <!-- 10-Minute Interactive Timer -->
+        <div class="timer-box p-3 rounded-2xl bg-[#141110] border border-emerald-500/40 flex items-center gap-3">
+          <div class="text-center">
+            <span class="text-[9px] uppercase font-bold text-emerald-400 block tracking-wider">დარჩენილი დრო</span>
+            <span id="timer-display-2" class="font-mono text-2xl font-bold text-white tracking-widest">10:00</span>
+          </div>
+          <button onclick="toggleTimer(2)" id="timer-btn-2" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md">
+            Start
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs sm:text-sm">
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">1. ამოცანა</span>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            დააგენერირეთ 8-წამიანი უწყვეტი ვიდეო ფონი (Liquid Gold ან Emerald Silk) Runway Gen-4.5-ში ან Kling AI-ში სცენის ეკრანისთვის.
+          </p>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">2. შესასრულებელი ნაბიჯები</span>
+          <ol class="text-brand-cream/80 space-y-1 font-light list-decimal list-inside leading-relaxed">
+            <li>დააკოპირეთ ზემოთ მოცემული ქეისი 01 ან 02-ის პრომპტი;</li>
+            <li>ჩართეთ Loop Mode (ან გამოიყენეთ First/End Frame ინტეგრაცია);</li>
+            <li>გაუშვით ვიდეო ფლეიერში Repeat-ზე და შეამოწმეთ, რომ შეერთებისას არ ხდება არანაირი გადახტომა (Zero Jitter).</li>
+          </ol>
+        </div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">3. Deliverable (შედეგი)</span>
+          <div class="sub-surface p-3 rounded-xl border border-emerald-500/30 text-emerald-300 text-xs font-light">
+            ✓ 1 მზა 4K MP4 Seamless Loop ვიდეო ფაილი, რომელიც მზადაა სასცენო LED ეკრანზე გასაშვებად!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== THEME 04: APP-LESS WEBAR ==================== -->
+    <section id="block-webar" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">თემა 04</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          App-less WebAR: "ცოცხალი" მოსაწვევები &amp; მაგიდის ნავიგაცია
+        </h2>
+      </div>
+
+      <!-- Philosophy & Open-Source Shift 2026 -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-brand-goldBorder">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-brand-gold tracking-widest block">WebXR • აპლიკაციის გარეშე</span>
+            <h3 class="serif-font text-lg sm:text-xl font-bold text-white">
+              რატომ არის WebAR აუცილებელი ელიტარული ივენთისთვის?
+            </h3>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold border border-emerald-500/30">
+            8th Wall Open-Source &amp; MindAR Standard
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-brand-cream/85 font-light leading-relaxed">
+          ლუქს-ივენთის სტუმარი <strong>არასდროს გადმოწერს ახალ აპლიკაციას App Store-იდან</strong> მხოლოდ ერთი მოსაწვევის სანახავად. WebAR-ის ძალა იმაშია, რომ სტუმარი უბრალოდ ასკანირებს QR კოდს ტელეფონის კამერით, ხსნის Safari-ს ან Chrome-ს, მიუშვერს კამერას დაბეჭდილ ქაღალდის მოსაწვევს, და ქაღალდზე "ცოცხლდება" 3D ოქროს მონოგრამა და ვიდეო-თიზერი!
+        </p>
+
+        <!-- 3 Core WebAR Components -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-1">
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">კომპონენტი 01 • Image Tracking</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">MindAR.js (Zero-Cost Open Source)</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              სუფთა JavaScript ბიბლიოთეკა, რომელიც დაბეჭდილი მოსაწვევის ვიზუალურ ორნამენტს იყენებს როგორც Target-ს. კამერა იჭერს ბარათს და ზედ ამაგრებს 3D ობიექტს.
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">კომპონენტი 02 • Native 3D AR</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">Google &lt;model-viewer&gt; (WebXR)</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              Google-ისა და Apple-ის ნატიური ტექნოლოგია. iOS-ზე იხსნება AR Quick Look (USDZ), Android-ზე Scene Viewer (GLB). სტუმარი თავის ოთახში დგამს სადღესასწაულო თაღს!
+            </p>
+          </div>
+
+          <div class="sub-surface p-4 rounded-xl border border-brand-goldBorder/40 space-y-2">
+            <span class="text-[10px] font-bold text-brand-gold uppercase block">კომპონენტი 03 • Action CTA</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm">RSVP &amp; Seating Finder ხიდი</h4>
+            <p class="text-[11px] text-brand-cream/80 leading-relaxed font-light">
+              AR გამოცდილების ბოლოს ეკრანზე ჩნდება ინტერაქტიული ოქროსფერი ღილაკი: <em>"ჩემი მაგიდის ნახვა"</em>, რომელიც სტუმარს გადაიყვანს დღე 2-ის RSVP პორტალზე.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FULL READY-TO-USE WEBAR HTML SNIPPET -->
+      <div class="vanilla-card p-5 sm:p-7 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-brand-gold tracking-widest block">მზა კოდის ბლოკი</span>
+            <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+              მზა MindAR + A-Frame კოდი: ცოცხალი მოსაწვევი (Image Target Tracking)
+            </h3>
+          </div>
+          <button onclick="copyCodeSnippet('code-webar-snippet')" id="btn-code-webar-snippet" class="bronze-btn px-4 py-1.5 rounded-full text-xs font-semibold uppercase">
+            კოპირება
+          </button>
+        </div>
+
+        <p class="text-xs text-brand-cream/80 font-light leading-relaxed">
+          დააკოპირეთ ეს კოდი და შეინახეთ როგორც <code>index.html</code> ნებისმიერ უფასო ჰოსტინგზე (Netlify, Vercel ან GitHub Pages). შეცვალეთ <code>target.mind</code> თქვენი მოსაწვევის სამიზნე ფაილით:
+        </p>
+
+        <pre id="code-webar-snippet" class="code-box p-4 rounded-xl text-xs overflow-x-auto leading-relaxed"><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+  &lt;title&gt;Vanilla Events • Live WebAR Invitation&lt;/title&gt;
+  &lt;!-- MindAR &amp; A-Frame Libraries --&gt;
+  &lt;script src="https://aframe.io/releases/1.5.0/aframe.min.js"&gt;&lt;/script&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"&gt;&lt;/script&gt;
+  &lt;style&gt;
+    body { margin: 0; overflow: hidden; }
+    .ar-btn {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #AC845D; color: #FFF; padding: 12px 28px; border-radius: 9999px;
+      font-family: sans-serif; font-weight: bold; text-decoration: none; z-index: 9999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5); text-transform: uppercase; font-size: 12px;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Interactive Button linked to Day 2 Portal --&gt;
+  &lt;a href="https://vanillaevents.ge/portal" class="ar-btn" target="_blank"&gt;ჩემი მაგიდის ნახვა &amp; RSVP &rarr;&lt;/a&gt;
+
+  &lt;!-- MindAR Scene Container --&gt;
+  &lt;a-scene mindar-image="imageTargetSrc: ./card-target.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"&gt;
+    &lt;a-assets&gt;
+      &lt;!-- Video Teaser from Day 1 --&gt;
+      &lt;video id="invitation-video" src="./gala-teaser.mp4" preload="auto" loop="true" playsinline webkit-playsinline&gt;&lt;/video&gt;
+      &lt;!-- 3D Monogram from Day 3 --&gt;
+      &lt;a-asset-item id="gold-monogram" src="./monogram.glb"&gt;&lt;/a-asset-item&gt;
+    &lt;/a-assets&gt;
+
+    &lt;a-camera position="0 0 0" look-controls="enabled: false"&gt;&lt;/a-camera&gt;
+
+    &lt;!-- Target 0: The Physical Printed Card --&gt;
+    &lt;a-entity mindar-image-target="targetIndex: 0"&gt;
+      &lt;!-- 3D Golden Monogram Floating Above Card --&gt;
+      &lt;a-gltf-model rotation="0 0 0" position="0 0.25 0.1" scale="0.15 0.15 0.15" src="#gold-monogram" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"&gt;&lt;/a-gltf-model&gt;
+      &lt;!-- Video Playing Directly on the Surface of the Card --&gt;
+      &lt;a-video src="#invitation-video" width="1" height="0.56" position="0 0 0"&gt;&lt;/a-video&gt;
+    &lt;/a-entity&gt;
+  &lt;/a-scene&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+
+    </section>
+
+    <!-- ==================== 10 ANTI-PATTERNS IN 3D & SPATIAL EVENT DESIGN ==================== -->
+    <section id="block-anti-patterns" class="vanilla-card p-6 sm:p-8 space-y-6 border-l-4 border-amber-500">
+      <div class="flex items-center justify-between pb-3 border-b border-brand-goldBorder">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-amber-400 tracking-widest block">შეცდომების პრევენცია</span>
+          <h3 class="serif-font text-base sm:text-lg font-bold text-white">
+            10 Anti-Pattern წესი სივრცით 3D, LED Loops &amp; WebAR დიზაინში
+          </h3>
+        </div>
+        <span class="text-xs text-amber-400 font-semibold">Production Checklist</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">1. ზედმეტად მძიმე პოლიგონები (&gt;500k Polys):</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            მობილური ტელეფონები ვერ ხსნიან 200MB-იან 3D მოდელებს. <strong>წესი:</strong> ყოველთვის გაატარეთ Meshy-ს Smart Remesh-ში ან Decimate-ში, რათა მოდელი იყოს &lt;50k პოლიგონი (&lt;15MB GLB).
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">2. დაბალკონტრასტული WebAR სამიზნე:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            თუ მოსაწვევი სუფთა თეთრია ან მხოლოდ ერთი ზოლი ახატია, კამერა ვერ დაიჭერს მას. <strong>წესი:</strong> სამიზნე ბარათს უნდა ჰქონდეს მკაფიო ასიმეტრიული ორნამენტი ან კონტურები.
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">3. Seamless Loop-ის გადახტომა (Jitter):</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            თუ ვიდეო ყოველ 8 წამში თვალშისაცემად ხტის, ის აფუჭებს მთელი სცენის იერს. <strong>წესი:</strong> ყოველთვის შეამოწმეთ პირველი და ბოლო კადრის 100% იდენტურობა.
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">4. არარეალური განათება, რაც არ ქირავდება:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            ნუ დაახატავთ 3D-ში სინათლის ისეთ წყაროებს, რაც თბილისში გაქირავებაში არ არსებობს. <strong>წესი:</strong> დაიცავით რეალური კელვინები (2700K - 3200K) და რეალური DMX პროჟექტორები.
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">5. 3DGS ფაილის დაუკომპრესირებლად გაგზავნა:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            150MB-იანი PLY ფაილი მობილურ ინტერნეტზე ვერ ჩაიტვირთება. <strong>წესი:</strong> ყოველთვის დააკომპრესირეთ Niantic SPZ ფორმატში, რაც ფაილს 10-15MB-მდე ამცირებს.
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">6. ანამორფული Sweet-Spot-ის უგულებელყოფა:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            ანამორფული 3D ეფექტი მხოლოდ ერთი კუთხიდან ჩანს სრულყოფილად. <strong>წესი:</strong> კამერა გაასწორეთ იმ წერტილზე, სადაც VIP მაგიდები ან მთავარი სტუმრები სხედან.
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">7. აპლიკაციის გადმოწერის მოთხოვნა:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            არასდროს მოსთხოვოთ სტუმარს App Store-იდან რამის დაყენება. <strong>წესი:</strong> გამოიყენეთ მხოლოდ App-less WebAR (ბრაუზერში 1 დაწკაპუნებით გახსნა).
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">8. არასწორი ასპექტ-რაციო LED კედელზე:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            სასცენო ეკრანები იშვიათადაა 16:9. ისინი ხშირად 32:9 ან ულტრა-ფართოა. <strong>წესი:</strong> წინასწარ აიღეთ ეკრანის პიქსელური რეზოლუცია და პრომპტში ჩაწერეთ <code>--ar 32:9</code>.
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">9. არარეალური მასშტაბები 3D-ში:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            თუ მაგიდა რეალურზე 2-ჯერ დიდი გამოჩნდება, დამკვეთს შეექმნება ცრუ მოლოდინი. <strong>წესი:</strong> ყოველთვის გამოიყენეთ 1:1 მეტრული მასშტაბი (1.8მ მრგვალი მაგიდა = 1.8 units).
+          </p>
+        </div>
+
+        <div class="sub-surface p-3.5 rounded-xl border border-brand-goldBorder/30 space-y-1">
+          <strong class="text-amber-400 block font-semibold">10. WebAR-ის ტესტირების გარეშე დაბეჭდვა:</strong>
+          <p class="text-brand-cream/80 font-light leading-relaxed">
+            არ გაუშვათ 500 ცალი მოსაწვევი სტამბაში, სანამ 1 სატესტო ანაბეჭდზე კამერით არ შეამოწმებთ MindAR-ის სტაბილურ ტრექინგს!
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== PROMPT BANK (BILINGUAL) ==================== -->
+    <section id="block-prompt-bank" class="space-y-6 scroll-mt-24">
+      <div class="flex items-center gap-3 border-b border-brand-goldBorder pb-3">
+        <span class="px-2.5 py-0.5 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-wider">პრომპტების ბანკი</span>
+        <h2 class="serif-font text-xl sm:text-2xl font-bold text-white">
+          3D გენერაციისა &amp; LED Loops-ის ორენოვანი პრომპტების ბანკი (EN / GEO)
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Prompt 1: Meshy 3D Floral Arch -->
+        <div class="vanilla-card p-5 space-y-2.5 border border-brand-gold/40">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-[10px] uppercase font-bold text-brand-gold tracking-wider">Meshy-4 • 3D Floral Arch</span>
+            <div class="flex items-center gap-1.5">
+              <div class="inline-flex items-center gap-1 bg-[#141110] p-0.5 rounded-full border border-brand-goldBorder/40">
+                <button onclick="setPromptLang('prompt-bank-3d-1', 'en')" id="tab-prompt-bank-3d-1-en" class="prompt-lang-tab active-tab">EN</button>
+                <button onclick="setPromptLang('prompt-bank-3d-1', 'ka')" id="tab-prompt-bank-3d-1-ka" class="prompt-lang-tab">GEO</button>
+              </div>
+              <button onclick="copyBilingualPrompt('prompt-bank-3d-1')" id="btn-prompt-bank-3d-1" class="bronze-btn px-3 py-1 rounded-full text-[10px] font-semibold uppercase">კოპირება</button>
+            </div>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">ლუქს-ქორწილის მონუმენტური ყვავილოვანი თაღი (GLB Asset)</h4>
+          <pre id="prompt-bank-3d-1-en" class="prompt-box prompt-pane active-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">High-end luxury wedding architectural floral arch designed by Vanilla Events. Minimalist slender brushed champagne-gold metal geometric frame. Asymmetrical cascading organic arrangements of white phalaenopsis orchids, ivory garden roses, and silver-green eucalyptus foliage. Photorealistic 4k PBR materials, metallic brass sheen, delicate petal translucency, clean quad topology, optimized game-ready GLB export under 45k polygons, isolated on neutral background.</pre>
+          <pre id="prompt-bank-3d-1-ka" class="prompt-box prompt-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">მაღალი კლასის ლუქს-ქორწილის არქიტექტურული ყვავილოვანი თაღი Vanilla Events-ის სტილში. მინიმალისტური დავარგებული შამპანურისფერი ოქროს გეომეტრიული ჩარჩო. თეთრი ორქიდეების, სპილოსძვლისფერი ბაღის ვარდებისა და ევკალიპტის ასიმეტრიული კასკადები. 4K PBR მასალები, მეტალის ბზინვარება, გამჭვირვალე ფურცლები, სუფთა Quad ტოპოლოგია, ოპტიმიზებული GLB მოდელი 45k პოლიგონზე ნაკლები.</pre>
+        </div>
+
+        <!-- Prompt 2: Meshy 3D Imperial Table -->
+        <div class="vanilla-card p-5 space-y-2.5 border border-brand-gold/40">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-[10px] uppercase font-bold text-brand-gold tracking-wider">Meshy-4 • 3D Gala Table</span>
+            <div class="flex items-center gap-1.5">
+              <div class="inline-flex items-center gap-1 bg-[#141110] p-0.5 rounded-full border border-brand-goldBorder/40">
+                <button onclick="setPromptLang('prompt-bank-3d-2', 'en')" id="tab-prompt-bank-3d-2-en" class="prompt-lang-tab active-tab">EN</button>
+                <button onclick="setPromptLang('prompt-bank-3d-2', 'ka')" id="tab-prompt-bank-3d-2-ka" class="prompt-lang-tab">GEO</button>
+              </div>
+              <button onclick="copyBilingualPrompt('prompt-bank-3d-2')" id="btn-prompt-bank-3d-2" class="bronze-btn px-3 py-1 rounded-full text-[10px] font-semibold uppercase">კოპირება</button>
+            </div>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-white">შავი მარმარილოს საბანკეტო მაგიდა სანთლებითა და ჭურჭლით</h4>
+          <pre id="prompt-bank-3d-2-en" class="prompt-box prompt-pane active-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">Mirror-polished black Nero Marquina marble banquet dining table styled for royal gala dinner. Gold cutlery place settings, fine cut crystal champagne flutes, slender ivory taper candles in brass holders, and a low continuous runner centerpiece of white orchids and ranunculus. PBR roughness and metallic maps, pristine reflections, photorealistic 3D asset, GLB format, optimized for real-time WebGL rendering.</pre>
+          <pre id="prompt-bank-3d-2-ka" class="prompt-box prompt-pane p-3 rounded-lg text-[11px] font-mono text-brand-cream/90 whitespace-pre-wrap leading-relaxed">გაპრიალებული შავი Nero Marquina მარმარილოს საბანკეტო მაგიდა გალა-ვახშმისთვის. ოქროს დანა-ჩანგალი, ბროლის შამპანურის ბოკალები, წვრილი სპილოსძვლისფერი სანთლები თითბრის სასანთლეებში და თეთრი ორქიდეების დაბალი ცენტრალური კომპოზიცია. PBR მასალები, სარკისებრი ანარეკლები, ფოტორეალისტური 3D მოდელი, ოპტიმიზებული რეალურ დროში WebGL რენდერისთვის.</pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== BOTTOM NAVIGATION & SUMMARY ==================== -->
+    <div class="vanilla-card p-6 sm:p-8 space-y-4 border-t-2 border-brand-gold flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <span class="text-xs text-brand-gold uppercase tracking-wider font-bold block">კურსის სრული პაკეტი</span>
+        <h4 class="serif-font text-lg font-bold text-white">Vanilla Events: 3-დღიანი AI სამაგისტრო პროგრამა</h4>
+        <p class="text-xs text-brand-cream/80 font-light mt-1">
+          ლექცია 01 (მულტიმოდალური AI) • ლექცია 02 (ვაიბ კოდინგი &amp; RSVP) • ლექცია 03 (სივრცითი 3D &amp; WebAR)
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="day-2-guide.html" class="day-btn-secondary px-4 py-2 rounded-full text-xs font-semibold uppercase">
+          &larr; დღე 2-ის გაიდი
+        </a>
+        <a href="day-3-slides.html" class="bronze-btn px-5 py-2 rounded-full text-xs font-semibold uppercase shadow-md">
+          დღე 3-ის სლაიდები &rarr;
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#141110] border-t border-brand-goldBorder py-8 mt-12 text-xs text-brand-cream/70 font-light">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="text-brand-gold font-serif font-bold">Vanilla Events</span>
+        <span>•</span>
+        <span>AI გენერაციული ინტელექტი პრაქტიკაში</span>
+      </div>
+      <div>
+        <span>ავტორი: გიორგი ბასილაია • Smart Academy</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT ENGINE: BILINGUAL TABS, TIMERS, CODE COPY & THEME -->
+  <script>
+    let currentGlobalPromptLang = 'en';
+
+    function setPromptLang(boxId, lang) {
+      const enPane = document.getElementById(boxId + '-en');
+      const kaPane = document.getElementById(boxId + '-ka');
+      const enTab = document.getElementById('tab-' + boxId + '-en');
+      const kaTab = document.getElementById('tab-' + boxId + '-ka');
+
+      if (lang === 'ka') {
+        if (enPane) enPane.classList.remove('active-pane');
+        if (kaPane) kaPane.classList.add('active-pane');
+        if (enTab) enTab.classList.remove('active-tab');
+        if (kaTab) kaTab.classList.add('active-tab');
+      } else {
+        if (kaPane) kaPane.classList.remove('active-pane');
+        if (enPane) enPane.classList.add('active-pane');
+        if (kaTab) kaTab.classList.remove('active-tab');
+        if (enTab) enTab.classList.add('active-tab');
+      }
+    }
+
+    function switchGlobalLang(targetLang) {
+      currentGlobalPromptLang = targetLang;
+      const btnEn = document.getElementById('lang-btn-en');
+      const btnKa = document.getElementById('lang-btn-ka');
+      if (targetLang === 'en') {
+        if (btnEn) { btnEn.classList.add('bg-brand-gold', 'text-white', 'shadow-sm'); btnEn.classList.remove('text-brand-cream/70'); }
+        if (btnKa) { btnKa.classList.remove('bg-brand-gold', 'text-white', 'shadow-sm'); btnKa.classList.add('text-brand-cream/70'); }
+      } else {
+        if (btnKa) { btnKa.classList.add('bg-brand-gold', 'text-white', 'shadow-sm'); btnKa.classList.remove('text-brand-cream/70'); }
+        if (btnEn) { btnEn.classList.remove('bg-brand-gold', 'text-white', 'shadow-sm'); btnEn.classList.add('text-brand-cream/70'); }
+      }
+
+      const allPanes = document.querySelectorAll('.prompt-pane');
+      allPanes.forEach(pane => {
+        const id = pane.id;
+        const baseId = id.replace(/-en$|-ka$/, '');
+        setPromptLang(baseId, targetLang);
+      });
+    }
+
+    function copyBilingualPrompt(boxId) {
+      const enPane = document.getElementById(boxId + '-en');
+      const kaPane = document.getElementById(boxId + '-ka');
+      let activeEl = enPane;
+      if (kaPane && kaPane.classList.contains('active-pane')) {
+        activeEl = kaPane;
+      } else if (enPane && enPane.classList.contains('active-pane')) {
+        activeEl = enPane;
+      }
+
+      if (!activeEl) return;
+      const text = activeEl.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-' + boxId);
+        if (btn) {
+          const orig = btn.innerText;
+          btn.innerText = '✓ დაკოპირდა!';
+          btn.classList.remove('bronze-btn');
+          btn.classList.add('bg-emerald-600', 'text-white');
+          setTimeout(() => {
+            btn.innerText = orig;
+            btn.classList.remove('bg-emerald-600', 'text-white');
+            btn.classList.add('bronze-btn');
+          }, 2000);
+        }
+      });
+    }
+
+    function copyCodeSnippet(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-' + elementId);
+        if (btn) {
+          const orig = btn.innerText;
+          btn.innerText = '✓ დაკოპირდა!';
+          btn.classList.remove('bronze-btn');
+          btn.classList.add('bg-emerald-600', 'text-white');
+          setTimeout(() => {
+            btn.innerText = orig;
+            btn.classList.remove('bg-emerald-600', 'text-white');
+            btn.classList.add('bronze-btn');
+          }, 2000);
+        }
+      });
+    }
+
+    /* 10-Minute Timers */
+    const timerState = {
+      1: { total: 600, current: 600, interval: null, running: false },
+      2: { total: 600, current: 600, interval: null, running: false }
+    };
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function toggleTimer(id) {
+      const st = timerState[id];
+      const btn = document.getElementById('timer-btn-' + id);
+      const display = document.getElementById('timer-display-' + id);
+
+      if (st.running) {
+        clearInterval(st.interval);
+        st.running = false;
+        if (btn) {
+          btn.innerText = 'Resume';
+          btn.classList.remove('bg-amber-500');
+          btn.classList.add('bg-emerald-500');
+        }
+      } else {
+        st.running = true;
+        if (btn) {
+          btn.innerText = 'Pause';
+          btn.classList.remove('bg-emerald-500');
+          btn.classList.add('bg-amber-500');
+        }
+        st.interval = setInterval(() => {
+          if (st.current > 0) {
+            st.current--;
+            if (display) display.innerText = formatTime(st.current);
+          } else {
+            clearInterval(st.interval);
+            st.running = false;
+            if (btn) btn.innerText = 'Done!';
+            if (display) display.innerText = '00:00';
+            alert('დავალება ' + id + ' (10 წუთი) დასრულდა!');
+          }
+        }, 1000);
+      }
+    }
+
+    /* Day / Night Theme Toggle */
+    function toggleTheme() {
+      const isDay = document.documentElement.classList.toggle('theme-day');
+      if (isDay) {
+        document.documentElement.classList.remove('scheme_gold_dark');
+        document.documentElement.classList.add('scheme_gold_light');
+        localStorage.setItem('vanilla_theme', 'day');
+      } else {
+        document.documentElement.classList.remove('scheme_gold_light');
+        document.documentElement.classList.add('scheme_gold_dark');
+        localStorage.setItem('vanilla_theme', 'dark');
+      }
+      updateThemeUI(isDay);
+    }
+
+    function updateThemeUI(isDay) {
+      const icon = document.getElementById('theme-icon');
+      const text = document.getElementById('theme-text');
+      const btn = document.getElementById('theme-toggle-btn');
+      const darkLogo = document.querySelector('.dark-logo');
+      const lightLogo = document.querySelector('.light-logo');
+
+      if (isDay) {
+        if (icon) icon.innerText = '🌙';
+        if (text) text.innerText = 'Night';
+        if (btn) btn.setAttribute('title', 'ღამის რეჟიმზე გადართვა');
+        if (darkLogo) darkLogo.classList.add('hidden');
+        if (lightLogo) lightLogo.classList.remove('hidden');
+      } else {
+        if (icon) icon.innerText = '☀️';
+        if (text) text.innerText = 'Day';
+        if (btn) btn.setAttribute('title', 'დღის რეჟიმზე გადართვა');
+        if (darkLogo) darkLogo.classList.remove('hidden');
+        if (lightLogo) lightLogo.classList.add('hidden');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const isDay = document.documentElement.classList.contains('theme-day');
+      updateThemeUI(isDay);
+    });
+  </script>
+</body>
+</html>
