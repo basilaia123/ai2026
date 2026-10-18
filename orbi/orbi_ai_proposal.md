@@ -76,7 +76,7 @@ To foster collaboration and prevent communication silos, the program is structur
 6. **Apartment Handover SOP, Acceptance Protocols & Defect Snagging:** Standard Operating Procedure (SOP) and acceptance protocols for apartment/suite handover to Radisson Blu/owners with zero missing snags and Decree 41 compliance (with an elective sales/marketing module: FLUX.3 / Rendair virtual staging).
 7. **OpenAI Whisper Large-v3 Turbo & Multimodal Snag Lists:** 4-decoder turbo transcription for technical site voice memos, Field Voice-to-Report pipelines (2-min voice memo to Daily Site Log), and defect extraction from photos into Snag List tables.
 8. **Make.com & Notion 3.0 Operations Hub:** Multi-step workflow automation connecting incoming invoice emails to Notion databases, executive Slack/Teams approval buttons, and vendor dispatchers.
-9. **Lovable.dev & Gamma 5:** Rapid prototyping of vendor submission web portals and 60-second executive slide decks generated from briefs.
+9. **Lovable.dev & Notion 3.0 Operations Hub:** Rapid prototyping of vendor submission web portals and relational database project management hubs connected via Make.com.
 
 ---
 
@@ -84,7 +84,7 @@ To foster collaboration and prevent communication silos, the program is structur
 * **Duration:** 8 Hours (4 practical workshops, 2 hours per session).
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
-  * **Session 1:** Enterprise AI Foundations, Security & Site Assistants (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon, 4 Pillars of Prompting, Traffic-Light Sanitization, Claude Projects, Gemini Gems & Deep Research).
+  * **Session 1:** Enterprise AI Foundations, Security & Site Assistants (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon, 4 Pillars of Prompting, Traffic-Light Sanitization, Claude Projects, Gemini Gems, Gemini Deep Research & Perplexity Pro).
   * **Session 2:** Advanced Data Analytics, Dynamic Excel/Python, Gemini Notebook (1M RAG) & Presentation Automation (Gamma 5).
   * **Session 3:** Contract Risk Intelligence, Automated Bid Leveling, Invoice Verification & Site Operations (Whisper Voice-to-Report, Snag Lists & Apartment Handover SOP).
   * **Session 4:** End-to-End Enterprise Automations: Lovable Portals, Make.com Approval Pipelines, Grok Bot Cloud Teammate & AI Governance.
@@ -104,9 +104,9 @@ Every session is delivered in person. The 2-hour practical workshops are divided
   * Preventing "Lost in the Middle" across 500+ page design archives.
   * **Claude Cowork:** Autonomous local desktop agent for scanning project folders and extracting issues.
 * **☕ Coffee Break (10m)**
-* **Block 2 (50m): Site Role Assistants (Gemini Gems & Claude Projects) & Deep Research**
+* **Block 2 (50m): Site Role Assistants (Gemini Gems & Claude Projects), Gemini Deep Research & Perplexity Pro**
   * Building persistent, site-specific AI assistants (Claude Projects & Google Gemini Gems) preloaded with Decree 41 safety codes, explication sheets, and system personas for PM, Construction, Procurement, and Operations.
-  * ChatGPT Deep Research for autonomous synthesis of 50+ regulatory sources and technical standards.
+  * Autonomous multi-source research via Gemini Deep Research and cited technical fact-checking with Perplexity Pro (synthesizing 50+ regulatory sources and ISO building standards).
   * **VERIFY Framework:** Comprehensive anti-hallucination validation before document sign-off.
 * **🛠️ Practical Task:** Establish an ORBI Site Hub (Claude Project or Gemini Gem), scan contract terms via Claude Cowork, draft an enforceable 14-day delay default notice using C.R.E.A.T.E., and cross-check statutory standards.
 * **⚡ Claude Alternative Track (Claude Projects & Cowork Workspace):** Dedicated ORBI Site Brain. Building a persistent workspace in Claude Projects for an ORBI property with preloaded explication sheets, Decree 41 safety codes, and subcontractor contracts + deploying Claude Cowork as an autonomous local desktop agent under strict Anthropic Zero Data Retention (ZDR) enterprise privacy.
@@ -144,8 +144,8 @@ Every session is delivered in person. The 2-hour practical workshops are divided
 * **☕ Coffee Break (10m)**
 * **Block 2 (50m): Make.com Approval Pipelines, Grok Bot & Corporate AI Governance**
   * Multi-stage Make.com workflow automation: `Incoming invoice email` ➔ `AI extraction` ➔ `Notion 3.0 / ERP database record` ➔ `Manager approval button (Slack/Teams)` ➔ `Automated vendor notification`.
-  * Deploying **Grok Bot (xAI)** as a persistent Cloud VM teammate for autonomous supplier portal navigation, material price scraping, and anomaly alerts.
-  * Corporate AI Governance: corporate tool whitelisting, secure API key management, intellectual property safety, and Shadow AI prevention protocols.
+  * Deploying **Grok Bot (xAI)** as a cloud computer-based AI agent (beta) for autonomous supplier portal navigation, material price scraping, and anomaly alerts.
+  * Corporate AI Governance: corporate tool whitelisting, secure API key management, intellectual property safety, Shadow AI prevention protocols, and strict credentials isolation (autonomous agents are never granted ORBI passwords, banking access, or Red category data, strictly enforcing the Session 1 Traffic-Light protocol).
 * **📋 Final Deliverable:** Deploy an active Make.com multi-stage approval scenario with email and Notion, launch a functioning prototype Lovable portal, and configure a Grok Bot supplier monitoring workflow.
 * **⚡ Claude Alternative Track (Claude Multi-Agent Approval Engine & Claude Code):** Integrating Claude via API into Make.com & Notion as the intelligent decision-making brain for incoming subcontractor invoices, and leveraging Claude Code for command-line batch processing of project drawings and photo logs.
 
