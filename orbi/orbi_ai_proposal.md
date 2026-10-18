@@ -172,5 +172,3 @@ Every session is delivered in person. The 2-hour practical workshops are divided
   * **Chief Technical Architect:** Georgia's real-time National Seismic Monitoring Network (26 stations) and low-power IoT field data transmission.
   * **Speaker & Lead Technical Expert:** 10 international conferences and donor programs (NATO Science for Peace, USAID, EU Erasmus+).
 
-#### Certification
-Upon successful completion, participants will receive bilingual corporate certificates validating their practical competence in applying Generative AI and No-Code Automation to construction, project management, and engineering workflows. Homework submission is required to receive the certificate.
