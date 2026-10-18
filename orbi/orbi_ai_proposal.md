@@ -87,8 +87,8 @@ To foster collaboration and prevent communication silos, the program is structur
   * **Session 1:** Enterprise AI Foundations, Security & Site Assistants (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon, 4 Pillars of Prompting, Traffic-Light Sanitization, Claude Projects, Gemini Gems, Gemini Deep Research & Perplexity Pro).
   * **Session 2:** Advanced Data Analytics, Dynamic Excel/Python, Gemini Notebook (1M RAG) & Presentation Automation (Gamma 5).
   * **Session 3:** Contract Risk Intelligence, Automated Bid Leveling, Invoice Verification & Site Operations (Whisper Voice-to-Report, Snag Lists & Apartment Handover SOP).
-  * **Session 4:** End-to-End Enterprise Automations: Lovable Portals, Make.com Approval Pipelines, Grok Bot Cloud Teammate & AI Governance.
-* **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate real project documents, build Custom Assistants, audit BOQs and invoices, compile apartment handover SOPs & protocols, create a front-end portal in Lovable.dev, and automate approval pipelines via Make.com.
+  * **Session 4:** End-to-End Enterprise Automations: Notion 3.0 Operations Hub, Lovable Portals, Make.com Approval Pipelines, Grok Bot Cloud Teammate & AI Governance.
+* **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate real project documents, build Custom Assistants, audit BOQs and invoices, compile apartment handover SOPs & protocols, configure a Notion 3.0 Operations Hub, create a front-end portal in Lovable.dev, and automate approval pipelines via Make.com.
 
 ---
 
@@ -125,9 +125,10 @@ Every session is delivered in person. The 2-hour practical workshops are divided
 * **⚡ Claude Alternative Track (Claude Artifacts Zero-Code Construction Dashboards):** Generating live, interactive React/HTML widgets directly inside chat: dynamic room explication filters, interactive budget deviation sliders, and defect snagging forms instantly embeddable into ORBI's internal project portal without developers.
 
 #### Session 3: Contract Risk Intelligence, Automated Bid Leveling & Site Operations (Whisper & Handover SOP) (2 Hours)
-* **Block 1 (50m): Contract Risk Auditing, Subcontractor Bid Leveling & Invoice Verification**
+* **Block 1 (50m): Contract Risk Auditing, Subcontractor Bid Leveling, Perplexity Pro Due Diligence & Invoice Verification**
   * Automated 100+ page contract Red Flags extraction (liquidated damages, warranty liabilities, scope exclusions) using Document Crunch & Provision AI methodologies.
   * Normalizing vendor quotes across currencies and units (m², m³) into automated 3-5 subcontractor weighted decision matrices (Togal.AI & ConWize).
+  * Subcontractor due diligence, reputation/litigation history verification, and real-time market material price benchmarking (rebar, concrete, glazing) via Perplexity Pro.
   * Automated mathematical cross-auditing of submitted site invoices against approved contractual unit rates.
 * **☕ Coffee Break (10m)**
 * **Block 2 (50m): Multimodal Field Operations: Whisper Voice-to-Report, Defect Snagging & Apartment Handover SOP**
@@ -137,16 +138,17 @@ Every session is delivered in person. The 2-hour practical workshops are divided
 * **🛠️ Practical Task:** Execute Bid Leveling on 2 disparate subcontractor BOQs, extract risk clauses, perform an invoice audit, generate an official Snag List from photo + voice note, and compile an official Apartment Handover SOP & Acceptance Protocol.
 * **⚡ Claude Alternative Track (Claude Extended Thinking for Deep Claims & Regulations):** Leveraging Claude Opus 5.5 / Sonnet 5.5 Extended Thinking for rigorous technical-legal deductions: multi-step cross-examination of subcontractor claims, liquidated damages, and warranty disparities against Decree 41 Georgian building standards + extracting critical path delays and drafting contractual notices from meeting audio transcripts.
 
-#### Session 4: End-to-End Enterprise Automations: Lovable Portals, Make.com & Grok Bot (2 Hours)
-* **Block 1 (50m): Internal Web Portals & Construction Micro-Apps (Lovable.dev & Supabase)**
+#### Session 4: End-to-End Enterprise Automations: Notion 3.0 Operations Hub, Lovable Portals, Make.com & Grok Bot (2 Hours)
+* **Block 1 (50m): Internal Web Portals, Construction Micro-Apps (Lovable.dev / Supabase) & Notion 3.0 Operations Hub**
   * Building full-stack internal web tools (subcontractor invoice submission portals, defect logging forms, site requisition trackers) using Lovable.dev connected to Supabase in minutes without traditional web development overhead.
+  * **Notion 3.0 Relational Construction & Operations Hub:** Deploying 4 linked relational databases (Subcontractors Master, Invoices & Payments, Daily Snags & Site Logs, Tasks & Approvals) as ORBI's centralized Single Source of Truth (SSoT).
   * Implementing Row-Level Security (RLS) and role-based permissions between trade contractors and ORBI leadership.
 * **☕ Coffee Break (10m)**
 * **Block 2 (50m): Make.com Approval Pipelines, Grok Bot & Corporate AI Governance**
   * Multi-stage Make.com workflow automation: `Incoming invoice email` ➔ `AI extraction` ➔ `Notion 3.0 / ERP database record` ➔ `Manager approval button (Slack/Teams)` ➔ `Automated vendor notification`.
   * Deploying **Grok Bot (xAI)** as a cloud computer-based AI agent (beta) for autonomous supplier portal navigation, material price scraping, and anomaly alerts.
   * Corporate AI Governance: corporate tool whitelisting, secure API key management, intellectual property safety, Shadow AI prevention protocols, and strict credentials isolation (autonomous agents are never granted ORBI passwords, banking access, or Red category data, strictly enforcing the Session 1 Traffic-Light protocol).
-* **📋 Final Deliverable:** Deploy an active Make.com multi-stage approval scenario with email and Notion, launch a functioning prototype Lovable portal, and configure a Grok Bot supplier monitoring workflow.
+* **📋 Final Deliverable:** Deploy a live Notion 3.0 Operations Hub (4 relational databases), an active Make.com multi-stage approval scenario with email and Notion, launch a functioning prototype Lovable portal, and configure a Grok Bot supplier monitoring workflow.
 * **⚡ Claude Alternative Track (Claude Multi-Agent Approval Engine & Claude Code):** Integrating Claude via API into Make.com & Notion as the intelligent decision-making brain for incoming subcontractor invoices, and leveraging Claude Code for command-line batch processing of project drawings and photo logs.
 
 ---
