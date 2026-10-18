@@ -109,6 +109,12 @@ Every session is delivered in person. The 2-hour practical workshops are divided
   * Autonomous multi-source research via Gemini Deep Research and cited technical fact-checking with Perplexity Pro (synthesizing 50+ regulatory sources and ISO building standards).
   * **VERIFY Framework:** Comprehensive anti-hallucination validation before document sign-off.
 * **🛠️ Practical Task:** Establish an ORBI Site Hub (Claude Project or Gemini Gem), scan contract terms via Claude Cowork, draft an enforceable 14-day delay default notice using C.R.E.A.T.E., and cross-check statutory standards.
+* **🎯 Learning Outcomes (What participants will be able to do after Session 1):**
+  * **Autonomous Desktop AI Agents:** Deploy Claude Cowork to independently scan local construction folders, triage drawings, and extract technical discrepancies.
+  * **Engineering Prompting & Zero-Retention:** Master the 4 Pillars of Prompting (Few-Shot, CoT, XML, Strict Fallback) and enforce Traffic-Light data masking (Red/Amber/Green) with zero data retention leaks.
+  * **Custom Department Assistants (Gems):** Configure persistent AI assistants (Gemini Gems & Claude Projects) tailored with system personas for PM, engineering, and procurement teams.
+  * **Official Dispute Correspondence:** Rapidly draft legally compliant contractor default notices, catch-up schedules, and delay claims within 3 minutes using C.R.E.A.T.E.
+  * **Deep Technical Fact-Checking:** Execute cited regulatory research across 50+ sources using Perplexity Pro and Gemini Deep Research with the VERIFY anti-hallucination framework.
 * **⚡ Claude Alternative Track (Claude Projects & Cowork Workspace):** Dedicated ORBI Site Brain. Building a persistent workspace in Claude Projects for an ORBI property with preloaded explication sheets, Decree 41 safety codes, and subcontractor contracts + deploying Claude Cowork as an autonomous local desktop agent under strict Anthropic Zero Data Retention (ZDR) enterprise privacy.
 
 #### Session 2: Data Analytics, Dynamic Excel/Python, Gemini Notebook & Gamma 5 (2 Hours)
@@ -122,6 +128,12 @@ Every session is delivered in person. The 2-hour practical workshops are divided
   * Interactive live web dashboards via **Claude Artifacts** (dynamic room explication filters, budget deviation sliders).
   * Transforming analytical outputs into executive 10-slide status decks in 60 seconds with **Gamma 5**.
 * **🛠️ Practical Task:** Clean a 1,000-row raw site expense ledger, isolate cost variances, render an interactive Claude Artifacts dashboard, index the project archive in Gemini Notebook with audio briefing, and generate an executive Gamma 5 slide deck.
+* **🎯 Learning Outcomes (What participants will be able to do after Session 2):**
+  * **Automated Data Normalization (ETL):** Clean messy, multi-source subcontractor spreadsheets and automatically resolve `#N/A` and `#VALUE!` errors in seconds.
+  * **Advanced Dynamic Formulas & Python:** Deploy dynamic array formulas (XLOOKUP, INDEX/MATCH, SUMIFS) and execute Python in Excel (`=PY()`) for cost forecasting, burn-rate calculation, and trend analysis.
+  * **Cost Anomaly & Leak Detection:** Uncover hidden variances, inflated contractor rates, and duplicate invoices across 1,000+ line expense models using AI data analysis tools.
+  * **Interactive Web Dashboards:** Build functional, interactive web dashboards via Claude Artifacts (room explication filters, budget variance sliders) without writing code.
+  * **1M Token Archive RAG & Executive Decks:** Index multi-volume project archives in Gemini Notebook (NotebookLM) for cited mobile audio briefs, and generate a 10-slide executive presentation in 60 seconds with Gamma 5.
 * **⚡ Claude Alternative Track (Claude Artifacts Zero-Code Construction Dashboards):** Generating live, interactive React/HTML widgets directly inside chat: dynamic room explication filters, interactive budget deviation sliders, and defect snagging forms instantly embeddable into ORBI's internal project portal without developers.
 
 #### Session 3: Contract Risk Intelligence, Automated Bid Leveling & Site Operations (Whisper & Handover SOP) (2 Hours)
@@ -136,6 +148,12 @@ Every session is delivered in person. The 2-hour practical workshops are divided
   * **Multimodal Computer Vision:** Detecting defects from site photos and formatting structured 7-column Snag Lists (location, trade, severity, SLA).
   * **Apartment Handover SOP & Acceptance Protocols:** Establishing standardized operational handover checklists, Decree 41 safety verification, and defect closeout protocols for apartment and hotel suite delivery to Radisson Blu / property owners with zero missing snags (plus a dedicated sales/marketing extension module: FLUX.3 / Rendair virtual staging for marketing renders).
 * **🛠️ Practical Task:** Execute Bid Leveling on 2 disparate subcontractor BOQs, extract risk clauses, perform an invoice audit, generate an official Snag List from photo + voice note, and compile an official Apartment Handover SOP & Acceptance Protocol.
+* **🎯 Learning Outcomes (What participants will be able to do after Session 3):**
+  * **Contract Risk Red Flags Auditing:** Extract liquidated damages, penalty clauses, warranty liabilities, and scope exclusions from 100+ page contracts using Document Crunch & Provision AI methodology.
+  * **Automated Tender Bid Leveling:** Normalize 3-5 disparate subcontractor BOQs across units (m², m³) and currencies into an automated 3-column weighted comparison matrix via Togal.AI and ConWize.
+  * **Subcontractor Due Diligence & Market Price Checks:** Verify bidder reputation, court litigation history, and benchmark key material prices (rebar, concrete, glazing) in real time using Perplexity Pro before contract award.
+  * **Mathematical Invoice Cross-Auditing:** Mathematically audit incoming contractor invoices against approved contract unit rates, advance deductions, and actual completed quantities.
+  * **Voice-to-Report & Apartment Handover SOP:** Convert 2-minute supervisor ambient voice memos into structured Daily Site Logs with Whisper Turbo, detect photo defects with Computer Vision for Snag Lists, and establish standardized Apartment Handover SOP protocols.
 * **⚡ Claude Alternative Track (Claude Extended Thinking for Deep Claims & Regulations):** Leveraging Claude Opus 5.5 / Sonnet 5.5 Extended Thinking for rigorous technical-legal deductions: multi-step cross-examination of subcontractor claims, liquidated damages, and warranty disparities against Decree 41 Georgian building standards + extracting critical path delays and drafting contractual notices from meeting audio transcripts.
 
 #### Session 4: End-to-End Enterprise Automations: Notion 3.0 Operations Hub, Lovable Portals, Make.com & Grok Bot (2 Hours)
@@ -149,6 +167,12 @@ Every session is delivered in person. The 2-hour practical workshops are divided
   * Deploying **Grok Bot (xAI)** as a cloud computer-based AI agent (beta) for autonomous supplier portal navigation, material price scraping, and anomaly alerts.
   * Corporate AI Governance: corporate tool whitelisting, secure API key management, intellectual property safety, Shadow AI prevention protocols, and strict credentials isolation (autonomous agents are never granted ORBI passwords, banking access, or Red category data, strictly enforcing the Session 1 Traffic-Light protocol).
 * **📋 Final Deliverable:** Deploy a live Notion 3.0 Operations Hub (4 relational databases), an active Make.com multi-stage approval scenario with email and Notion, launch a functioning prototype Lovable portal, and configure a Grok Bot supplier monitoring workflow.
+* **🎯 Learning Outcomes (What participants will be able to do after Session 4):**
+  * **Rapid Web Portals & Micro-Apps:** Prototype and launch internal full-stack web applications (subcontractor doc submission portals, defect logging forms) via Lovable.dev and Supabase without developers in hours.
+  * **Notion 3.0 Relational Operations Hub:** Deploy a 4-database relational construction hub (Subcontractors, Invoices, Daily Snags, Tasks/Approvals) acting as ORBI's operational Single Source of Truth (SSoT).
+  * **Multi-Stage Automated Approval Pipelines:** Configure Make.com workflows connecting email triggers, AI data extraction, Notion 3.0 updates, Slack/Teams one-click manager approvals, and automated vendor notifications.
+  * **Autonomous Cloud AI Teammate (Grok Bot):** Safely run Grok Bot (beta) on a cloud computer to perform autonomous vendor portal price scraping, material audits, and anomaly monitoring.
+  * **Corporate AI Governance & Security:** Enforce Shadow AI prevention policies, API key security, and credentials isolation standards (autonomous agents are strictly restricted from passwords, bank accounts, and Red-category data).
 * **⚡ Claude Alternative Track (Claude Multi-Agent Approval Engine & Claude Code):** Integrating Claude via API into Make.com & Notion as the intelligent decision-making brain for incoming subcontractor invoices, and leveraging Claude Code for command-line batch processing of project drawings and photo logs.
 
 ---
