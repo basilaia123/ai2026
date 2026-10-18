@@ -84,8 +84,8 @@ To foster collaboration and prevent communication silos, the program is structur
 * **Duration:** 12 Hours (4 sessions - 3 hours per session).
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
-  * **Day 1:** Reasoning Architectures (Claude Opus 5.5, GPT-6 Astra/Sol, Gemini 4 Argon), 4 Pillars of Engineering Prompting (Few-Shot, CoT/Self-Refine, XML tags, Strict Fallback), Claude Cowork desktop agent, Lost in the Middle prevention, Gemini Notebook knowledge hubs (NotebookLM), and Deep Research.
-  * **Day 2:** Copilot with Python in Excel (dynamic formulas, data normalization ETL), interactive web dashboards via Claude Artifacts, and Visual AI Virtual Staging (FLUX.3 4K Layout Control & Rendair AI).
+  * **Day 1:** Reasoning Architectures (Claude Opus 5.5, GPT-6 Astra/Sol, Gemini 4 Argon), 4 Pillars of Engineering Prompting (Few-Shot, CoT/Self-Refine, XML tags, Strict Fallback), Claude Cowork desktop agent, Lost in the Middle prevention, Google Gemini Gems custom assistants, Claude Projects, and Deep Research.
+  * **Day 2:** Copilot with Python in Excel (dynamic formulas, data normalization ETL), interactive web dashboards via Claude Artifacts, Google Gemini Notebook (NotebookLM - 1M archive RAG & Audio Overviews), and Visual AI Virtual Staging (FLUX.3 4K Layout Control & Rendair AI).
   * **Day 3:** 100+ page contract Red Flags auditing (Document Crunch & Provision AI), 3-5 subcontractor weighted decision matrices, Whisper Large-v3 Turbo Field Voice-to-Report, and Multimodal Computer Vision defect extraction (Snag List tables).
   * **Day 4:** Rapid web portals with Lovable.dev, multi-stage Make.com approval workflows (invoice email to Notion and manager alerts), Gamma 5 status decks, and enterprise AI security policies (Zero Data Retention & Red/Amber/Green data masking).
 * **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate their real project documents, build Custom Assistants, design a database backend in Notion, create a front-end portal in Lovable.app, and automate it via Make.com.
