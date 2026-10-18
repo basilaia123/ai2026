@@ -80,87 +80,73 @@ To foster collaboration and prevent communication silos, the program is structur
 
 ---
 
-#### AI & Automation Corporate Program (4 Sessions / 12 Hours)
-* **Duration:** 12 Hours (4 sessions - 3 hours per session).
+#### AI & Automation Corporate Program (4 Sessions / 8 Hours)
+* **Duration:** 8 Hours (4 practical workshops, 2 hours per session).
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
-  * **Day 1:** Reasoning Architectures (Claude Opus 5.5, GPT-6 Astra/Sol, Gemini 4 Argon), 4 Pillars of Engineering Prompting (Few-Shot, CoT/Self-Refine, XML tags, Strict Fallback), Claude Cowork desktop agent, Lost in the Middle prevention, Google Gemini Gems custom assistants, Claude Projects, and Deep Research.
-  * **Day 2:** Copilot with Python in Excel (dynamic formulas, data normalization ETL), interactive web dashboards via Claude Artifacts, Google Gemini Notebook (NotebookLM - 1M archive RAG & Audio Overviews), and Visual AI Virtual Staging (FLUX.3 4K Layout Control & Rendair AI).
-  * **Day 3:** 100+ page contract Red Flags auditing (Document Crunch & Provision AI), 3-5 subcontractor weighted decision matrices, Whisper Large-v3 Turbo Field Voice-to-Report, and Multimodal Computer Vision defect extraction (Snag List tables).
-  * **Day 4:** Rapid web portals with Lovable.dev, multi-stage Make.com approval workflows (invoice email to Notion and manager alerts), Grok Bot (xAI) persistent cloud teammate for automated vendor portal audits, Gamma 5 status decks, and enterprise AI security policies (Zero Data Retention & Red/Amber/Green data masking).
-* **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate their real project documents, build Custom Assistants, design a database backend in Notion, create a front-end portal in Lovable.app, and automate it via Make.com.
+  * **Session 1:** Enterprise AI Foundations, Security & Site Assistants (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon, 4 Pillars of Prompting, Traffic-Light Sanitization, Claude Projects, Gemini Gems & Deep Research).
+  * **Session 2:** Advanced Data Analytics, Dynamic Excel/Python, Gemini Notebook (1M RAG) & Presentation Automation (Gamma 5).
+  * **Session 3:** Contract Risk Intelligence, Automated Bid Leveling, Invoice Verification & Multimodal Site Operations (Whisper Voice-to-Report, Snag Lists & FLUX.3 / Rendair Virtual Staging).
+  * **Session 4:** End-to-End Enterprise Automations: Lovable Portals, Make.com Approval Pipelines, Grok Bot Cloud Teammate & AI Governance.
+* **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate real project documents, build Custom Assistants, audit BOQs and invoices, generate virtual staging visuals, create a front-end portal in Lovable.dev, and automate approval pipelines via Make.com.
 
 ---
 
-### 📅 Detailed 4-Session Schedule (12 Hours)
+### 📅 Detailed 4-Session Schedule (8 Hours)
 
-Every session is delivered in person. The 3-hour daily meetings are divided into two focused work blocks and a coffee break.
+Every session is delivered in person. The 2-hour practical workshops are divided into two 50-minute focused work blocks and a 10-minute coffee break.
 
-#### Day 1: AI History, Model Comparison & Critical Thinking (3 Hours)
-* **Block 1 (1 hour 25 minutes): AI History, Evolution & the 2026 Landscape**
-  * **AI Evolution Timeline:** From rule-based systems (ELIZA, 1966) and neural network breakthroughs to Transformer architecture, GPT-3, ChatGPT, and the 2026 agent-first ecosystem.
-  * **LLM Mechanics Under the Hood:** Understanding next-word prediction probability vectors, temperature settings, and why tokenization and training corpus context directly impact output reliability.
-  * **The 2026 Landscape Deep-Dive:** Comparing **GPT-6 Astra / Sol** (speed/multimodal analysis), **Claude Opus 5.5** (complex coding/logic/reasoning), **Gemini 4 Argon**, and mastering the **4 Pillars of Engineering Prompting** (Few-Shot, CoT & Self-Refine, XML tags, Strict Fallback) (1,048,576 tokens unified context budget for huge project archives).
-  * **Arena.ai (lmarena.ai) Benchmarking:** Running blind model comparison tests. Participants learn how to submit live prompts, evaluate blind outputs side-by-side, vote, and interpret ELO rating leaderboards.
-  * **Perplexity.ai for Real-Time Project Research:** Master focus filters (All vs. Writing vs. Search), search operators, file uploads for web analysis, and how to verify Perplexity inline source citations against official regulatory or vendor websites.
-* **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes): Model Comparison, Brainstorming & Critical Thinking**
-  * **Hands-on Model Comparison:** Running identical prompt structures across all three flagships to contrast tone, accuracy, table formatting, and structural differences on actual Orbi business cases.
-  * **AI Brainstorming (Top 2 Techniques):**
-    1. *Multi-Perspective Roleplay:* Structuring system instructions to make the AI simulate a joint review panel (e.g., Architect, MEP Engineer, Project Manager, Hotel Operator) to identify design issues.
-    2. *Reverse Brainstorming:* Forcing the AI to list every logical reason why a specific site construction schedule or procurement plan might fail, then reversing those constraints into risk-mitigation prompts.
-  * **Claude Cowork desktop agent:** Downloading, configuring permissions, and running local file scanning tasks (e.g., automatically sorting construction logs or generating summaries from directories of weekly reports).
-  * **AI Hallucinations & Limitations:** Why LLMs hallucinate, recognizing "plausible-sounding" but fabricated metrics, fake CAD commands, and non-existent industry standards.
-  * **VERIFY Critical Thinking Framework:**
-    * **V**alidate facts against official documents.
-    * **E**valuate source reliability.
-    * **R**ead details actively.
-    * **I**nspect output variables and instructions.
-    * **F**act-check numerical calculations.
-    * **Y**ield decision-making power only after manual human audit.
-  * **Enterprise Data Privacy & Security:** Practical rules for handling proprietary ORBI architectural drawings, supplier agreements, unreleased budgets, and GDPR-compliant client data.
-* **📋 Practical Assignment:** Run a work-relevant project planning prompt across ChatGPT, Claude, and Gemini. Write a comparative report scoring them on accuracy, tone, and format, and identify at least one hallucination or logic error using the VERIFY checklist.
-* **⚡ Claude Alternative Track (Claude Projects & Desktop Cowork):** Dedicated ORBI Site Brain. Building a persistent workspace in Claude Projects for an ORBI property with preloaded explication sheets, Decree 41 safety codes, and subcontractor contracts + deploying Claude Cowork as an autonomous local desktop agent under strict Anthropic Zero Data Retention (ZDR) enterprise privacy.
+#### Session 1: Enterprise AI Foundations, Security & Site Assistants (2 Hours)
+* **Block 1 (50m): Reasoning Architectures, Enterprise Security & Prompting Pillars**
+  * Flagship model mechanics: **Claude Opus 5.5 / Sonnet 5.5**, **GPT-6 Astra / Sol**, and **Gemini 4 Argon**.
+  * Enterprise Zero Data Retention (ZDR) and the Traffic-Light Data Sanitization standard (Red / Yellow / Green).
+  * **4 Pillars of Engineering Prompting:** Few-Shot gold standard, Chain-of-Thought (CoT) & Self-Refine, XML tag structuring, and Strict Fallback anti-hallucination barriers.
+  * Preventing "Lost in the Middle" across 500+ page design archives.
+  * **Claude Cowork:** Autonomous local desktop agent for scanning project folders and extracting issues.
+* **☕ Coffee Break (10m)**
+* **Block 2 (50m): Site Role Assistants (Gemini Gems & Claude Projects) & Deep Research**
+  * Building persistent, site-specific AI assistants (Claude Projects & Google Gemini Gems) preloaded with Decree 41 safety codes, explication sheets, and system personas for PM, Construction, Procurement, and Operations.
+  * ChatGPT Deep Research for autonomous synthesis of 50+ regulatory sources and technical standards.
+  * **VERIFY Framework:** Comprehensive anti-hallucination validation before document sign-off.
+* **🛠️ Practical Task:** Establish an ORBI Site Hub (Claude Project or Gemini Gem), scan contract terms via Claude Cowork, draft an enforceable 14-day delay default notice using C.R.E.A.T.E., and cross-check statutory standards.
+* **⚡ Claude Alternative Track (Claude Projects & Cowork Workspace):** Dedicated ORBI Site Brain. Building a persistent workspace in Claude Projects for an ORBI property with preloaded explication sheets, Decree 41 safety codes, and subcontractor contracts + deploying Claude Cowork as an autonomous local desktop agent under strict Anthropic Zero Data Retention (ZDR) enterprise privacy.
 
-#### Day 2: Prompt Engineering, Custom Assistants, and Gemini Notebook (3 Hours)
-* **Block 1 (1 hour 25 minutes): Advanced Prompting, Custom Assistants & CAD Automation**
-  * **Prompt Engineering Frameworks:** Deep-dive into **PARTS** (Purpose, Action, Role, Topic, Style) and **CREATE** (Context, Role, Examples, Ask, Tone, Execution).
-  * **Advanced In-Context Learning:** Implementing zero-shot, one-shot, and multi-shot prompting with raw Orbi specification examples.
-  * **Custom AI Assistants:** Setting up Custom GPTs and Claude Projects. Structuring system instructions, configuring knowledge bases (MEP guidelines, Orbi design standards), and using markdown system prompts to enforce specific formatting.
-  * **CAD, BIM, and Scripting Automation:** Prompting Claude to generate, debug, and optimize AutoCAD LISP routines, Revit Python scripts, and Dynamo script blocks. Step-by-step methods for explaining execution errors to the AI to auto-correct code.
-* **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes): Google Gemini Notebook in Practice**
-  * **Gemini Notebook Workspace Setup:** Creating dedicated notebooks for large-scale projects (e.g., Central Park Towers). Uploading multiple sources: PDF manuals, MEP standards, Excel schedules, and international hotel brand checklists.
-  * **Retrieval & Analysis:** Running cross-source semantic Q&A, generating automatic study guides, briefing notes, and extracting action items from hundreds of pages of documentation.
-  * **AI Audio Overviews (Podcasts):** Configuring and generating natural-sounding AI audio dialogues summarizing technical specifications, and downloading them for site managers' mobile briefings.
-* **📋 Practical Assignment:** Create a Gemini Notebook workspace with at least 3 project specification documents, generate a Q&A summary note, and build a prototype Custom Assistant in Claude Projects loaded with your department's standard operating procedures (SOPs).
-* **⚡ Claude Alternative Track (Claude Extended Thinking for CAD/BIM & Specs):** Prompting Claude Opus 5.5 / Sonnet 5.5 with Extended Thinking to analyze complex AutoCAD/Dynamo/Revit scripts, auto-resolve syntax conflicts, and cross-reference architectural room explications with Georgian building regulations.
-
-#### Day 3: Notion & Lovable.app Prototyping (3 Hours)
-* **Block 1 (1 hour 25 minutes): Notion Databases as a Backend**
-  * **Structured Data Architectures:** Pages vs. Databases, properties (Select, Formula, Relation, Rollup). Building a relational schema connecting a "Contractors Database" to a "Site Tasks Log" and "Project Milestones".
-  * **Notion AI Integration:** Automatically summarizing meeting minutes, auto-extracting task items into checkboxes, drafting status updates from database records, and using Notion AI formulas.
-* **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes): Lovable.app No-Code Development**
-  * **Interactive App Prototyping:** Introduction to Lovable.app. Understanding how to use simple natural language prompts to generate a complete React/Vite web application front-end.
-  * **Database Bindings & Supabase:** Linking the Lovable UI to Supabase databases. Creating fields, data tables, and setting up real-time sync.
-  * **Practical Real Estate Portals:** Designing an interface for a "Site Defect Reporter" or a "Project KPI Dashboard". Configuring Role-Based Access Control (RBAC) to restrict viewing rights between contractors and Orbi management.
-* **📋 Practical Assignment:** Build a structured, two-table relational database in Notion and generate a functional web portal prototype in Lovable.app that displays mock construction task statuses.
+#### Session 2: Data Analytics, Dynamic Excel/Python, Gemini Notebook & Gamma 5 (2 Hours)
+* **Block 1 (50m): Data Normalization (ETL), Formulas & Copilot with Python**
+  * Ingesting multi-format site files, resolving `#N/A` and `#VALUE!` errors, and dynamic array formula engineering (XLOOKUP, INDEX/MATCH, SUMIFS).
+  * Native Python execution in Excel (`=PY()`) for linear regression, burn-rate velocity tracking, and predictive budget modeling.
+* **☕ Coffee Break (10m)**
+* **Block 2 (50m): Anomaly Detection, Gemini Notebook (1M Archive RAG) & Gamma 5 Decks**
+  * Cost anomaly detection and budget variance analysis.
+  * **Google Gemini Notebook (NotebookLM):** Indexing multi-volume project archives with 1,048,576 token unified context budget for zero-leak semantic search and mobile Studio Audio Overviews for site briefings.
+  * Interactive live web dashboards via **Claude Artifacts** (dynamic room explication filters, budget deviation sliders).
+  * Transforming analytical outputs into executive 10-slide status decks in 60 seconds with **Gamma 5**.
+* **🛠️ Practical Task:** Clean a 1,000-row raw site expense ledger, isolate cost variances, render an interactive Claude Artifacts dashboard, index the project archive in Gemini Notebook with audio briefing, and generate an executive Gamma 5 slide deck.
 * **⚡ Claude Alternative Track (Claude Artifacts Zero-Code Construction Dashboards):** Generating live, interactive React/HTML widgets directly inside chat: dynamic room explication filters, interactive budget deviation sliders, and defect snagging forms instantly embeddable into ORBI's internal project portal without developers.
 
-#### Day 4: Make.com - Workflow Automation (3 Hours)
-* **Block 1 (1 hour 25 minutes): Make.com Core Concepts**
-  * **No-Code Automation Architecture:** Understanding Scenarios, Triggers, Actions, and search modules. Working with JSON data, filters, and conditional routers.
-  * **Data Syncing:** Connecting Notion, Supabase/Lovable, and external APIs. Automatically triggering a workflow when a new site defect is logged in the Lovable portal.
-* **☕ Coffee Break (10 minutes)**
-* **Block 2 (1 hour 25 minutes): Practical Scenarios & AI Governance**
-  * **Real-World Automation Recipes:**
-    * Automatically capturing incoming contractor emails, using AI modules (GPT-6 / Claude Opus 5.5 API) inside Make to extract defect details, and logging them in Notion.
-    * Deploying Grok Bot (xAI) as an autonomous cloud coworker with dedicated Cloud VM for continuous vendor portal navigation, daily material price checks, and anomaly alerts.
-    * Sending automated Slack notifications and Outlook emails when task statuses change.
-    * Utilizing Make's AI Assistant for writing complex mapping formulas and troubleshooting runtime errors.
-  * **Corporate AI Governance & Policy:** Structuring allowed corporate tool lists, secure API key management, intellectual property boundaries, and establishing "Shadow AI" prevention protocols.
-* **📋 Practical Assignment:** Build a live Make.com scenario that connects an email inbox to your Notion database, automatically generating tasks from incoming emails, and draft a 5-point corporate AI compliance checklist.
+#### Session 3: Contract Risk Intelligence, Automated Bid Leveling & Multimodal Site Operations (2 Hours)
+* **Block 1 (50m): Contract Risk Auditing, Subcontractor Bid Leveling & Invoice Verification**
+  * Automated 100+ page contract Red Flags extraction (liquidated damages, warranty liabilities, scope exclusions) using Document Crunch & Provision AI methodologies.
+  * Normalizing vendor quotes across currencies and units (m², m³) into automated 3-5 subcontractor weighted decision matrices (Togal.AI & ConWize).
+  * Automated mathematical cross-auditing of submitted site invoices against approved contractual unit rates.
+* **☕ Coffee Break (10m)**
+* **Block 2 (50m): Multimodal Field Operations: Whisper Voice-to-Report, Defect Snagging & Visual AI Staging**
+  * **OpenAI Whisper Large-v3 Turbo:** Transforming raw 2-minute field supervisor voice memos into structured, official Daily Site Logs.
+  * **Multimodal Computer Vision:** Detecting defects from site photos and formatting structured 7-column Snag Lists (location, trade, severity, SLA).
+  * **Visual AI & Virtual Staging (FLUX.3 Image 2026 4K Layout Control & Rendair AI):** Converting raw grey/black-frame site photos and CAD drawings into photorealistic furnished hotel suites for sales, marketing, and operations.
+* **🛠️ Practical Task:** Execute Bid Leveling on 2 disparate subcontractor BOQs, extract risk clauses, perform an invoice audit, generate an official Snag List from photo + voice note, and render a 4K virtual staging interior.
+* **⚡ Claude Alternative Track (Claude Extended Thinking for Deep Claims & Regulations):** Leveraging Claude Opus 5.5 / Sonnet 5.5 Extended Thinking for rigorous technical-legal deductions: multi-step cross-examination of subcontractor claims, liquidated damages, and warranty disparities against Decree 41 Georgian building standards + extracting critical path delays and drafting contractual notices from meeting audio transcripts.
+
+#### Session 4: End-to-End Enterprise Automations: Lovable Portals, Make.com & Grok Bot (2 Hours)
+* **Block 1 (50m): Internal Web Portals & Construction Micro-Apps (Lovable.dev & Supabase)**
+  * Building full-stack internal web tools (subcontractor invoice submission portals, defect logging forms, site requisition trackers) using Lovable.dev connected to Supabase in minutes without traditional web development overhead.
+  * Implementing Row-Level Security (RLS) and role-based permissions between trade contractors and ORBI leadership.
+* **☕ Coffee Break (10m)**
+* **Block 2 (50m): Make.com Approval Pipelines, Grok Bot & Corporate AI Governance**
+  * Multi-stage Make.com workflow automation: `Incoming invoice email` ➔ `AI extraction` ➔ `Notion 3.0 / ERP database record` ➔ `Manager approval button (Slack/Teams)` ➔ `Automated vendor notification`.
+  * Deploying **Grok Bot (xAI)** as a persistent Cloud VM teammate for autonomous supplier portal navigation, material price scraping, and anomaly alerts.
+  * Corporate AI Governance: corporate tool whitelisting, secure API key management, intellectual property safety, and Shadow AI prevention protocols.
+* **📋 Final Deliverable:** Deploy an active Make.com multi-stage approval scenario with email and Notion, launch a functioning prototype Lovable portal, and configure a Grok Bot supplier monitoring workflow.
 * **⚡ Claude Alternative Track (Claude Multi-Agent Approval Engine & Claude Code):** Integrating Claude via API into Make.com & Notion as the intelligent decision-making brain for incoming subcontractor invoices, and leveraging Claude Code for command-line batch processing of project drawings and photo logs.
 
 ---
