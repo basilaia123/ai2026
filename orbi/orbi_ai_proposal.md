@@ -73,7 +73,7 @@ To foster collaboration and prevent communication silos, the program is structur
 3. **MS Copilot in Excel (Python Engine) & Interactive Claude Artifacts:** Native Python execution in Excel for dynamic formula engineering, automated error repair, data normalization ETL, and live web dashboards for budget anomaly detection.
 4. **Document Crunch & Red Flags Contract Audit:** Project-level risk intelligence for 100+ page contracts: automated detection of liquidated damages, hidden liability shifts, and auto-drafting formal warning notices.
 5. **Togal.AI & Subcontractor Weighted Decision Matrix:** Automated BOQ extraction and 3-5 subcontractor weighted decision matrices (scoring price, catch-up timeline, Decree 41 compliance, warranty, and composite risk).
-6. **FLUX.3 Image (2026) 4K Layout Control & Rendair AI:** 0-1000 coordinate grid CAD alignment for photorealistic virtual staging and lobby concept variations without geometric drift.
+6. **Apartment Handover SOP, Acceptance Protocols & Defect Snagging:** Standard Operating Procedure (SOP) and acceptance protocols for apartment/suite handover to Radisson Blu/owners with zero missing snags and Decree 41 compliance (with an elective sales/marketing module: FLUX.3 / Rendair virtual staging).
 7. **OpenAI Whisper Large-v3 Turbo & Multimodal Snag Lists:** 4-decoder turbo transcription for technical site voice memos, Field Voice-to-Report pipelines (2-min voice memo to Daily Site Log), and defect extraction from photos into Snag List tables.
 8. **Make.com & Notion 3.0 Operations Hub:** Multi-step workflow automation connecting incoming invoice emails to Notion databases, executive Slack/Teams approval buttons, and vendor dispatchers.
 9. **Lovable.dev & Gamma 5:** Rapid prototyping of vendor submission web portals and 60-second executive slide decks generated from briefs.
@@ -86,9 +86,9 @@ To foster collaboration and prevent communication silos, the program is structur
 * **Structure:**
   * **Session 1:** Enterprise AI Foundations, Security & Site Assistants (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon, 4 Pillars of Prompting, Traffic-Light Sanitization, Claude Projects, Gemini Gems & Deep Research).
   * **Session 2:** Advanced Data Analytics, Dynamic Excel/Python, Gemini Notebook (1M RAG) & Presentation Automation (Gamma 5).
-  * **Session 3:** Contract Risk Intelligence, Automated Bid Leveling, Invoice Verification & Multimodal Site Operations (Whisper Voice-to-Report, Snag Lists & FLUX.3 / Rendair Virtual Staging).
+  * **Session 3:** Contract Risk Intelligence, Automated Bid Leveling, Invoice Verification & Site Operations (Whisper Voice-to-Report, Snag Lists & Apartment Handover SOP).
   * **Session 4:** End-to-End Enterprise Automations: Lovable Portals, Make.com Approval Pipelines, Grok Bot Cloud Teammate & AI Governance.
-* **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate real project documents, build Custom Assistants, audit BOQs and invoices, generate virtual staging visuals, create a front-end portal in Lovable.dev, and automate approval pipelines via Make.com.
+* **Evaluation:** The optimal practical corporate format. Provides ample hands-on time for participants to integrate real project documents, build Custom Assistants, audit BOQs and invoices, compile apartment handover SOPs & protocols, create a front-end portal in Lovable.dev, and automate approval pipelines via Make.com.
 
 ---
 
@@ -114,7 +114,7 @@ Every session is delivered in person. The 2-hour practical workshops are divided
 #### Session 2: Data Analytics, Dynamic Excel/Python, Gemini Notebook & Gamma 5 (2 Hours)
 * **Block 1 (50m): Data Normalization (ETL), Formulas & Copilot with Python**
   * Ingesting multi-format site files, resolving `#N/A` and `#VALUE!` errors, and dynamic array formula engineering (XLOOKUP, INDEX/MATCH, SUMIFS).
-  * Native Python execution in Excel (`=PY()`) for linear regression, burn-rate velocity tracking, and predictive budget modeling.
+  * Native Python execution in Excel (`=PY()`) for simple spend forecasting, burn-rate calculation, and trend analysis.
 * **☕ Coffee Break (10m)**
 * **Block 2 (50m): Anomaly Detection, Gemini Notebook (1M Archive RAG) & Gamma 5 Decks**
   * Cost anomaly detection and budget variance analysis.
@@ -124,17 +124,17 @@ Every session is delivered in person. The 2-hour practical workshops are divided
 * **🛠️ Practical Task:** Clean a 1,000-row raw site expense ledger, isolate cost variances, render an interactive Claude Artifacts dashboard, index the project archive in Gemini Notebook with audio briefing, and generate an executive Gamma 5 slide deck.
 * **⚡ Claude Alternative Track (Claude Artifacts Zero-Code Construction Dashboards):** Generating live, interactive React/HTML widgets directly inside chat: dynamic room explication filters, interactive budget deviation sliders, and defect snagging forms instantly embeddable into ORBI's internal project portal without developers.
 
-#### Session 3: Contract Risk Intelligence, Automated Bid Leveling & Multimodal Site Operations (2 Hours)
+#### Session 3: Contract Risk Intelligence, Automated Bid Leveling & Site Operations (Whisper & Handover SOP) (2 Hours)
 * **Block 1 (50m): Contract Risk Auditing, Subcontractor Bid Leveling & Invoice Verification**
   * Automated 100+ page contract Red Flags extraction (liquidated damages, warranty liabilities, scope exclusions) using Document Crunch & Provision AI methodologies.
   * Normalizing vendor quotes across currencies and units (m², m³) into automated 3-5 subcontractor weighted decision matrices (Togal.AI & ConWize).
   * Automated mathematical cross-auditing of submitted site invoices against approved contractual unit rates.
 * **☕ Coffee Break (10m)**
-* **Block 2 (50m): Multimodal Field Operations: Whisper Voice-to-Report, Defect Snagging & Visual AI Staging**
+* **Block 2 (50m): Multimodal Field Operations: Whisper Voice-to-Report, Defect Snagging & Apartment Handover SOP**
   * **OpenAI Whisper Large-v3 Turbo:** Transforming raw 2-minute field supervisor voice memos into structured, official Daily Site Logs.
   * **Multimodal Computer Vision:** Detecting defects from site photos and formatting structured 7-column Snag Lists (location, trade, severity, SLA).
-  * **Visual AI & Virtual Staging (FLUX.3 Image 2026 4K Layout Control & Rendair AI):** Converting raw grey/black-frame site photos and CAD drawings into photorealistic furnished hotel suites for sales, marketing, and operations.
-* **🛠️ Practical Task:** Execute Bid Leveling on 2 disparate subcontractor BOQs, extract risk clauses, perform an invoice audit, generate an official Snag List from photo + voice note, and render a 4K virtual staging interior.
+  * **Apartment Handover SOP & Acceptance Protocols:** Establishing standardized operational handover checklists, Decree 41 safety verification, and defect closeout protocols for apartment and hotel suite delivery to Radisson Blu / property owners with zero missing snags (plus a dedicated sales/marketing extension module: FLUX.3 / Rendair virtual staging for marketing renders).
+* **🛠️ Practical Task:** Execute Bid Leveling on 2 disparate subcontractor BOQs, extract risk clauses, perform an invoice audit, generate an official Snag List from photo + voice note, and compile an official Apartment Handover SOP & Acceptance Protocol.
 * **⚡ Claude Alternative Track (Claude Extended Thinking for Deep Claims & Regulations):** Leveraging Claude Opus 5.5 / Sonnet 5.5 Extended Thinking for rigorous technical-legal deductions: multi-step cross-examination of subcontractor claims, liquidated damages, and warranty disparities against Decree 41 Georgian building standards + extracting critical path delays and drafting contractual notices from meeting audio transcripts.
 
 #### Session 4: End-to-End Enterprise Automations: Lovable Portals, Make.com & Grok Bot (2 Hours)
