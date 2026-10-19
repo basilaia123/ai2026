@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 1 · Practical Exercises Workbook | ORBI Group</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Loopple/FiraGO@1.0/cdn/FiraGO.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            orbi: {
+              green: '#274931',
+              forest: '#173f26',
+              dark: '#061c35',
+              navy: '#0b233a',
+              slate: '#122c44',
+              surface: '#0f293e',
+              card: '#16334d',
+              accent: '#10b981',
+              border: 'rgba(39, 73, 49, 0.4)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'FiraGO', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background-color: #061c35; color: #e2e8f0; font-size: 1rem; line-height: 1.65; }
+
+    h1 { font-size: 2.2rem; font-weight: 900; line-height: 1.25; }
+    h2 { font-size: 1.6rem; font-weight: 800; line-height: 1.3; }
+    h3 { font-size: 1.2rem; font-weight: 700; line-height: 1.4; }
+
+    .panel {
+      background: #0b233a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    }
+    .task-container {
+      background: #0f293e;
+      border: 1px solid rgba(39, 73, 49, 0.6);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+    }
+    .ex-input {
+      width: 100%;
+      background: #061c35;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: vertical;
+      min-height: 130px;
+      transition: all 0.2s;
+    }
+    .ex-input:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+    .timer-badge {
+      font-family: 'Courier New', monospace;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #34d399;
+    }
+    .choice-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.85rem 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      background: #122c44;
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    .choice-btn:hover {
+      border-color: #10b981;
+      background: rgba(39, 73, 49, 0.3);
+    }
+    .choice-btn.correct {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      font-weight: bold;
+    }
+    .choice-btn.wrong {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+    .sample-answer {
+      background: #061c35;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* Role Boxes Base Styling */
+    .role-box {
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-width: 1.5px;
+      transition: all 0.2s;
+    }
+    .role-box.role-pm { background: rgba(6, 78, 59, 0.4); border-color: rgba(16, 185, 129, 0.4); }
+    .role-box.role-pm .role-title { color: #34d399; }
+    .role-box.role-con { background: rgba(12, 74, 110, 0.4); border-color: rgba(56, 189, 248, 0.4); }
+    .role-box.role-con .role-title { color: #38bdf8; }
+    .role-box.role-proc { background: rgba(120, 53, 15, 0.4); border-color: rgba(251, 191, 36, 0.4); }
+    .role-box.role-proc .role-title { color: #fbbf24; }
+    .role-box.role-ops { background: rgba(88, 28, 135, 0.4); border-color: rgba(192, 132, 252, 0.4); }
+    .role-box.role-ops .role-title { color: #c084fc; }
+
+    /* Day (Light) Theme - WCAG AAA / AA High-Contrast Standard */
+    html.theme-light body { 
+      background-color: #f1f5f3 !important; 
+      color: #0f172a !important; 
+    }
+
+    /* Header in Day Theme */
+    html.theme-light header { 
+      background: linear-gradient(135deg, #ffffff 0%, #f4f9f6 50%, #e8f4ec 100%) !important; 
+      color: #061c35 !important; 
+      border-bottom: 2px solid rgba(39, 73, 49, 0.25) !important;
+      box-shadow: 0 4px 20px -4px rgba(6, 28, 53, 0.06) !important;
+    }
+    html.theme-light header h1 { 
+      color: #061c35 !important; 
+      font-weight: 900 !important;
+    }
+    html.theme-light .header-title-accent { 
+      color: #047857 !important; 
+      font-weight: 900 !important;
+    }
+    html.theme-light .header-subtitle { 
+      color: #047857 !important; 
+      font-weight: 800 !important;
+    }
+    html.theme-light .header-desc { 
+      color: #334155 !important; 
+      font-weight: 500 !important;
+    }
+    html.theme-light .btn-secondary {
+      background: #ffffff !important;
+      border: 1.5px solid #cbd5e1 !important;
+      color: #0f172a !important;
+      font-weight: 700 !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    }
+    html.theme-light .btn-secondary:hover {
+      background: #f8fafc !important;
+      border-color: #94a3b8 !important;
+    }
+    html.theme-light .btn-assets {
+      background: #ecfdf5 !important;
+      border: 1.5px solid #a7f3d0 !important;
+      color: #065f46 !important;
+      font-weight: 800 !important;
+    }
+    html.theme-light .btn-assets:hover {
+      background: #d1fae5 !important;
+    }
+    html.theme-light #themeToggleBtn {
+      background: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    }
+
+    /* Task Containers & Panels in Day Theme */
+    html.theme-light .task-container { 
+      background: #ffffff !important; 
+      border: 2px solid #e2e8f0 !important; 
+      box-shadow: 0 4px 24px -2px rgba(6, 28, 53, 0.08) !important; 
+    }
+    html.theme-light .panel { 
+      background: #ffffff !important; 
+      border: 2px solid #e2e8f0 !important; 
+      box-shadow: 0 4px 20px -2px rgba(6, 28, 53, 0.06) !important; 
+    }
+    html.theme-light .task-header-border { 
+      border-bottom: 2px solid #e2e8f0 !important; 
+    }
+    html.theme-light h2.text-white,
+    html.theme-light h2 { 
+      color: #061c35 !important; 
+      font-weight: 900 !important;
+    }
+    html.theme-light .task-condition { 
+      color: #1e293b !important; 
+      font-weight: 500 !important;
+    }
+    html.theme-light .task-condition strong { 
+      color: #061c35 !important; 
+      font-weight: 800 !important;
+    }
+    html.theme-light .field-label { 
+      color: #065f46 !important; 
+      font-weight: 800 !important;
+    }
+
+    /* Role Boxes in Day Theme */
+    html.theme-light .role-box.role-pm { 
+      background: #ecfdf5 !important; 
+      border-color: #a7f3d0 !important; 
+      color: #064e3b !important; 
+    }
+    html.theme-light .role-box.role-pm .role-title { 
+      color: #047857 !important; 
+      font-weight: 800 !important; 
+    }
+    html.theme-light .role-box.role-con { 
+      background: #f0f9ff !important; 
+      border-color: #bae6fd !important; 
+      color: #0c4a6e !important; 
+    }
+    html.theme-light .role-box.role-con .role-title { 
+      color: #0284c7 !important; 
+      font-weight: 800 !important; 
+    }
+    html.theme-light .role-box.role-proc { 
+      background: #fffbeb !important; 
+      border-color: #fde68a !important; 
+      color: #78350f !important; 
+    }
+    html.theme-light .role-box.role-proc .role-title { 
+      color: #b45309 !important; 
+      font-weight: 800 !important; 
+    }
+    html.theme-light .role-box.role-ops { 
+      background: #faf5ff !important; 
+      border-color: #e9d5ff !important; 
+      color: #581c87 !important; 
+    }
+    html.theme-light .role-box.role-ops .role-title { 
+      color: #7e22ce !important; 
+      font-weight: 800 !important; 
+    }
+    html.theme-light .role-box .role-text { 
+      color: #334155 !important; 
+      font-weight: 500 !important; 
+    }
+
+    /* Inputs & Textarea in Day Theme */
+    html.theme-light .ex-input { 
+      background: #ffffff !important; 
+      border: 1.5px solid #cbd5e1 !important; 
+      color: #0f172a !important; 
+      font-weight: 500 !important;
+    }
+    html.theme-light .ex-input:focus { 
+      border-color: #047857 !important; 
+      box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.18) !important; 
+    }
+    html.theme-light .ex-input::placeholder { 
+      color: #94a3b8 !important; 
+    }
+
+    /* Timers & Controls in Day Theme */
+    html.theme-light .timer-badge { 
+      color: #047857 !important; 
+      font-weight: 900 !important;
+    }
+    html.theme-light .btn-reset { 
+      background: #f1f5f9 !important; 
+      border: 1.5px solid #cbd5e1 !important; 
+      color: #334155 !important; 
+      font-weight: 700 !important;
+    }
+    html.theme-light .btn-reset:hover { 
+      background: #e2e8f0 !important; 
+      color: #0f172a !important; 
+    }
+    html.theme-light .btn-sample { 
+      background: #f0fdf4 !important; 
+      border: 1.5px solid #86efac !important; 
+      color: #065f46 !important; 
+      font-weight: 800 !important;
+    }
+    html.theme-light .btn-sample:hover { 
+      background: #dcfce7 !important; 
+      color: #047857 !important; 
+    }
+    html.theme-light .save-status { 
+      color: #047857 !important; 
+      font-weight: 700 !important;
+    }
+
+    /* Sample Solutions in Day Theme */
+    html.theme-light .sample-answer { 
+      background: #f8fafc !important; 
+      border: 2px solid #cbd5e1 !important; 
+      color: #0f172a !important; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
+    }
+    html.theme-light .sample-answer strong.sample-title { 
+      color: #065f46 !important; 
+      font-weight: 900 !important;
+    }
+    html.theme-light .sample-answer p { 
+      color: #1e293b !important; 
+      font-weight: 500 !important;
+    }
+    html.theme-light .sample-answer strong { 
+      color: #061c35 !important; 
+      font-weight: 800 !important;
+    }
+
+    /* Quiz in Day Theme */
+    html.theme-light .quiz-question { 
+      color: #061c35 !important; 
+      font-weight: 800 !important;
+    }
+    html.theme-light .quiz-divider { 
+      border-bottom: 2px solid #e2e8f0 !important; 
+    }
+    html.theme-light .quiz-desc { 
+      color: #475569 !important; 
+      font-weight: 500 !important;
+    }
+    html.theme-light .choice-btn { 
+      background: #ffffff !important; 
+      border: 1.5px solid #cbd5e1 !important; 
+      color: #1e293b !important; 
+      font-weight: 600 !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    }
+    html.theme-light .choice-btn:hover { 
+      background: #f0fdf4 !important; 
+      border-color: #047857 !important; 
+      color: #064e3b !important; 
+    }
+    html.theme-light .choice-btn.correct { 
+      background: #dcfce7 !important; 
+      border-color: #22c55e !important; 
+      color: #14532d !important; 
+      font-weight: 800 !important;
+    }
+    html.theme-light .choice-btn.wrong { 
+      background: #fee2e2 !important; 
+      border-color: #ef4444 !important; 
+      color: #991b1b !important; 
+      font-weight: 800 !important;
+    }
+
+    /* Solid green button contrast rule */
+    .bg-\[\#274931\],
+    [class*="bg-[#274931]"] { 
+      background-color: #274931 !important; 
+      color: #ffffff !important; 
+    }
+    .bg-\[\#274931\] *,
+    [class*="bg-[#274931]"] * { 
+      color: #ffffff !important; 
+    }
+  
+    /* Selection */
+    ::selection {
+      background-color: #d1fae5 !important;
+      color: #061c35 !important;
+    }
+    ::-moz-selection {
+      background-color: #d1fae5 !important;
+      color: #061c35 !important;
+    }
+  </style>
+  <script>
+    (function () {
+      var t = 'light';
+      try { t = localStorage.getItem('orbi-theme') || 'light'; } catch (e) {}
+      if (t === 'light') document.documentElement.classList.add('theme-light');
+    })();
+  </script>
+</head>
+<body class="bg-orbi-dark">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-orbi-navy via-orbi-slate to-orbi-dark text-white px-6 md:px-12 py-10 border-b border-orbi-border">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between gap-3 mb-2">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-2.5 py-0.5 rounded" style="color:#ffffff !important;">ORBI GROUP</span>
+          <span class="header-subtitle text-emerald-400 text-xs font-bold">Session 1 · Practical Exercises Workbook</span>
+        </div>
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="px-3 py-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white transition flex items-center gap-1.5 text-xs font-bold shadow-sm" title="Toggle Day/Night Theme">
+          <span id="themeIcon">☀️</span> <span class="hidden sm:inline" id="themeText">Day Theme</span>
+        </button>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black mb-3">
+        Interactive Exercises & <span class="header-title-accent text-emerald-400">Site Case Studies</span>
+      </h1>
+      <p class="header-desc text-gray-300 text-sm md:text-base leading-relaxed">
+        This workbook contains two in-class timed assignments for Session 1: Task 1 (15 min execution + 5 min review) and Team Task 2 (20 min). Each assignment includes role-specific real-world cases, gold standard reference samples, auto-saving text response areas, and a quick knowledge check quiz.
+      </p>
+
+      <div class="flex flex-wrap gap-3 mt-5 text-xs">
+        <a href="orbi-session1-en.html" class="bg-[#274931] text-white px-4 py-2.5 rounded-lg font-black hover:bg-emerald-600 transition shadow" style="color:#ffffff !important;">
+          ← Back to Slides
+        </a>
+        <a href="orbi-day1-exercises.html" class="btn-secondary bg-white/10 text-gray-200 px-4 py-2.5 rounded-lg font-bold hover:bg-white/20 transition flex items-center gap-1.5">
+          🇬🇪 ქართული ვერსია (KA)
+        </a>
+        <a href="orbi-day1-summary-en.html" class="btn-secondary bg-white/10 text-gray-200 px-4 py-2.5 rounded-lg font-bold hover:bg-white/20 transition">
+          📋 Cheat Sheet & Summary
+        </a>
+        <a href="assets/traffic_light_data_sanitization.txt" target="_blank" class="btn-assets bg-white/5 text-emerald-300 border border-emerald-500/30 px-4 py-2.5 rounded-lg font-bold hover:bg-white/15 transition">
+          📁 Test Assets (Sanitization)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-10">
+
+    <!-- TASK 1 -->
+    <section class="task-container" id="task-1">
+      <div class="task-header-border flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-emerald-500/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-3 py-1 rounded-full uppercase" style="color:#ffffff !important;">🎯 Task 1 · 15 min</span>
+          <h2 class="task-title text-xl font-bold text-white">Engineering Prompting & Formal Default Notice (C.R.E.A.T.E.)</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="timer-badge" id="t1">15:00</span>
+          <button onclick="startT(1, 900)" class="bg-[#274931] text-white text-xs font-black px-3.5 py-1.5 rounded-lg hover:bg-emerald-600 transition" style="color:#ffffff !important;">Start</button>
+          <button onclick="resetT(1, 900)" class="btn-reset bg-white/10 text-gray-300 text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/20 transition">Reset</button>
+        </div>
+      </div>
+
+      <p class="task-condition text-sm text-gray-300 mb-3 leading-relaxed">
+        <strong>Instructions:</strong> Select your team role and complete the corresponding case study using the C.R.E.A.T.E. or P.A.R.T.S. engineering prompt framework:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs mb-4">
+        <div class="role-box role-pm">
+          <strong class="role-title block mb-1">📊 1. Project Management (PM & Controls):</strong>
+          <span class="role-text">Official contractual default notice for a 14-day schedule delay using the DEFUSE framework, enforcing a mandatory 72-hour Catch-up Plan.</span>
+        </div>
+        <div class="role-box role-con">
+          <strong class="role-title block mb-1">🏗️ 2. Construction & Site Supervision:</strong>
+          <span class="role-text">On-site inspection report, recording non-compliance with Decree 41 (minimum 90 cm egress corridor width violation) and formal Snag List.</span>
+        </div>
+        <div class="role-box role-proc">
+          <strong class="role-title block mb-1">🛒 3. Procurement & Commercial Team:</strong>
+          <span class="role-text">Comparative BOQ tender analysis of 3 subcontractors, flagging unit price deviations (>10%), and negotiating alternative terms.</span>
+        </div>
+        <div class="role-box role-ops">
+          <strong class="role-title block mb-1">🏨 4. Hotel Operations & Handover:</strong>
+          <span class="role-text">Aparthotel unit acceptance defect rectification report, hotel brand SOP non-conformities, and operational readiness handover checklist.</span>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="field-label block text-xs font-bold text-emerald-400 mb-1.5">📝 Paste your prompt and AI generated output here (automatically saved in your browser):</label>
+        <textarea id="task1_output" class="ex-input" placeholder="Paste your structured prompt and the AI-generated official notice or engineering analysis here..." oninput="saveNote('task1_output')"></textarea>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <button onclick="toggleSample('sample1')" class="btn-sample text-xs bg-white/10 text-emerald-300 border border-emerald-500/30 px-3.5 py-1.5 rounded-lg hover:bg-white/20 transition">
+          👁️ View Sample Solution
+        </button>
+        <span class="save-status text-xs text-gray-400 py-1.5" id="save-status-1">✓ Saved</span>
+      </div>
+
+      <div id="sample1" class="sample-answer">
+        <strong class="sample-title text-emerald-400 block mb-1.5">✅ Reference Solution (PM Contractual Default Notice via DEFUSE Framework):</strong>
+        <p class="text-xs text-gray-300 font-mono leading-relaxed">
+          To: Board of Directors, Comfort-Climate LLC<br>
+          From: ORBI Group, Project Management Directorate (Central Park Towers)<br>
+          Date: October 18, 2026<br><br>
+          <strong>Contractual Notice of Default No. CPT-HVAC-014 (Schedule Breach)</strong><br><br>
+          1. <strong>Factual Circumstances:</strong> Pursuant to Clause 4 of Agreement No. 41/2026, Phase 2 HVAC mechanical installation was scheduled for completion by October 4, 2026. As of October 18, 2026, an unexcused critical path delay of 14 calendar days is recorded.<br>
+          2. <strong>Absence of Force Majeure:</strong> Your verbal claim of "customs clearance delay" does not qualify as Force Majeure under Clause 9.1 of the Agreement, as no formal written notification was submitted within the mandatory 48-hour window.<br>
+          3. <strong>Mandatory Remedial Action:</strong> Within 72 hours of receipt of this notice, submit an accelerated Catch-up Schedule supported by proof of additional shift crew mobilization.<br>
+          4. <strong>Contractual Liquidated Damages:</strong> Failure to submit an approved Catch-up Plan will result in the immediate assessment of contractual delay penalties at 0.1% per day (Clause 8.1 of the Agreement) effective October 22, 2026.
+        </p>
+      </div>
+    </section>
+
+    <!-- TASK 2 -->
+    <section class="task-container" id="task-2">
+      <div class="task-header-border flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-emerald-500/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-[#274931] text-white text-xs font-black px-3 py-1 rounded-full uppercase" style="color:#ffffff !important;">🎯 Task 2 · 20 min</span>
+          <h2 class="task-title text-xl font-bold text-white">Deploying an ORBI Project Assistant (Claude Projects / Gemini Gems)</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="timer-badge" id="t2">20:00</span>
+          <button onclick="startT(2, 1200)" class="bg-[#274931] text-white text-xs font-black px-3.5 py-1.5 rounded-lg hover:bg-emerald-600 transition" style="color:#ffffff !important;">Start</button>
+          <button onclick="resetT(2, 1200)" class="btn-reset bg-white/10 text-gray-300 text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/20 transition">Reset</button>
+        </div>
+      </div>
+
+      <p class="task-condition text-sm text-gray-300 mb-3 leading-relaxed">
+        <strong>Instructions:</strong> Configure a dedicated Claude Project or Google Gemini Gem assistant for your team (Central Park Towers / ORBI City). Attach your role's key knowledge files, configure the System Persona, and validate it with a stress-test query:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs mb-4">
+        <div class="role-box role-pm">
+          <strong class="role-title block mb-1">📊 Track A (Project Management):</strong>
+          <span class="role-text">Upload contract conditions and penalty clauses. Direct AI to evaluate critical path delays and draft an escalated contractor notice.</span>
+        </div>
+        <div class="role-box role-con">
+          <strong class="role-title block mb-1">🏗️ Track B (Construction & Engineering):</strong>
+          <span class="role-text">Upload Georgia Decree 41 safety code and architectural room schedule. Direct AI to audit 4th floor evacuation egress corridors.</span>
+        </div>
+        <div class="role-box role-proc">
+          <strong class="role-title block mb-1">🛒 Track C (Procurement & Tenders):</strong>
+          <span class="role-text">Upload comparative BOQ database. Direct AI to perform multi-subcontractor pricing variance analysis and flag unbundled line items.</span>
+        </div>
+        <div class="role-box role-ops">
+          <strong class="role-title block mb-1">🏨 Track D (Hotel Operations & Handover):</strong>
+          <span class="role-text">Upload aparthotel unit handover protocol. Direct AI to cross-reference brand SOPs, punch-list defects, and prioritize 48-hour turnarounds.</span>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="field-label block text-xs font-bold text-emerald-400 mb-1.5">📝 Record your assistant validation test results (what was the assistant's output?):</label>
+        <textarea id="task2_output" class="ex-input" placeholder="Paste the assistant's compliance findings regarding Decree 41, BOQ deviations, or contractual notice review..." oninput="saveNote('task2_output')"></textarea>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <button onclick="toggleSample('sample2')" class="btn-sample text-xs bg-white/10 text-emerald-300 border border-emerald-500/30 px-3.5 py-1.5 rounded-lg hover:bg-white/20 transition">
+          👁️ View Sample Solution
+        </button>
+        <span class="save-status text-xs text-gray-400 py-1.5" id="save-status-2">✓ Saved</span>
+      </div>
+
+      <div id="sample2" class="sample-answer">
+        <strong class="sample-title text-emerald-400 block mb-1.5">✅ Reference Solution (Claude Project Automated Regulatory & Engineering Audit):</strong>
+        <p class="text-xs text-gray-300 font-mono leading-relaxed">
+          <strong>Status:</strong> Partial Non-Compliance with Georgia Decree 41 (Building Safety Code).<br>
+          <strong>Technical Finding:</strong> In Central Park Towers Room Schedule CSV file, the 4th floor emergency evacuation corridor (ID: CORR-402) width is recorded as 0.85 m (85 cm).<br>
+          <strong>Regulatory Requirement:</strong> Under Georgia Decree No. 41, the absolute minimum clear width for an egress route of this occupancy classification is 0.90 m (90 cm).<br>
+          <strong>PM Recommendation:</strong> Issue immediate written engineering directive to architectural and structural teams to shift partition wall alignment by 5 cm prior to drywall installation, ensuring compliance for final municipal occupancy sign-off.
+        </p>
+      </div>
+    </section>
+
+    <!-- KNOWLEDGE CHECK QUIZ -->
+    <section class="panel">
+      <h2 class="quiz-title text-xl font-bold text-white mb-2">🧠 Quick Knowledge Check Quiz</h2>
+      <p class="quiz-desc text-xs text-gray-300 mb-5 leading-relaxed">
+        3 quick questions to reinforce core Session 1 principles:
+      </p>
+
+      <!-- Q1 -->
+      <div class="quiz-divider mb-6 pb-6 border-b border-white/10">
+        <p class="quiz-question text-sm font-bold text-white mb-3">1. Under the ORBI Data Sanitization "Traffic Light" protocol, which information belongs strictly to the 🔴 Red Zone?</p>
+        <button class="choice-btn" onclick="checkChoice(this, false, 'q1')">A) Room schedule square footage, floor area, and corridor perimeters</button>
+        <button class="choice-btn" onclick="checkChoice(this, true, 'q1')">B) Corporate bank account IBAN numbers, employee national IDs, and executive passwords</button>
+        <button class="choice-btn" onclick="checkChoice(this, false, 'q1')">C) Public text of Georgia Decree 41 building safety regulations</button>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-divider mb-6 pb-6 border-b border-white/10">
+        <p class="quiz-question text-sm font-bold text-white mb-3">2. In the C.R.E.A.T.E. engineering prompt framework, what does the letter 'E' (Examples) represent?</p>
+        <button class="choice-btn" onclick="checkChoice(this, true, 'q2')">A) Few-Shot exemplars (providing an approved previous contract letter or inspection report to set exact tone and format)</button>
+        <button class="choice-btn" onclick="checkChoice(this, false, 'q2')">B) Emotional tone and aggressive legal demands</button>
+        <button class="choice-btn" onclick="checkChoice(this, false, 'q2')">C) Translating text into English</button>
+      </div>
+
+      <!-- Q3 -->
+      <div>
+        <p class="quiz-question text-sm font-bold text-white mb-3">3. Why should the ORBI team utilize Claude Projects and Gemini Gems instead of repeatedly uploading files to fresh individual chats?</p>
+        <button class="choice-btn" onclick="checkChoice(this, false, 'q3')">A) Because uploading files into general chat windows is technically impossible</button>
+        <button class="choice-btn" onclick="checkChoice(this, true, 'q3')">B) To maintain persistent project memory (Project Knowledge base) and an enforced, pre-configured role persona (System Instruction)</button>
+        <button class="choice-btn" onclick="checkChoice(this, false, 'q3')">C) Solely to run web searches on public construction news</button>
+      </div>
+    </section>
+
+  </main>
+
+<script>
+  // Theme Toggle Functionality
+  function toggleTheme() {
+    var isLight = document.documentElement.classList.toggle('theme-light');
+    try { localStorage.setItem('orbi-theme', isLight ? 'light' : 'dark'); } catch(e) {}
+    updateThemeUI(isLight);
+  }
+
+  function updateThemeUI(isLight) {
+    var icon = document.getElementById('themeIcon');
+    var text = document.getElementById('themeText');
+    if (icon) icon.innerText = isLight ? '☀️' : '🌙';
+    if (text) text.innerText = isLight ? 'Day Theme' : 'Night Theme';
+  }
+
+  // Initialize theme on DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', function() {
+    var isLight = document.documentElement.classList.contains('theme-light');
+    updateThemeUI(isLight);
+  });
+
+  // LocalStorage save (using EN specific keys so KA and EN responses remain separate)
+  function saveNote(id) {
+    var val = document.getElementById(id).value;
+    try { localStorage.setItem('orbi_ex_en_' + id, val); } catch(e) {}
+    var s = document.getElementById(id === 'task1_output' ? 'save-status-1' : 'save-status-2');
+    if (s) {
+      s.innerText = '✓ Saved';
+      s.classList.add('text-emerald-400');
+    }
+  }
+
+  // Load notes
+  window.addEventListener('DOMContentLoaded', function() {
+    ['task1_output', 'task2_output'].forEach(function(id) {
+      try {
+        var v = localStorage.getItem('orbi_ex_en_' + id);
+        if (v) document.getElementById(id).value = v;
+      } catch(e) {}
+    });
+  });
+
+  // Toggle sample solution
+  function toggleSample(id) {
+    var el = document.getElementById(id);
+    if (el.style.display === 'block') {
+      el.style.display = 'none';
+    } else {
+      el.style.display = 'block';
+    }
+  }
+
+  // Quiz Checker
+  function checkChoice(btn, isCorrect, group) {
+    var parent = btn.parentElement;
+    var all = parent.querySelectorAll('.choice-btn');
+    all.forEach(function(b) {
+      b.classList.remove('correct', 'wrong');
+      b.disabled = true;
+    });
+    if (isCorrect) {
+      btn.classList.add('correct');
+    } else {
+      btn.classList.add('wrong');
+    }
+  }
+
+  // Timers
+  var exTimers = {};
+  function startT(num, dur) {
+    if (exTimers[num]) clearInterval(exTimers[num]);
+    var rem = dur;
+    var el = document.getElementById('t' + num);
+    exTimers[num] = setInterval(function() {
+      rem--;
+      if (rem <= 0) {
+        clearInterval(exTimers[num]);
+        rem = 0;
+        if (el) el.innerText = '00:00';
+        alert('Time is up for this exercise!');
+        return;
+      }
+      var m = Math.floor(rem / 60);
+      var s = rem % 60;
+      if (el) el.innerText = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }, 1000);
+  }
+  function resetT(num, dur) {
+    if (exTimers[num]) clearInterval(exTimers[num]);
+    var m = Math.floor(dur / 60);
+    var s = dur % 60;
+    var el = document.getElementById('t' + num);
+    if (el) el.innerText = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+</script>
+</body>
+</html>

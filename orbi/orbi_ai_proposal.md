@@ -82,7 +82,7 @@ To foster collaboration and prevent communication silos, the program is structur
 
 #### AI & Automation Corporate Program (4 Sessions / 10 Hours)
 * **Duration:** 10 Hours (4 sessions of 2.5 hours each).
-* **Budget:** 7,000 GEL (all taxes included)
+* **Budget:** 6,000 GEL (all taxes included). ✨ +2 hours at no extra cost: a 10-hour training instead of 8 hours
 * **Structure:**
   * **Session 1:** Enterprise AI Foundations, Security & Site Assistants (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon, 4 Pillars of Prompting, Traffic-Light Sanitization, Claude Projects, Gemini Gems, Gemini Deep Research & Perplexity Pro).
   * **Session 2:** Advanced Data Analytics, Dynamic Excel/Python, Gemini Notebook (1M RAG) & Presentation Automation (Gamma 5).
