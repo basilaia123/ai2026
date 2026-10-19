@@ -80,8 +80,8 @@ To foster collaboration and prevent communication silos, the program is structur
 
 ---
 
-#### AI & Automation Corporate Program (4 Sessions / 8 Hours)
-* **Duration:** 8 Hours (4 practical workshops, 2 hours per session).
+#### AI & Automation Corporate Program (4 Sessions / 8.5 Hours)
+* **Duration:** 8.5 Hours (Session 1: 2.5 hours, Sessions 2-4: 2 hours each).
 * **Budget:** 7,000 GEL (all taxes included)
 * **Structure:**
   * **Session 1:** Enterprise AI Foundations, Security & Site Assistants (Claude Opus 5.5, GPT-6 Astra, Gemini 4 Argon, 4 Pillars of Prompting, Traffic-Light Sanitization, Claude Projects, Gemini Gems, Gemini Deep Research & Perplexity Pro).
@@ -92,23 +92,25 @@ To foster collaboration and prevent communication silos, the program is structur
 
 ---
 
-### 📅 Detailed 4-Session Schedule (8 Hours)
+### 📅 Detailed 4-Session Schedule (8.5 Hours)
 
-Every session is delivered in person. The 2-hour practical workshops are divided into two 50-minute focused work blocks and a 10-minute coffee break.
+Every session is delivered in person. Session 1 is a 2.5-hour intensive kickoff workshop (140 mins active work + 10 mins coffee break), and Sessions 2-4 are 2-hour practical workshops.
 
-#### Session 1: Enterprise AI Foundations, Security & Site Assistants (2 Hours)
-* **Block 1 (50m): Reasoning Architectures, Enterprise Security & Prompting Pillars**
+#### Session 1: Enterprise AI Foundations, Security & Site Assistants (2.5 Hours)
+* **Block 1 (40m): Reasoning Architectures, Enterprise Security & Live Workflow Audit**
   * Flagship model mechanics: **Claude Opus 5.5 / Sonnet 5.5**, **GPT-6 Astra / Sol**, and **Gemini 4 Argon**.
+  * Live bottleneck audit across 4 teams (Operations, Procurement, Construction, PM).
   * Enterprise Zero Data Retention (ZDR) and the Traffic-Light Data Sanitization standard (Red / Yellow / Green).
+* **Block 2 (50m): 4 Pillars of Engineering Prompting & Default Notice Drafting**
   * **4 Pillars of Engineering Prompting:** Few-Shot gold standard, Chain-of-Thought (CoT) & Self-Refine, XML tag structuring, and Strict Fallback anti-hallucination barriers.
   * Preventing "Lost in the Middle" across 500+ page design archives.
-  * **Claude Cowork:** Autonomous local desktop agent for scanning project folders and extracting issues.
+  * **Practical Task 1:** Drafting an enforceable 14-day delay default notice with liquidated damages formulas.
 * **☕ Coffee Break (10m)**
-* **Block 2 (50m): Site Role Assistants (Gemini Gems & Claude Projects), Gemini Deep Research & Perplexity Pro**
+* **Block 3 (50m): Site Role Assistants (Gemini Gems & Claude Projects), Claude Cowork & Deep Research**
   * Building persistent, site-specific AI assistants (Claude Projects & Google Gemini Gems) preloaded with Decree 41 safety codes, explication sheets, and system personas for PM, Construction, Procurement, and Operations.
-  * Autonomous multi-source research via Gemini Deep Research and cited technical fact-checking with Perplexity Pro (synthesizing 50+ regulatory sources and ISO building standards).
-  * **VERIFY Framework:** Comprehensive anti-hallucination validation before document sign-off.
-* **🛠️ Practical Task:** Establish an ORBI Site Hub (Claude Project or Gemini Gem), scan contract terms via Claude Cowork, draft an enforceable 14-day delay default notice using C.R.E.A.T.E., and cross-check statutory standards.
+  * Deploying **Claude Cowork** as an autonomous desktop agent for batch-scanning project folders.
+  * Autonomous multi-source research via Gemini Deep Research and cited technical fact-checking with Perplexity Pro (synthesizing 50+ regulatory sources and ISO building standards) with the **VERIFY Framework**.
+  * **Practical Task 2:** Establish and test a live ORBI Site Assistant Hub.
 * **🎯 Learning Outcomes (What participants will be able to do after Session 1):**
   * **Autonomous Desktop AI Agents:** Deploy Claude Cowork to independently scan local construction folders, triage drawings, and extract technical discrepancies.
   * **Engineering Prompting & Zero-Retention:** Master the 4 Pillars of Prompting (Few-Shot, CoT, XML, Strict Fallback) and enforce Traffic-Light data masking (Red/Amber/Green) with zero data retention leaks.
